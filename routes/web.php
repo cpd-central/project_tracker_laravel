@@ -14,3 +14,21 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::get('/project', 'ProjectController@form')->name('project.form');
+Route::post('/project/save', 'ProjectController@save')->name('project.save');
+
+
+
+
+
+
+
+
+
+
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
