@@ -7,8 +7,8 @@ use App\Project;
 
 class ProjectController extends Controller
 {
-	public function form(){
-		return view('project.form');
+	public function new_project(){
+		return view('project.newproject');
 	}
 	public function save(Request $request){
 		//dd($request->all());
