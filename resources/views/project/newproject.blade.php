@@ -5,9 +5,10 @@
 	<div class="row justify-content-center">
 		<div class="col-md-8">
 			<div class="card">
-				<div class="card-header">Project Form</div>
-			
+				<div class="card-header">New Project</div>
+						
 				<div class="card-body">
+					<?php echo 'hi'; ?>	
 					<form action="{{ route('project.save') }}" method="post">	
 						@csrf
 						<div class="form-group">

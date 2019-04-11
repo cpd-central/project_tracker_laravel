@@ -16,8 +16,8 @@ Route::get('/', function () {
 });
 
 
-Route::get('/project', 'ProjectController@form')->name('project.form');
-Route::post('/project/save', 'ProjectController@save')->name('project.save');
+Route::get('/newproject', 'ProjectController@new_project')->name('project.newproject');
+Route::post('/newproject/save', 'ProjectController@save')->name('project.save');
 
 
 
