@@ -16,15 +16,16 @@ Route::get('/', function () {
 });
 
 
-Route::get('/newproject', 'ProjectController@new_project')->name('project.newproject');
-Route::post('/newproject/save', 'ProjectController@save')->name('project.save');
-Route::get('/editproject')->name('project.editproject');
-Route::get('/projectindex')->name('project.projectindex');
+//Items added for 'new' project
+Route::get('newproject','newprojectcontroller@create');
+Route::post('newproject','newprojectcontroller@store');
 
+Route::get('allprojects','newprojectcontroller@index');
 
+Route::get('editproject/{id}','newprojectcontroller@edit');
+Route::post('editproject/{id}','newprojectcontroller@update');
 
-
-
+Route::delete('{id}','newprojectcontroller@destroy');
 
 
 
