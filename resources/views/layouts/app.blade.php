@@ -53,9 +53,6 @@
                 <a class="nav-link" href="{{ route('project.newproject') }}">New Project</a>
               </li>
                <li class="nav-item">
-                <a class="nav-link" href="{{ route('project.editproject') }}">Edit Project</a>
-              </li>
-               <li class="nav-item">
                 <a class="nav-link" href="{{ route('project.projectindex') }}">Project Index</a>
               </li>
 

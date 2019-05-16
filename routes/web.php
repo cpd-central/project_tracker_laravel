@@ -17,13 +17,13 @@ Route::get('/', function () {
 
 
 //Items added for 'new' project
-Route::get('newproject','newprojectcontroller@create');
-Route::post('newproject','newprojectcontroller@store');
+Route::get('/newproject','newprojectcontroller@create')->name('project.newproject');
+Route::post('/newproject','newprojectcontroller@store')->name('project.save');
 
-Route::get('allprojects','newprojectcontroller@index');
+Route::get('/allprojects','newprojectcontroller@index')->name('project.projectindex');
 
-Route::get('editproject/{id}','newprojectcontroller@edit');
-Route::post('editproject/{id}','newprojectcontroller@update');
+Route::get('/editproject/{id}','newprojectcontroller@edit')->name('project.editproject');
+Route::post('/editproject/{id}','newprojectcontroller@update');
 
 Route::delete('{id}','newprojectcontroller@destroy');
 

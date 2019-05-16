@@ -9,7 +9,7 @@ class newprojectcontroller extends Controller
     //
 	public function create()
     {
-        return view('newprojectcreate');
+        return view('project.newproject');
     }
 	
 	public function store(Request $request)
