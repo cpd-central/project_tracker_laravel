@@ -1,6 +1,6 @@
 <!-- newprojectcreate.blade.php -->
 
-@extends('../layouts/app')
+@extends('../layouts/layout')
 
 @section('title','New Project')
 
