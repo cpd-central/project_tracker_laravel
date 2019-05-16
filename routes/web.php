@@ -18,8 +18,8 @@ Route::get('/', function () {
 
 Route::get('/newproject', 'ProjectController@new_project')->name('project.newproject');
 Route::post('/newproject/save', 'ProjectController@save')->name('project.save');
-
-
+Route::get('/editproject')->name('project.editproject');
+Route::get('/projectindex')->name('project.projectindex');
 
 
 
