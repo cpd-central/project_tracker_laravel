@@ -8,7 +8,6 @@
 				<div class="card-header">New Project</div>
 						
 				<div class="card-body">
-					<?php echo 'hi'; ?>	
 					<form action="{{ route('project.save') }}" method="post">	
 						@csrf
 						<div class="form-group">
@@ -36,8 +35,8 @@
 							<input type="text" class="form-control" name="voltage">
 						</div>
 						<div class="form-group">
-							<label for="dollarvalue">Dollar Value:</label>
-							<input type="text" class="form-control" name="dollarvalue">
+							<label for="dollarvalueinhouse">Dollar Value:</label>
+							<input type="text" class="form-control" name="dollarvalueinhouse">
 						</div>
 						<div class="form-group">
 							<label for="datesent">Date Sent (YYYY-MM-DD):</label>
