@@ -1,6 +1,10 @@
 <!-- newprojectcreate.blade.php -->
 
+
+@extends('../layouts/layout')
+
 @extends('../layouts/app')
+
 
 @section('title','New Project')
 
@@ -39,4 +43,7 @@
 @section('sel1','')        
 @section('projectcode','')        
 @section('projectmanager','')        
+
+
+
 

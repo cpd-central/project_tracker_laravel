@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use App\newproject;
+use App\Project;
 
 class newprojectcontroller extends Controller
 {
@@ -14,7 +14,7 @@ class newprojectcontroller extends Controller
 	
 	public function store(Request $request)
     {
-        $newproject = new newproject();
+        $newproject = new Project();
         $newproject->cegproposalauthor= $request->get('cegproposalauthor');
         $newproject->projectname= $request->get('projectname');
         $newproject->clientcontactname= $request->get('clientcontactname');
@@ -46,12 +46,12 @@ class newprojectcontroller extends Controller
         $newproject->projectcode = $request->get('projectcode');        
         $newproject->projectmanager = $request->get('projectmanager');        
         $newproject->save();
-        return redirect('newproject')->with('success', 'newproject has been successfully added');
+        return redirect('project.projectindex')->with('success', 'newproject has been successfully added');
     }
 
     public function update(Request $request, $id)
     {
-        $newproject = newproject::find($id);
+        $newproject = Project::find($id);
         $newproject->cegproposalauthor= $request->get('cegproposalauthor');
         $newproject->projectname= $request->get('projectname');
         $newproject->clientcontactname= $request->get('clientcontactname');
@@ -83,7 +83,7 @@ class newprojectcontroller extends Controller
         $newproject->projectcode = $request->get('projectcode');        
         $newproject->projectmanager = $request->get('projectmanager');        
         $newproject->save();
-        return redirect('allprojects')->with('success', 'newproject has been successfully added');
+        return redirect('project.projectindex')->with('success', 'newproject has been successfully added');
     }
 
 
@@ -91,21 +91,21 @@ class newprojectcontroller extends Controller
 
 	public function index()
     {
-        $newprojects=newproject::all();
-        return view('newprojectindex',compact('newprojects'));
+        $projects=Project::all();
+        return view('project.projectindex',compact('projects'));
     }
 
     public function edit($id)   
     {
-        $newproject = newproject::find($id);
-        return view('newprojectedit',compact('newproject','id'));
+        $newproject = Project::find($id);
+        return view('project.editproject',compact('newproject','id'));
     }
 
     public function destroy($id)
     {
-        $newproject = newproject::find($id);
+        $newproject = Project::find($id);
         $newproject->delete();
-        return redirect('allprojects')->with('success','Newproject has been  deleted');
+        return redirect('project.projectindex')->with('success','Newproject has been  deleted');
     }
 	
 }

@@ -1,5 +1,8 @@
 <!-- newprojectindex.blade.php -->
 
+@extends('../layouts/app')
+
+@section('content')
 <!DOCTYPE html>
 <html>
   <head>
@@ -54,47 +57,47 @@
     </thead>
     <tbody>
       
-      @foreach($newprojects as $newproject)
+      @foreach($projects as $project)
       <tr>
-        <td><a href="{{action('newprojectcontroller@create', $newproject->id)}}" class="btn btn-primary">New</a></td>
-        <td><a href="{{action('newprojectcontroller@edit', $newproject->id)}}" class="btn btn-warning">Edit</a></td>
+        <td><a href="{{action('newprojectcontroller@create', $project->id)}}" class="btn btn-primary">New</a></td>
+        <td><a href="{{action('newprojectcontroller@edit', $project->id)}}" class="btn btn-warning">Edit</a></td>
         <td>
-          <form action="{{action('newprojectcontroller@destroy', $newproject->id)}}" method="post">
+          <form action="{{action('newprojectcontroller@destroy', $project->id)}}" method="post">
             @csrf
             <input name="_method" type="hidden" value="DELETE">
             <button class="btn btn-danger" type="submit">Delete</button>
           </form>
         </td>
 
-        <td>{{$newproject->cegproposalauthor}}</td>
-        <td>{{$newproject->projectname}}</td>        
-        <td>{{$newproject->clientcontactname}}</td>
-        <td>{{$newproject->clientcompany}}</td>
-        <td>{{$newproject->mwsize}}</td>
-        <!-- <td>{{$newproject->voltage}}</td>    -->
-        <td>{{$newproject->dollarvalueinhouse}}</td>
-        <!-- <td>{{$newproject->dateproposed}}</td>   -->
-        <td>{{$newproject->datentp}}</td>
-        <td>{{$newproject->dateenergization}}</td>
+        <td>{{$project->cegproposalauthor}}</td>
+        <td>{{$project->projectname}}</td>        
+        <td>{{$project->clientcontactname}}</td>
+        <td>{{$project->clientcompany}}</td>
+        <td>{{$project->mwsize}}</td>
+        <!-- <td>{{$project->voltage}}</td>    -->
+        <td>{{$project->dollarvalueinhouse}}</td>
+        <!-- <td>{{$project->dateproposed}}</td>   -->
+        <td>{{$project->datentp}}</td>
+        <td>{{$project->dateenergization}}</td>
 
-        <!-- <td>{{$newproject->projectrypewind}}</td>
-        <td>{{$newproject->projectypesolar}}</td>
-        <td>{{$newproject->projecttypestorage}}</td>
-        <td>{{$newproject->projecttypearray}}</td>
-        <td>{{$newproject->projecttypetransmission}}</td>
-        <td>{{$newproject->projecttypesubstation}}</td>
-        <td>{{$newproject->projecttypedistribution}}</td>
-        <td>{{$newproject->projectypescada}}</td>
-        <td>{{$newproject->projectypestudy}}</td>
+        <!-- <td>{{$project->projectrypewind}}</td>
+        <td>{{$project->projectypesolar}}</td>
+        <td>{{$project->projecttypestorage}}</td>
+        <td>{{$project->projecttypearray}}</td>
+        <td>{{$project->projecttypetransmission}}</td>
+        <td>{{$project->projecttypesubstation}}</td>
+        <td>{{$project->projecttypedistribution}}</td>
+        <td>{{$project->projectypescada}}</td>
+        <td>{{$project->projectypestudy}}</td>
 
-        <td>{{$newproject->electricalengineering}}</td>
-        <td>{{$newproject->civilengineering}}</td>
-        <td>{{$newproject->structuralmechanicalengineering}}</td>
-        <td>{{$newproject->procurement}}</td>
-        <td>{{$newproject->construction}}</td>  -->
-        <td>{{$newproject->sel1}}</td> 
-        <td>{{$newproject->projectcode}}</td>
-        <td>{{$newproject->projectmanager}}</td>
+        <td>{{$project->electricalengineering}}</td>
+        <td>{{$project->civilengineering}}</td>
+        <td>{{$project->structuralmechanicalengineering}}</td>
+        <td>{{$project->procurement}}</td>
+        <td>{{$project->construction}}</td>  -->
+        <td>{{$project->sel1}}</td> 
+        <td>{{$project->projectcode}}</td>
+        <td>{{$project->projectmanager}}</td>
 
 
       </tr>
@@ -104,3 +107,4 @@
   </div>
   </body>
 </html>
+@endsection
