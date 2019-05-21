@@ -46,7 +46,7 @@ class newprojectcontroller extends Controller
         $newproject->projectcode = $request->get('projectcode');        
         $newproject->projectmanager = $request->get('projectmanager');        
         $newproject->save();
-        return redirect('project.projectindex')->with('success', 'newproject has been successfully added');
+        return redirect('/projectindex')->with('success', 'newproject has been successfully added');
     }
 
     public function update(Request $request, $id)
@@ -83,29 +83,29 @@ class newprojectcontroller extends Controller
         $newproject->projectcode = $request->get('projectcode');        
         $newproject->projectmanager = $request->get('projectmanager');        
         $newproject->save();
-        return redirect('project.projectindex')->with('success', 'newproject has been successfully added');
+        return redirect('/projectindex')->with('success', 'newproject has been successfully added');
     }
 
 
 
 
-	public function index()
+    public function index()
     {
         $projects=Project::all();
-        return view('project.projectindex',compact('projects'));
+        return view('/projectindex',compact('projects'));
     }
 
     public function edit($id)   
     {
         $newproject = Project::find($id);
-        return view('project.editproject',compact('newproject','id'));
+        return view('/editproject/{id}',compact('newproject','id'));
     }
 
     public function destroy($id)
     {
         $newproject = Project::find($id);
         $newproject->delete();
-        return redirect('project.projectindex')->with('success','Newproject has been  deleted');
+        return redirect('/projectindex')->with('success','Newproject has been  deleted');
     }
 	
 }

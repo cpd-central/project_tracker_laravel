@@ -20,7 +20,7 @@ Route::get('/', function () {
 Route::get('/newproject','newprojectcontroller@create')->name('project.newproject');
 Route::post('/newproject','newprojectcontroller@store')->name('project.save');
 
-Route::get('/allprojects','newprojectcontroller@index')->name('project.projectindex');
+Route::get('/projectindex','newprojectcontroller@index')->name('project.projectindex');
 
 Route::get('/editproject/{id}','newprojectcontroller@edit')->name('project.editproject');
 Route::post('/editproject/{id}','newprojectcontroller@update');
