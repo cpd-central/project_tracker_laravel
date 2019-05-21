@@ -9,13 +9,13 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">  
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>  
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
-	<style>
-		#checkbox {
-			vertical-align:middle;
-		}
+    <style>
+#checkbox {
+  vertical-align:middle;
+}
 
-	</style>
-	
+    </style>
+
   </head>
 
 
@@ -23,7 +23,7 @@
     <div class="container">
       <h4>@yield('h4proposal','Title')</h4>
       <div class="container">
-    </div>
+      </div>
       <form method="post" action="{{url('newproject')}}">
         @csrf
         <div class="row">
@@ -34,7 +34,7 @@
             <input type="text" class="form-control" name="cegproposalauthor" value="@yield('cegproposalauthor')">
           </div>			  
         </div>
-		
+
         <div class="row">
           <div class="form-group col-md-4">
             <label for="projectname">Project Name:</label>
@@ -42,7 +42,7 @@
             @yield('projectname')
             <input type="text" class="form-control" name="projectname" value="@yield('projectname')">
           </div>
-		  <div class="form-group col-md-4">
+          <div class="form-group col-md-4">
             <label for="clientcontactname">Client Contact Name:</label>
             <input type="text" class="form-control" name="clientcontractname" value="@yield('clientcontractname')">
           </div>
@@ -51,8 +51,8 @@
             <input type="text" class="form-control" name="clientcompany" value="">
           </div>	
         </div>
-		
-		
+
+
         <div class="row">
           <div class="form-group col-md-4">
             <label for="mwsize">MW Size:</label>
@@ -88,79 +88,79 @@
           <div class="form-group col-md-2">
             <label for="fill">Project Type:</label>
           </div>
-  
+
           <div class="form-group col-md-10">
-			<label class="checkbox-inline" for="projecttypewind">
-				<input id="element_9_1" name="projecttypewind" class="element checkbox" type="checkbox" value="" />Wind
-			</label>
-			<label class="checkbox-inline" for="projecttypesolar">
-				<input id="element_9_2" name="projecttypesolar" class="element checkbox" type="checkbox" value="" />Solar
-			</label>
-			<label class="checkbox-inline" for="projecttypestorage">
-				<input id="element_9_3" name="projecttypestorage" class="element checkbox" type="checkbox" value="" />Storage
-			</label>
-			<label class="checkbox-inline" for="projecttypearray">
-				<input id="element_9_4" name="projecttypearray" class="element checkbox" type="checkbox" value="" />Array
-			</label>
-			<label class="checkbox-inline" for="projecttypetransmission">
-				<input id="element_9_5" name="projecttypetransmission" class="element checkbox" type="checkbox" value="" />Transmission
-			</label>
-			<label class="checkbox-inline" for="projecttypesubstation">
-				<input id="element_9_6" name="projecttypesubstation" class="element checkbox" type="checkbox" value="" />Substation
-			</label>
-			<label class="checkbox-inline" for="projecttypedistribution">
-				<input id="element_9_7" name="projecttypedistribution" class="element checkbox" type="checkbox" value="" />Distribution
-			</label>
-			<label class="checkbox-inline" for="projecttypescada">
-				<input id="element_9_8" name="projecttypescada" class="element checkbox" type="checkbox" value="" />SCADA
-			</label>
-			<label class="checkbox-inline" for="projecttypestudy">
-				<input id="element_9_9" name="projecttypestudy" class="element checkbox" type="checkbox" value="" />Study
-			</label>
-			
+            <label class="checkbox-inline" for="projecttypewind">
+              <input id="element_9_1" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Wind" />Wind
+            </label>
+            <label class="checkbox-inline" for="projecttypesolar">
+              <input id="element_9_2" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Solar" />Solar
+            </label>
+            <label class="checkbox-inline" for="projecttypestorage">
+              <input id="element_9_3" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Storage" />Storage
+            </label>
+            <label class="checkbox-inline" for="projecttypearray">
+              <input id="element_9_4" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Array" />Array
+            </label>
+            <label class="checkbox-inline" for="projecttypetransmission">
+              <input id="element_9_5" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Transmission" />Transmission
+            </label>
+            <label class="checkbox-inline" for="projecttypesubstation">
+              <input id="element_9_6" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Substation" />Substation
+            </label>
+            <label class="checkbox-inline" for="projecttypedistribution">
+              <input id="element_9_7" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Distribution" />Distribution
+            </label>
+            <label class="checkbox-inline" for="projecttypescada">
+              <input id="element_9_8" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="SCADA" />SCADA
+            </label>
+            <label class="checkbox-inline" for="projecttypestudy">
+              <input id="element_9_9" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Study" />Study
+            </label>
+
           </div>
         </div>
 
-       <div class="row">
+        <div class="row">
           <div class="form-group col-md-2">
             <label for="fill">EPC Type:</label>
           </div>
-  
+
           <div class="form-group col-md-10">
-			<label class="checkbox-inline" for="electricalengineering">
-				<input id="element_10_1" name="electricalengineering" class="element checkbox" type="checkbox" value="@yield('electricalengineering')" />Electrical Engineering
-			</label>
-			<label class="checkbox-inline" for="civilengineering">
-				<input id="element_10_2" name="civilengineering" class="element checkbox" type="checkbox" value="@yield('civilengineering')" />Civil Engineering
-			</label>
-			<label class="checkbox-inline" for="structuralmechanicalengineering">
-				<input id="element_10_3" name="structuralmechanicalengineering" class="element checkbox" type="checkbox" value="@yield('structuralmechanicalengineering')" />Structural/Mechanical Engineering
-			</label>
-			<label class="checkbox-inline" for="procurement">
-				<input id="element_10_4" name="procurement" class="element checkbox" type="checkbox" value="@yield('procurement')" />Procurement
-			</label>
-			<label class="checkbox-inline" for="construction">
-				<input id="element_10_5" name="construction" class="element checkbox" type="checkbox" value="@yield('construction')" />Construction
-			</label>
+            <label class="checkbox-inline" for="electricalengineering">
+              <input id="element_10_1" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="@yield('electricalengineering')" />Electrical Engineering
+            </label>
+            <label class="checkbox-inline" for="civilengineering">
+              <input id="element_10_2" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="@yield('civilengineering')" />Civil Engineering
+            </label>
+            <label class="checkbox-inline" for="structuralmechanicalengineering">
+              <input id="element_10_3" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="@yield('structuralmechanicalengineering')" />Structural/Mechanical Engineering
+            </label>
+            <label class="checkbox-inline" for="procurement">
+              <input id="element_10_4" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="@yield('procurement')" />Procurement
+            </label>
+            <label class="checkbox-inline" for="construction">
+              <input id="element_10_5" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="@yield('construction')" />Construction
+            </label>
           </div>
         </div>
 
 
         <div class="row">
           <div class="form-group col-md-4">
-	      	<br>	
-		  	<h4>@yield('h4won','Title')</h4>
+            <br>	
+            <h4>@yield('h4won','Title')</h4>
           </div>
         </div>
 
         <div class="row">
           <div class="form-group col-md-4">
             <label for="projectwon">Project Proposed/Won/Expired:</label>
-		<select class="form-control" id="sel1" value="@yield('sel1')">
-			<option>Proposed</option>
-			<option>Won</option>
-			<option>Expired</option>
-		</select>
+            <select class="form-control" id="sel1" value="@yield('sel1')">
+              <option>Proposed</option>
+              <option>Won</option>
+              <option>Expired</option>
+            </select>
           </div>
           <div class="form-group col-md-4">
             <label for="projectcode">Project Code:</label>
@@ -174,28 +174,28 @@
 
         <!--<div class="row">
           <div class="form-group col-md-4">
-            <label for="fill">fill:</label>
-            <input type="text" class="form-control" name="fill">
+          <label for="fill">fill:</label>
+          <input type="text" class="form-control" name="fill">
           </div>
           <div class="form-group col-md-4">
-            <label for="fill">fill:</label>
-            <input type="text" class="form-control" name="fill">
+          <label for="fill">fill:</label>
+          <input type="text" class="form-control" name="fill">
           </div>
           <div class="form-group col-md-4">
-            <label for="fill">fill:</label>
-            <input type="text" class="form-control" name="fill">
+          <label for="fill">fill:</label>
+          <input type="text" class="form-control" name="fill">
           </div>
-        </div>-->
-	
+          </div>-->
 
-		
-		
-        <div class="row">
-          <div class="form-group col-md-4">
-            <button type="submit" class="btn btn-success">Submit</button>
+
+
+
+          <div class="row">
+            <div class="form-group col-md-4">
+              <button type="submit" class="btn btn-success">Submit</button>
+            </div>
           </div>
-        </div>
       </form>
-   </div>
+    </div>
   </body>
 </html>
