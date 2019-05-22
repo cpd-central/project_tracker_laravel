@@ -10,5 +10,9 @@
 
 
 @section('cegproposalauthor',$newproject->cegproposalauthor)
-  
+@section('projectname',$newproject->projectname)
+
+
+
+
 

@@ -10,7 +10,7 @@ class newprojectcontroller extends Controller
   //
   public function create()
   {
-    return view('project.newproject');
+    return view('pages.newproject');
   }
 
   public function store(Request $request)
@@ -23,13 +23,11 @@ class newprojectcontroller extends Controller
     $newproject->clientcompany = $request->get('clientcompany');        
     $newproject->mwsize = $request->get('mwsize');        
     $newproject->voltage = $request->get('voltage');        
-    $newproject->dollarvalueinhouse = $request->get('dollarvalueinhouse');        
-    $newproject->dateproposed = new Carbon($request->get('dateproposed')); 
+    $newproject->dollarvalueinhouse = $request->get('dollarvalueinhouse');
+    $newproject->dateproposed = $request->get('dateproposed'); 
     $newproject->datentp = $request->get('datentp');        
-    $newproject->dateenergization = strtotime($request->get('dateenergization'));        
-
-    $newproject->projecttype = $request->get('projecttype_checklist'); 
-    
+    $newproject->dateenergization = $request->get('dateenergization');
+    $newproject->projecttype = $request->get('projecttype_checklist');
     $newproject->epctype = $request->get('epctype_checklist'); 
 
     $newproject->sel1 = $request->get('sel1');        
@@ -82,13 +80,13 @@ class newprojectcontroller extends Controller
   public function index()
   {
     $projects=Project::all();
-    return view('project.projectindex',compact('projects'));
+    return view('pages.projectindex',compact('projects'));
   }
 
   public function edit($id)   
   {
     $newproject = Project::find($id);
-    return view('project.editproject',compact('newproject','id'));
+    return view('pages.editproject',compact('newproject','id'));
   }
 
   public function destroy($id)
