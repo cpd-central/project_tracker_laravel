@@ -1,6 +1,9 @@
 <!-- layout.blade.php -->
 
 <!DOCTYPE html>
+@extends('layouts/app')
+
+@section('project_input_template')
 <html>
   <head>
     <meta charset="utf-8">
@@ -199,3 +202,6 @@
     </div>
   </body>
 </html>
+
+
+
