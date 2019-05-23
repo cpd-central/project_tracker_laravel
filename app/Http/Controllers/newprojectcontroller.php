@@ -21,7 +21,7 @@ class newprojectcontroller extends Controller
     $project->dateenergization = $req->get('dateenergization');
     $project->projecttype = $req->get('projecttype_checklist');
     $project->epctype = $req->get('epctype_checklist');
-    $project->sel1 = $req->get('sel1');
+    $project->projectstatus = $req->get('projectstatus');
     $project->projectcode = $req->get('projectcode');
     $project->projectmanager = $req->get('projectmanager');
     $project->save();
