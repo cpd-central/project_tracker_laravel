@@ -109,31 +109,28 @@
 
       <div class="form-group col-md-10">
         <label class="checkbox-inline" for="electricalengineering">
-          <input id="element_10_1" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="" />Electrical Engineering
+          <input id="element_10_1" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Electrical Engineering" />Electrical Engineering
         </label>
         <label class="checkbox-inline" for="civilengineering">
-          <input id="element_10_2" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="" />Civil Engineering
+          <input id="element_10_2" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Civil Engineering" />Civil Engineering
         </label>
         <label class="checkbox-inline" for="structuralmechanicalengineering">
-          <input id="element_10_3" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="" />Structural/Mechanical Engineering
+          <input id="element_10_3" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Structural/Mechanical Engineering" />Structural/Mechanical Engineering
         </label>
         <label class="checkbox-inline" for="procurement">
-          <input id="element_10_4" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="" />Procurement
+          <input id="element_10_4" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Procurement" />Procurement
         </label>
         <label class="checkbox-inline" for="construction">
-          <input id="element_10_5" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="" />Construction
+          <input id="element_10_5" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Construction" />Construction
         </label>
       </div>
     </div>
-
-
     <div class="row">
       <div class="form-group col-md-4">
         <br>	
         <h4></h4>
       </div>
     </div>
-
     <div class="row">
       <div class="form-group col-md-4">
         <label for="projectwon">Project Proposed/Won/Expired:</label>
@@ -152,25 +149,6 @@
         <input type="text" class="form-control" name="projectmanager" value="">
       </div>
     </div>
-
-    <!--<div class="row">
-      <div class="form-group col-md-4">
-      <label for="fill">fill:</label>
-      <input type="text" class="form-control" name="fill">
-      </div>
-      <div class="form-group col-md-4">
-      <label for="fill">fill:</label>
-      <input type="text" class="form-control" name="fill">
-      </div>
-      <div class="form-group col-md-4">
-      <label for="fill">fill:</label>
-      <input type="text" class="form-control" name="fill">
-      </div>
-      </div>-->
-
-
-
-
       <div class="row">
         <div class="form-group col-md-4">
           <button type="submit" class="btn btn-success">Submit</button>
