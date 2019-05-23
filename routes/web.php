@@ -16,22 +16,22 @@ Route::get('/', function () {
 });
 
 
-Route::get('/newproject', 'newprojectcontroller@new_project')->name('pages.newproject');
-Route::post('/newproject', 'newprojectcontroller@create');
+Route::get('/newproject', 'ProjectController@new_project')->name('pages.newproject');
+Route::post('/newproject', 'ProjectController@create');
 
-Route::get('/projectindex', 'newprojectcontroller@index')->name('pages.projectindex');
-Route::post('/projectindex', 'newprojectcontroller@search');
+Route::get('/projectindex', 'ProjectController@index')->name('pages.projectindex');
+Route::post('/projectindex', 'ProjectController@search');
 
-Route::get('/editproject/{id}', 'newprojectcontroller@edit_project')->name('pages.editproject');
-Route::post('/editproject/{id}', 'newprojectcontroller@update');
+Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject');
+Route::post('/editproject/{id}', 'ProjectController@update');
 
-Route::get('/wonprojectsummary', 'newprojectcontroller@summary')->name('pages.wonprojectsummary');
+Route::get('/wonprojectsummary', 'ProjectController@summary')->name('pages.wonprojectsummary');
 
-Route::delete('{id}', 'newprojectcontroller@destroy');
+Route::delete('{id}', 'ProjectController@destroy');
 
 Auth::routes();
 
-Route::get('/home', 'newprojectcontroller@index')->name('home');
+Route::get('/home', 'ProjectController@index')->name('home');
 
 
 #save this for later, for now, home will redirect to project index

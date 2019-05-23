@@ -5,7 +5,7 @@
   <br />
   <!-- Search Bar Form -->
   <div class="active-pink-3 active-pink-4 mb-4">
-    <form class="form-inline md-form mr-auto mb-4" method="post" action="{{action('newprojectcontroller@search')}}"> 
+    <form class="form-inline md-form mr-auto mb-4" method="post" action="{{action('ProjectController@search')}}"> 
       @csrf 
       <input name="search" class="form-control mr-sm-2" type="text" placeholder="Search Projects" aria-label="Search">
       <button class="btn aqua-gradient btn-rounded btn-sm my-0" type="submit">Search</button> 
@@ -41,10 +41,10 @@
 
       @foreach($projects as $project)
       <tr>
-        <td><a href="{{action('newprojectcontroller@new_project', $project['_id'])}}" class="btn btn-primary">New</a></td>
-        <td><a href="{{action('newprojectcontroller@edit_project', $project['_id'])}}" class="btn btn-warning">Edit</a></td>
+        <td><a href="{{action('ProjectController@new_project', $project['_id'])}}" class="btn btn-primary">New</a></td>
+        <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit</a></td>
         <td>
-          <form action="{{action('newprojectcontroller@destroy', $project['id'])}}" method="post">
+          <form action="{{action('ProjectController@destroy', $project['id'])}}" method="post">
             @csrf
             <input name="_method" type="hidden" value="DELETE">
             <button class="btn btn-danger" type="submit">Delete</button>
