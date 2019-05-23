@@ -49,13 +49,7 @@ class newprojectcontroller extends Controller
   public function index()
   {
     $projects=Project::all();
-    return view('pages.projectindex',compact('projects'));
-  }
-
-  public function edit_project($id)
-  {
-    $project = Project::find($id);
-    return view('pages.editproject',compact('editproject','project'));
+    return view('pages.projectindex', compact('projects'));
   }
 
   public function search(Request $request)
@@ -63,6 +57,18 @@ class newprojectcontroller extends Controller
     $term = $request['search'];
     $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
     return view('pages.projectindex', compact('projects')); 
+  }
+
+  public function edit_project($id)
+  {
+    $project = Project::find($id);
+    return view('pages.editproject', compact('editproject','project'));
+  }
+
+  public function summary()
+  {
+    //Steve's code goes here
+    return view('pages.wonprojectsummary');
   }
 
   public function destroy($id)

@@ -20,11 +20,12 @@ Route::get('/newproject', 'newprojectcontroller@new_project')->name('pages.newpr
 Route::post('/newproject', 'newprojectcontroller@create');
 
 Route::get('/projectindex', 'newprojectcontroller@index')->name('pages.projectindex');
+Route::post('/projectindex', 'newprojectcontroller@search');
 
 Route::get('/editproject/{id}', 'newprojectcontroller@edit_project')->name('pages.editproject');
 Route::post('/editproject/{id}', 'newprojectcontroller@update');
 
-Route::post('/projectindex', 'newprojectcontroller@search');
+Route::get('/wonprojectsummary', 'newprojectcontroller@summary')->name('pages.wonprojectsummary');
 
 Route::delete('{id}', 'newprojectcontroller@destroy');
 
