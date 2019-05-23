@@ -7,75 +7,44 @@ use App\Project;
 
 class newprojectcontroller extends Controller
 {
-  //
-  public function create()
+  protected function store($project, $req)
+  {
+    $project->cegproposalauthor= $req->get('cegproposalauthor');
+    $project->projectname= $req->get('projectname');
+    $project->clientcontactname= $req->get('clientcontactname');
+    $project->clientcompany = $req->get('clientcompany');
+    $project->mwsize = $req->get('mwsize');
+    $project->voltage = $req->get('voltage');
+    $project->dollarvalueinhouse = $req->get('dollarvalueinhouse');
+    $project->dateproposed = $req->get('dateproposed');
+    $project->datentp = $req->get('datentp');
+    $project->dateenergization = $req->get('dateenergization');
+    $project->projecttype = $req->get('projecttype_checklist');
+    $project->epctype = $req->get('epctype_checklist');
+    $project->sel1 = $req->get('sel1');
+    $project->projectcode = $req->get('projectcode');
+    $project->projectmanager = $req->get('projectmanager');
+    $project->save();
+  }
+
+  public function new_project()
   {
     return view('pages.newproject');
   }
 
-  public function store(Request $request)
+  public function create(Request $request)
   {
-    $newproject = new Project();
-    
-    $newproject->cegproposalauthor= $request->get('cegproposalauthor');
-    $newproject->projectname= $request->get('projectname');
-    $newproject->clientcontactname= $request->get('clientcontactname');
-    $newproject->clientcompany = $request->get('clientcompany');        
-    $newproject->mwsize = $request->get('mwsize');        
-    $newproject->voltage = $request->get('voltage');        
-    $newproject->dollarvalueinhouse = $request->get('dollarvalueinhouse');
-    $newproject->dateproposed = $request->get('dateproposed'); 
-    $newproject->datentp = $request->get('datentp');        
-    $newproject->dateenergization = $request->get('dateenergization');
-    $newproject->projecttype = $request->get('projecttype_checklist');
-    $newproject->epctype = $request->get('epctype_checklist'); 
-
-    $newproject->sel1 = $request->get('sel1');        
-    $newproject->projectcode = $request->get('projectcode');        
-    $newproject->projectmanager = $request->get('projectmanager');        
-    $newproject->save();
-    return redirect('/projectindex')->with('success', 'newproject has been successfully added');
+    $project = new Project();
+    $this->store($project, $request);
+    return redirect('/projectindex')->with('success', 'Project has been successfully added.');
   }
 
   public function update(Request $request, $id)
   {
-    $newproject = Project::find($id);
-    $newproject->cegproposalauthor= $request->get('cegproposalauthor');
-    $newproject->projectname= $request->get('projectname');
-    $newproject->clientcontactname= $request->get('clientcontactname');
-    $newproject->clientcompany = $request->get('clientcompany');        
-    $newproject->mwsize = $request->get('mwsize');        
-    $newproject->voltage = $request->get('voltage');        
-    $newproject->dollarvalueinhouse = $request->get('dollarvalueinhouse');        
-    $newproject->dateproposed = $request->get('dateproposed');        
-    $newproject->datentp = $request->get('datentp');        
-    $newproject->dateenergization = $request->get('dateenergization');        
-
-    $newproject->projecttypewind = $request->get('projectrypewind');        
-    $newproject->projecttypesolar = $request->get('projectypesolar');        
-    $newproject->projecttypestorage = $request->get('projecttypestorage');        
-    $newproject->projecttypearray = $request->get('projecttypearray');        
-    $newproject->projecttypetransmission = $request->get('projecttypetransmission');        
-    $newproject->projecttypesubstation = $request->get('projecttypesubstation');        
-    $newproject->projecttypedistribution = $request->get('projecttypedistribution');        
-    $newproject->projecttypescada = $request->get('projectypescada');        
-    $newproject->projecttypestudy = $request->get('projectypestudy');        
-
-    $newproject->electricalengineering = $request->get('electricalengineering');        
-    $newproject->civilengineering = $request->get('civilengineering');        
-    $newproject->structuralmechanicalengineering = $request->get('structuralmechanicalengineering');        
-    $newproject->procurement = $request->get('procurement');        
-    $newproject->construction = $request->get('construction');        
-
-    $newproject->sel1 = $request->get('sel1');        
-    $newproject->projectcode = $request->get('projectcode');        
-    $newproject->projectmanager = $request->get('projectmanager');        
-    $newproject->save();
-    return redirect('/projectindex')->with('success', 'newproject has been successfully added');
+    $project = Project::find($id);
+    $this->store($project, $request);
+    return redirect('/projectindex')->with('success', 'Project has been successfully updated');
   }
-
-
-
 
   public function index()
   {
@@ -83,7 +52,7 @@ class newprojectcontroller extends Controller
     return view('pages.projectindex',compact('projects'));
   }
 
-  public function edit($id)   
+  public function edit_project($id)
   {
     $project = Project::find($id);
     return view('pages.editproject',compact('editproject','project'));

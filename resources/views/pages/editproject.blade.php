@@ -1,5 +1,6 @@
 @extends('layouts.input')
 
+
 @section('cegproposalauthor', $project['cegproposalauthor'])
 @section('projectname', $project['projectname'])
 @section('clientcompany', $project['clientcompany'])

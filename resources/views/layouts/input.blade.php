@@ -14,7 +14,7 @@
       <h4></h4>
       <div class="container">
       </div>
-      <form method="post" action="{{url('newproject')}}">
+      <form method="post">
         @csrf
         <div class="row">
           <!--<div class="col-md-4"></div>-->

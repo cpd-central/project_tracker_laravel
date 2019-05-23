@@ -49,8 +49,8 @@
 
       @foreach($projects as $project)
       <tr>
-        <td><a href="{{action('newprojectcontroller@create', $project['_id'])}}" class="btn btn-primary">New</a></td>
-        <td><a href="{{action('newprojectcontroller@edit', $project['_id'])}}" class="btn btn-warning">Edit</a></td>
+        <td><a href="{{action('newprojectcontroller@new_project', $project['_id'])}}" class="btn btn-primary">New</a></td>
+        <td><a href="{{action('newprojectcontroller@edit_project', $project['_id'])}}" class="btn btn-warning">Edit</a></td>
         <td>
           <form action="{{action('newprojectcontroller@destroy', $project['id'])}}" method="post">
             @csrf
