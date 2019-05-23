@@ -30,21 +30,13 @@ Route::delete('{id}', 'newprojectcontroller@destroy');
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-//Items added for 'new' project
-//Route::get('/newproject','newprojectcontroller@create')->name('project.newproject');
-//Route::post('/newproject','newprojectcontroller@store')->name('project.save');
-//
-//Route::get('/projectindex','newprojectcontroller@index')->name('project.projectindex');
-//
-//Route::get('/editproject/{id}','newprojectcontroller@edit')->name('project.editproject');
-//Route::post('/editproject/{id}','newprojectcontroller@update');
-//
-//Route::delete('{id}','newprojectcontroller@destroy');
-//
-//
-//
-//
-//Auth::routes();
-//
-//Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'newprojectcontroller@index')->name('home');
+
+
+#save this for later, for now, home will redirect to project index
+#Route::get('/home', 'HomeController@index')->name('home');
+
+
+
+
+
