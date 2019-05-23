@@ -85,8 +85,8 @@ class newprojectcontroller extends Controller
 
   public function edit($id)   
   {
-    $newproject = Project::find($id);
-    return view('pages.editproject',compact('newproject','id'));
+    $project = Project::find($id);
+    return view('pages.editproject',compact('editproject','project'));
   }
 
   public function destroy($id)
