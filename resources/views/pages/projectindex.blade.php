@@ -3,6 +3,16 @@
 
 <div class="container">
   <br />
+  <!-- Search Bar Form -->
+  <div class="active-pink-3 active-pink-4 mb-4">
+    <form class="form-inline md-form mr-auto mb-4" method="post" action="{{action('newprojectcontroller@search')}}"> 
+      @csrf 
+      <input name="search" class="form-control mr-sm-2" type="text" placeholder="Search Projects" aria-label="Search">
+      <button class="btn aqua-gradient btn-rounded btn-sm my-0" type="submit">Search</button> 
+    </form> 
+  </div>
+
+  <br />
   @if (\Session::has('success'))
   <div class="alert alert-success">
     <p>{{ \Session::get('success') }}</p>

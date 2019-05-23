@@ -58,11 +58,18 @@ class newprojectcontroller extends Controller
     return view('pages.editproject',compact('editproject','project'));
   }
 
+  public function search(Request $request)
+  {
+    $term = $request['search'];
+    $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
+    return view('pages.projectindex', compact('projects')); 
+  }
+
   public function destroy($id)
   {
     $newproject = Project::find($id);
     $newproject->delete();
-    return redirect('/projectindex')->with('success','Newproject has been  deleted');
+    return redirect('/projectindex')->with('success','Project has been deleted');
   }
 
 }

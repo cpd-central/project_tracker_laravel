@@ -24,9 +24,13 @@ Route::get('/projectindex', 'newprojectcontroller@index')->name('pages.projectin
 Route::get('/editproject/{id}', 'newprojectcontroller@edit_project')->name('pages.editproject');
 Route::post('/editproject/{id}', 'newprojectcontroller@update');
 
+Route::post('/projectindex', 'newprojectcontroller@search');
+
 Route::delete('{id}', 'newprojectcontroller@destroy');
 
 Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
 //Items added for 'new' project
 //Route::get('/newproject','newprojectcontroller@create')->name('project.newproject');
 //Route::post('/newproject','newprojectcontroller@store')->name('project.save');
