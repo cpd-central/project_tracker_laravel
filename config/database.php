@@ -48,7 +48,7 @@ return [
 					'username' => env('DB_USERNAME'),
 					'password' => env('DB_PASSWORD'),
 					'options'  => [
-        		'database' => 'admin' // sets the authentication database required by mongo 3
+        		'database' => env('DB_DATABASE') // sets the authentication database required by mongo 3
     			]
 				],
 
