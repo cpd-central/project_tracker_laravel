@@ -20,22 +20,20 @@
           <!--<div class="col-md-4"></div>-->
           <div class="form-group col-md-4">
             <label for="cegproposalauther">CEG Proposal Author</label>
-
-            <input type="text" class="form-control" name="cegproposalauthor" value="@yield('cegproposalauthor')">
-          </div>			  
+            <input type="text" class="form-control" name="cegproposalauthor" value="@yield('cegproposalauthor')" required>
+          </div>
         </div>
-
         <div class="row">
           <div class="form-group col-md-4">
             <label for="projectname">Project Name:</label>
-
-
-            <input type="text" class="form-control" name="projectname" value="@yield('projectname')">
+            <input type="text" class="form-control" name="projectname" value="@yield('projectname')" required>
           </div>
           <div class="form-group col-md-4">
             <label for="clientcontactname">Client Contact Name:</label>
-            <input type="text" class="form-control" name="clientcontactname" value="@yield('clientcontactname')">
+            <input type="text" class="form-control" name="clientcontactname" value="@yield('clientcontactname')" required>
           </div>
+          
+
           <div class="form-group col-md-4">
             <label for="clientcompany">Client Company:</label>
             <input type="text" class="form-control" name="clientcompany" value="@yield('clientcompany')">
@@ -164,6 +162,21 @@
           </div>
         </div>
       </form>
+     
+      <!-- we may use these later, but for now we'll just use required client side -->
+      <!-- alerts -->
+      <!--@if (count($errors)) 
+      <div class="form-group"> 
+        <div class="alert alert-danger">
+          <ul>
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li> 
+            @endforeach
+          </ul>
+        </div>
+      </div>
+      @endif-->
+
     </div>
   </body>
 </html>
