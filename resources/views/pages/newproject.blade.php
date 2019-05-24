@@ -7,6 +7,7 @@
 @section('cegproposalauthor', '')
 @section('projectname', '')
 @section('clientcompany', '')
+@section('clientcontactname', '')
 @section('mwsize', '')
 @section('voltage', '')
 @section('dollaravlueinhouse', '')

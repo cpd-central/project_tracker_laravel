@@ -6,6 +6,7 @@
 
 @section('cegproposalauthor', $project['cegproposalauthor'])
 @section('projectname', $project['projectname'])
+@section('clientcontactname', $project['clientcontactname'])
 @section('clientcompany', $project['clientcompany'])
 @section('mwsize', $project['mwsize'])
 @section('voltage', $project['voltage'])
