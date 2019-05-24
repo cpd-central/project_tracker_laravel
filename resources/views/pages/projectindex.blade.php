@@ -30,6 +30,8 @@
         <th>CEG In-house Budget</th>
         <th>Date NTP</th>
         <th>Date Energize</th>   
+        <th>Project Type(s)</th>
+        <th>EPC Type(s)</th>
         <th>Project Status</th>   
         <th>Project Code</th>
         <th>Project Manager</th>
@@ -59,6 +61,18 @@
         <td>{{ $project['dollarvalueinhouse'] }}</td>
         <td>{{ $project['datentp'] }}</td>
         <td>{{ $project['dateenergization'] }}</td>
+        <td>
+          <table>
+            @foreach($project['projecttype'] as $project_type)
+            <tr><td>{{ $project_type }}</td></tr>
+            @endforeach
+          </table>
+        <td>
+          <table>
+            @foreach($project['epctype'] as $epc_type)
+            <tr><td>{{ $epc_type }}</td></tr>
+            @endforeach
+          </table>
         <td>{{ $project['projectstatus']}}</td > 
         <td>{{ $project['projectcode'] }}</td>
         <td>{{ $project['projectmanager'] }}</td>
