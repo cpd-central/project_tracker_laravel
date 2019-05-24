@@ -10,6 +10,11 @@
       <div class="card">
         <div class="card-header">{{ __('Register') }}</div>
         {{ env('DB_HOST') }}
+        {{ env('DB_PORT') }} 
+        {{ env('DB_DATABASE') }}
+        {{ env('DB_PASSWORD') }}
+        {{ env('DB_USERNAME') }}
+
         <div class="card-body">
           <form method="POST" action="{{ route('register') }}">
             @csrf
