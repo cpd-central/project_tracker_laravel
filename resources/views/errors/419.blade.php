@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+@include('includes.navbar')
+  <body>
+    <div class="flex-center position-ref full-height">
+      <div class="code">
+        419            </div>
+
+      <div class="message" style="padding: 10px;">
+        Page Expired            </div>
+    </div>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+

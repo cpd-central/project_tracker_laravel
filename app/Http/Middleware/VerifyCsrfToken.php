@@ -21,4 +21,28 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         //
     ];
+
+    //force laravel to regenerate session token on every successful token verification
+    //For example:
+    //Someone submits a new project, the token is verified and the project is added to the database.
+    //The token is regenerated, so now if this someone mashed the submit button twice, the token will be different and the second submission will not go through
+    protected function tokensMatch($request)
+    {
+      $token = $request->input('_token') ?: $request->header('X-CSRF-TOKEN');
+
+      if (!$token && $header = $request->header('X-XSRF-TOKEN')) 
+      {
+        $token = $this->encrypter->decrypt($header);
+      }
+      
+      $tokensMatch = hash_equals($request->session()->token(), $token);
+
+      if($tokensMatch) 
+      {
+        $request->session()->regenerateToken();
+      }
+      return $tokensMatch;
+    }
+
+
 }
