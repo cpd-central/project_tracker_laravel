@@ -10,8 +10,10 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
   </head>
   <body>
+
     <div class="container">
-      <h4></h4>
+      <h2><b>@yield('title')</b></h2>    
+      <h4>@yield('h4proposal')</h4>
       <div class="container">
       </div>
       <form method="post">
@@ -137,7 +139,7 @@
         <div class="row">
           <div class="form-group col-md-4">
             <br>	
-            <h4></h4>
+            <h4>@yield('h4won')</h4>
           </div>
         </div>
         <div class="row">

@@ -1,5 +1,8 @@
 @extends('layouts.input')
 
+@section('title', 'Project Update Form')
+@section('h4proposal', 'Edit Project - Proposal Details')
+@section('h4won', 'Edit Project - Won Details')
 
 @section('cegproposalauthor', $project['cegproposalauthor'])
 @section('projectname', $project['projectname'])

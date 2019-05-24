@@ -2,6 +2,7 @@
 @section('content')
 
 <div class="container">
+  <h2><b>Project Search</b></h2> 
   <br />
   <!-- Search Bar Form -->
   <div class="active-pink-3 active-pink-4 mb-4">
@@ -18,6 +19,7 @@
     <p>{{ \Session::get('success') }}</p>
   </div><br />
   @endif
+  <h2><b>Project Index</b></h2> 
   <table class="table table-striped">
     <thead>
       <tr>

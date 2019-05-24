@@ -1,5 +1,9 @@
 @extends('layouts.input')
 
+@section('title', 'Project Insert Form')
+@section('h4proposal', 'New Project - Proposal Details')
+@section('h4won', 'New Project - Won Details')
+
 @section('cegproposalauthor', '')
 @section('projectname', '')
 @section('clientcompany', '')
