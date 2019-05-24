@@ -23,7 +23,7 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th colspan="3">Action</th>
+        <th colspan="2">Action</th>
         <th>CEG Proposal Author</th>
         <th>Project Name</th>
         <th>Client Contact</th>
@@ -45,7 +45,6 @@
 
       @foreach($projects as $project)
       <tr>
-        <td><a href="{{action('ProjectController@new_project', $project['_id'])}}" class="btn btn-primary">New</a></td>
         <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit</a></td>
         <td>
           <form action="{{action('ProjectController@destroy', $project['id'])}}" method="post">
