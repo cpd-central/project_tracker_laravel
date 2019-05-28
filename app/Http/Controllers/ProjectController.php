@@ -27,6 +27,15 @@ class ProjectController extends Controller
     $project->save();
   }
 
+  protected function validate_request($req)
+  {
+    $this->validate($req, [
+      'cegproposalauthor' => 'required',
+      'projectname' => 'required',
+      'clientcontactname' => 'required'
+    ]);
+  }
+
   public function new_project()
   {
     return view('pages.newproject');
@@ -34,6 +43,7 @@ class ProjectController extends Controller
 
   public function create(Request $request)
   {
+    $this->validate_request($request); 
     $project = new Project();
     $this->store($project, $request);
     return redirect('/projectindex')->with('success', 'Project has been successfully added.');
@@ -41,6 +51,7 @@ class ProjectController extends Controller
 
   public function update(Request $request, $id)
   {
+    $this->validate_request($request);   
     $project = Project::find($id);
     $this->store($project, $request);
     return redirect('/projectindex')->with('success', 'Project has been successfully updated');
@@ -62,7 +73,7 @@ class ProjectController extends Controller
   public function edit_project($id)
   {
     $project = Project::find($id);
-    return view('pages.editproject', compact('editproject','project'));
+    return view('pages.editproject', compact('project'));
   }
 
   public function summary()

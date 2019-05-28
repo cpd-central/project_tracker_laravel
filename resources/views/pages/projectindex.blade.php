@@ -2,6 +2,7 @@
 @section('content')
 
 <div class="container">
+  <h2><b>Project Search</b></h2> 
   <br />
   <!-- Search Bar Form -->
   <div class="active-pink-3 active-pink-4 mb-4">
@@ -18,10 +19,11 @@
     <p>{{ \Session::get('success') }}</p>
   </div><br />
   @endif
+  <h2><b>Project Index</b></h2> 
   <table class="table table-striped">
     <thead>
       <tr>
-        <th colspan="3">Action</th>
+        <th colspan="2">Action</th>
         <th>CEG Proposal Author</th>
         <th>Project Name</th>
         <th>Client Contact</th>
@@ -30,6 +32,8 @@
         <th>CEG In-house Budget</th>
         <th>Date NTP</th>
         <th>Date Energize</th>   
+        <th>Project Type(s)</th>
+        <th>EPC Type(s)</th>
         <th>Project Status</th>   
         <th>Project Code</th>
         <th>Project Manager</th>
@@ -41,13 +45,12 @@
 
       @foreach($projects as $project)
       <tr>
-        <td><a href="{{action('ProjectController@new_project', $project['_id'])}}" class="btn btn-primary">New</a></td>
         <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit</a></td>
         <td>
           <form action="{{action('ProjectController@destroy', $project['id'])}}" method="post">
             @csrf
             <input name="_method" type="hidden" value="DELETE">
-            <button class="btn btn-danger" type="submit">Delete</button>
+            <button class="btn btn-danger" type="submit" onclick="return confirm('This will delete the project from the database.  Are you sure you want to do this?')">Delete</button>
           </form>
         </td>
 
@@ -59,6 +62,24 @@
         <td>{{ $project['dollarvalueinhouse'] }}</td>
         <td>{{ $project['datentp'] }}</td>
         <td>{{ $project['dateenergization'] }}</td>
+        <td>
+          @if (!empty($project['projecttype'] > 0))
+          <table>
+            @foreach($project['projecttype'] as $project_type)
+            <tr><td>{{ $project_type }}</td></tr>
+            @endforeach
+          </table>
+          @endif
+        </td> 
+        <td>
+          @if (!empty($project['epctype'] > 0))
+          <table>
+            @foreach($project['epctype'] as $epc_type)
+            <tr><td>{{ $epc_type }}</td></tr>
+            @endforeach
+          </table>
+          @endif 
+        </td> 
         <td>{{ $project['projectstatus']}}</td > 
         <td>{{ $project['projectcode'] }}</td>
         <td>{{ $project['projectmanager'] }}</td>
