@@ -82,6 +82,12 @@ class ProjectController extends Controller
     return view('pages.wonprojectsummary');
   }
 
+  public function hours_graph()
+  {
+    $projects = Project::all();
+    return view('pages.hoursgraph', compact('projects'));
+  }
+
   public function destroy($id)
   {
     $project = Project::find($id);

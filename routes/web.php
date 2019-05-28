@@ -27,6 +27,8 @@ Route::post('/editproject/{id}', 'ProjectController@update');
 
 Route::get('/wonprojectsummary', 'ProjectController@summary')->name('pages.wonprojectsummary');
 
+Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph');
+
 Route::delete('{id}', 'ProjectController@destroy');
 
 Auth::routes();
