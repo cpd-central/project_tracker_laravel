@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Project;
 use App\Charts\HoursChart;
@@ -85,12 +87,12 @@ class ProjectController extends Controller
 
   public function hours_graph(Request $request)
   {
-
-    $projects = Project::whereRaw(['hours_data' => ['$exists' => 'true']])->get();
+    $projects = DB::collection('hours_by_project')->get()->sortBy('code');
+    #$projects = Project::whereRaw(['hours_data' => ['$exists' => 'true']])->get();
     
     function get_chart_info($id)
     {
-      $selected_project = Project::where('_id', $id)->first();
+      $selected_project = DB::collection('hours_by_project')->where('_id', $id)->first();
 
       if ($selected_project)
       {
