@@ -130,7 +130,7 @@ class ProjectController extends Controller
       $labels_arr_start_end = array_slice($labels_arr, $start_key, $end_key - $start_key + 1);
 
       $labels = $labels_arr_start_end;
-      $dataset = array($selected_project['projectcode'] . ' Hours', 'line', $hours_arr_start_end); 
+      $dataset = array($selected_project['code'] . ' Hours', 'line', $hours_arr_start_end); 
       return array('labels' => $labels, 'dataset' => $dataset); 
       }
       else

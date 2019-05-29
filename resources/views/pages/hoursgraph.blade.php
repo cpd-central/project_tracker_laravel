@@ -14,7 +14,7 @@
                 <select name="project_id" class="form-control">
                   <option value=" ">-----Select Project Code-----</option>	
                   @foreach($projects as $project)	
-                  <option value="{{ $project['_id'] }}">{{ $project['projectcode'] }}</option>
+                  <option value="{{ $project['_id'] }}">{{ $project['code'] }}</option>
                   @endforeach	
                 </select>
               </div>	
