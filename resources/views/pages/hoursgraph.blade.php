@@ -6,21 +6,14 @@
   <div class="row justify-content-center">
     <div class="card">
       <div class="card-body">
-        <form>	
-          <div class="row">
-            <div class="col-md">
-              <div class="form-group">	
+        <form method="get" id="projectcode-form">	
                 <label for="project-content">Select Project</label>
-                <select name="project_id" class="form-control">
-                  <option value=" ">-----Select Project Code-----</option>	
+                <select name="project_id" class="form-control" onchange="document.getElementById('projectcode-form').submit()">
+                  <option value="0">-----Select Project Code-----</option>	
                   @foreach($projects as $project)	
                   <option value="{{ $project['_id'] }}">{{ $project['code'] }}</option>
                   @endforeach	
                 </select>
-              </div>	
-            </div>	  
-            <button type="submit" class="btn btn-success">Graph</button>
-          </div>
         </form>	
       </div>
     </div> 
