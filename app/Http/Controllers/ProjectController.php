@@ -135,17 +135,25 @@ class ProjectController extends Controller
       }
       else
       {
-      return array('labels' => [0, 1, 2, 3], 'dataset' => ['No Data', 'line', [0, 1, 2, 3]]);
+      return Null;
       } 
     }
     
-    $chart = new HoursChart;
-
+    
     $chart_info = get_chart_info($request['project_id']);
-    $chart->labels($chart_info['labels']);
-    $chart->dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2])->options([
-      'borderColor'=>'#3cba9f', 'fill' => False]);
-    return view('pages.hoursgraph', compact('projects', 'chart'));
+    if (isset($chart_info))
+    {
+      $chart = new HoursChart;
+
+      $chart->labels($chart_info['labels']);
+      $chart->dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2])->options([
+        'borderColor'=>'#3cba9f', 'fill' => False]);
+      return view('pages.hoursgraph', compact('projects', 'chart'));
+    }
+    else 
+    {
+      return view('pages.hoursgraph', compact('projects'));
+    } 
   }
 
   public function destroy($id)
