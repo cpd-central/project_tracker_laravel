@@ -178,7 +178,10 @@ return [
 
 				//mongodb service provider
 				Jenssegers\Mongodb\MongodbServiceProvider::class,
-    ],
+                              //charts
+                                ConsoleTVs\Charts\ChartsServiceProvider::class, 
+                              
+                              ],
 
     /*
     |--------------------------------------------------------------------------
