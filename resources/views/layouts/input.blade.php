@@ -75,13 +75,13 @@
 
           <div class="form-group col-md-10">
             <label class="checkbox-inline" for="projecttypewind">
-              <input id="element_9_1" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Wind" />Wind
+              <input id="element_9_1" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Wind" @yield('projecttypewind')/>Wind
             </label>
             <label class="checkbox-inline" for="projecttypesolar">
-              <input id="element_9_2" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Solar" />Solar
+              <input id="element_9_2" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Solar" @yield('projecttypesolar')/>Solar
             </label>
             <label class="checkbox-inline" for="projecttypestorage">
-              <input id="element_9_3" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Storage" />Storage
+              <input id="element_9_3" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Storage" @yield('projecttypestorage')/>Storage
             </label>
             <label class="checkbox-inline" for="projecttypearray">
               <input id="element_9_4" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Array" />Array
