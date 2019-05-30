@@ -48,7 +48,76 @@
   }
 ?>
 @stop
-
+@section('projecttypearray')
+<?php
+  if(isset($project['projecttype']))
+  { 
+    if(in_array('Array', $project['projecttype'])){
+      echo 'checked';
+    }
+  }
+?>
+@stop
+@section('projecttypetransmission')
+<?php
+  if(isset($project['projecttype']))
+  { 
+    if(in_array('Transmission', $project['projecttype'])){
+      echo 'checked';
+    }
+  }
+?>
+@stop
+@section('projecttypetransmission')
+<?php
+  if(isset($project['projecttype']))
+  { 
+    if(in_array('Transmission', $project['projecttype'])){
+      echo 'checked';
+    }
+  }
+?>
+@stop
+@section('projecttypesubstation')
+<?php
+  if(isset($project['projecttype']))
+  { 
+    if(in_array('Substation', $project['projecttype'])){
+      echo 'checked';
+    }
+  }
+?>
+@stop
+@section('projecttypedistribution')
+<?php
+  if(isset($project['projecttype']))
+  { 
+    if(in_array('Distribution', $project['projecttype'])){
+      echo 'checked';
+    }
+  }
+?>
+@stop
+@section('projecttypescada')
+<?php
+  if(isset($project['projecttype']))
+  { 
+    if(in_array('SCADA', $project['projecttype'])){
+      echo 'checked';
+    }
+  }
+?>
+@stop
+@section('projecttypestudy')
+<?php
+  if(isset($project['projecttype']))
+  { 
+    if(in_array('Study', $project['projecttype'])){
+      echo 'checked';
+    }
+  }
+?>
+@stop
 
 @section('projectwon', $project['projectwon'])
 @section('projectcode', $project['projectcode'])

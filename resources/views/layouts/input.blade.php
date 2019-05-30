@@ -84,22 +84,22 @@
               <input id="element_9_3" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Storage" @yield('projecttypestorage')/>Storage
             </label>
             <label class="checkbox-inline" for="projecttypearray">
-              <input id="element_9_4" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Array" />Array
+              <input id="element_9_4" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Array" @yield('projecttypearray')/>Array
             </label>
             <label class="checkbox-inline" for="projecttypetransmission">
-              <input id="element_9_5" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Transmission" />Transmission
+              <input id="element_9_5" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Transmission" @yield('projecttypetransmission')/>Transmission
             </label>
             <label class="checkbox-inline" for="projecttypesubstation">
-              <input id="element_9_6" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Substation" />Substation
+              <input id="element_9_6" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Substation" @yield('projecttypesubstation')/>Substation
             </label>
             <label class="checkbox-inline" for="projecttypedistribution">
-              <input id="element_9_7" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Distribution" />Distribution
+              <input id="element_9_7" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Distribution" @yield('projecttypedistribution')/>Distribution
             </label>
             <label class="checkbox-inline" for="projecttypescada">
-              <input id="element_9_8" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="SCADA" />SCADA
+              <input id="element_9_8" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="SCADA" @yield('projecttypescada')/>SCADA
             </label>
             <label class="checkbox-inline" for="projecttypestudy">
-              <input id="element_9_9" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Study" />Study
+              <input id="element_9_9" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Study" @yield('projecttypestudy')/>Study
             </label>
 
           </div>
