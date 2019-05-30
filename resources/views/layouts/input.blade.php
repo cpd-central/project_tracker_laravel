@@ -112,19 +112,19 @@
 
           <div class="form-group col-md-10">
             <label class="checkbox-inline" for="electricalengineering">
-              <input id="element_10_1" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Electrical Engineering" />Electrical Engineering
+              <input id="element_10_1" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Electrical Engineering" @yield('epctypeelectricalengineering')/>Electrical Engineering
             </label>
             <label class="checkbox-inline" for="civilengineering">
-              <input id="element_10_2" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Civil Engineering" />Civil Engineering
+              <input id="element_10_2" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Civil Engineering" @yield('epctypecivilengineering')/>Civil Engineering
             </label>
             <label class="checkbox-inline" for="structuralmechanicalengineering">
-              <input id="element_10_3" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Structural/Mechanical Engineering" />Structural/Mechanical Engineering
+              <input id="element_10_3" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Structural/Mechanical Engineering" @yield('epctypestructuralmechanicalengineering')/>Structural/Mechanical Engineering
             </label>
             <label class="checkbox-inline" for="procurement">
-              <input id="element_10_4" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Procurement" />Procurement
+              <input id="element_10_4" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Procurement" @yield('epctypeprocurement')/>Procurement
             </label>
             <label class="checkbox-inline" for="construction">
-              <input id="element_10_5" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Construction" />Construction
+              <input id="element_10_5" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Construction" @yield('epctypeconstruction')/>Construction
             </label>
           </div>
         </div>

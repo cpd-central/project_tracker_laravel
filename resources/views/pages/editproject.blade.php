@@ -16,108 +16,80 @@
 @section('dateenergization', $project['dateenergization'])
 @section('dateenergization', $project['dateenergization'])
 
-@section('checkboxes')
-
+<!-- Project Type Sections -->
 @section('projecttypewind')
 <?php
-  if(isset($project['projecttype']))
-  {
-    if(in_array('Wind', $project['projecttype'])){
-      echo 'checked';
-    }
-  }
+  check_project_box('Wind', $project['projecttype']);
 ?>
 @stop
 @section('projecttypesolar')
 <?php
-  if(isset($project['projecttype']))
-  { 
-    if(in_array('Solar', $project['projecttype'])){
-      echo 'checked';
-    }
-  }
+  check_project_box('Solar', $project['projecttype']);
 ?>
 @stop
 @section('projecttypestorage')
 <?php
-  if(isset($project['projecttype']))
-  { 
-    if(in_array('Storage', $project['projecttype'])){
-      echo 'checked';
-    }
-  }
+  check_project_box('Storage', $project['projecttype']);
 ?>
 @stop
 @section('projecttypearray')
 <?php
-  if(isset($project['projecttype']))
-  { 
-    if(in_array('Array', $project['projecttype'])){
-      echo 'checked';
-    }
-  }
+  check_project_box('Array', $project['projecttype']);
 ?>
 @stop
 @section('projecttypetransmission')
 <?php
-  if(isset($project['projecttype']))
-  { 
-    if(in_array('Transmission', $project['projecttype'])){
-      echo 'checked';
-    }
-  }
-?>
-@stop
-@section('projecttypetransmission')
-<?php
-  if(isset($project['projecttype']))
-  { 
-    if(in_array('Transmission', $project['projecttype'])){
-      echo 'checked';
-    }
-  }
+  check_project_box('Transmission', $project['projecttype']);
 ?>
 @stop
 @section('projecttypesubstation')
 <?php
-  if(isset($project['projecttype']))
-  { 
-    if(in_array('Substation', $project['projecttype'])){
-      echo 'checked';
-    }
-  }
+  check_project_box('Substation', $project['projecttype']);
 ?>
 @stop
 @section('projecttypedistribution')
 <?php
-  if(isset($project['projecttype']))
-  { 
-    if(in_array('Distribution', $project['projecttype'])){
-      echo 'checked';
-    }
-  }
+  check_project_box('Distribution', $project['projecttype']);
 ?>
 @stop
 @section('projecttypescada')
 <?php
-  if(isset($project['projecttype']))
-  { 
-    if(in_array('SCADA', $project['projecttype'])){
-      echo 'checked';
-    }
-  }
+  check_project_box('SCADA', $project['projecttype']);
 ?>
 @stop
 @section('projecttypestudy')
 <?php
-  if(isset($project['projecttype']))
-  { 
-    if(in_array('Study', $project['projecttype'])){
-      echo 'checked';
-    }
-  }
+  check_project_box('Study', $project['projecttype']);
 ?>
 @stop
+<!-------------------------------------------------------->
+<!-- EPC Type Sections -->
+@section('epctypeelectricalengineering')
+<?php
+  check_project_box('Electrical Engineering', $project['epctype']);
+?>
+@stop
+@section('epctypecivilengineering')
+<?php
+  check_project_box('Civil Engineering', $project['epctype']);
+?>
+@stop
+@section('epctypestructuralmechanicalengineering')
+<?php
+  check_project_box('Structural/Mechanical Engineering', $project['epctype']);
+?>
+@stop
+@section('epctypeprocurement')
+<?php
+  check_project_box('Procurement', $project['epctype']);
+?>
+@stop
+@section('epctypeconstruction')
+<?php
+  check_project_box('Construction', $project['epctype']);
+?>
+@stop
+<!-------------------------------------------------------->
 
 @section('projectwon', $project['projectwon'])
 @section('projectcode', $project['projectcode'])
