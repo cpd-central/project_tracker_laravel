@@ -46,18 +46,18 @@ class ProjectController extends Controller
 
   public function create(Request $request)
   {
-    $this->validate_request($request); 
+    $this->validate_request($request);
     $project = new Project();
     $this->store($project, $request);
-    return redirect('/projectindex')->with('success', 'Project has been successfully added.');
+    return redirect('/projectindex')->with('Success!', 'Project has been successfully added.');
   }
 
   public function update(Request $request, $id)
   {
-    $this->validate_request($request);   
+    $this->validate_request($request);
     $project = Project::find($id);
     $this->store($project, $request);
-    return redirect('/projectindex')->with('success', 'Project has been successfully updated');
+    return redirect('/projectindex')->with('Success!', 'Project has been successfully updated');
   }
 
   public function index()
@@ -107,8 +107,13 @@ class ProjectController extends Controller
   public function search(Request $request)
   {
     $term = $request['search'];
-    $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
-    return view('pages.projectindex', compact('projects')); 
+    if (isset($term)) { 
+      $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
+      return view('pages.projectindex', compact('projects')); 
+    }
+    else {
+      return redirect('/projectindex')->with('Please enter a search term to search.');
+    }
   }
 
   public function edit_project($id)
