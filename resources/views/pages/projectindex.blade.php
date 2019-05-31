@@ -63,14 +63,14 @@
         <td>{{ $project['datentp'] }}</td>
         <td>{{ $project['dateenergization'] }}</td>
         <td>
-          @if (!empty($project['projecttype'] > 0))
+        <!--   @if (!empty($project['projecttype'] > 0))
           <table>
             @foreach($project['projecttype'] as $project_type)
             <tr><td>{{ $project_type }}</td></tr>
             @endforeach
           </table>
           @endif
-        </td> 
+        </td>
         <td>
           @if (!empty($project['epctype'] > 0))
           <table>
@@ -79,7 +79,7 @@
             @endforeach
           </table>
           @endif 
-        </td> 
+        </td> --> 
         <td>{{ $project['projectstatus']}}</td > 
         <td>{{ $project['projectcode'] }}</td>
         <td>{{ $project['projectmanager'] }}</td>

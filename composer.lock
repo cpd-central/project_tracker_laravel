@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0a231bf8d121f943ad19451dc95f39f5",
+    "content-hash": "cf07d5dcc4bccecef9498221772bdfa4",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -2712,6 +2712,55 @@
             "description": "CssToInlineStyles is a class that enables you to convert HTML-pages/files into HTML-pages/files with inline styles. This is very useful when you're sending emails.",
             "homepage": "https://github.com/tijsverkoyen/CssToInlineStyles",
             "time": "2017-11-27T11:13:29+00:00"
+        },
+        {
+            "name": "utcdatetime/utcdatetime",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/heiglandreas/UTCDateTime.git",
+                "reference": "ab261b51b2f8b429a7d79bc1900f580feb8e6919"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/heiglandreas/UTCDateTime/zipball/ab261b51b2f8b429a7d79bc1900f580feb8e6919",
+                "reference": "ab261b51b2f8b429a7d79bc1900f580feb8e6919",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "dev-master",
+                "mockery/mockery": "^1.2.0",
+                "phpunit/phpunit": "^8.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "UTCDateTime\\": "src/UTCDateTime"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andreas Heigl",
+                    "email": "andreas@heigl.org",
+                    "homepage": "https://andreas.heigl.org",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Provides a datetime-implementation that is always UTC",
+            "homepage": "http://github.com/heiglandreas/UTCDateTime",
+            "keywords": [
+                "GMT",
+                "datetime",
+                "utc"
+            ],
+            "time": "2019-05-16T06:04:32+00:00"
         },
         {
             "name": "vlucas/phpdotenv",

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Project;
+use MongoDB\BSON\UTCDateTime;   //Imported for strToDate function
+use UTCDateTime\DateTime;
+use UTCDateTime\DateTime\DateTimeZone;
 
 class ProjectController extends Controller
 {
@@ -13,18 +16,19 @@ class ProjectController extends Controller
     $project->projectname= $req->get('projectname');
     $project->clientcontactname= $req->get('clientcontactname');
     $project->clientcompany = $req->get('clientcompany');
-    $project->mwsize = $req->get('mwsize');
-    $project->voltage = $req->get('voltage');
-    $project->dollarvalueinhouse = $req->get('dollarvalueinhouse');
-    $project->dateproposed = $req->get('dateproposed');
-    $project->datentp = $req->get('datentp');
-    $project->dateenergization = $req->get('dateenergization');
+    $project->mwsize = (int) $req->get('mwsize');
+    $project->voltage = (int) $req->get('voltage');
+    $project->dollarvalueinhouse = (int) $req->get('dollarvalueinhouse');
+    $project->dateproposed = $this->strToDate($req->get('dateproposed'));
+    $project->datentp = $this->strToDate($req->get('datentp'));
+    $project->dateenergization = $this->strToDate($req->get('dateenergization'));
     $project->projecttype = $req->get('projecttype_checklist');
     $project->epctype = $req->get('epctype_checklist');
     $project->projectstatus = $req->get('projectstatus');
     $project->projectcode = $req->get('projectcode');
     $project->projectmanager = $req->get('projectmanager');
-    $project->save();
+    dd($project);
+    //$project->save();
   }
 
   protected function validate_request($req)
@@ -34,6 +38,14 @@ class ProjectController extends Controller
       'projectname' => 'required',
       'clientcontactname' => 'required'
     ]);
+  }
+
+    protected function strToDate($req)
+  {
+    $timestamp = strtotime($req);                      //Must use MM/DD/YYY because MM-DD-YYYY is actually european so it will be used wrong
+    $date = new \DateTime($req, new \DateTimeZone('America/Chicago'));
+    $utcdatetime = new UTCDateTime(intval($date) * 1000);
+    return $date;
   }
 
   public function new_project()
