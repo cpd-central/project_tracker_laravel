@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Project;
+use MongoDB\BSON\UTCDateTime; 
+use MongoDB\BSON\Decimal128; 
 
 class ProjectController extends Controller
 {
@@ -41,6 +43,7 @@ class ProjectController extends Controller
     return view('pages.newproject');
   }
 
+
   public function create(Request $request)
   {
     $this->validate_request($request); 
@@ -63,6 +66,44 @@ class ProjectController extends Controller
     return view('pages.projectindex', compact('projects'));
   }
 
+  public function indexwon()
+  {
+    #$project=Project::all()->where('projectstatus','Won')->first();
+    #$vardate=$project['dateenergization'];
+    #$vardate=new UTCDateTime(strtotime($vardate));
+    #$vardate=$vardate->toDateTime();
+    #$vardate=$vardate->getTimestamp();
+    #$today=time();
+    #$result=ceil(($vardate*1000-$today)/2629743);
+    #echo "vardate:" . $vardate*1000 . "<br>";
+    #echo "today:" . $today . "<br>";
+    #echo "result:" . $result . "<br>";
+
+    $maxenddate = 0;
+    $numQUERYfieldsY = 0;
+    $MAXxDATE = 0;
+    $today=time();
+
+    $projects=Project::all()->where('projectstatus','Won');
+
+    foreach($projects as $project)
+    {
+      $enddate=new UTCDateTime(strtotime($project['dateenergization']));
+      $enddate=$enddate->toDateTime();
+      $enddate=$enddate->getTimestamp();
+      if ($enddate>$maxenddate) {
+        $maxenddate=$enddate;
+      };
+      $numQUERYfieldsY++;
+    };      
+
+    $MAXxDATE=ceil(($maxenddate*1000-$today)/2629743);
+    #echo "MAXxDATE:" . $MAXxDATE . "<br>";
+    return view('pages.wonprojectsummary', compact('projects','MAXxDATE','today'));
+  }
+
+
+
   public function search(Request $request)
   {
     $term = $request['search'];
@@ -76,11 +117,6 @@ class ProjectController extends Controller
     return view('pages.editproject', compact('project'));
   }
 
-  public function summary()
-  {
-    //Steve's code goes here
-    return view('pages.wonprojectsummary');
-  }
 
   public function destroy($id)
   {

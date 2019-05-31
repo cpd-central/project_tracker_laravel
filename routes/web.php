@@ -22,10 +22,15 @@ Route::post('/newproject', 'ProjectController@create');
 Route::get('/projectindex', 'ProjectController@index')->name('pages.projectindex');
 Route::post('/projectindex', 'ProjectController@search');
 
+Route::get('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummary');
+Route::post('/wonprojectsummary', 'ProjectController@search');
+
+
+
 Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject');
 Route::post('/editproject/{id}', 'ProjectController@update');
 
-Route::get('/wonprojectsummary', 'ProjectController@summary')->name('pages.wonprojectsummary');
+
 
 Route::delete('{id}', 'ProjectController@destroy');
 
