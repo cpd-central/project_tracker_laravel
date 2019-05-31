@@ -75,31 +75,31 @@
 
           <div class="form-group col-md-10">
             <label class="checkbox-inline" for="projecttypewind">
-              <input id="element_9_1" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Wind" />Wind
+              <input id="element_9_1" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Wind" @yield('projecttypewind')/>Wind
             </label>
             <label class="checkbox-inline" for="projecttypesolar">
-              <input id="element_9_2" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Solar" />Solar
+              <input id="element_9_2" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Solar" @yield('projecttypesolar')/>Solar
             </label>
             <label class="checkbox-inline" for="projecttypestorage">
-              <input id="element_9_3" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Storage" />Storage
+              <input id="element_9_3" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Storage" @yield('projecttypestorage')/>Storage
             </label>
             <label class="checkbox-inline" for="projecttypearray">
-              <input id="element_9_4" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Array" />Array
+              <input id="element_9_4" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Array" @yield('projecttypearray')/>Array
             </label>
             <label class="checkbox-inline" for="projecttypetransmission">
-              <input id="element_9_5" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Transmission" />Transmission
+              <input id="element_9_5" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Transmission" @yield('projecttypetransmission')/>Transmission
             </label>
             <label class="checkbox-inline" for="projecttypesubstation">
-              <input id="element_9_6" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Substation" />Substation
+              <input id="element_9_6" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Substation" @yield('projecttypesubstation')/>Substation
             </label>
             <label class="checkbox-inline" for="projecttypedistribution">
-              <input id="element_9_7" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Distribution" />Distribution
+              <input id="element_9_7" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Distribution" @yield('projecttypedistribution')/>Distribution
             </label>
             <label class="checkbox-inline" for="projecttypescada">
-              <input id="element_9_8" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="SCADA" />SCADA
+              <input id="element_9_8" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="SCADA" @yield('projecttypescada')/>SCADA
             </label>
             <label class="checkbox-inline" for="projecttypestudy">
-              <input id="element_9_9" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Study" />Study
+              <input id="element_9_9" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Study" @yield('projecttypestudy')/>Study
             </label>
 
           </div>
@@ -112,19 +112,19 @@
 
           <div class="form-group col-md-10">
             <label class="checkbox-inline" for="electricalengineering">
-              <input id="element_10_1" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Electrical Engineering" />Electrical Engineering
+              <input id="element_10_1" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Electrical Engineering" @yield('epctypeelectricalengineering')/>Electrical Engineering
             </label>
             <label class="checkbox-inline" for="civilengineering">
-              <input id="element_10_2" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Civil Engineering" />Civil Engineering
+              <input id="element_10_2" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Civil Engineering" @yield('epctypecivilengineering')/>Civil Engineering
             </label>
             <label class="checkbox-inline" for="structuralmechanicalengineering">
-              <input id="element_10_3" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Structural/Mechanical Engineering" />Structural/Mechanical Engineering
+              <input id="element_10_3" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Structural/Mechanical Engineering" @yield('epctypestructuralmechanicalengineering')/>Structural/Mechanical Engineering
             </label>
             <label class="checkbox-inline" for="procurement">
-              <input id="element_10_4" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Procurement" />Procurement
+              <input id="element_10_4" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Procurement" @yield('epctypeprocurement')/>Procurement
             </label>
             <label class="checkbox-inline" for="construction">
-              <input id="element_10_5" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Construction" />Construction
+              <input id="element_10_5" name="epctype_checklist[]" class="element checkbox" type="checkbox" value="Construction" @yield('epctypeconstruction')/>Construction
             </label>
           </div>
         </div>
