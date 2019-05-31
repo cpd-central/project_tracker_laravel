@@ -40,30 +40,30 @@
         <div class="row">
           <div class="form-group col-md-4">
             <label for="mwsize">MW Size:</label>
-            <input type="mwsize" class="form-control" name="mwsize" value="@yield('mwsize')">
+            <input type="number" class="form-control" name="mwsize" value="@yield('mwsize')">
           </div>
           <div class="form-group col-md-4">
             <label for="voltage">Voltage:</label>
-            <input type="text" class="form-control" name="voltage" value="@yield('voltage')">
+            <input type="number" class="form-control" name="voltage" value="@yield('voltage')">
           </div>
           <div class="form-group col-md-4">
             <label for="dollarvalueinhouse">Dollar Value (in-house expense):</label>
-            <input type="text" class="form-control" name="dollarvalueinhouse" value="@yield('dollarvalueinhouse')">
+            <input type="number" class="form-control" name="dollarvalueinhouse" value="@yield('dollarvalueinhouse')">
           </div>
         </div>
 
         <div class="row">
           <div class="form-group col-md-4">
             <label for="dateproposed">Date of Proposed:</label>
-            <input type="text" class="form-control" name="dateproposed" value="@yield('dateproposed')">
+            <input type="date" class="form-control" name="dateproposed" value="@yield('dateproposed')">
           </div>
           <div class="form-group col-md-4">
             <label for="datentp">Date of Notice To Proceed:</label>
-            <input type="text" class="form-control" name="datentp" value="@yield('datentp')">
+            <input type="date" class="form-control" name="datentp" value="@yield('datentp')">
           </div>
           <div class="form-group col-md-4">
             <label for="dateenergization">Date of Energization:</label>
-            <input type="text" class="form-control" name="dateenergization" value="@yield('dateenergization')">
+            <input type="date" class="form-control" name="dateenergization" value="@yield('dateenergization')">
           </div>
         </div>
 
