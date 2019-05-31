@@ -6,9 +6,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Project;
+<<<<<<< HEAD
 use MongoDB\BSON\UTCDateTime; 
 use MongoDB\BSON\Decimal128; 
+=======
 use App\Charts\HoursChart;
+>>>>>>> graphs
 
 class ProjectController extends Controller
 {
