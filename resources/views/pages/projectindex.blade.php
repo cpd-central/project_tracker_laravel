@@ -29,16 +29,17 @@
         <th>Client Contact</th>
         <th>Client Company</th>
         <th>MW</th>
+        <th>Voltage</th> 
         <th>CEG In-house Budget</th>
         <th>Date NTP</th>
         <th>Date Energize</th>   
+        <!--Array headers - not used at the moment 
         <th>Project Type(s)</th>
         <th>EPC Type(s)</th>
+        --> 
         <th>Project Status</th>   
         <th>Project Code</th>
         <th>Project Manager</th>
-
-
       </tr>
     </thead>
     <tbody>
@@ -59,9 +60,11 @@
         <td>{{ $project['clientcontactname'] }}</td>
         <td>{{ $project['clientcompany'] }}</td>
         <td>{{ $project['mwsize'] }}</td>
+        <td>{{ $project['voltage'] }}</td> 
         <td>{{ $project['dollarvalueinhouse'] }}</td>
         <td>{{ $project['datentp'] }}</td>
         <td>{{ $project['dateenergization'] }}</td>
+        <!-- Array populating - not used at the moment 
         <td>
           @if (!empty($project['projecttype'] > 0))
           <table>
@@ -80,6 +83,7 @@
           </table>
           @endif 
         </td> 
+        --> 
         <td>{{ $project['projectstatus']}}</td > 
         <td>{{ $project['projectcode'] }}</td>
         <td>{{ $project['projectmanager'] }}</td>
