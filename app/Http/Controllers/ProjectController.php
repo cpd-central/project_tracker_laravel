@@ -1,11 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Project;
 use MongoDB\BSON\UTCDateTime; 
 use MongoDB\BSON\Decimal128; 
+=======
+use App\Charts\HoursChart;
 
 class ProjectController extends Controller
 {
@@ -132,6 +136,77 @@ class ProjectController extends Controller
     return view('pages.editproject', compact('project'));
   }
 
+
+  public function hours_graph(Request $request)
+  {
+    $projects = DB::collection('hours_by_project')->get()->sortBy('code');
+    #$projects = Project::whereRaw(['hours_data' => ['$exists' => 'true']])->get();
+    
+    function get_chart_info($id)
+    {
+      $selected_project = DB::collection('hours_by_project')->where('_id', $id)->first();
+
+      if ($selected_project)
+      {
+        $hours_data = $selected_project['hours_data'];
+
+        $years = array_keys($hours_data);
+        $hours_arr = array();
+        $labels_arr = array();
+
+        foreach($years as $year)
+        {
+          $year_hours_data = $hours_data[$year];
+          $months = array_keys($year_hours_data);
+          foreach($months as $month)
+          {
+            array_push($labels_arr, $month . '-' . $year);
+
+            $people_hours = $year_hours_data[$month];
+
+            $total_project_hours = $people_hours['Total'];
+            array_push($hours_arr, $total_project_hours);
+          }
+        }
+      //We only want the data from the first non zero entry to the lst non zero entry in the set 
+      //array_filter will remove all zero entries
+      //we take the start key and end key of the zeros removed array
+      //we use these keys to get the slice of the original array between those keys 
+      $hours_array_filtered = array_filter($hours_arr);
+      $start_key = key($hours_array_filtered);
+      //moves pointer to end
+      end($hours_array_filtered);
+      $end_key = key($hours_array_filtered);
+
+      $hours_arr_start_end = array_slice($hours_arr, $start_key, $end_key - $start_key + 1);
+      $labels_arr_start_end = array_slice($labels_arr, $start_key, $end_key - $start_key + 1);
+
+      $labels = $labels_arr_start_end;
+      $dataset = array($selected_project['code'] . ' Hours', 'line', $hours_arr_start_end); 
+      return array('labels' => $labels, 'dataset' => $dataset); 
+      }
+      else
+      {
+      return Null;
+      } 
+    }
+    
+    
+    $chart_info = get_chart_info($request['project_id']);
+    if (isset($chart_info))
+    {
+      $chart = new HoursChart;
+
+      $chart->labels($chart_info['labels']);
+      $chart->dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2])->options([
+        'borderColor'=>'#3cba9f', 'fill' => False]);
+      return view('pages.hoursgraph', compact('projects', 'chart'));
+    }
+    else 
+    {
+      return view('pages.hoursgraph', compact('projects'));
+    } 
+  }
 
   public function destroy($id)
   {
