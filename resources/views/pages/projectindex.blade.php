@@ -33,10 +33,6 @@
         <th>CEG In-house Budget</th>
         <th>Date NTP</th>
         <th>Date Energize</th>   
-        <!--Array headers - not used at the moment 
-        <th>Project Type(s)</th>
-        <th>EPC Type(s)</th>
-        --> 
         <th>Project Status</th>   
         <th>Project Code</th>
         <th>Project Manager</th>
@@ -64,26 +60,6 @@
         <td>{{ $project['dollarvalueinhouse'] }}</td>
         <td>{{ $project['datentp'] }}</td>
         <td>{{ $project['dateenergization'] }}</td>
-        <!-- Array populating - not used at the moment 
-        <td>
-          @if (!empty($project['projecttype'] > 0))
-          <table>
-            @foreach($project['projecttype'] as $project_type)
-            <tr><td>{{ $project_type }}</td></tr>
-            @endforeach
-          </table>
-          @endif
-        </td> 
-        <td>
-          @if (!empty($project['epctype'] > 0))
-          <table>
-            @foreach($project['epctype'] as $epc_type)
-            <tr><td>{{ $epc_type }}</td></tr>
-            @endforeach
-          </table>
-          @endif 
-        </td> 
-        --> 
         <td>{{ $project['projectstatus']}}</td > 
         <td>{{ $project['projectcode'] }}</td>
         <td>{{ $project['projectmanager'] }}</td>
