@@ -91,7 +91,22 @@
 @stop
 <!-------------------------------------------------------->
 
-@section('projectwon', $project['projectwon'])
+@section('projectstatus')
+@if ($project['projectstatus'] == 'Won') 
+  <option>Proposed</option>
+  <option selected="selected">Won</option>
+  <option>Expired</option>
+@elseif ($project['projectstatus'] == 'Expired')
+  <option>Proposed</option>
+  <option>Won</option>
+  <option selected="selected">Expired</option>
+@else
+  <option selected="selected">Proposed</option>
+  <option>Won</option>
+  <option>Expired</option>
+@endif
+@stop
+
 @section('projectcode', $project['projectcode'])
 @section('projectmanager', $project['projectmanager'])
 
