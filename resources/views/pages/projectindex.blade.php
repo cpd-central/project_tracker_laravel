@@ -22,8 +22,7 @@
   <h2><b>Project Index</b></h2> 
   <table class="table table-striped">
     <thead>
-      <tr>
-        <th colspan="2">Action</th>
+      <tr> 
         <th>CEG Proposal Author</th>
         <th>Project Name</th>
         <th>Client Contact</th>
@@ -36,21 +35,13 @@
         <th>Project Status</th>   
         <th>Project Code</th>
         <th>Project Manager</th>
+        <th colspan="2">Action</th>
       </tr>
     </thead>
     <tbody>
 
       @foreach($projects as $project)
       <tr>
-        <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit</a></td>
-        <td>
-          <form action="{{action('ProjectController@destroy', $project['id'])}}" method="post">
-            @csrf
-            <input name="_method" type="hidden" value="DELETE">
-            <button class="btn btn-danger" type="submit" onclick="return confirm('This will delete the project from the database.  Are you sure you want to do this?')">Delete</button>
-          </form>
-        </td>
-
         <td>{{ $project['cegproposalauthor'] }}</td>
         <td>{{ $project['projectname']}}</td >        
         <td>{{ $project['clientcontactname'] }}</td>
@@ -63,6 +54,15 @@
         <td>{{ $project['projectstatus']}}</td > 
         <td>{{ $project['projectcode'] }}</td>
         <td>{{ $project['projectmanager'] }}</td>
+        <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit</a></td>
+        <td>
+          <form action="{{action('ProjectController@destroy', $project['id'])}}" method="post">
+            @csrf
+            <input name="_method" type="hidden" value="DELETE">
+            <button class="btn btn-danger" type="submit" onclick="return confirm('This will delete the project from the database.  Are you sure you want to do this?')">Delete</button>
+          </form>
+        </td>
+
 
 
       </tr>

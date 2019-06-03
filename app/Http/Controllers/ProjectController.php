@@ -54,12 +54,18 @@ class ProjectController extends Controller
     ]);
   }
 
-  protected function strToDate($req)
-  {
-    $timestamp = strtotime($req);                      //Must use MM/DD/YYY because MM-DD-YYYY is actually european so it will be used wrong
-    $date = new \DateTime($req, new \DateTimeZone('America/Chicago'));
-    $utcdatetime = new UTCDateTime(intval($date) * 1000);
+  protected function strToDate($date_string)
+  { 
+    $php_date = new \DateTime($date_string, new \DateTimeZone('America/Chicago')); 
+    $date = new UTCDateTime($timestamp * 1000);
     return $date;
+  }
+
+  protected function dateToStr($mongo_date)
+  {
+    $php_datetime = $mongo_date->toDateTime();
+    $date_string = $php_datetime->format('m-d-Y');
+    return $date_string;
   }
 
   public function new_project()
@@ -87,6 +93,12 @@ class ProjectController extends Controller
   public function index()
   {
     $projects=Project::all();
+    foreach($projects as $project)
+    {
+      $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
+      $project['datentp'] = $this->dateToStr($project['datentp']);
+      $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+    } 
     return view('pages.projectindex', compact('projects'));
   }
 
