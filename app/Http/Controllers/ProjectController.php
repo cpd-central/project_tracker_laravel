@@ -57,7 +57,7 @@ class ProjectController extends Controller
   protected function strToDate($date_string)
   { 
     $php_date = new \DateTime($date_string, new \DateTimeZone('America/Chicago')); 
-    $date = new UTCDateTime($timestamp * 1000);
+    $date = new UTCDateTime($php_date->getTimestamp() * 1000);
     return $date;
   }
 
