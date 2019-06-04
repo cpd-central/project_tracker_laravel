@@ -14,7 +14,6 @@
 @section('dateproposed', $project['dateproposed'])
 @section('datentp', $project['datentp'])
 @section('dateenergization', $project['dateenergization'])
-@section('dateenergization', $project['dateenergization'])
 
 <!-- Project Type Sections -->
 @section('projecttypewind')

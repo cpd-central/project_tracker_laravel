@@ -64,7 +64,9 @@ class ProjectController extends Controller
   protected function dateToStr($mongo_date)
   {
     $php_datetime = $mongo_date->toDateTime();
-    $date_string = $php_datetime->format('m-d-Y');
+    //Note, this is the format needed to display in Chrome.  If Someone uses a different browser, 
+    //we will need to think through further. 
+    $date_string = $php_datetime->format('Y-m-d');
     return $date_string;
   }
 
@@ -155,6 +157,9 @@ class ProjectController extends Controller
   public function edit_project($id)
   {
     $project = Project::find($id);
+    $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
+    $project['datentp'] = $this->dateToStr($project['datentp']);
+    $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
     return view('pages.editproject', compact('project'));
   }
 
