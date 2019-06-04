@@ -16,6 +16,7 @@
 @section('dateenergization', $project['dateenergization'])
 @section('dateenergization', $project['dateenergization'])
 
+<<<<<<< HEAD
 <!-- Project Type Sections -->
 @section('projecttypewind')
 <?php
@@ -91,6 +92,8 @@
 @stop
 <!-------------------------------------------------------->
 
+@section('projectwon', $project['projectwon'])
+=======
 @section('projectstatus')
 @if ($project['projectstatus'] == 'Won') 
   <option>Proposed</option>
@@ -107,6 +110,7 @@
 @endif
 @stop
 
+>>>>>>> remove_arrays_from_index
 @section('projectcode', $project['projectcode'])
 @section('projectmanager', $project['projectmanager'])
 

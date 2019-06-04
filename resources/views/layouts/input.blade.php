@@ -136,11 +136,9 @@
         </div>
         <div class="row">
           <div class="form-group col-md-4">
-            <label for="projectwon">Project Proposed/Won/Expired:</label>
-            <select class="form-control" id="sel1" name="projectstatus" value="@yield('projectwon')">
-              <option>Proposed</option>
-              <option>Won</option>
-              <option>Expired</option>
+            <label for="projectstatus">Project Proposed/Won/Expired:</label>
+            <select class="form-control" id="sel1" name="projectstatus"> 
+              @yield('projectstatus')
             </select>
           </div>
           <div class="form-group col-md-4">

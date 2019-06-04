@@ -15,7 +15,13 @@
 @section('datentp', '')
 @section('dateenergization', '')
 @section('dateenergization', '')
-@section('projectwon', '')
+
+@section('projectstatus')
+  <option>Proposed</option>
+  <option>Won</option>
+  <option>Expired</option>
+@stop
+
 @section('projectcode', '')
 @section('projectmanager', '')
 
