@@ -6,8 +6,9 @@
         echo 'checked';
       }
     }
-
   }
+
+  
 
 ?>
 
