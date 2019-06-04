@@ -55,18 +55,30 @@ class ProjectController extends Controller
   }
 
   protected function strToDate($date_string)
-  { 
-    $php_date = new \DateTime($date_string, new \DateTimeZone('America/Chicago')); 
-    $date = new UTCDateTime($php_date->getTimestamp() * 1000);
+  {
+    if (isset($date_string))
+    {
+      $php_date = new \DateTime($date_string, new \DateTimeZone('America/Chicago'));
+      $date = new UTCDateTime($php_date->getTimestamp() * 1000);
+    }
+    else {
+      $date = 'None';
+    }
     return $date;
   }
 
   protected function dateToStr($mongo_date)
   {
-    $php_datetime = $mongo_date->toDateTime();
-    //Note, this is the format needed to display in Chrome.  If Someone uses a different browser, 
-    //we will need to think through further. 
-    $date_string = $php_datetime->format('Y-m-d');
+    if (is_string($mongo_date))
+    {
+      $date_string = $mongo_date;
+    }
+    else {
+      $php_datetime = $mongo_date->toDateTime();
+      //Note, this is the format needed to display in Chrome.  If Someone uses a different browser, 
+      //we will need to think through further. 
+      $date_string = $php_datetime->format('Y-m-d');
+    }
     return $date_string;
   }
 
