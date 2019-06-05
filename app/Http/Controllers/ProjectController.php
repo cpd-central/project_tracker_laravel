@@ -206,7 +206,7 @@ class ProjectController extends Controller
     }; 
     $x=0;
     #dd($th_headerMonthBins);
-    return view('pages.wonprojectsummary', compact('projects', 'th_headerMonthBins', 'testarray', 'averagePERmonthARRAYperROW', 'total_footer_array'));
+    return view('pages.wonprojectsummary', compact('projects', 'th_headerMonthBins', 'averagePERmonthARRAYperROW', 'total_footer_array'));
   }
 
 
