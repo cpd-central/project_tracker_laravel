@@ -132,22 +132,23 @@ class ProjectController extends Controller
     {
       $enddate=$project['dateenergization'];
       $enddate=$enddate->toDateTime();
-      $enddate=(int)($enddate->getTimestamp());
-
+      $enddate=$enddate->getTimestamp();
+      #dd($enddate); 
       $startdate=$project['datentp'];
       $startdate=$startdate->toDateTime();
-      $startdate=(int)($startdate->getTimestamp());
-
-      $startdateround = round(($startdate*1000-$today)/(262974300));
-      $enddateround = round(($enddate*1000-$today)/(262974300));
-
+      $startdate=$startdate->getTimestamp();
+      #dd($startdate); 
+      #dd($today);
+      $startdateround = round(($startdate-$today)/(2629743));
+      $enddateround = round(($enddate-$today)/(2629743));
+      #dd($enddateround);
       $averagePERmonth = $project['dollarvalueinhouse']/($enddateround-$startdateround);
       array_push($averagePERmonthARRAYperPROJECT,$project['dollarvalueinhouse']/($enddateround-$startdateround));
 
       if ($enddate>$maxenddate) {
         $maxenddate=$enddate;
       };
-      $MAXxDATE=ceil(($maxenddate*1000-$today)/262974300);
+      $MAXxDATE=ceil(($maxenddate-$today)/2629743);
     };
 
     //I have to run this again because the MAXxDATE is used for establishing
@@ -155,14 +156,14 @@ class ProjectController extends Controller
     {
       $enddate=$project['dateenergization'];
       $enddate=$enddate->toDateTime();
-      $enddate=(int)($enddate->getTimestamp());
+      $enddate=$enddate->getTimestamp();
 
       $startdate=$project['datentp'];
       $startdate=$startdate->toDateTime();
-      $startdate=(int)($startdate->getTimestamp());
+      $startdate=$startdate->getTimestamp();
 
-      $startdateround = round(($startdate*1000-$today)/(262974300));
-      $enddateround = round(($enddate*1000-$today)/(262974300));
+      $startdateround = round(($startdate-$today)/(2629743));
+      $enddateround = round(($enddate-$today)/(2629743));
       $averagePERmonth = $project['dollarvalueinhouse']/($enddateround-$startdateround);
       array_push($averagePERmonthARRAYperPROJECT,$project['dollarvalueinhouse']/($enddateround-$startdateround));
       $totalPERmonthARRAY=[];
@@ -197,11 +198,12 @@ class ProjectController extends Controller
     $x=5;
     $z=0;
     ini_set('memory_limit', '-1'); 
+    #dd($MAXxDATE); 
     for ($x;$x<($MAXxDATE+$FIELDS);$x++)
     {
       $th_headerMonthBins[$x]="" . date("M-y",((int)$today+2629743*($z+1)));
       $z++;
-    };
+    }; 
     $x=0;
     #dd($th_headerMonthBins);
     return view('pages.wonprojectsummary', compact('projects', 'th_headerMonthBins', 'testarray', 'averagePERmonthARRAYperROW', 'total_footer_array'));
