@@ -10,7 +10,7 @@
 @section('clientcompany', $project['clientcompany'])
 @section('mwsize', $project['mwsize'])
 @section('voltage', $project['voltage'])
-@section('dollaravlueinhouse', $project['dollaravlueinhouse'])
+@section('dollarvalueinhouse', $project['dollarvalueinhouse'])
 @section('dateproposed', $project['dateproposed'])
 @section('datentp', $project['datentp'])
 @section('dateenergization', $project['dateenergization'])

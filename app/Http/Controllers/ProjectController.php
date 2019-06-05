@@ -31,9 +31,9 @@ class ProjectController extends Controller
     $project->projectname= $req->get('projectname');
     $project->clientcontactname= $req->get('clientcontactname');
     $project->clientcompany = $req->get('clientcompany');
-    $project->mwsize = (int) $req->get('mwsize');
-    $project->voltage = (int) $req->get('voltage');
-    $project->dollarvalueinhouse = (int) $req->get('dollarvalueinhouse');
+    $project->mwsize = $this->intCheck((int) $req->get('mwsize'));
+    $project->voltage = $this->intCheck((int) $req->get('voltage'));
+    $project->dollarvalueinhouse = $this->intCheck((int) $req->get('dollarvalueinhouse'));
     $project->dateproposed = $this->strToDate($req->get('dateproposed'));
     $project->datentp = $this->strToDate($req->get('datentp'));
     $project->dateenergization = $this->strToDate($req->get('dateenergization'));
@@ -62,7 +62,7 @@ class ProjectController extends Controller
       $date = new UTCDateTime($php_date->getTimestamp() * 1000);
     }
     else {
-      $date = 'None';
+      $date = "";
     }
     return $date;
   }
@@ -80,6 +80,24 @@ class ProjectController extends Controller
       $date_string = $php_datetime->format('Y-m-d');
     }
     return $date_string;
+  }
+
+  protected function intCheck($integer)
+  {
+    if($integer == null || $integer == "")
+    {
+      $integer = -1;
+    }
+    return $integer;
+  }
+
+  protected function intDisplay($integer)
+  {
+    if($integer == -1)
+    {
+      $integer = "";
+    }
+    return $integer;
   }
 
   public function new_project()
@@ -169,6 +187,9 @@ class ProjectController extends Controller
   public function edit_project($id)
   {
     $project = Project::find($id);
+    $project['mwsize'] = $this->intDisplay($project['mwsize']);
+    $project['voltage'] = $this->intDisplay($project['voltage']);
+    $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
     $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
     $project['datentp'] = $this->dateToStr($project['datentp']);
     $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
