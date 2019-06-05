@@ -112,11 +112,11 @@ class ProjectController extends Controller
     //I have to run this again because the MAXxDATE is used for establishing
     foreach($projects as $project)
     {
-      $enddate=new UTCDateTime(strtotime($project['dateenergization']));
+      $enddate=$project['dateenergization']
       $enddate=$enddate->toDateTime();
       $enddate=$enddate->getTimestamp();
 
-      $startdate=new UTCDateTime(strtotime($project['datentp']));
+      $startdate=$project['datentp'];
       $startdate=$startdate->toDateTime();
       $startdate=$startdate->getTimestamp();
 
@@ -161,8 +161,8 @@ class ProjectController extends Controller
       $z++;
     };
     $x=0;
-
-    return view('pages.wonprojectsummary', compact('projects','th_headerMonthBins','testarray','averagePERmonthARRAYperROW','total_footer_array'));
+    dd($th_headerMonthBins);
+    return view('pages.wonprojectsummary', compact('projects', 'th_headerMonthBins', 'testarray', 'averagePERmonthARRAYperROW', 'total_footer_array'));
   }
 
 
