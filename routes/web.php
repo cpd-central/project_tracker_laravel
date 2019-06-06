@@ -40,7 +40,6 @@ Auth::routes();
 
 Route::get('/home', 'ProjectController@index')->name('home');
 
-
 #save this for later, for now, home will redirect to project index
 #Route::get('/home', 'HomeController@index')->name('home');
 
