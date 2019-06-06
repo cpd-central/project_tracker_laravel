@@ -24,13 +24,26 @@
     <!-- this is the table header / titles for the columns -->
     <thead>
       <tr>
+        <th></th>
+        <th></th>
+        <th></th>        
+        <th></th>
+        <th></th>
+        <th></th>
+       	<th></th>
+        <th>Total</th>
+        @foreach($total_dollars as $each)
+          <th>{{ $each }}</th>
+        @endforeach 
+      </tr>  
+      <tr>
         <th colspan="2">Action</th>
         <th>Project Name</th>
         <th>Dollar Value</th>
         <th colspan="2">Date NTP</th>
         <th colspan="2">Date Energization</th>
-        @foreach($th_headerMonthBins as $each)  
-          <th>{{ $each }}</th>
+        @foreach($months as $month)  
+          <th>{{ $month }}</th>
         @endforeach
    </thead>
 
@@ -50,9 +63,9 @@
         <td>{{ $project['dollarvalueinhouse'] }}</td>
         <td colspan="2">{{ $project['datentp'] }}</td>
         <td colspan="2">{{ $project['dateenergization'] }}</td>
-        @foreach($project['averagePERmonth'] as $each)
-          <td>{{ $each }}</td>
-        @endforeach 
+        @foreach($project['per_month_dollars'] as $per_month)
+          <td> {{ $per_month }} </td>
+        @endforeach
       </tr>
       @endforeach
       <!-- this is the table footer which is just going to be the totals of the columns -->
@@ -64,10 +77,8 @@
         <td></td>
         <td></td>
        	<td></td>
-        <td>Total</td>
-        @foreach($total_footer_array as $each)
-          <td>{{ $each }}</td>
-        @endforeach 
+
+
       </tr>
       </tbody>
   </table>
