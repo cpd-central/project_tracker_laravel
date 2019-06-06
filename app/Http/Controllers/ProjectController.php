@@ -226,6 +226,11 @@ class ProjectController extends Controller
     $term = $request['search'];
     if (isset($term)) { 
       $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
+      foreach ($projects as $project) {
+        $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
+        $project['datentp'] = $this->dateToStr($project['datentp']);
+        $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+      }
       return view('pages.projectindex', compact('projects')); 
     }
     else {
