@@ -182,7 +182,7 @@ class ProjectController extends Controller
       unset($months[$i]);
     }
     $chart = new HoursChart; 
-    $month_values = array_slice(array_values($months), 12);
+    $month_values = array_slice(array_values($months), 0, 12);
     $chart->labels($month_values);
     $chart_colors = [
       'rgb(255, 99, 132, 0.4)',
@@ -226,13 +226,13 @@ class ProjectController extends Controller
       $project['datentp'] = $this->dateToStr($project['datentp']);
       $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
       //add the project hours to the chart as a dataset 
-      $dollar_values = array_slice(array_values($project['per_month_dollars']), 12);
+      $dollar_values = array_slice(array_values($project['per_month_dollars']), 0, 12);
       $chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options([
         'scales' => [
-          'yAxes' => [ 
+          'xAxes' => [ 
             'stacked' => 'true'],
-          'xAxes' => [
-            'stacked' => 'true', 
+          'yAxes' => [
+            'stacked' => 'false', 
             'ticks' => [
               'beginAtZero' => 'true']]],
         'backgroundColor' => $chart_colors[$color_counter]]);
