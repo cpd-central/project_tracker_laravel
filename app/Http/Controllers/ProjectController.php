@@ -210,6 +210,10 @@ class ProjectController extends Controller
       {
         $total_dollars[$month] = round($total_dollars[$month] + $project['per_month_dollars'][$month], 0);
       }
+      //need these three lines for proper date formatting 
+      $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
+      $project['datentp'] = $this->dateToStr($project['datentp']);
+      $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
     }
     //format total dollars with commas
     foreach($months as $month)
