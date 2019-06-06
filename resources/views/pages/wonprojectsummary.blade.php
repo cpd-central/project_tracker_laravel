@@ -1,5 +1,14 @@
 @extends('layouts.default')
+
 @section('content')
+
+<div>
+  @isset($chart) 
+  {!! $chart->container() !!} 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
+  {!! $chart->script() !!}
+  @endisset
+</div>
 
 <div class="container">
   @if (\Session::has('success'))
