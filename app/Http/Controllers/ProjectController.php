@@ -142,14 +142,7 @@ class ProjectController extends Controller
   
   public function indexwon()
   {
-    $maxenddate = 0;
-    $MAXxDATE = 0;
-    $today=time();
-    $FIELDS = 5;
-    $lastarray=array();
-    $total_footer_array=array();
     $projects=Project::all()->where('projectstatus','Won');
-
     //1. Get Max end date in order to establish the # of columns needed for the table
     //Also, get smallest start date to establish the beginning of the array 
     $start_dates = array();
@@ -191,7 +184,6 @@ class ProjectController extends Controller
 
     //now loop through the projects again and update the array to have the months we are displaying, and fill with zeros for the rest
     $total_dollars = array();
-    $i = 0; 
     foreach($projects as $project)
     {
       //find first key of month array
@@ -218,8 +210,12 @@ class ProjectController extends Controller
       {
         $total_dollars[$month] = round($total_dollars[$month] + $project['per_month_dollars'][$month], 0);
       }
-      $i++; 
     }
+    //format total dollars with commas
+    foreach($months as $month)
+    {
+      $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
+    } 
     return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars')); 
   }
 
