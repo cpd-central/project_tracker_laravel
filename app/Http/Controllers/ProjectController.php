@@ -132,8 +132,9 @@ class ProjectController extends Controller
     {
       $enddate=$project['dateenergization'];
       $enddate=$enddate->toDateTime();
+      dd((int)$enddate->format('m')); 
       $enddate=$enddate->getTimestamp();
-      #dd($enddate); 
+      
       $startdate=$project['datentp'];
       $startdate=$startdate->toDateTime();
       $startdate=$startdate->getTimestamp();
