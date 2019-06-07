@@ -65,7 +65,7 @@ class ProjectController extends Controller
       $date = new UTCDateTime($php_date->getTimestamp() * 1000);
     }
     else {
-      $date = "";
+      $date = "None";
     }
     return $date;
   }
@@ -89,14 +89,14 @@ class ProjectController extends Controller
   {
     if($integer == null || $integer == "")
     {
-      $integer = -1;
+      $integer = "None";
     }
     return $integer;
   }
 
   protected function intDisplay($integer)
   {
-    if($integer == -1)
+    if($integer == "None")
     {
       $integer = "";
     }
