@@ -2,6 +2,8 @@
 @section('content')
 
 <div class="container">
+  </br>
+  </br> 
   <h2><b>Project Search</b></h2> 
   <br />
   <!-- Search Bar Form -->

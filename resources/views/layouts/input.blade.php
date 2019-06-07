@@ -12,6 +12,8 @@
     @endif
 
     <div class="container">
+      </br>
+      </br> 
       <h2><b>@yield('title')</b></h2>    
       <h4>@yield('h4proposal')</h4>
       <div class="container">
