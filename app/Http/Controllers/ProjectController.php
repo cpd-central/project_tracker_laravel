@@ -132,7 +132,6 @@ class ProjectController extends Controller
       $project['mwsize'] = $this->intDisplay($project['mwsize']);
       $project['voltage'] = $this->intDisplay($project['voltage']);
       $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
-
       $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
       $project['datentp'] = $this->dateToStr($project['datentp']);
       $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
@@ -252,6 +251,9 @@ class ProjectController extends Controller
     if (isset($term)) { 
       $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
       foreach ($projects as $project) {
+        $project['mwsize'] = $this->intDisplay($project['mwsize']);
+        $project['voltage'] = $this->intDisplay($project['voltage']);
+        $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
         $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
         $project['datentp'] = $this->dateToStr($project['datentp']);
         $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
