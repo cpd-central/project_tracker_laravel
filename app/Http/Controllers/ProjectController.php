@@ -12,6 +12,8 @@ use App\Charts\HoursChart;
 use UTCDateTime\DateTime;
 use UTCDateTime\DateTime\DateTimeZone;
 
+use DateInterval;
+use DatePeriod;
 
 class ProjectController extends Controller
 {
@@ -59,6 +61,7 @@ class ProjectController extends Controller
     if (isset($date_string))
     {
       $php_date = new \DateTime($date_string, new \DateTimeZone('America/Chicago'));
+      //note this is a mongodb UTCDateTime 
       $date = new UTCDateTime($php_date->getTimestamp() * 1000);
     }
     else {
@@ -174,97 +177,108 @@ class ProjectController extends Controller
     return view('pages.projectindex', compact('projects'));
   }
 
+  protected function get_project_start_end($proj)
+  {
+    //convert the mongo UTC datetime that comes out of the database to a php datetime 
+    $start = $proj['datentp']->toDateTime();
+    $end = $proj['dateenergization']->toDateTime();
+    return ['start' => $start, 'end' => $end];
+  }
+
+  protected function get_date_interval_array($start, $end, $int, $format)
+  {
+    $interval = DateInterval::createFromDateString($int);
+    $period = new DatePeriod($start, $interval, $end);
+
+    $arr = array();
+    foreach($period as $dt)
+    {
+      array_push($arr, $dt->format($format));
+    }
+    return $arr;
+  }
+  
   public function indexwon()
   {
-    $maxenddate = 0;
-    $MAXxDATE = 0;
-    $today=time();
-    $FIELDS = 5;
-    $lastarray=array();
-    $total_footer_array=array();
     $projects=Project::all()->where('projectstatus','Won');
-
-    //Finding the energization date that is the furthest out... this sets the end of the table
-    $averagePERmonthARRAYperPROJECT = array();
+    //1. Get Max end date in order to establish the # of columns needed for the table
+    //Also, get smallest start date to establish the beginning of the array 
+    $start_dates = array();
+    $end_dates = array();
     foreach($projects as $project)
     {
-      $enddate=$project['dateenergization'];
-      $enddate=$enddate->toDateTime();
-      $enddate=$enddate->getTimestamp();
-      #dd($enddate); 
-      $startdate=$project['datentp'];
-      $startdate=$startdate->toDateTime();
-      $startdate=$startdate->getTimestamp();
-      #dd($startdate); 
-      #dd($today);
-      $startdateround = round(($startdate-$today)/(2629743));
-      $enddateround = round(($enddate-$today)/(2629743));
-      #dd($enddateround);
-      $averagePERmonth = $project['dollarvalueinhouse']/($enddateround-$startdateround);
-      array_push($averagePERmonthARRAYperPROJECT,$project['dollarvalueinhouse']/($enddateround-$startdateround));
+      $start_end = $this->get_project_start_end($project);
+      $start_date = $start_end['start'];
+      $end_date = $start_end['end']; 
+      //put these in the arrays of all start and end dates
+      array_push($start_dates, $start_date);
+      array_push($end_dates, $end_date);
+      //get the total dollars and divide by number of months.  create an array of that for this specific project 
+      $project_dollars = $project['dollarvalueinhouse'];
+      //need to use the specific start and end for this project 
+      $project_months = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');
+      $num_months = count($project_months);
+      $per_month_dollars = $project_dollars / $num_months;
+      $project_per_month_dollars = array();
+      foreach($project_months as $month)
+      {
+        $project_per_month_dollars[$month] = $per_month_dollars;
+      }
+      $project['per_month_dollars'] = $project_per_month_dollars;
+    }
+    //get the max end date and min start date
+    $earliest_start = min($start_dates);
+    $latest_end = max($end_dates);
+    //create an array of months between these two dates 
+    $months = $this->get_date_interval_array($earliest_start, $latest_end, '1 month', 'M-y'); 
 
-      if ($enddate>$maxenddate) {
-        $maxenddate=$enddate;
-      };
-      $MAXxDATE=ceil(($maxenddate-$today)/2629743);
-    };
+    $today = date('M-y'); 
+    //find today in the array of months and remove everything before it 
+    $search_index = array_search($today, $months); 
+    for ($i=0; $i<$search_index; $i++)
+    {
+      unset($months[$i]);
+    }
 
-    //I have to run this again because the MAXxDATE is used for establishing
+    //now loop through the projects again and update the array to have the months we are displaying, and fill with zeros for the rest
+    $total_dollars = array();
     foreach($projects as $project)
     {
-      $enddate=$project['dateenergization'];
-      $enddate=$enddate->toDateTime();
-      $enddate=$enddate->getTimestamp();
-
-      $startdate=$project['datentp'];
-      $startdate=$startdate->toDateTime();
-      $startdate=$startdate->getTimestamp();
-
-      $startdateround = round(($startdate-$today)/(2629743));
-      $enddateround = round(($enddate-$today)/(2629743));
-      $averagePERmonth = $project['dollarvalueinhouse']/($enddateround-$startdateround);
-      array_push($averagePERmonthARRAYperPROJECT,$project['dollarvalueinhouse']/($enddateround-$startdateround));
-      $totalPERmonthARRAY=[];
-      $averagePERmonthARRAYperROW=[];
-      //This is for populating zeros in the array before the data starts (depends on project start date)
-      $x=0;
-      for ($x;$x<($startdateround);$x++) 
+      //find first key of month array
+      $first_month = array_key_first($months);
+      $new_project_per_month_dollars = array(); 
+      foreach($months as $month)
       {
-        $averagePERmonthARRAYperROW[$x]=0;
-      };
-
-      //There's where the hour/time distribution is placed, next step, need to change the distribution to an array that is imported and expandable to the time window to account for variable time distribution.  Specifically, the "averagePERmonth" variable will need to change to an array that fits the project type curve of when we spend our time. 
-      $x=$startdateround + $FIELDS;
-      setlocale(LC_MONETARY, 'en_US.UTF-8');
-      for ($x;$x<($enddateround+$FIELDS);$x++) 
+        //check if each month is in the current project's array.  If it is, then simply put the existing value in the new array
+        //if it isn't, put zero in the new array 
+        if (array_key_exists($month, $project['per_month_dollars']))
+        { 
+          //round to 0 decimals 
+          $new_project_per_month_dollars[$month] = round($project['per_month_dollars'][$month], 0);
+        }
+        else 
+        {
+          $new_project_per_month_dollars[$month] = 0;
+        } 
+      }
+      //now re-write the project data with the new array 
+      $project['per_month_dollars'] = $new_project_per_month_dollars;  
+      $total_dollars = $total_dollars + $project['per_month_dollars'];  
+      foreach ($months as $month)
       {
-        $averagePERmonthARRAYperROW[$x]=money_format('%.0n',round($averagePERmonth));
-      };
-
-      //This is for the total/footer row;
-      $x=0;
-      for ($x; $x<($MAXxDATE-$enddateround);$x++)
-      {
-      array_push($averagePERmonthARRAYperROW,0);
-      };
-      $project['averagePERmonth']=$averagePERmonthARRAYperROW;
-      $total_footer_array = array_map(function () {return array_sum(func_get_args()); }, $total_footer_array, $project['averagePERmonth']);
-      $lastarray = $project['averagePERmonth'];
-    };      
-
-    //This is the header for the months calculation.  Basically, the first month is to be the next month (not the current month).
-    $x=5;
-    $z=0;
-    ini_set('memory_limit', '-1'); 
-    #dd($MAXxDATE); 
-    for ($x;$x<($MAXxDATE+$FIELDS);$x++)
+        $total_dollars[$month] = round($total_dollars[$month] + $project['per_month_dollars'][$month], 0);
+      }
+      //need these three lines for proper date formatting 
+      $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
+      $project['datentp'] = $this->dateToStr($project['datentp']);
+      $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+    }
+    //format total dollars with commas
+    foreach($months as $month)
     {
-      $th_headerMonthBins[$x]="" . date("M-y",((int)$today+2629743*($z+1)));
-      $z++;
-    }; 
-    $x=0;
-    #dd($th_headerMonthBins);
-    return view('pages.wonprojectsummary', compact('projects', 'th_headerMonthBins', 'averagePERmonthARRAYperROW', 'total_footer_array'));
+      $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
+    } 
+    return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars')); 
   }
 
 
