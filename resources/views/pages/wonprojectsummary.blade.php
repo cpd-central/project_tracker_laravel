@@ -4,7 +4,7 @@
 
 </br>
 </br>
-<h2><b>Total Project Dollars Per Month Graph</b></h2>
+<h2><b>Total Project Dollars Per Month</b></h2>
 <div>
   @isset($chart) 
   {!! $chart->container() !!} 
