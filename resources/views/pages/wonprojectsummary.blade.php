@@ -74,18 +74,6 @@
         @endforeach
       </tr>
       @endforeach
-      <!-- this is the table footer which is just going to be the totals of the columns -->
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>        
-        <td></td>
-        <td></td>
-        <td></td>
-       	<td></td>
-
-
-      </tr>
       </tbody>
   </table>
 </div>
