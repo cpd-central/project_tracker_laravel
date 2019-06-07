@@ -9,7 +9,8 @@
   {!! $chart->script() !!}
   @endisset
 </div>
-
+</br>
+</br>
 <div class="container">
   @if (\Session::has('success'))
   <div class="alert alert-success">
