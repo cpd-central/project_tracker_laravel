@@ -87,21 +87,15 @@ class ProjectController extends Controller
 
   protected function intCheck($integer)
   {
-    if($integer == null || $integer == "")
-    {
-      if($integer != 0){
-        $integer = "None";
-        return $integer;
-      }
+    if($integer == null || $integer == ""){
+        $integer = -1;
     }
-    else{
-      return ((int) $integer);
-    }
+      return ((int)$integer);
   }
 
   protected function intDisplay($integer)
   {
-    if($integer == "None"  && $integer != 0)
+    if($integer == -1)
     {
       $integer = "";
     }
@@ -135,6 +129,10 @@ class ProjectController extends Controller
     $projects=Project::all();
     foreach($projects as $project)
     {
+      $project['mwsize'] = $this->intDisplay($project['mwsize']);
+      $project['voltage'] = $this->intDisplay($project['voltage']);
+      $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
+
       $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
       $project['datentp'] = $this->dateToStr($project['datentp']);
       $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
