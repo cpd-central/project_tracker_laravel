@@ -473,7 +473,6 @@ class ProjectController extends Controller
     if (isset($chart_info))
     {
       $chart = new HoursChart;
-      dd($chart_info['labels']);
       $chart->labels($chart_info['labels']);
       $chart->dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2])->options([
         'borderColor'=>'#3cba9f', 'fill' => False]);
