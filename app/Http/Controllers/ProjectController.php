@@ -260,125 +260,132 @@ class ProjectController extends Controller
   public function indexwon()
   {
     $projects=Project::all()->where('projectstatus','Won');
-    //1. Get Max end date in order to establish the # of columns needed for the table
-    //Also, get smallest start date to establish the beginning of the array 
-    $start_dates = array();
-    $end_dates = array();
-    foreach($projects as $project)
-    {
-      $start_end = $this->get_project_start_end($project);
-      $start_date = $start_end['start'];
-      $end_date = $start_end['end']; 
-      //put these in the arrays of all start and end dates
-      array_push($start_dates, $start_date);
-      array_push($end_dates, $end_date);
-      //get the total dollars and divide by number of months.  create an array of that for this specific project 
-      $project_dollars = $project['dollarvalueinhouse'];
-      //need to use the specific start and end for this project 
-      $project_months = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');
-      $num_months = count($project_months);
-      $per_month_dollars = $project_dollars / $num_months;
-      $project_per_month_dollars = array();
-      foreach($project_months as $month)
+    if (count($projects) > 0)
+    { 
+      //1. Get Max end date in order to establish the # of columns needed for the table
+      //Also, get smallest start date to establish the beginning of the array 
+      $start_dates = array();
+      $end_dates = array();
+      foreach($projects as $project)
       {
-        $project_per_month_dollars[$month] = $per_month_dollars;
-      }
-      $project['per_month_dollars'] = $project_per_month_dollars;
-    }
-    //get the max end date and min start date
-    $earliest_start = min($start_dates);
-    $latest_end = max($end_dates);
-    //create an array of months between these two dates 
-    $months = $this->get_date_interval_array($earliest_start, $latest_end, '1 month', 'M-y'); 
-
-    $today = date('M-y'); 
-    //find today in the array of months and remove everything before it 
-    $search_index = array_search($today, $months); 
-    for ($i=0; $i<$search_index; $i++)
-    {
-      unset($months[$i]);
-    }
-    //create chart and add the months as labels 
-    $chart = new HoursChart; 
-    #$month_values = array_slice(array_values($months), 0, 12);
-    $month_values = array_values($months);
-    $chart->labels($month_values);
-    $chart_colors = [
-      'rgb(255, 99, 132, 0.4)',
-      'rgb(75, 192, 192, 0.4)',
-      'rgb(255, 159, 64, 0.4)',
-      'rgb(54, 162, 235, 0.4)',
-      'rgb(255, 205, 86, 0.4)',
-      'rgb(153, 102, 255, 0.4)'];
-    //$max_color_counter = count($chart_colors) - 1;
-    //$color_counter = 0; 
-    //now loop through the projects again and update the array to have the months we are displaying, and fill with zeros for the rest
-    $total_dollars = array();
-    foreach($projects as $project)
-    {
-      //find first key of month array
-      $first_month = array_key_first($months);
-      $new_project_per_month_dollars = array(); 
-      foreach($months as $month)
-      {
-        //check if each month is in the current project's array.  If it is, then simply put the existing value in the new array
-        //if it isn't, put zero in the new array 
-        if (array_key_exists($month, $project['per_month_dollars']))
-        { 
-          //round to 0 decimals 
-          $new_project_per_month_dollars[$month] = round($project['per_month_dollars'][$month], 0);
-        }
-        else 
+        $start_end = $this->get_project_start_end($project);
+        $start_date = $start_end['start'];
+        $end_date = $start_end['end']; 
+        //put these in the arrays of all start and end dates
+        array_push($start_dates, $start_date);
+        array_push($end_dates, $end_date);
+        //get the total dollars and divide by number of months.  create an array of that for this specific project 
+        $project_dollars = $project['dollarvalueinhouse'];
+        //need to use the specific start and end for this project 
+        $project_months = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');
+        $num_months = count($project_months);
+        $per_month_dollars = $project_dollars / $num_months;
+        $project_per_month_dollars = array();
+        foreach($project_months as $month)
         {
-          $new_project_per_month_dollars[$month] = 0;
-        } 
+          $project_per_month_dollars[$month] = $per_month_dollars;
+        }
+        $project['per_month_dollars'] = $project_per_month_dollars;
       }
-      //now re-write the project data with the new array 
-      $project['per_month_dollars'] = $new_project_per_month_dollars;  
-      $total_dollars = $total_dollars + $project['per_month_dollars'];  
-      foreach ($months as $month)
-      {
-        $total_dollars[$month] = round($total_dollars[$month] + $project['per_month_dollars'][$month], 0);
-      }
-      //need these three lines for proper date formatting 
-      $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
-      $project['datentp'] = $this->dateToStr($project['datentp']);
-      $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
-      $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
-      //add the project hours to the chart as a dataset 
-      //$dollar_values = array_slice(array_values($project['per_month_dollars']), 0, 12);
-      //$chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options([
-      //  'scales' => [
-      //    'xAxes' => [ 
-      //      'stacked' => 'true'],
-      //    'yAxes' => [
-      //      'stacked' => 'false', 
-      //      'ticks' => [
-      //        'beginAtZero' => 'true']]],
-      //  'backgroundColor' => $chart_colors[1]]);
-      //$color_counter++;
-      //if ($color_counter > $max_color_counter)
-      //{
-      //  $color_counter = 0;
-      //} 
-    }
-    $dollar_values = array_values($total_dollars); 
-    $chart->dataset("Total Project Dollars Per Month", 'bar', $dollar_values)->options([
-      'scales' => [
-          'xAxes' => [ 
-            'stacked' => 'true'],
-          'yAxes' => [
-            'stacked' => 'false', 
-            'ticks' => [
-              'beginAtZero' => 'true']]],
-        'backgroundColor' => $chart_colors[1]]);
-    //format total dollars with commas
-    //foreach($months as $month)
-    //{
-    //  $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
-    //} 
+      //get the max end date and min start date
+      $earliest_start = min($start_dates);
+      $latest_end = max($end_dates);
+      //create an array of months between these two dates 
+      $months = $this->get_date_interval_array($earliest_start, $latest_end, '1 month', 'M-y'); 
 
-    return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart')); 
+      $today = date('M-y'); 
+      //find today in the array of months and remove everything before it 
+      $search_index = array_search($today, $months); 
+      for ($i=0; $i<$search_index; $i++)
+      {
+        unset($months[$i]);
+      }
+      //create chart and add the months as labels 
+      $chart = new HoursChart; 
+      #$month_values = array_slice(array_values($months), 0, 12);
+      $month_values = array_values($months);
+      $chart->labels($month_values);
+      $chart_colors = [
+        'rgb(255, 99, 132, 0.4)',
+        'rgb(75, 192, 192, 0.4)',
+        'rgb(255, 159, 64, 0.4)',
+        'rgb(54, 162, 235, 0.4)',
+        'rgb(255, 205, 86, 0.4)',
+        'rgb(153, 102, 255, 0.4)'];
+      //$max_color_counter = count($chart_colors) - 1;
+      //$color_counter = 0; 
+      //now loop through the projects again and update the array to have the months we are displaying, and fill with zeros for the rest
+      $total_dollars = array();
+      foreach($projects as $project)
+      {
+        //find first key of month array
+        $first_month = array_key_first($months);
+        $new_project_per_month_dollars = array(); 
+        foreach($months as $month)
+        {
+          //check if each month is in the current project's array.  If it is, then simply put the existing value in the new array
+          //if it isn't, put zero in the new array 
+          if (array_key_exists($month, $project['per_month_dollars']))
+          { 
+            //round to 0 decimals 
+            $new_project_per_month_dollars[$month] = round($project['per_month_dollars'][$month], 0);
+          }
+          else 
+          {
+            $new_project_per_month_dollars[$month] = 0;
+          } 
+        }
+        //now re-write the project data with the new array 
+        $project['per_month_dollars'] = $new_project_per_month_dollars;  
+        $total_dollars = $total_dollars + $project['per_month_dollars'];  
+        foreach ($months as $month)
+        {
+          $total_dollars[$month] = round($total_dollars[$month] + $project['per_month_dollars'][$month], 0);
+        }
+        //need these three lines for proper date formatting 
+        $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
+        $project['datentp'] = $this->dateToStr($project['datentp']);
+        $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+        $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
+        //add the project hours to the chart as a dataset 
+        //$dollar_values = array_slice(array_values($project['per_month_dollars']), 0, 12);
+        //$chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options([
+        //  'scales' => [
+        //    'xAxes' => [ 
+        //      'stacked' => 'true'],
+        //    'yAxes' => [
+        //      'stacked' => 'false', 
+        //      'ticks' => [
+        //        'beginAtZero' => 'true']]],
+        //  'backgroundColor' => $chart_colors[1]]);
+        //$color_counter++;
+        //if ($color_counter > $max_color_counter)
+        //{
+        //  $color_counter = 0;
+        //} 
+      }
+      $dollar_values = array_values($total_dollars); 
+      $chart->dataset("Total Project Dollars Per Month", 'bar', $dollar_values)->options([
+        'scales' => [
+            'xAxes' => [ 
+              'stacked' => 'true'],
+            'yAxes' => [
+              'stacked' => 'false', 
+              'ticks' => [
+                'beginAtZero' => 'true']]],
+          'backgroundColor' => $chart_colors[1]]);
+      //format total dollars with commas
+      //foreach($months as $month)
+      //{
+      //  $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
+      //} 
+
+      return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart')); 
+    }
+    else 
+    {
+      return view('pages.wonprojectsummary', compact('projects'));
+    }
   }
 
 
