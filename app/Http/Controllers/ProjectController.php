@@ -255,10 +255,10 @@ class ProjectController extends Controller
               'beginAtZero' => 'true']]],
         'backgroundColor' => $chart_colors[1]]);
     //format total dollars with commas
-    foreach($months as $month)
-    {
-      $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
-    } 
+    //foreach($months as $month)
+    //{
+    //  $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
+    //} 
 
     return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart')); 
   }
