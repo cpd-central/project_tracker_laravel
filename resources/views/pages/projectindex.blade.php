@@ -48,7 +48,7 @@
         <td>{{ $project['clientcompany'] }}</td>
         <td>{{ $project['mwsize'] }}</td>
         <td>{{ $project['voltage'] }}</td> 
-        <td>{{ $project['dollarvalueinhouse'] }}</td>
+        <td>{{ number_format($project['dollarvalueinhouse'], 0, '.', ',') }}</td>
         <td>{{ $project['datentp'] }}</td>
         <td>{{ $project['dateenergization'] }}</td>
         <td>{{ $project['projectstatus']}}</td > 
