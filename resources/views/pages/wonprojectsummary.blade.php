@@ -1,5 +1,14 @@
 @extends('layouts.default')
+
 @section('content')
+
+<div>
+  @isset($chart) 
+  {!! $chart->container() !!} 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
+  {!! $chart->script() !!}
+  @endisset
+</div>
 
 <div class="container">
   @if (\Session::has('success'))
@@ -7,7 +16,7 @@
     <p>{{ \Session::get('success') }}</p>
   </div><br />
   @endif
-  <h2><b>Monthly Breakdown</b></h2> 
+  <h2><b>Monthly Breakdown By Project</b></h2> 
   <table class="table table-striped">
     <!-- this is the table header / titles for the columns -->
     <thead>
@@ -21,7 +30,7 @@
        	<th></th>
         <th>Total</th>
         @foreach($total_dollars as $each)
-          <th>{{ $each }}</th>
+          <th>{{ number_format($each, 0, '.', ',') }}</th>
         @endforeach 
       </tr>  
       <tr>
@@ -52,7 +61,7 @@
         <td colspan="2">{{ $project['datentp'] }}</td>
         <td colspan="2">{{ $project['dateenergization'] }}</td>
         @foreach($project['per_month_dollars'] as $per_month)
-          <td> {{ $per_month }} </td>
+          <td> {{ number_format($per_month, 0, '.', ',') }} </td>
         @endforeach
       </tr>
       @endforeach

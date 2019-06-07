@@ -139,7 +139,7 @@ class ProjectController extends Controller
     }
     return $arr;
   }
-  
+
   public function indexwon()
   {
     $projects=Project::all()->where('projectstatus','Won');
@@ -181,7 +181,20 @@ class ProjectController extends Controller
     {
       unset($months[$i]);
     }
-
+    //create chart and add the months as labels 
+    $chart = new HoursChart; 
+    #$month_values = array_slice(array_values($months), 0, 12);
+    $month_values = array_values($months);
+    $chart->labels($month_values);
+    $chart_colors = [
+      'rgb(255, 99, 132, 0.4)',
+      'rgb(75, 192, 192, 0.4)',
+      'rgb(255, 159, 64, 0.4)',
+      'rgb(54, 162, 235, 0.4)',
+      'rgb(255, 205, 86, 0.4)',
+      'rgb(153, 102, 255, 0.4)'];
+    //$max_color_counter = count($chart_colors) - 1;
+    //$color_counter = 0; 
     //now loop through the projects again and update the array to have the months we are displaying, and fill with zeros for the rest
     $total_dollars = array();
     foreach($projects as $project)
@@ -214,13 +227,40 @@ class ProjectController extends Controller
       $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
       $project['datentp'] = $this->dateToStr($project['datentp']);
       $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+      //add the project hours to the chart as a dataset 
+      //$dollar_values = array_slice(array_values($project['per_month_dollars']), 0, 12);
+      //$chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options([
+      //  'scales' => [
+      //    'xAxes' => [ 
+      //      'stacked' => 'true'],
+      //    'yAxes' => [
+      //      'stacked' => 'false', 
+      //      'ticks' => [
+      //        'beginAtZero' => 'true']]],
+      //  'backgroundColor' => $chart_colors[1]]);
+      //$color_counter++;
+      //if ($color_counter > $max_color_counter)
+      //{
+      //  $color_counter = 0;
+      //} 
     }
+    $dollar_values = array_values($total_dollars); 
+    $chart->dataset("Total Project Dollars Per Month", 'bar', $dollar_values)->options([
+      'scales' => [
+          'xAxes' => [ 
+            'stacked' => 'true'],
+          'yAxes' => [
+            'stacked' => 'false', 
+            'ticks' => [
+              'beginAtZero' => 'true']]],
+        'backgroundColor' => $chart_colors[1]]);
     //format total dollars with commas
-    foreach($months as $month)
-    {
-      $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
-    } 
-    return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars')); 
+    //foreach($months as $month)
+    //{
+    //  $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
+    //} 
+
+    return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart')); 
   }
 
 
@@ -255,8 +295,7 @@ class ProjectController extends Controller
   public function hours_graph(Request $request)
   {
     $projects = DB::collection('hours_by_project')->get()->sortBy('code');
-    #$projects = Project::whereRaw(['hours_data' => ['$exists' => 'true']])->get();
-    
+
     function get_chart_info($id)
     {
       $selected_project = DB::collection('hours_by_project')->where('_id', $id)->first();
@@ -295,7 +334,6 @@ class ProjectController extends Controller
 
       $hours_arr_start_end = array_slice($hours_arr, $start_key, $end_key - $start_key + 1);
       $labels_arr_start_end = array_slice($labels_arr, $start_key, $end_key - $start_key + 1);
-
       $labels = $labels_arr_start_end;
       $dataset = array($selected_project['code'] . ' Hours', 'line', $hours_arr_start_end); 
       return array('labels' => $labels, 'dataset' => $dataset); 
@@ -311,7 +349,7 @@ class ProjectController extends Controller
     if (isset($chart_info))
     {
       $chart = new HoursChart;
-
+      dd($chart_info['labels']);
       $chart->labels($chart_info['labels']);
       $chart->dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2])->options([
         'borderColor'=>'#3cba9f', 'fill' => False]);
