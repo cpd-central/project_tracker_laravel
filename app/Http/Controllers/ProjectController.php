@@ -33,9 +33,9 @@ class ProjectController extends Controller
     $project->projectname= $req->get('projectname');
     $project->clientcontactname= $req->get('clientcontactname');
     $project->clientcompany = $req->get('clientcompany');
-    $project->mwsize = $this->intCheck((int) $req->get('mwsize'));
-    $project->voltage = $this->intCheck((int) $req->get('voltage'));
-    $project->dollarvalueinhouse = $this->intCheck((int) $req->get('dollarvalueinhouse'));
+    $project->mwsize = $this->intCheck($req->get('mwsize'));
+    $project->voltage = $this->intCheck($req->get('voltage'));
+    $project->dollarvalueinhouse = $this->intCheck($req->get('dollarvalueinhouse'));
     $project->dateproposed = $this->strToDate($req->get('dateproposed'));
     $project->datentp = $this->strToDate($req->get('datentp'));
     $project->dateenergization = $this->strToDate($req->get('dateenergization'));
@@ -91,9 +91,12 @@ class ProjectController extends Controller
     {
       if($integer != 0){
         $integer = "None";
+        return $integer;
       }
     }
-    return $integer;
+    else{
+      return ((int) $integer);
+    }
   }
 
   protected function intDisplay($integer)
