@@ -47,8 +47,12 @@
         <td>{{ $project['clientcontactname'] }}</td>
         <td>{{ $project['clientcompany'] }}</td>
         <td>{{ $project['mwsize'] }}</td>
-        <td>{{ $project['voltage'] }}</td> 
-        <td>{{ number_format($project['dollarvalueinhouse'], 0, '.', ',') }}</td>
+        <td>{{ $project['voltage'] }}</td>  
+        @if (is_string($project['dollarvalueinhouse'])) 
+          <td>{{ $project['dollarvalueinhouse'] }}</td>
+        @else
+          <td>{{ number_format($project['dollarvalueinhouse'], 0, '.', ',') }}</td>
+        @endif 
         <td>{{ $project['datentp'] }}</td>
         <td>{{ $project['dateenergization'] }}</td>
         <td>{{ $project['projectstatus']}}</td > 

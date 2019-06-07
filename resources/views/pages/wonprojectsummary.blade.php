@@ -57,11 +57,19 @@
           </form>
         </td>
         <td>{{ $project['projectname']}}</td >        
-        <td>{{ $project['dollarvalueinhouse'] }}</td>
+        @if (is_string($project['dollarvalueinhouse'])) 
+          <td>{{ $project['dollarvalueinhouse'] }}</td>
+        @else
+          <td>{{ number_format($project['dollarvalueinhouse'], 0, ',', ',') }}</td> 
+        @endif 
         <td colspan="2">{{ $project['datentp'] }}</td>
         <td colspan="2">{{ $project['dateenergization'] }}</td>
         @foreach($project['per_month_dollars'] as $per_month)
-          <td> {{ number_format($per_month, 0, '.', ',') }} </td>
+          @if (is_string($per_month)) 
+            <td>0</td>
+          @else
+            <td> {{ number_format($per_month, 0, '.', ',') }} </td>
+          @endif 
         @endforeach
       </tr>
       @endforeach

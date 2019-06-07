@@ -33,9 +33,9 @@ class ProjectController extends Controller
     $project->projectname= $req->get('projectname');
     $project->clientcontactname= $req->get('clientcontactname');
     $project->clientcompany = $req->get('clientcompany');
-    $project->mwsize = (int) $req->get('mwsize');
-    $project->voltage = (int) $req->get('voltage');
-    $project->dollarvalueinhouse = (int) $req->get('dollarvalueinhouse');
+    $project->mwsize = $this->intCheck($req->get('mwsize'));
+    $project->voltage = $this->intCheck($req->get('voltage'));
+    $project->dollarvalueinhouse = $this->intCheck($req->get('dollarvalueinhouse'));
     $project->dateproposed = $this->strToDate($req->get('dateproposed'));
     $project->datentp = $this->strToDate($req->get('datentp'));
     $project->dateenergization = $this->strToDate($req->get('dateenergization'));
@@ -65,7 +65,7 @@ class ProjectController extends Controller
       $date = new UTCDateTime($php_date->getTimestamp() * 1000);
     }
     else {
-      $date = 'None';
+      $date = "None";
     }
     return $date;
   }
@@ -100,6 +100,22 @@ class ProjectController extends Controller
         return "checked";
       }
     }
+  }
+  protected function intCheck($integer)
+  {
+    if($integer == null || $integer == ""){
+        $integer = -1;
+    }
+      return ((int)$integer);
+  }
+
+  protected function intDisplay($integer)
+  {
+    if($integer == -1)
+    {
+      $integer = "";
+    }
+    return $integer;
   }
 
   public function new_project()
@@ -210,6 +226,9 @@ class ProjectController extends Controller
     $projects=Project::all();
     foreach($projects as $project)
     {
+      $project['mwsize'] = $this->intDisplay($project['mwsize']);
+      $project['voltage'] = $this->intDisplay($project['voltage']);
+      $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
       $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
       $project['datentp'] = $this->dateToStr($project['datentp']);
       $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
@@ -325,6 +344,7 @@ class ProjectController extends Controller
       $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
       $project['datentp'] = $this->dateToStr($project['datentp']);
       $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+      $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
       //add the project hours to the chart as a dataset 
       //$dollar_values = array_slice(array_values($project['per_month_dollars']), 0, 12);
       //$chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options([
@@ -369,6 +389,9 @@ class ProjectController extends Controller
     if (isset($term)) { 
       $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
       foreach ($projects as $project) {
+        $project['mwsize'] = $this->intDisplay($project['mwsize']);
+        $project['voltage'] = $this->intDisplay($project['voltage']);
+        $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
         $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
         $project['datentp'] = $this->dateToStr($project['datentp']);
         $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
@@ -383,6 +406,9 @@ class ProjectController extends Controller
   public function edit_project($id)
   {
     $project = Project::find($id);
+    $project['mwsize'] = $this->intDisplay($project['mwsize']);
+    $project['voltage'] = $this->intDisplay($project['voltage']);
+    $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
     $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
     $project['datentp'] = $this->dateToStr($project['datentp']);
     $project['dateenergization'] = $this->dateToStr($project['dateenergization']);

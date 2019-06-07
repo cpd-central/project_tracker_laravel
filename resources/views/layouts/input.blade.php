@@ -227,9 +227,9 @@
           <div class="form-group col-md-2">
             <label for="fill">Project Type:</label>
           </div>
-
+        
           <div class="form-group col-md-10">
-            <label class="checkbox-inline" for="projecttypewind">
+            <label margin:0 auto; width:80%; class="checkbox-inline" for="projecttypewind">
               <input id="element_9_1" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Wind" @yield('projecttypewind')/>Wind
             </label>
             <label class="checkbox-inline" for="projecttypesolar">
@@ -256,7 +256,6 @@
             <label class="checkbox-inline" for="projecttypestudy">
               <input id="element_9_9" name="projecttype_checklist[]" class="element checkbox" type="checkbox" value="Study" @yield('projecttypestudy')/>Study
             </label>
-
           </div>
         </div>
 
