@@ -89,14 +89,16 @@ class ProjectController extends Controller
   {
     if($integer == null || $integer == "")
     {
-      $integer = "None";
+      if($integer != 0){
+        $integer = "None";
+      }
     }
     return $integer;
   }
 
   protected function intDisplay($integer)
   {
-    if($integer == "None")
+    if($integer == "None"  && $integer != 0)
     {
       $integer = "";
     }
