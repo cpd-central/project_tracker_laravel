@@ -2,6 +2,8 @@
 @section('content')
 
 <div class="container">
+  </br>
+  </br> 
   <h2><b>Project Search</b></h2> 
   <br />
   <!-- Search Bar Form -->
@@ -47,8 +49,12 @@
         <td>{{ $project['clientcontactname'] }}</td>
         <td>{{ $project['clientcompany'] }}</td>
         <td>{{ $project['mwsize'] }}</td>
-        <td>{{ $project['voltage'] }}</td> 
-        <td>{{ $project['dollarvalueinhouse'] }}</td>
+        <td>{{ $project['voltage'] }}</td>  
+        @if (is_string($project['dollarvalueinhouse'])) 
+          <td>{{ $project['dollarvalueinhouse'] }}</td>
+        @else
+          <td>{{ number_format($project['dollarvalueinhouse'], 0, '.', ',') }}</td>
+        @endif 
         <td>{{ $project['datentp'] }}</td>
         <td>{{ $project['dateenergization'] }}</td>
         <td>{{ $project['projectstatus']}}</td > 
