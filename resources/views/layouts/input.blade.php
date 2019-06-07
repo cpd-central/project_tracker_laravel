@@ -147,8 +147,9 @@
           <div class="form-group col-md-4">
             <label for="projectstatus">Project Proposed/Won/Expired:</label>
             <select class="form-control" id="sel1" name="projectstatus"> 
-              <option selected="selected"><?= Session::get('projectstatus')?></option>  <!-- Fix -->
-              @yield('projectstatus')
+              <option>Proposed</option>                         <!-- FIX -->
+              <option selected="selected">Won</option>          <!-- FIX -->
+              <option>Expired</option>                          <!-- FIX -->
             </select>
           </div>
           <div class="form-group col-md-4">
