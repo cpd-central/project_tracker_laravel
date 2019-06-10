@@ -54,6 +54,13 @@ class ProjectController extends Controller
       'projectname' => 'required',
       'clientcontactname' => 'required'
     ]);
+
+    if($req['projectstatus'] == 'Won'){         //Randy's edit for Project Won, must require dates.
+      $this->validate($req, [
+        'datentp' => 'required',
+        'dateenergization' => 'required'
+      ]);
+    }
   }
 
   protected function strToDate($date_string)
@@ -85,14 +92,14 @@ class ProjectController extends Controller
     return $date_string;
   }
 
-  protected function projectStatusCheck(Request $req) {
-    if($req['projectstatus'] == 'Won'){
-      if($req['datentp'] == null || $req['dateenergization'] == null) {
-        return -1;
-      }
-    }
-    return 0;
-  }
+  // protected function projectStatusCheck(Request $req) {
+  //   if($req['projectstatus'] == 'Won'){
+  //     if($req['datentp'] == null || $req['dateenergization'] == null) {
+  //       return -1;
+  //     }
+  //   }
+  //   return 0;
+  // }
 
   protected function check_project_box($type, $typeArray) {
     if(isset($typeArray)) {
@@ -127,50 +134,50 @@ class ProjectController extends Controller
   public function create(Request $request)
   {
     $this->validate_request($request);
-    $testNum = $this->projectStatusCheck($request);
-    $projectType = $request['projecttype_checklist'];
-    $epcType = $request['epctype_checklist'];
-    if($testNum == -1) {
-      return redirect('/newproject')
-        ->with('message','Please enter a Date NTP & a Date Energization.')
-        ->with('cegproposalauthor', $request['cegproposalauthor'])              //hardcoded
-        ->with('projectname', $request['projectname'])                          //hardcoded
-        ->with('clientcontactname', $request['clientcontactname'])              //hardcoded
-        ->with('clientcompany', $request['clientcompany'])                      //hardcoded
-        ->with('mwsize', $request['mwsize'])                                    //hardcoded
-        ->with('voltage', $request['voltage'])                                  //hardcoded
-        ->with('dollarvalueinhouse', $request['dollarvalueinhouse'])            //hardcoded
-        ->with('dateproposed', $request['dateproposed'])                        //hardcoded
-        ->with('datentp', $request['datentp'])                                  //hardcoded
-        ->with('dateenergization', $request['dateenergization'])                //hardcoded
+    //$testNum = $this->projectStatusCheck($request);
+    //$projectType = $request['projecttype_checklist'];
+    //$epcType = $request['epctype_checklist'];
+    // if($testNum == -1) {
+    //   return redirect('/newproject')
+    //     ->with('message','Please enter a Date NTP & a Date Energization.')
+    //     ->with('cegproposalauthor', $request['cegproposalauthor'])              //hardcoded
+    //     ->with('projectname', $request['projectname'])                          //hardcoded
+    //     ->with('clientcontactname', $request['clientcontactname'])              //hardcoded
+    //     ->with('clientcompany', $request['clientcompany'])                      //hardcoded
+    //     ->with('mwsize', $request['mwsize'])                                    //hardcoded
+    //     ->with('voltage', $request['voltage'])                                  //hardcoded
+    //     ->with('dollarvalueinhouse', $request['dollarvalueinhouse'])            //hardcoded
+    //     ->with('dateproposed', $request['dateproposed'])                        //hardcoded
+    //     ->with('datentp', $request['datentp'])                                  //hardcoded
+    //     ->with('dateenergization', $request['dateenergization'])                //hardcoded
 
-        ->with('Wind', $this->check_project_box('Wind', $projectType))
-        ->with('Solar', $this->check_project_box('Solar', $projectType))
-        ->with('Storage', $this->check_project_box('Storage', $projectType))
-        ->with('Array', $this->check_project_box('Array', $projectType))
-        ->with('Transmission', $this->check_project_box('Transmission', $projectType))
-        ->with('Substation', $this->check_project_box('Substation', $projectType))
-        ->with('Distribution', $this->check_project_box('Distribution', $projectType))
-        ->with('SCADA', $this->check_project_box('SCADA', $projectType))
-        ->with('Study', $this->check_project_box('Study', $projectType))
+    //     ->with('Wind', $this->check_project_box('Wind', $projectType))
+    //     ->with('Solar', $this->check_project_box('Solar', $projectType))
+    //     ->with('Storage', $this->check_project_box('Storage', $projectType))
+    //     ->with('Array', $this->check_project_box('Array', $projectType))
+    //     ->with('Transmission', $this->check_project_box('Transmission', $projectType))
+    //     ->with('Substation', $this->check_project_box('Substation', $projectType))
+    //     ->with('Distribution', $this->check_project_box('Distribution', $projectType))
+    //     ->with('SCADA', $this->check_project_box('SCADA', $projectType))
+    //     ->with('Study', $this->check_project_box('Study', $projectType))
 
-        ->with('Electrical Engineering', $this->check_project_box('Electrical Engineering', $epcType))
-        ->with('Civil Engineering', $this->check_project_box('Civil Engineering', $epcType))
-        ->with('Structural/Mechanical Engineering', $this->check_project_box('Structural/Mechanical Engineering', $epcType))
-        ->with('Procurement', $this->check_project_box('Procurement', $epcType))
-        ->with('Construction', $this->check_project_box('Construction', $epcType))
+    //     ->with('Electrical Engineering', $this->check_project_box('Electrical Engineering', $epcType))
+    //     ->with('Civil Engineering', $this->check_project_box('Civil Engineering', $epcType))
+    //     ->with('Structural/Mechanical Engineering', $this->check_project_box('Structural/Mechanical Engineering', $epcType))
+    //     ->with('Procurement', $this->check_project_box('Procurement', $epcType))
+    //     ->with('Construction', $this->check_project_box('Construction', $epcType))
 
 
-        ->with('projectstatus', $request['projectstatus'])                      //hardcoded
-        ->with('projectcode', $request['projectcode'])                          //hardcoded 
-        ->with('projectmanager', $request['projectmanager']);                 //hardcoded
+    //     ->with('projectstatus', $request['projectstatus'])                      //hardcoded
+    //     ->with('projectcode', $request['projectcode'])                          //hardcoded 
+    //     ->with('projectmanager', $request['projectmanager']);                 //hardcoded
 
-    }
-    else{
+    // }
+    // else{
     $project = new Project();
     $this->store($project, $request);
     return redirect('/projectindex')->with('Success!', 'Project has been successfully added.');
-    }
+    //}
   }
 
   public function update(Request $request, $id)
