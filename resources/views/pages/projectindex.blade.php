@@ -1,5 +1,6 @@
 @extends('layouts.default')
 @section('content')
+@section('page-title', 'Project Index')
 
 <div class="container">
   </br>

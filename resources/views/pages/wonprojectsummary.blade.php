@@ -1,6 +1,6 @@
 @extends('layouts.default')
-
 @section('content')
+@section('page-title', "Won Project Summary")
 
 </br>
 </br>
