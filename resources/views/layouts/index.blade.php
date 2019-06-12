@@ -8,8 +8,8 @@
       <div id="main">
       </br>
       </br>
-      @yield('toptool')
       <div class="container">
+      @yield('toptool')
         @if (\Session::has('success'))
         <div class="alert alert-success">
           <p>{{ \Session::get('success') }}</p>
