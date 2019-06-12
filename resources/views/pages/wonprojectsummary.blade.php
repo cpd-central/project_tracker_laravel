@@ -18,7 +18,12 @@
   <thead>
     <tr> 
       @if (count($projects))
-      <th></th>
+      <form method="post">
+      <th colspan="2"><select class="form-control" id="sel1" name="projectstatus" action="{{redirect('ProjectController@search')}}">
+        <option>All</option>
+        <option>Won</option>
+        <option>Probable</option>
+      </th></form>
       <th></th>
       <th></th>        
       <th></th>
@@ -33,6 +38,7 @@
     <tr>
       <th colspan="2">Action</th>
       <th>Project Name</th>
+      <th>Project Status</th>
       <th>Dollar Value</th>
       <th colspan="2">Date NTP</th>
       <th colspan="2">Date Energization</th>
@@ -56,7 +62,8 @@
           <button class="btn btn-danger" type="submit" onclick="return confirm('This will delete the project from the database.  Are you sure you want to do this?')">Delete</button>
         </form>
       </td>
-      <td>{{ $project['projectname']}}</td >        
+      <td>{{ $project['projectname']}}</td >  
+      <td>{{ $project['projectstatus']}}</td>      
       @if (is_string($project['dollarvalueinhouse'])) 
         <td>{{ $project['dollarvalueinhouse'] }}</td>
       @else

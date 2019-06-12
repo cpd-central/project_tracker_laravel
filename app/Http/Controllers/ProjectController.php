@@ -55,7 +55,7 @@ class ProjectController extends Controller
       'clientcontactname' => 'required'
     ]);
 
-    if($req['projectstatus'] == 'Won'){         //Randy's edit for Project Won, must require dates & dollar value.
+    if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable'){         //Randy's edit for Project Won, must require dates & dollar value.
       $this->validate($req, [
         'dollarvalueinhouse' => 'required',
         'datentp' => 'required',
@@ -183,7 +183,7 @@ class ProjectController extends Controller
 
   public function indexwon()
   {
-    $projects=Project::all()->where('projectstatus','Won');
+    $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
     if (count($projects) > 0)
     { 
       //1. Get Max end date in order to establish the # of columns needed for the table
