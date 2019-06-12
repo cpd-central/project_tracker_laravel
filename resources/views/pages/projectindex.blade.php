@@ -1,5 +1,4 @@
 @extends('layouts.index')
-<?php $page = 2?>
 
 
 @section('toptool')
@@ -17,7 +16,28 @@
   @stop
 
   @section('table-title', 'Project Index')
-  @section('content')
+  @section('table-header')
+  <table class="table table-striped">
+    <thead>
+      <tr> 
+        <th colspan="2">Action</th>
+        <th>CEG Proposal Author</th>
+        <th>Project Name</th>
+        <th>Client Contact</th>
+        <th>Client Company</th>
+        <th>MW</th>
+        <th>Voltage</th> 
+        <th>CEG In-house Budget</th>
+        <th>Date NTP</th>
+        <th>Date Energize</th>   
+        <th>Project Status</th>   
+        <th>Project Code</th>
+        <th>Project Manager</th>
+      </tr>
+    </thead>
+  @stop
+
+  @section('table-content')
     @foreach($projects as $project)
     <tr>
       <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit</a></td>

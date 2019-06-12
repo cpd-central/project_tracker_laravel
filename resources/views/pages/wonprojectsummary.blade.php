@@ -1,5 +1,4 @@
 @extends('layouts.index')
-<?php $page = 1?>
 
 @section('toptool')
 <h2><b>Total Project Dollars Per Month</b></h2>
@@ -15,7 +14,39 @@
 @stop 
 
 @section('table-title', 'Monthly Breakdown By Project')
-@section('content')
+@section('table-header')
+<table class="table table-striped">
+  <thead>
+    <tr> 
+      @if (count($projects))
+      <th></th>
+      <th></th>
+      <th></th>        
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th>Total</th> 
+      @foreach($total_dollars as $each)
+        <th>{{ number_format($each, 0, '.', ',') }}</th>
+      @endforeach 
+    </tr>  
+    <tr>
+      <th colspan="2">Action</th>
+      <th>Project Name</th>
+      <th>Dollar Value</th>
+      <th colspan="2">Date NTP</th>
+      <th colspan="2">Date Energization</th>
+      @foreach($months as $month)  
+        <th>{{ $month }}</th>
+      @endforeach
+      @else
+        <h2>No Won Projects to Display</h2>
+      @endif
+  </thead>
+@stop
+
+@section('table-content')
   @foreach($projects as $project)
     <tr>
       <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit</a></td>
