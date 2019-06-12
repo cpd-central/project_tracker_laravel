@@ -237,7 +237,7 @@ class ProjectController extends Controller
     $projects=Project::all();
     foreach($projects as $project)
     {
-      $this->displayFormat($project);
+      $project = $this->displayFormat($project);
     } 
     return view('pages.projectindex', compact('projects'));
   }
@@ -349,7 +349,7 @@ class ProjectController extends Controller
           $total_dollars[$month] = round($total_dollars[$month] + $project['per_month_dollars'][$month], 0);
         }
         //formats the project data in order to display properly
-        $this->displayFormat($project);
+        $project = $this->displayFormat($project);
 
         //add the project hours to the chart as a dataset 
         //$dollar_values = array_slice(array_values($project['per_month_dollars']), 0, 12);
@@ -400,7 +400,7 @@ class ProjectController extends Controller
     if (isset($term)) { 
       $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
       foreach ($projects as $project) {
-        $this->displayFormat($project);
+        $project = $this->displayFormat($project);
       }
       return view('pages.projectindex', compact('projects')); 
     }
@@ -412,7 +412,7 @@ class ProjectController extends Controller
   public function edit_project($id)
   {
     $project = Project::find($id);
-    $this->displayFormat($project);
+    $project = $this->displayFormat($project);
     return view('pages.editproject', compact('project'));
   }
 
