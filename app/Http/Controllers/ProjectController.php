@@ -64,7 +64,18 @@ class ProjectController extends Controller
     }
   }
 
-  public static function strToDate($date_string)       //Switched to public static to be used in view. Helper?
+  protected function displayFormat($project)
+  {
+    $project['mwsize'] = $this->intDisplay($project['mwsize']);
+    $project['voltage'] = $this->intDisplay($project['voltage']);
+    $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
+    $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
+    $project['datentp'] = $this->dateToStr($project['datentp']);
+    $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+    return $project;
+  }
+
+  protected function strToDate($date_string)
   {
     if (isset($date_string))
     {
@@ -144,12 +155,7 @@ class ProjectController extends Controller
     $projects=Project::all();
     foreach($projects as $project)
     {
-      $project['mwsize'] = $this->intDisplay($project['mwsize']);
-      $project['voltage'] = $this->intDisplay($project['voltage']);
-      $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
-      $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
-      $project['datentp'] = $this->dateToStr($project['datentp']);
-      $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+      $project = $this->displayFormat($project);
     } 
     return view('pages.projectindex', compact('projects'));
   }
@@ -260,11 +266,9 @@ class ProjectController extends Controller
         {
           $total_dollars[$month] = round($total_dollars[$month] + $project['per_month_dollars'][$month], 0);
         }
-        //need these three lines for proper date formatting 
-        $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
-        $project['datentp'] = $this->dateToStr($project['datentp']);
-        $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
-        $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
+        //formats the project data in order to display properly
+        $project = $this->displayFormat($project);
+
         //add the project hours to the chart as a dataset 
         //$dollar_values = array_slice(array_values($project['per_month_dollars']), 0, 12);
         //$chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options([
@@ -314,12 +318,7 @@ class ProjectController extends Controller
     if (isset($term)) { 
       $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
       foreach ($projects as $project) {
-        $project['mwsize'] = $this->intDisplay($project['mwsize']);
-        $project['voltage'] = $this->intDisplay($project['voltage']);
-        $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
-        $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
-        $project['datentp'] = $this->dateToStr($project['datentp']);
-        $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+        $project = $this->displayFormat($project);
       }
       return view('pages.projectindex', compact('projects')); 
     }
@@ -331,12 +330,7 @@ class ProjectController extends Controller
   public function edit_project($id)
   {
     $project = Project::find($id);
-    $project['mwsize'] = $this->intDisplay($project['mwsize']);
-    $project['voltage'] = $this->intDisplay($project['voltage']);
-    $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
-    $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
-    $project['datentp'] = $this->dateToStr($project['datentp']);
-    $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+    $project = $this->displayFormat($project);
     return view('pages.editproject', compact('project'));
   }
 
