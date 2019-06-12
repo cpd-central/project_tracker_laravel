@@ -19,7 +19,7 @@ Route::get('/', function () {
 Route::get('/newproject', 'ProjectController@new_project')->name('pages.newproject')->middleware('verified');
 Route::post('/newproject', 'ProjectController@create')->middleware('verified');
 
-Route::get('/projectindex', 'ProjectController@index')->name('pages.projectindex');
+Route::get('/projectindex', 'ProjectController@index')->name('pages.projectindex')->middleware('verified');
 Route::post('/projectindex', 'ProjectController@search')->middleware('verified');
 
 Route::get('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummary')->middleware('verified');
