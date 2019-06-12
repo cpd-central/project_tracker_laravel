@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+<title id="page-title">@yield('page-title')</title>
     <head>
         <title>@yield('title')</title>
 

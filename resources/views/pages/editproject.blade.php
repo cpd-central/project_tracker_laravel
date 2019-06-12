@@ -9,6 +9,7 @@
 ?>
 @extends('layouts.input')
 
+@section('page-title', 'Edit Project')
 @section('title', 'Project Update Form')
 @section('h4proposal', 'Edit Project - Proposal Details')
 @section('h4won', 'Edit Project - Won Details')
