@@ -248,8 +248,8 @@ class ProjectController extends Controller
         'rgb(54, 162, 235, 0.4)',
         'rgb(255, 205, 86, 0.4)',
         'rgb(153, 102, 255, 0.4)'];
-      //$max_color_counter = count($chart_colors) - 1;
-      //$color_counter = 0; 
+      $max_color_counter = count($chart_colors) - 1;
+      $color_counter = 0; 
       //now loop through the projects again and update the array to have the months we are displaying, and fill with zeros for the rest
       $total_dollars = array();
       foreach($projects as $project)
@@ -282,32 +282,21 @@ class ProjectController extends Controller
         $project = $this->displayFormat($project);
 
         //add the project hours to the chart as a dataset 
-        //$dollar_values = array_slice(array_values($project['per_month_dollars']), 0, 12);
-        //$chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options([
-        //  'scales' => [
-        //    'xAxes' => [ 
-        //      'stacked' => 'true'],
-        //    'yAxes' => [
-        //      'stacked' => 'false', 
-        //      'ticks' => [
-        //        'beginAtZero' => 'true']]],
-        //  'backgroundColor' => $chart_colors[1]]);
-        //$color_counter++;
-        //if ($color_counter > $max_color_counter)
-        //{
-        //  $color_counter = 0;
-        //} 
+        $dollar_values = array_values($project['per_month_dollars']);
+        $chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options(['backgroundColor' => $chart_colors[$color_counter]]);
+        $color_counter++;
+        if ($color_counter > $max_color_counter)
+        {
+          $color_counter = 0;
+        } 
       }
       $dollar_values = array_values($total_dollars); 
-      $chart->dataset("Total Project Dollars Per Month", 'bar', $dollar_values)->options([
-        'scales' => [
-            'xAxes' => [ 
-              'stacked' => 'true'],
-            'yAxes' => [
-              'stacked' => 'false', 
-              'ticks' => [
-                'beginAtZero' => 'true']]],
-          'backgroundColor' => $chart_colors[1]]);
+      //$chart->dataset("Total Project Dollars Per Month", 'bar', $dollar_values)->options(['backgroundColor' => $chart_colors[1]]);
+      $options = [];
+      $options['scales']['xAxes'][]['stacked'] = true;
+      $options['scales']['yAxes'][]['stacked'] = true;
+      $chart->options($options); 
+      #dd($chart); 
       //format total dollars with commas
       //foreach($months as $month)
       //{
