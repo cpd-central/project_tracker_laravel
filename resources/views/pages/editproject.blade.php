@@ -104,14 +104,22 @@
 @if ($project['projectstatus'] == 'Won') 
   <option>Proposed</option>
   <option selected="selected">Won</option>
+  <option>Probable</option>
   <option>Expired</option>
 @elseif ($project['projectstatus'] == 'Expired')
   <option>Proposed</option>
   <option>Won</option>
+  <option>Probable</option>
   <option selected="selected">Expired</option>
+@elseif ($project['projectstatus'] == 'Probable')
+  <option>Proposed</option>
+  <option>Won</option>
+  <option selected="selected">Probable</option>
+  <option>Expired</option>
 @else
   <option selected="selected">Proposed</option>
   <option>Won</option>
+  <option>Probable</option>
   <option>Expired</option>
 @endif
 @stop

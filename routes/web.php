@@ -25,7 +25,8 @@ Route::post('/projectindex', 'ProjectController@search');
 Route::get('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummary');
 Route::post('/wonprojectsummary', 'ProjectController@search');
 
-
+//Select Menu Route
+Route::post('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummarySearch');
 
 Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject');
 Route::post('/editproject/{id}', 'ProjectController@update');

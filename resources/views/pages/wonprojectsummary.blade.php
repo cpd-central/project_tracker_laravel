@@ -18,7 +18,24 @@
   <thead>
     <tr> 
       @if (count($projects))
-      <th></th>
+      <form action="{{ route('pages.wonprojectsummarySearch') }}" method="POST">
+        @csrf
+      <th colspan="2"><select name='projectstatus' class="form-control" onchange="this.form.submit()">
+        @if($projectStatus == "Won")
+        <option value="All">All</option>
+        <option value="Won" selected>Won</option>
+        <option value="Probable">Probable</option>
+        @elseif($projectStatus == "Probable")
+        <option value="All">All</option>
+        <option value="Won">Won</option>
+        <option value="Probable" selected>Probable</option>
+        @else
+          <option value="All" selected>All</option>
+          <option value="Won">Won</option>
+          <option value="Probable">Probable</option>
+        @endif
+      </select></form>
+      </th>
       <th></th>
       <th></th>        
       <th></th>
@@ -33,6 +50,7 @@
     <tr>
       <th colspan="2">Action</th>
       <th>Project Name</th>
+      <th>Project Status</th>
       <th>Dollar Value</th>
       <th colspan="2">Date NTP</th>
       <th colspan="2">Date Energization</th>
@@ -56,7 +74,8 @@
           <button class="btn btn-danger" type="submit" onclick="return confirm('This will delete the project from the database.  Are you sure you want to do this?')">Delete</button>
         </form>
       </td>
-      <td>{{ $project['projectname']}}</td >        
+      <td>{{ $project['projectname']}}</td >  
+      <td>{{ $project['projectstatus']}}</td>      
       @if (is_string($project['dollarvalueinhouse'])) 
         <td>{{ $project['dollarvalueinhouse'] }}</td>
       @else

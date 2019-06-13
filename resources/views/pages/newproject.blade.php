@@ -20,6 +20,7 @@
 @section('projectstatus')
   <option>Proposed</option>
   <option>Won</option>
+  <option>Probable</option>
   <option>Expired</option>
 @stop
 
