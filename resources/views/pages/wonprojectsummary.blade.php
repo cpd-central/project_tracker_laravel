@@ -18,12 +18,24 @@
   <thead>
     <tr> 
       @if (count($projects))
-      <form method="post">
-      <th colspan="2"><select class="form-control" id="sel1" name="projectstatus" action="{{redirect('ProjectController@search')}}">
-        <option>All</option>
-        <option>Won</option>
-        <option>Probable</option>
-      </th></form>
+      <form action="{{ route('pages.wonprojectsummarySearch') }}" method="POST">
+        @csrf
+      <th colspan="2"><select name='projectstatus' class="form-control" onchange="this.form.submit()">
+        @if($projectStatus == "Won")
+        <option value="All">All</option>
+        <option value="Won" selected>Won</option>
+        <option value="Probable">Probable</option>
+        @elseif($projectStatus == "Probable")
+        <option value="All">All</option>
+        <option value="Won">Won</option>
+        <option value="Probable" selected>Probable</option>
+        @else
+          <option value="All" selected>All</option>
+          <option value="Won">Won</option>
+          <option value="Probable">Probable</option>
+        @endif
+      </select></form>
+      </th>
       <th></th>
       <th></th>        
       <th></th>

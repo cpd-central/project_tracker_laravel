@@ -181,9 +181,21 @@ class ProjectController extends Controller
     return $arr;
   }
 
-  public function indexwon()
+  public function indexwon(Request $request)
   {
-    $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
+    //dd($request);
+    if($request['projectstatus'] == 'Won'){
+      $projects=Project::all()->where('projectstatus','Won');
+      $projectStatus = "Won";
+    }
+    else if($request['projectstatus'] == 'Probable'){
+      $projects=Project::all()->where('projectstatus','Probable');
+      $projectStatus = "Probable";
+    }
+    else{
+      $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
+      $projectStatus = "All";
+    }
     if (count($projects) > 0)
     { 
       //1. Get Max end date in order to establish the # of columns needed for the table
@@ -302,7 +314,7 @@ class ProjectController extends Controller
       //  $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
       //} 
 
-      return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart')); 
+      return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart', 'projectStatus')); 
     }
     else 
     {
