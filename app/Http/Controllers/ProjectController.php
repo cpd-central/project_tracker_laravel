@@ -181,6 +181,16 @@ class ProjectController extends Controller
     return $arr;
   }
 
+  protected function add_dollars($project, $dollars_arr, $months)
+  {
+    $dollars_arr = $dollars_arr + $project['per_month_dollars'];
+    foreach ($months as $month)
+    {
+      $dollars_arr[$month] = round($dollars_arr[$month] + $project['per_month_dollars'][$month], 0);
+    }
+    return $dollars_arr; 
+  }
+
   public function indexwon(Request $request)
   {
     //dd($request);
@@ -251,7 +261,10 @@ class ProjectController extends Controller
       //$max_color_counter = count($chart_colors) - 1;
       //$color_counter = 0; 
       //now loop through the projects again and update the array to have the months we are displaying, and fill with zeros for the rest
-      $total_dollars = array();
+      $total_dollars_won = array();
+      $total_dollars_probable = array();
+      $total_dollars_total = array();
+
       foreach($projects as $project)
       {
         //find first key of month array
@@ -272,42 +285,39 @@ class ProjectController extends Controller
           } 
         }
         //now re-write the project data with the new array 
-        $project['per_month_dollars'] = $new_project_per_month_dollars;  
-        $total_dollars = $total_dollars + $project['per_month_dollars'];  
-        foreach ($months as $month)
+        $project['per_month_dollars'] = $new_project_per_month_dollars;
+
+        if ($project['projectstatus'] == 'Won')
         {
-          $total_dollars[$month] = round($total_dollars[$month] + $project['per_month_dollars'][$month], 0);
+          $total_dollars_won = $this->add_dollars($project, $total_dollars_won, $months);
+        }
+        else 
+        {
+          $total_dollars_probable = $this->add_dollars($project, $total_dollars_probable, $months);
         }
         //formats the project data in order to display properly
         $project = $this->displayFormat($project);
 
         //add the project hours to the chart as a dataset 
-        //$dollar_values = array_slice(array_values($project['per_month_dollars']), 0, 12);
-        //$chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options([
-        //  'scales' => [
-        //    'xAxes' => [ 
-        //      'stacked' => 'true'],
-        //    'yAxes' => [
-        //      'stacked' => 'false', 
-        //      'ticks' => [
-        //        'beginAtZero' => 'true']]],
-        //  'backgroundColor' => $chart_colors[1]]);
+        //$dollar_values = array_values($project['per_month_dollars']);
+        //$chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options(['backgroundColor' => $chart_colors[$color_counter]]);
         //$color_counter++;
         //if ($color_counter > $max_color_counter)
         //{
         //  $color_counter = 0;
         //} 
       }
-      $dollar_values = array_values($total_dollars); 
-      $chart->dataset("Total Project Dollars Per Month", 'bar', $dollar_values)->options([
-        'scales' => [
-            'xAxes' => [ 
-              'stacked' => 'true'],
-            'yAxes' => [
-              'stacked' => 'false', 
-              'ticks' => [
-                'beginAtZero' => 'true']]],
-          'backgroundColor' => $chart_colors[1]]);
+ 
+      $total_dollars = $total_dollars_won + $total_dollars_probable; 
+      $dollar_values_won = array_values($total_dollars_won); 
+      $dollar_values_probable = array_values($total_dollars_probable);
+      $chart->dataset("Won Project Dollars Per Month", 'bar', $dollar_values_won)->options(['backgroundColor' => $chart_colors[1]]);
+      $chart->dataset("Probable Project Dollars Per Month", 'bar', $dollar_values_probable)->options(['backgroundColor' => $chart_colors[0]]);
+      $options = [];
+      $options['scales']['xAxes'][]['stacked'] = true;
+      $options['scales']['yAxes'][]['stacked'] = true;
+      $chart->options($options); 
+      #dd($chart); 
       //format total dollars with commas
       //foreach($months as $month)
       //{
