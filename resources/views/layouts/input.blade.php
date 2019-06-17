@@ -71,11 +71,11 @@
         <div class="row">
           <div class="form-group col-md-4">
             <label for="mwsize">MW Size:</label>
-            <input type="number" class="form-control" id="test" name="mwsize" value="@if(old('mwsize')){{ old('mwsize') }}@else<?= $__env->yieldContent('mwsize')?>@endif">
+            <input type="number" class="form-control" name="mwsize" value="@if(old('mwsize')){{ old('mwsize') }}@else<?= $__env->yieldContent('mwsize')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="voltage">Voltage:</label>
-            <input type="number" class="form-control" id="test2" name="voltage" value="@if(old('voltage')){{ old('voltage') }}@else<?= $__env->yieldContent('voltage')?>@endif">
+            <input type="number" class="form-control" name="voltage" value="@if(old('voltage')){{ old('voltage') }}@else<?= $__env->yieldContent('voltage')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="dollarvalueinhouse">Dollar Value (in-house expense):</label>
@@ -94,7 +94,7 @@
           </div>
           <div class="form-group col-md-4">
             <label for="dateenergization">Date of Energization:</label>
-            <input type="date" class="form-control" name="dateenergization" value="@if(old('dateenergization'))<?= old('dateenergization') ?>@else<?= $__env->yieldContent('dateenergization')?>@endif">
+            <input type="date" class="form-control" id="dateenergization" name="dateenergization" value="@if(old('dateenergization'))<?= old('dateenergization') ?>@else<?= $__env->yieldContent('dateenergization')?>@endif">
           </div>
         </div>
 
@@ -221,37 +221,69 @@
       </form>
     </div>
     <script type="text/javascript">
-    var test1;
-    var test2;
+    var datentp;
+    var dateenergization;
       $(document).ready(function() {
-        $("#test").on('change', function() {
-          test1 = parseInt(this.value);
-          calculateFields(test1);
+        $("#datentp").on('blur', function() {
+          var values = $('#datentp').val();
+          var dateArr = values.split('-');
+           if (dateArr.length > 1) {
+            datentp = (dateArr[1] + '/' + dateArr[2] + '/' + dateArr[0]);
+            }  
+            datentp = new Date(datentp);
+          console.log(datentp);
           check();
         });
-        $("#test2").on('change', function() {
-          test2 = parseInt(this.value);
-          calculateFields(test2);
+        $("#dateenergization").on('blur', function() {
+          var values = $('#dateenergization').val();
+          var dateArr = values.split('-');
+           if (dateArr.length > 1) {
+            dateenergization = (dateArr[1] + '/' + dateArr[2] + '/' + dateArr[0]);
+            }  
+            dateenergization = new Date(dateenergization);
+          console.log(dateenergization);
           check();
-          //console.log(test1); //use this to check values in console in chrome f12
         });
       });
 
       function check() {
-        if(test1 != null && test2 != null) {
-          var addition = test1 + test2;
-          calculateFields(addition);
+        if(datentp != null && dateenergization != null) {
+          calculateFields(monthDiff(datentp, dateenergization));
         }
       }
 
-      function calculateFields($var){
-        var tr = '<tr>' +
-                        '<td>'+
-                            $var +
-                        '</td>' +
-                    '</tr>';
-                    $('#dynamic_field').append(tr);
+      function monthDiff(dateFrom, dateTo) {
+        return dateTo.getMonth() - dateFrom.getMonth() + 
+        (12 * (dateTo.getFullYear() - dateFrom.getFullYear()))
       }
+
+
+      function calculateFields($var){
+        var row = $var / 4;             //4 text boxes per row
+        var mod = $var % 4;
+        if (mod > 0) {
+          row = row + 1;                //add 1 to get the extra row for extra fields
+        }
+        for(var i = 1; i <= $var; i++) {
+          var tr = '<tr>' +
+                        '<td>' + 'month '+ i + '</td>' +
+                        '<td>'+
+                            '<input type="number" class="form-control" name="month'+i+'" value="" />' +
+                        '</td>' +
+                    '</tr>';          
+        $('#dynamic_field').append(tr);
+        }
+      }
+
+  //   function getMyDateValue(e) {
+  //   var dateArr = e.srcElement.value.split('-');
+  //   if (dateArr.length > 1) {
+  //     return (dateArr[1] + '/' + dateArr[2] + '/' + dateArr[0]);
+  //   }  
+  // }
+  //     document.getElementById("datentp").addEventListener("blur", getMyDateValue);
+  //     document.getElementById("dateenergization").addEventListener("blur", getMyDateValue);
+
     </script>
   </body>
 </html>
