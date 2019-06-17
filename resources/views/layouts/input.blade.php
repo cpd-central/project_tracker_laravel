@@ -75,7 +75,7 @@
           </div>
           <div class="form-group col-md-4">
             <label for="voltage">Voltage:</label>
-            <input type="number" class="form-control" name="voltage" value="@if(old('voltage')){{ old('voltage') }}@else<?= $__env->yieldContent('voltage')?>@endif">
+            <input type="number" class="form-control" id="test2" name="voltage" value="@if(old('voltage')){{ old('voltage') }}@else<?= $__env->yieldContent('voltage')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="dollarvalueinhouse">Dollar Value (in-house expense):</label>
@@ -221,16 +221,33 @@
       </form>
     </div>
     <script type="text/javascript">
+    var test1;
+    var test2;
       $(document).ready(function() {
         $("#test").on('change', function() {
-          calculateFields();
+          test1 = parseInt(this.value);
+          calculateFields(test1);
+          check();
+        });
+        $("#test2").on('change', function() {
+          test2 = parseInt(this.value);
+          calculateFields(test2);
+          check();
+          //console.log(test1); //use this to check values in console in chrome f12
         });
       });
 
-      function calculateFields(){
+      function check() {
+        if(test1 != null && test2 != null) {
+          var addition = test1 + test2;
+          calculateFields(addition);
+        }
+      }
+
+      function calculateFields($var){
         var tr = '<tr>' +
                         '<td>'+
-                            'test' +
+                            $var +
                         '</td>' +
                     '</tr>';
                     $('#dynamic_field').append(tr);
