@@ -47,7 +47,7 @@ class ProjectController extends Controller
     $project->save();
   }
 
-  protected function validate_request($req)
+  protected function validate_request($req, $month = null)
   {
     $this->validate($req, [
       'cegproposalauthor' => 'required',
@@ -55,7 +55,7 @@ class ProjectController extends Controller
       'clientcontactname' => 'required'
     ]);
 
-    if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable'){         //Randy's edit for Project Won, must require dates & dollar value.
+    if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable' || $month != null){         //Randy's edit for Project Won, must require dates & dollar value.
       $this->validate($req, [
         'dollarvalueinhouse' => 'required',
         'datentp' => 'required',
@@ -136,10 +136,21 @@ class ProjectController extends Controller
 
   public function create(Request $request)
   {
-    $this->validate_request($request);
+    $this->validate_request($request, $request['']);
     $project = new Project();
     $this->store($project, $request);
     return redirect('/projectindex')->with('Success!', 'Project has been successfully added.');
+  }
+
+  public function percentPerMonth(Request $request)
+  {
+    //$this->validate_request($request);
+    //$start_end = $this->get_project_start_end($request);
+    //$start_date = $start_end['start'];
+    //$end_date = $start_end['end']; 
+    //$project_months = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');
+    //$num_months = count($project_months);
+    return view('pages.percentpermonth');
   }
 
   public function update(Request $request, $id)

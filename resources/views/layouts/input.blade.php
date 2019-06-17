@@ -13,6 +13,8 @@
   }
 ?>
 <!doctype html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <html>
   <title id="page-title">@yield('page-title')</title>
   <head>
@@ -69,7 +71,7 @@
         <div class="row">
           <div class="form-group col-md-4">
             <label for="mwsize">MW Size:</label>
-            <input type="number" class="form-control" name="mwsize" value="@if(old('mwsize')){{ old('mwsize') }}@else<?= $__env->yieldContent('mwsize')?>@endif">
+            <input type="number" class="form-control" id="test" name="mwsize" value="@if(old('mwsize')){{ old('mwsize') }}@else<?= $__env->yieldContent('mwsize')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="voltage">Voltage:</label>
@@ -88,7 +90,7 @@
           </div>
             <div class="form-group col-md-4">
             <label for="datentp">Date of Notice To Proceed:</label>
-            <input type="date" class="form-control" name="datentp" value="@if(old('datentp'))<?= old('datentp') ?>@else<?= $__env->yieldContent('datentp')?>@endif">
+            <input type="date" class="form-control" id="datentp" name="datentp" value="@if(old('datentp'))<?= old('datentp') ?>@else<?= $__env->yieldContent('datentp')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="dateenergization">Date of Energization:</label>
@@ -96,6 +98,14 @@
           </div>
         </div>
 
+        <div class="row">
+          <div class="col-md-12 col-sm-12">
+            <table class="table table-hover" id="dynamic_field">
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         <div class="row">
           <div class="form-group col-md-2">
@@ -210,6 +220,22 @@
         </div>
       </form>
     </div>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $("#test").on('change', function() {
+          calculateFields();
+        });
+      });
+
+      function calculateFields(){
+        var tr = '<tr>' +
+                        '<td>'+
+                            'test' +
+                        '</td>' +
+                    '</tr>';
+                    $('#dynamic_field').append(tr);
+      }
+    </script>
   </body>
 </html>
 

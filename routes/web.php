@@ -19,6 +19,9 @@ Route::get('/', function () {
 Route::get('/newproject', 'ProjectController@new_project')->name('pages.newproject');
 Route::post('/newproject', 'ProjectController@create');
 
+//percentPerMonth Route
+Route::get('/percentpermonth','ProjectController@percentPerMonth');
+
 Route::get('/projectindex', 'ProjectController@index')->name('pages.projectindex');
 Route::post('/projectindex', 'ProjectController@search');
 
