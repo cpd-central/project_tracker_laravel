@@ -279,7 +279,7 @@
             }
               var tr = tr + '<td>' + months[i] + ' ' + year + '</td>' +
                         '<td>'+
-                            '<input type="number" class="form-control" name="month'+i+'year'+year+'" value="" />' +
+                            '<input type="number" class="form-control" id="month'+i+'year'+year+'" name="monthly_percent[]" value="" />' +
                         '</td>';
                         i++;
           }
@@ -295,7 +295,7 @@
             }
             var tr = tr + '<td>' + months[i] + ' ' + year + '</td>' +
                         '<td>'+
-                            '<input type="number" class="form-control" name="month'+i+'year'+year+'" value="" />' +
+                            '<input type="number" class="form-control" id="month'+i+'year'+year+'" name="monthly_percent[]" value="" />' +
                         '</td>';
                         i++;
           }

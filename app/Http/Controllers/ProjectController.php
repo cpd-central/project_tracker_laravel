@@ -39,6 +39,7 @@ class ProjectController extends Controller
     $project->dateproposed = $this->strToDate($req->get('dateproposed'));
     $project->datentp = $this->strToDate($req->get('datentp'));
     $project->dateenergization = $this->strToDate($req->get('dateenergization'));
+    //$project->projecttype = $req->get('monthly_percent');
     $project->projecttype = $req->get('projecttype_checklist');
     $project->epctype = $req->get('epctype_checklist');
     $project->projectstatus = $req->get('projectstatus');
