@@ -39,12 +39,13 @@ class ProjectController extends Controller
     $project->dateproposed = $this->strToDate($req->get('dateproposed'));
     $project->datentp = $this->strToDate($req->get('datentp'));
     $project->dateenergization = $this->strToDate($req->get('dateenergization'));
-    //$project->projecttype = $req->get('monthly_percent');
+    $project->monthlypercent = $this->floatConversion($req->get('monthly_percent'));
     $project->projecttype = $req->get('projecttype_checklist');
     $project->epctype = $req->get('epctype_checklist');
     $project->projectstatus = $req->get('projectstatus');
     $project->projectcode = $req->get('projectcode');
     $project->projectmanager = $req->get('projectmanager');
+    dd($project);
     $project->save();
   }
 
@@ -112,6 +113,7 @@ class ProjectController extends Controller
       }
     }
   }
+
   protected function intCheck($integer)
   {
     if($integer == null || $integer == ""){
@@ -127,6 +129,16 @@ class ProjectController extends Controller
       $integer = "";
     }
     return $integer;
+  }
+
+  protected function floatConversion($percents){
+    foreach($percents as $percent){
+      if($percent == null || $percent ==""){
+        $percent = 0;
+      }
+      $percent = (float) $percent;
+    }
+    return $percents;
   }
 
   public function new_project()
