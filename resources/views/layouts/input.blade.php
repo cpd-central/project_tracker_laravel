@@ -220,6 +220,7 @@
         </div>
       </form>
     </div>
+
     <script type="text/javascript">
     var datentp;
     var dateenergization;
@@ -254,36 +255,54 @@
 
       function monthDiff(dateFrom, dateTo) {
         return dateTo.getMonth() - dateFrom.getMonth() + 
-        (12 * (dateTo.getFullYear() - dateFrom.getFullYear()))
+        (12 * (dateTo.getFullYear() - dateFrom.getFullYear())) + 1;
       }
 
 
       function calculateFields($var){
         var row = $var / 4;             //4 text boxes per row
         var mod = $var % 4;
-        if (mod > 0) {
-          row = row + 1;                //add 1 to get the extra row for extra fields
-        }
-        for(var i = 1; i <= $var; i++) {
-          var tr = '<tr>' +
-                        '<td>' + 'month '+ i + '</td>' +
+
+        var start_month = datentp.getMonth();
+        var start_year = datentp.getFullYear();
+
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        var i = start_month;
+        var year = start_year;
+        for(var k = 1; k < row; k++) {
+          var tr = '<tr>';
+          for (var j = 0; j < 4; j++) {
+            if(i > 11){
+              i = 0;
+              year = year + 1;
+            }
+              var tr = tr + '<td>' + months[i] + ' ' + year + '</td>' +
                         '<td>'+
-                            '<input type="number" class="form-control" name="month'+i+'" value="" />' +
-                        '</td>' +
-                    '</tr>';          
-        $('#dynamic_field').append(tr);
+                            '<input type="number" class="form-control" name="month'+i+'year'+year+'" value="" />' +
+                        '</td>';
+                        i++;
+          }
+              var tr = tr + '</tr>';          
+          $('#dynamic_field').append(tr);
+        }
+        if(mod > 0) {
+          var tr = '<tr>';
+          for (var w = 0; w < mod; w ++) {
+            if(i > 11){
+              i = 0;
+              year = year + 1;
+            }
+            var tr = tr + '<td>' + months[i] + ' ' + year + '</td>' +
+                        '<td>'+
+                            '<input type="number" class="form-control" name="month'+i+'year'+year+'" value="" />' +
+                        '</td>';
+                        i++;
+          }
+          var tr = tr + '</tr>';          
+          $('#dynamic_field').append(tr);
         }
       }
-
-  //   function getMyDateValue(e) {
-  //   var dateArr = e.srcElement.value.split('-');
-  //   if (dateArr.length > 1) {
-  //     return (dateArr[1] + '/' + dateArr[2] + '/' + dateArr[0]);
-  //   }  
-  // }
-  //     document.getElementById("datentp").addEventListener("blur", getMyDateValue);
-  //     document.getElementById("dateenergization").addEventListener("blur", getMyDateValue);
-
     </script>
   </body>
 </html>
