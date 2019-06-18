@@ -206,8 +206,18 @@ class ProjectController extends Controller
       $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
       $projectStatus = "All";
     }
+
     if (count($projects) > 0)
-    { 
+    {
+      //dd($request); 
+      if (!isset($request['switch_chart_button'])) 
+      {
+        $chart_type = 'projects';
+      }
+      else
+      { 
+        $chart_type = $request['switch_chart_button'];
+      } 
       //1. Get Max end date in order to establish the # of columns needed for the table
       //Also, get smallest start date to establish the beginning of the array 
       $start_dates = array();
@@ -258,8 +268,8 @@ class ProjectController extends Controller
         'rgb(54, 162, 235, 0.4)',
         'rgb(255, 205, 86, 0.4)',
         'rgb(153, 102, 255, 0.4)'];
-      //$max_color_counter = count($chart_colors) - 1;
-      //$color_counter = 0; 
+      $max_color_counter = count($chart_colors) - 1;
+      $color_counter = 0; 
       //now loop through the projects again and update the array to have the months we are displaying, and fill with zeros for the rest
       $total_dollars_won = array();
       $total_dollars_probable = array();
@@ -286,7 +296,6 @@ class ProjectController extends Controller
         }
         //now re-write the project data with the new array 
         $project['per_month_dollars'] = $new_project_per_month_dollars;
-
         if ($project['projectstatus'] == 'Won')
         {
           $total_dollars_won = $this->add_dollars($project, $total_dollars_won, $months);
@@ -298,25 +307,31 @@ class ProjectController extends Controller
         //formats the project data in order to display properly
         $project = $this->displayFormat($project);
 
-        //add the project hours to the chart as a dataset 
-        //$dollar_values = array_values($project['per_month_dollars']);
-        //$chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options(['backgroundColor' => $chart_colors[$color_counter]]);
-        //$color_counter++;
-        //if ($color_counter > $max_color_counter)
-        //{
-        //  $color_counter = 0;
-        //} 
+        if ($chart_type == 'projects')
+        {
+          //add the project hours to the chart as a dataset 
+          $dollar_values = array_values($project['per_month_dollars']);
+          $chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options(['backgroundColor' => $chart_colors[$color_counter]]);
+          $color_counter++;
+          if ($color_counter > $max_color_counter)
+          {
+            $color_counter = 0;
+          }
+        }
       }
- 
+      
       $total_dollars = $total_dollars_won + $total_dollars_probable; 
-      $dollar_values_won = array_values($total_dollars_won); 
-      $dollar_values_probable = array_values($total_dollars_probable);
-      $chart->dataset("Won Project Dollars Per Month", 'bar', $dollar_values_won)->options(['backgroundColor' => $chart_colors[1]]);
-      $chart->dataset("Probable Project Dollars Per Month", 'bar', $dollar_values_probable)->options(['backgroundColor' => $chart_colors[0]]);
+      if ($chart_type == 'won_prob')
+      {
+        $dollar_values_won = array_values($total_dollars_won); 
+        $dollar_values_probable = array_values($total_dollars_probable);
+        $chart->dataset("Won Project Dollars Per Month", 'bar', $dollar_values_won)->options(['backgroundColor' => $chart_colors[1]]);
+        $chart->dataset("Probable Project Dollars Per Month", 'bar', $dollar_values_probable)->options(['backgroundColor' => $chart_colors[0]]);
+      }
       $options = [];
       $options['scales']['xAxes'][]['stacked'] = true;
       $options['scales']['yAxes'][]['stacked'] = true;
-      $chart->options($options); 
+      $chart->options($options);
       #dd($chart); 
       //format total dollars with commas
       //foreach($months as $month)
@@ -324,7 +339,7 @@ class ProjectController extends Controller
       //  $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
       //} 
 
-      return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart', 'projectStatus')); 
+      return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart', 'projectStatus', 'chart_type')); 
     }
     else 
     {
