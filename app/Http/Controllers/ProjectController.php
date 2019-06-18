@@ -45,7 +45,6 @@ class ProjectController extends Controller
     $project->projectstatus = $req->get('projectstatus');
     $project->projectcode = $req->get('projectcode');
     $project->projectmanager = $req->get('projectmanager');
-    dd($project);
     $project->save();
   }
 
@@ -136,8 +135,9 @@ class ProjectController extends Controller
       if($percent == null || $percent ==""){
         $percent = 0;
       }
-      $percent = (float) $percent;
+      //$percent = ((float)$percent);     //This works, but as soon as out of foreach its a string
     }
+    array_walk($percents, function(&$x){$x = (float)($x);});
     return $percents;
   }
 
