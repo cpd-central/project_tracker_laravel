@@ -222,9 +222,12 @@
     </div>
 
     <script type="text/javascript">
-    var datentp;
-    var dateenergization;
+    var datentp = {!! json_encode($__env->yieldContent('datentp')) !!}
+    var dateenergization = {!! json_encode($__env->yieldContent('dateenergization')) !!}
       $(document).ready(function() {
+        console.log(datentp);
+        console.log(dateenergization);
+        check();
         $("#datentp").on('blur', function() {
           var values = $('#datentp').val();
           var dateArr = values.split('-');
@@ -249,6 +252,8 @@
 
       function check() {
         if(datentp != null && dateenergization != null) {
+          datentp = new Date(datentp);
+          dateenergization = new Date(dateenergization);
           calculateFields(monthDiff(datentp, dateenergization));
         }
       }
