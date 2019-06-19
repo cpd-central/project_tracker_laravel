@@ -141,7 +141,7 @@
                             }?>
                           <td>{{$month[$mm].$year}}</td>
                                         <td>
-                                            <input type="number" class="form-control" id="{{'month'.$mm.'year'.$year}}" name="monthly_percent[]" value="{{$project['monthlypercent'][$i]}}" />
+                                            <input type="number" step="0.01" class="form-control" min="0.01" max="1.00" id="{{'month'.$mm.'year'.$year}}" name="monthly_percent[]" value="{{$project['monthlypercent'][$i]}}" />
                                         </td>
                                     <?php $mm++;
                                           $i++;
@@ -157,7 +157,7 @@
                             } ?>
                             <td>{{$month[$mm].$year}}</td>
                                         <td>
-                                            <input type="number" class="form-control" id="{{'month'.$mm.'year'.$year}}" name="monthly_percent[]" value="{{$project['monthlypercent'][$i]}}" />
+                                            <input type="number" step="0.01" min="0.01" max="1.00" class="form-control" id="{{'month'.$mm.'year'.$year}}" name="monthly_percent[]" value="{{$project['monthlypercent'][$i]}}" />
                                         </td>
                                      <?php $mm++;
                                            $i++; 
@@ -373,7 +373,7 @@
             }
               var tr = tr + '<td>' + months[i] + ' ' + year + '</td>' +
                         '<td>'+
-                            '<input type="number" class="form-control" id="month'+i+'year'+year+'" name="monthly_percent[]" value="" />' +
+                            '<input type="number" step="0.01" min="0.01" max="1.00" class="form-control" id="month'+i+'year'+year+'" name="monthly_percent[]" value="" />' +
                         '</td>';
                         i++;
           }
@@ -389,7 +389,7 @@
             }
             var tr = tr + '<td>' + months[i] + ' ' + year + '</td>' +
                         '<td>'+
-                            '<input type="number" class="form-control" id="month'+i+'year'+year+'" name="monthly_percent[]" value="" />' +
+                            '<input type="number" step="0.01" min="0.01" max="1.00" class="form-control" id="month'+i+'year'+year+'" name="monthly_percent[]" value="" />' +
                         '</td>';
                         i++;
           }
@@ -423,10 +423,11 @@
             i++;
           }
         }
-        if(total == 100){
+        var totalPercentDisplay = total*100;
+        if(total == 1.00){
           var tr = '<tr id="total_box">' +
                         '<td>' +
-                          '<div class="p-3 mb-2 bg-success text-white">'+total+"%"+'</div>'
+                          '<div class="p-3 mb-2 bg-success text-white">'+totalPercentDisplay+"%"+'</div>'
                         '</td>' +
                   '</tr>';
             $('#dynamic_field').append(tr);   
@@ -434,7 +435,7 @@
         else{
           var tr = '<tr id="total_box">' +
                         '<td>' +
-                          '<div class="p-3 mb-2 bg-danger text-white">'+total+"%"+'</div>'
+                          '<div class="p-3 mb-2 bg-danger text-white">'+totalPercentDisplay+"%"+'</div>'
                         '</td>' +
                   '</tr>';
             $('#dynamic_field').append(tr);       
