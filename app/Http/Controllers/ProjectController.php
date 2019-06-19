@@ -131,13 +131,15 @@ class ProjectController extends Controller
   }
 
   protected function floatConversion($percents){
-    foreach($percents as $percent){
-      if($percent == null || $percent ==""){
-        $percent = 0;
-      }
-      //$percent = ((float)$percent);     //This works, but as soon as out of foreach its a string
-    }
+    if($percents){
+      foreach($percents as $percent){
+        if($percent == null || $percent ==""){
+          $percent = 0;
+        }
+        //$percent = ((float)$percent);     //This works, but as soon as out of foreach its a string
+      } 
     array_walk($percents, function(&$x){$x = (float)($x);});
+    }
     return $percents;
   }
 
@@ -249,13 +251,23 @@ class ProjectController extends Controller
         //need to use the specific start and end for this project 
         $project_months = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');
         $num_months = count($project_months);
-        $per_month_dollars = $project_dollars / $num_months;
-        $project_per_month_dollars = array();
-        foreach($project_months as $month)
-        {
-          $project_per_month_dollars[$month] = $per_month_dollars;
+        if($num_months <= 0){
+          $project_per_month_dollars = array();
+          foreach($project_months as $month)
+          {
+            $project_per_month_dollars[$month] = 0;
+          }
+          $project['per_month_dollars'] = $project_per_month_dollars;
         }
-        $project['per_month_dollars'] = $project_per_month_dollars;
+        else{
+          $per_month_dollars = $project_dollars / $num_months;
+          $project_per_month_dollars = array();
+          foreach($project_months as $month)
+          {
+            $project_per_month_dollars[$month] = $per_month_dollars;
+          }
+          $project['per_month_dollars'] = $project_per_month_dollars;
+        }
       }
       //get the max end date and min start date
       $earliest_start = min($start_dates);
