@@ -423,8 +423,8 @@
             i++;
           }
         }
-        var totalPercentDisplay = total*100;
-        if(total == 1.00){
+        var totalPercentDisplay = Math.round(total*100);
+        if(total < 1.01 && total > 0.999999){
           var tr = '<tr id="total_box">' +
                         '<td>' +
                           '<div class="p-3 mb-2 bg-success text-white">'+totalPercentDisplay+"%"+'</div>'
