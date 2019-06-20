@@ -45,6 +45,7 @@ class ProjectController extends Controller
     $project->projectstatus = $req->get('projectstatus');
     $project->projectcode = $req->get('projectcode');
     $project->projectmanager = $req->get('projectmanager');
+    $project->projectnotes = $req->get('projectnotes');
     $project->save();
   }
 
@@ -153,6 +154,7 @@ class ProjectController extends Controller
   {
     $this->validate_request($request, $request['']);
     $project = new Project();
+    $project->created_by = auth()->user()->email;
     $this->store($project, $request);
     return redirect('/projectindex')->with('Success!', 'Project has been successfully added.');
   }
@@ -178,12 +180,22 @@ class ProjectController extends Controller
 
   public function index()
   {
-    $projects=Project::all();
-    foreach($projects as $project)
-    {
-      $project = $this->displayFormat($project);
-    } 
-    return view('pages.projectindex', compact('projects'));
+    if(auth()->user()->role != "user"){
+      $projects=Project::all();
+      foreach($projects as $project)
+      {
+        $project = $this->displayFormat($project);
+      } 
+      return view('pages.projectindex', compact('projects'));
+    }
+    else{
+      $projects=Project::where('cegproposalauthor', auth()->user()->name)->orWhere('projectmanager', auth()->user()->name)->orWhere('created_by', auth()->user()->email)->get();
+      foreach($projects as $project)
+      {
+        $project = $this->displayFormat($project);
+      } 
+      return view('pages.projectindex', compact('projects'));
+    }
   }
 
   protected function get_project_start_end($proj)
@@ -219,18 +231,53 @@ class ProjectController extends Controller
 
   public function indexwon(Request $request)
   {
-    //dd($request);
-    if($request['projectstatus'] == 'Won'){
-      $projects=Project::all()->where('projectstatus','Won');
-      $projectStatus = "Won";
-    }
-    else if($request['projectstatus'] == 'Probable'){
-      $projects=Project::all()->where('projectstatus','Probable');
-      $projectStatus = "Probable";
+    if(auth()->user()->role != 'user'){
+      if($request['projectstatus'] == 'Won'){
+        $projects=Project::all()->where('projectstatus','Won');
+        $projectStatus = "Won";
+      }
+      else if($request['projectstatus'] == 'Probable'){
+        $projects=Project::all()->where('projectstatus','Probable');
+        $projectStatus = "Probable";
+      }
+      else{
+        $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
+        $projectStatus = "All";
+      }
     }
     else{
-      $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
-      $projectStatus = "All";
+      if($request['projectstatus'] == 'Won'){
+        $projects=Project::where('projectstatus','Won')->where(function($query){
+          $query->where('cegproposalauthor', auth()->user()->name)
+                ->orWhere('projectmanager', auth()->user()->name)
+                ->orWhere('created_by', auth()->user()->email);
+        })->get();
+        $projectStatus = "Won";
+      }
+      else if($request['projectstatus'] == 'Probable'){
+        $projects=Project::where('projectstatus','Probable')->where(function($query){
+          $query->where('cegproposalauthor', auth()->user()->name)
+                ->orWhere('projectmanager', auth()->user()->name)
+                ->orWhere('created_by', auth()->user()->email);
+        })->get();
+        $projectStatus = "Probable";
+      }
+      else{
+        $projects=Project::where(function($query) {
+          $query->where('projectstatus','Won')->where(function($query2){
+          $query2->where('cegproposalauthor', auth()->user()->name)
+                ->orWhere('projectmanager', auth()->user()->name)
+                ->orWhere('created_by', auth()->user()->email);
+        }); })
+        ->orWhere(function($query) {
+          $query->where('projectstatus','Probable')->where(function($query2){
+          $query2->where('cegproposalauthor', auth()->user()->name)
+                ->orWhere('projectmanager', auth()->user()->name)
+                ->orWhere('created_by', auth()->user()->email);
+        }); })->get();
+        //$projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
+        $projectStatus = "All";
+      }
     }
     if (count($projects) > 0)
     { 

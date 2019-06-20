@@ -280,6 +280,10 @@
             <input type="text" class="form-control" name="projectmanager" value="@if(old('projectmanager'))<?= old('projectmanager') ?>@else<?= $__env->yieldContent('projectmanager')?>@endif">
           </div>
         </div>
+        <div class="form-group">
+          <label for="projectnotes">Project Notes:</label>
+          <textarea class="form-control" name="projectnotes" id="projectnotes" rows="3">@if(old('projectnotes'))<?= old('projectnotes') ?>@else<?= $__env->yieldContent('projectnotes')?>@endif</textarea>
+        </div>
         <div class="row">
           <div class="form-group col-md-4">
             <button type="submit" class="btn btn-success">Submit</button>
@@ -444,27 +448,3 @@
     </script>
   </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

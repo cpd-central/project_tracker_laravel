@@ -14,6 +14,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 
 class User extends Eloquent implements AuthenticatableContract, MustVerifyEmailContract
 {
+<<<<<<< HEAD
   use Authenticatable;	
   use Notifiable;
   use MustVerifyEmail;
@@ -26,7 +27,7 @@ class User extends Eloquent implements AuthenticatableContract, MustVerifyEmailC
    * @var array
    */
   protected $fillable = [
-    'name', 'email', 'password', 'role'
+    'name', 'email', 'password',
   ];
 
   /**
@@ -46,4 +47,37 @@ class User extends Eloquent implements AuthenticatableContract, MustVerifyEmailC
   protected $casts = [
     'email_verified_at' => 'datetime',
   ];
+=======
+	use AuthenticatableTrait;	
+	use Notifiable;
+
+	protected $connection = 'mongodb';
+
+	/**
+	 * The attributes that are mass assignable.
+	 *
+	 * @var array
+	 */
+	protected $fillable = [
+			'name', 'email', 'password', 'role'
+	];
+
+	/**
+	 * The attributes that should be hidden for arrays.
+	 *
+	 * @var array
+	 */
+	protected $hidden = [
+			'password', 'remember_token',
+	];
+
+	/**
+	 * The attributes that should be cast to native types.
+	 *
+	 * @var array
+	 */
+	protected $casts = [
+			'email_verified_at' => 'datetime',
+	];
+>>>>>>> userRoles
 }

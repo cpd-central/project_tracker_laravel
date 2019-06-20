@@ -126,6 +126,7 @@
 
 @section('projectcode', $project['projectcode'])
 @section('projectmanager', $project['projectmanager'])
+@section('projectnotes', $project['projectnotes'])
 
 
 
