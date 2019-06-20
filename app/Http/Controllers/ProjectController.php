@@ -44,6 +44,7 @@ class ProjectController extends Controller
     $project->projectstatus = $req->get('projectstatus');
     $project->projectcode = $req->get('projectcode');
     $project->projectmanager = $req->get('projectmanager');
+    $project->projectnotes = $req->get('projectnotes');
     $project->created_by = auth()->user()->email;
     $project->save();
   }

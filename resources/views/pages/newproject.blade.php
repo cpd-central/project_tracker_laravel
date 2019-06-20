@@ -26,6 +26,7 @@
 
 @section('projectcode', '')
 @section('projectmanager', '')
+@section('projectnotes', '')
 
 
 
