@@ -45,7 +45,6 @@ class ProjectController extends Controller
     $project->projectcode = $req->get('projectcode');
     $project->projectmanager = $req->get('projectmanager');
     $project->projectnotes = $req->get('projectnotes');
-    $project->created_by = auth()->user()->email;
     $project->save();
   }
 
@@ -140,6 +139,7 @@ class ProjectController extends Controller
   {
     $this->validate_request($request);
     $project = new Project();
+    $project->created_by = auth()->user()->email;
     $this->store($project, $request);
     return redirect('/projectindex')->with('Success!', 'Project has been successfully added.');
   }
