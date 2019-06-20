@@ -39,6 +39,7 @@ class ProjectController extends Controller
     $project->dateproposed = $this->strToDate($req->get('dateproposed'));
     $project->datentp = $this->strToDate($req->get('datentp'));
     $project->dateenergization = $this->strToDate($req->get('dateenergization'));
+    $project->monthlypercent = $this->floatConversion($req->get('monthly_percent'));
     $project->projecttype = $req->get('projecttype_checklist');
     $project->epctype = $req->get('epctype_checklist');
     $project->projectstatus = $req->get('projectstatus');
@@ -47,7 +48,7 @@ class ProjectController extends Controller
     $project->save();
   }
 
-  protected function validate_request($req)
+  protected function validate_request($req, $month = null)
   {
     $this->validate($req, [
       'cegproposalauthor' => 'required',
@@ -55,7 +56,7 @@ class ProjectController extends Controller
       'clientcontactname' => 'required'
     ]);
 
-    if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable'){         //Randy's edit for Project Won, must require dates & dollar value.
+    if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable' || $month != null){         //Randy's edit for Project Won, must require dates & dollar value.
       $this->validate($req, [
         'dollarvalueinhouse' => 'required',
         'datentp' => 'required',
@@ -111,6 +112,7 @@ class ProjectController extends Controller
       }
     }
   }
+
   protected function intCheck($integer)
   {
     if($integer == null || $integer == ""){
@@ -128,6 +130,19 @@ class ProjectController extends Controller
     return $integer;
   }
 
+  protected function floatConversion($percents){
+    if($percents){
+      foreach($percents as $percent){
+        if($percent == null || $percent ==""){
+          $percent = 0;
+        }
+        //$percent = ((float)$percent);     //This works, but as soon as out of foreach its a string
+      } 
+    array_walk($percents, function(&$x){$x = (float)($x);});
+    }
+    return $percents;
+  }
+
   public function new_project()
   {
     return view('pages.newproject');
@@ -136,10 +151,21 @@ class ProjectController extends Controller
 
   public function create(Request $request)
   {
-    $this->validate_request($request);
+    $this->validate_request($request, $request['']);
     $project = new Project();
     $this->store($project, $request);
     return redirect('/projectindex')->with('Success!', 'Project has been successfully added.');
+  }
+
+  public function percentPerMonth(Request $request)
+  {
+    //$this->validate_request($request);
+    //$start_end = $this->get_project_start_end($request);
+    //$start_date = $start_end['start'];
+    //$end_date = $start_end['end']; 
+    //$project_months = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');
+    //$num_months = count($project_months);
+    return view('pages.percentpermonth');
   }
 
   public function update(Request $request, $id)
@@ -225,13 +251,23 @@ class ProjectController extends Controller
         //need to use the specific start and end for this project 
         $project_months = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');
         $num_months = count($project_months);
-        $per_month_dollars = $project_dollars / $num_months;
-        $project_per_month_dollars = array();
-        foreach($project_months as $month)
-        {
-          $project_per_month_dollars[$month] = $per_month_dollars;
+        if($num_months <= 0){
+          $project_per_month_dollars = array();
+          foreach($project_months as $month)
+          {
+            $project_per_month_dollars[$month] = 0;
+          }
+          $project['per_month_dollars'] = $project_per_month_dollars;
         }
-        $project['per_month_dollars'] = $project_per_month_dollars;
+        else{
+          $per_month_dollars = $project_dollars / $num_months;
+          $project_per_month_dollars = array();
+          foreach($project_months as $month)
+          {
+            $project_per_month_dollars[$month] = $per_month_dollars;
+          }
+          $project['per_month_dollars'] = $project_per_month_dollars;
+        }
       }
       //get the max end date and min start date
       $earliest_start = min($start_dates);

@@ -1,4 +1,5 @@
 <?php
+
   function check_project_box2($type, $typeArray) {
     if($typeArray == null || $typeArray == "") {
       return false;
@@ -11,8 +12,19 @@
       }
     }
   }
+
+  function get_array(){
+    return $project['monthlypercent'];
+  }
+
+  function monthDiff($dateFrom, $dateTo) {
+        return $dateTo.getMonth() - $dateFrom.getMonth() + 
+        (12 * ($dateTo.getFullYear() - $dateFrom.getFullYear())) + 1;
+      }
 ?>
 <!doctype html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <html>
   <title id="page-title">@yield('page-title')</title>
   <head>
@@ -88,14 +100,79 @@
           </div>
             <div class="form-group col-md-4">
             <label for="datentp">Date of Notice To Proceed:</label>
-            <input type="date" class="form-control" name="datentp" value="@if(old('datentp'))<?= old('datentp') ?>@else<?= $__env->yieldContent('datentp')?>@endif">
+            <input type="date" class="form-control" id="datentp" name="datentp" value="@if(old('datentp'))<?= old('datentp') ?>@else<?= $__env->yieldContent('datentp')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="dateenergization">Date of Energization:</label>
-            <input type="date" class="form-control" name="dateenergization" value="@if(old('dateenergization'))<?= old('dateenergization') ?>@else<?= $__env->yieldContent('dateenergization')?>@endif">
+            <input type="date" class="form-control" id="dateenergization" name="dateenergization" value="@if(old('dateenergization'))<?= old('dateenergization') ?>@else<?= $__env->yieldContent('dateenergization')?>@endif">
           </div>
         </div>
 
+        <div class="row">
+          <div class="col-md-12 col-sm-12">
+            <table class="table table-hover" id="dynamic_field">
+              <tbody>
+                    @if(isset($project['monthlypercent']))
+                    <?php $month = array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+                      
+
+                      $mm = ((int) date('n', strtotime($project['datentp'])) - 1);
+                      $year = (int) date('Y', strtotime($project['datentp']));
+
+                      $row = (int) (count($project['monthlypercent']) / 4);             //4 text boxes per row
+                      $mod = count($project['monthlypercent']) % 4;
+                      $i = 0;
+
+                      //caption header  ?>
+                       <tr>
+                        <td colspan="100%">
+                          <h5 class="text-center">Input percents as decimals below. For reference: 0.05 = 5%, 0.7 = 70%, 1 = 100%</h5>
+                        </td>
+                        </tr>
+
+                      <?php
+                      while($i < count($project['monthlypercent'])) {
+                        for($k = 1; $k <= $row; $k++) { ?>
+                          <tr>
+                      <?php for($j = 0; $j < 4; $j++) {
+                            if($mm > 11){
+                              $mm = 0;
+                              $year = $year + 1;
+                            }?>
+                          <td>{{$month[$mm].$year}}</td>
+                                        <td>
+                                            <input type="number" step="0.01" class="form-control" min="0.01" max="1.00" id="{{'month'.$mm.'year'.$year}}" name="monthly_percent[]" value="{{$project['monthlypercent'][$i]}}" />
+                                        </td>
+                                    <?php $mm++;
+                                          $i++;
+                          } ?>
+                          </tr>         
+                      <?php }
+                        if($mod > 0) { ?>
+                          <tr>
+                      <?php for($w = 0; $w < $mod; $w++) {
+                            if($mm > 11){
+                              $mm = 0;
+                              $year = $year + 1;
+                            } ?>
+                            <td>{{$month[$mm].$year}}</td>
+                                        <td>
+                                            <input type="number" step="0.01" min="0.01" max="1.00" class="form-control" id="{{'month'.$mm.'year'.$year}}" name="monthly_percent[]" value="{{$project['monthlypercent'][$i]}}" />
+                                        </td>
+                                     <?php $mm++;
+                                           $i++; 
+                                      }?>
+                          </tr>   
+                        <?php  
+                      }    
+                      }
+                      ?>
+                    @else
+                    @endif
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         <div class="row">
           <div class="form-group col-md-2">
@@ -210,6 +287,161 @@
         </div>
       </form>
     </div>
+
+
+
+    <script type="text/javascript">
+    var datentp;
+    var dateenergization;
+    var numFields;
+    var start_month;
+    var start_year;
+      $(document).ready(function() {
+        $("#datentp").on('blur', function() {
+          removeFields();
+          datentp = format('#datentp');
+          dateenergization = format('#dateenergization');
+          check();
+        });
+
+        $("#dateenergization").on('blur', function() {
+          removeFields();
+          datentp = format('#datentp');
+          dateenergization = format('#dateenergization');
+          check();
+        });
+
+        $("#dynamic_field").on('change', function() {
+          if(datentp != 0 && dateenergization != 0) {
+            addTotalBox();
+          }
+        });
+      });
+
+      function check() {
+        if(datentp != 0 && dateenergization != 0) {
+          datentp = new Date(datentp);                   
+          dateenergization = new Date(dateenergization); 
+          calculateFields(monthDiff(datentp, dateenergization));
+        }
+      }
+
+      function format(id) {
+        var values = $(id).val();
+        var dateArr = values.split('-');
+        if (dateArr.length > 1) {
+        return (dateArr[1] + '/' + dateArr[2] + '/' + dateArr[0]);
+        }
+        return 0;
+      }
+
+      function removeFields() {
+        $("#dynamic_field tr").remove(); 
+      }
+
+      function monthDiff(dateFrom, dateTo) {
+        return dateTo.getMonth() - dateFrom.getMonth() + 
+        (12 * (dateTo.getFullYear() - dateFrom.getFullYear())) + 1;
+      }
+
+      function calculateFields($var){
+        numFields = $var;
+        var row = $var / 4;             //4 text boxes per row
+        var mod = $var % 4;
+
+        start_month = datentp.getMonth();
+        start_year = datentp.getFullYear();
+
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        var i = start_month;
+        var year = start_year;
+
+        //Caption
+          var tr =  '<tr>' +
+                        '<td colspan="100%">' +
+                          '<h5 class="text-center">'+"Input percents as decimals below. For reference: 0.05 = 5%, 0.7 = 70%, 1 = 100%"+'</h5>'
+                        '</td>' +
+                  '</tr>';
+                  $('#dynamic_field').append(tr);
+        for(var k = 1; k <= row; k++) {
+          var tr = '<tr>';
+          for (var j = 0; j < 4; j++) {
+            if(i > 11){
+              i = 0;
+              year = year + 1;
+            }
+              var tr = tr + '<td>' + months[i] + ' ' + year + '</td>' +
+                        '<td>'+
+                            '<input type="number" step="0.01" min="0.01" max="1.00" class="form-control" id="month'+i+'year'+year+'" name="monthly_percent[]" value="" />' +
+                        '</td>';
+                        i++;
+          }
+              var tr = tr + '</tr>';          
+          $('#dynamic_field').append(tr);
+        }
+        if(mod > 0) {
+          var tr = '<tr>';
+          for (var w = 0; w < mod; w ++) {
+            if(i > 11){
+              i = 0;
+              year = year + 1;
+            }
+            var tr = tr + '<td>' + months[i] + ' ' + year + '</td>' +
+                        '<td>'+
+                            '<input type="number" step="0.01" min="0.01" max="1.00" class="form-control" id="month'+i+'year'+year+'" name="monthly_percent[]" value="" />' +
+                        '</td>';
+                        i++;
+          }
+          var tr = tr + '</tr>';          
+          $('#dynamic_field').append(tr);
+        }
+        addTotalBox();
+      }
+
+      function addTotalBox() {
+        $("#total_box").remove();
+        if($('#datentp').val() && $('#dateenergization').val()){
+          datentp = new Date($('#datentp').val());
+          dateenergization = new Date($('#dateenergization').val());
+          numFields = monthDiff(datentp, dateenergization);
+        }
+        var i =  parseInt(datentp.getMonth());
+        var year = parseInt(datentp.getFullYear());
+        var total = 0;
+        for(j=0; j < numFields; j++){
+          if(i > 11){
+              i = 0;
+              year = year + 1;
+            }
+          var string = '#month'+i+'year'+year;
+          if(!isNaN(parseFloat($(string).val()))) {
+            total += parseFloat($(string).val());
+            i++;
+          }
+          else{
+            i++;
+          }
+        }
+        var totalPercentDisplay = Math.round(total*100);
+        if(total < 1.01 && total > 0.999999){
+          var tr = '<tr id="total_box">' +
+                        '<td>' +
+                          '<div class="p-3 mb-2 bg-success text-white">'+totalPercentDisplay+"%"+'</div>'
+                        '</td>' +
+                  '</tr>';
+            $('#dynamic_field').append(tr);   
+        }
+        else{
+          var tr = '<tr id="total_box">' +
+                        '<td>' +
+                          '<div class="p-3 mb-2 bg-danger text-white">'+totalPercentDisplay+"%"+'</div>'
+                        '</td>' +
+                  '</tr>';
+            $('#dynamic_field').append(tr);       
+        }
+      }
+    </script>
   </body>
 </html>
 
