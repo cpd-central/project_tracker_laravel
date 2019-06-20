@@ -178,7 +178,8 @@ return [
 
 				//mongodb service provider
 				Jenssegers\Mongodb\MongodbServiceProvider::class,
-                              //charts
+                                Jenssegers\Mongodb\Auth\PasswordResetServiceProvider::class,
+                                //charts
                                 ConsoleTVs\Charts\ChartsServiceProvider::class, 
                               
                               ],
