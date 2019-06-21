@@ -307,13 +307,37 @@ class ProjectController extends Controller
           $project['per_month_dollars'] = $project_per_month_dollars;
         }
         else{
-          $per_month_dollars = $project_dollars / $num_months;
-          $project_per_month_dollars = array();
-          foreach($project_months as $month)
+          if (isset($project['monthlypercent']))
           {
-            $project_per_month_dollars[$month] = $per_month_dollars;
+            //check if all values in the monthly percent array are 0 or if there are non zero elements
+            $temp = array_filter($project['monthlypercent']);
+            if (count($temp) > 0)
+            {
+              $project_per_month_dollars = array();
+              $i = 0;
+              foreach($project_months as $month)
+              {
+                //the only real difference between this and the else, is that we do the per month calc for
+                //each iteration of the foreach loop, rather than all at once.
+                //This could be cleaned up if we had 'monthlypercent' be an associative array with the 
+                //month as the key
+                $per_month_dollars = $project_dollars * $project['monthlypercent'][$i];
+                $project_per_month_dollars[$month] = $per_month_dollars;
+                $i++;
+              }
+            }
+            //if not, do a flat distribution
+            else
+            {
+              $per_month_dollars = $project_dollars / $num_months;
+              $project_per_month_dollars = array();
+              foreach($project_months as $month)
+              {
+                $project_per_month_dollars[$month] = $per_month_dollars;
+              }
+            }
+            $project['per_month_dollars'] = $project_per_month_dollars;
           }
-          $project['per_month_dollars'] = $project_per_month_dollars;
         }
       }
       //get the max end date and min start date
@@ -392,14 +416,14 @@ class ProjectController extends Controller
       }
  
       $total_dollars = $total_dollars_won + $total_dollars_probable; 
-      $dollar_values_won = array_values($total_dollars_won); 
+      $dollar_values_won = array_values($total_dollars_won);
       $dollar_values_probable = array_values($total_dollars_probable);
       $chart->dataset("Won Project Dollars Per Month", 'bar', $dollar_values_won)->options(['backgroundColor' => $chart_colors[1]]);
       $chart->dataset("Probable Project Dollars Per Month", 'bar', $dollar_values_probable)->options(['backgroundColor' => $chart_colors[0]]);
       $options = [];
       $options['scales']['xAxes'][]['stacked'] = true;
       $options['scales']['yAxes'][]['stacked'] = true;
-      $chart->options($options); 
+      $chart->options($options);
       #dd($chart); 
       //format total dollars with commas
       //foreach($months as $month)
