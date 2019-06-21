@@ -27,6 +27,11 @@ class ProjectController extends Controller
       $this->middleware('auth');
   }
   
+  /**
+   * Stores attributes from the $req to $project and is saved to the database.
+   * @param $project - variable type Project to be saved to the database.
+   * @param $req - Request variable with attributes to be assigned to $project.
+   */
   protected function store($project, $req)
   {
     $project->cegproposalauthor= $req->get('cegproposalauthor');
@@ -49,6 +54,12 @@ class ProjectController extends Controller
     $project->save();
   }
 
+  /**
+   * Requires certain fields to be filled in and validates. If statement for Won and Probable 
+   * which results in more requirements. If required fields not provided, route is redirected back to page.
+   * @param $req - Request variable with attributes to be assigned to $project.
+   * @param $month - an option parameter. 
+   */
   protected function validate_request($req, $month = null)
   {
     $this->validate($req, [
@@ -57,7 +68,7 @@ class ProjectController extends Controller
       'clientcontactname' => 'required'
     ]);
 
-    if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable' || $month != null){         //Randy's edit for Project Won, must require dates & dollar value.
+    if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable' || $month != null){ 
       $this->validate($req, [
         'dollarvalueinhouse' => 'required',
         'datentp' => 'required',
@@ -66,6 +77,11 @@ class ProjectController extends Controller
     }
   }
 
+  /**
+   * Calls other functions to reformat the data for display..
+   * @param $project - project whose attributes are being reformatted for display.
+   * @return $project
+   */
   protected function displayFormat($project)
   {
     $project['mwsize'] = $this->intDisplay($project['mwsize']);
@@ -77,6 +93,12 @@ class ProjectController extends Controller
     return $project;
   }
 
+  /**
+   * Converts the date inputted string to a variable type Date. Stores it in the database.
+   * If the received date is null, the date is set to the string "None".
+   * @param $date_string - string to be converted to a variable type Date.
+   * @return $date
+   */
   protected function strToDate($date_string)
   {
     if (isset($date_string))
@@ -91,6 +113,12 @@ class ProjectController extends Controller
     return $date;
   }
 
+  /**
+   * Converts the Date variable $mongo_date to a string in order to be displayed properly.
+   * Reformats the String to 'Year-month-day'.
+   * @param $mongo_date - date received from mongoDB. 
+   * @return $date_string
+   */
   public static function dateToStr($mongo_date)
   {
     if (is_string($mongo_date))
@@ -106,6 +134,12 @@ class ProjectController extends Controller
     return $date_string;
   }
 
+  /**
+   * Checks if array $typeArray is not null and then checks to see if $type is in $typeArray.
+   * @param $type - variable to be checked if its in $typeArray. 
+   * @param $typeArray - array that contains keywords of boxes that are checked.
+   * @return "checked"
+   */
   protected function check_project_box($type, $typeArray) {
     if(isset($typeArray)) {
       if(in_array($type, $typeArray)) {
@@ -114,6 +148,12 @@ class ProjectController extends Controller
     }
   }
 
+  /**
+   * Checks if inputted number field was left blank. Assigns the number -1 and
+   * parses it from String to Integer.
+   * @param $integer - inputted number to be checked and converted. 
+   * @return $integer
+   */
   protected function intCheck($integer)
   {
     if($integer == null || $integer == ""){
@@ -122,6 +162,12 @@ class ProjectController extends Controller
       return ((int)$integer);
   }
 
+  /**
+  * If the number from the database was -1, it was originally null. Changes the value to null
+  * and return its.
+  * @param $integer - integer received from mongoDB. 
+  * @return $integer
+  */
   protected function intDisplay($integer)
   {
     if($integer == -1)
@@ -131,25 +177,40 @@ class ProjectController extends Controller
     return $integer;
   }
 
+  /**
+   * Converts inputted monthly percents into a float. If percent input is
+   * null, assigns it 0. array_walk converts all array values to floats.
+   * @param $percents - array of inputted monthly percent fields. 
+   * @return $percents
+   */
   protected function floatConversion($percents){
     if($percents){
       foreach($percents as $percent){
         if($percent == null || $percent ==""){
           $percent = 0;
         }
-        //$percent = ((float)$percent);     //This works, but as soon as out of foreach its a string
       } 
     array_walk($percents, function(&$x){$x = (float)($x);});
     }
     return $percents;
   }
 
+  /**
+   * Returns a view of the newproject blade page.
+   * @return view pages.newproject
+   */
   public function new_project()
   {
     return view('pages.newproject');
   }
 
-
+  /**
+   * Creates a new project to be stored in the database. Validates the 
+   * $request and assigns the user that created it to the project along with the $request
+   * attributes. Redirects the route to the project index page.
+   * @param $req - Request variable with attributes to be assigned to $project. 
+   * @return redirect /projectindex
+   */
   public function create(Request $request)
   {
     $this->validate_request($request, $request['']);
