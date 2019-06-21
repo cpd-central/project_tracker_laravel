@@ -10,13 +10,15 @@
 </div>
 <form action="{{ route('pages.wonprojectsummary') }}" method="POST">
   @csrf
-  @if ($chart_type == 'projects')
-    <input class="btn btn-primary" name="switch_chart_button" type="submit" value="won_prob">
-  @elseif ($chart_type == 'won_prob')
-    <input class="btn btn-primary" name="switch_chart_button" type="submit" value="projects">
-  @else
-    <input class="btn btn-primary" name="switch_chart_button" type="submit" value="projects">
-  @endif
+  @isset($chart_type) 
+    @if ($chart_type == 'projects')
+      <input class="btn btn-primary" name="switch_chart_button" type="submit" value="won_prob">
+    @elseif ($chart_type == 'won_prob')
+      <input class="btn btn-primary" name="switch_chart_button" type="submit" value="projects">
+    @else
+      <input class="btn btn-primary" name="switch_chart_button" type="submit" value="projects">
+    @endif
+  @endisset
 </form>
 </br>
 </br>
