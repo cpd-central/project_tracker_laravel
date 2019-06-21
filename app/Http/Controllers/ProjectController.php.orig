@@ -316,8 +316,7 @@ class ProjectController extends Controller
           }
           $project['per_month_dollars'] = $project_per_month_dollars;
         }
-        else
-        {
+        else{
           if (isset($project['monthlypercent']))
           {
             //check if all values in the monthly percent array are 0 or if there are non zero elements
@@ -438,6 +437,12 @@ class ProjectController extends Controller
       }
       
       $total_dollars = $total_dollars_won + $total_dollars_probable; 
+<<<<<<< HEAD
+      $dollar_values_won = array_values($total_dollars_won);
+      $dollar_values_probable = array_values($total_dollars_probable);
+      $chart->dataset("Won Project Dollars Per Month", 'bar', $dollar_values_won)->options(['backgroundColor' => $chart_colors[1]]);
+      $chart->dataset("Probable Project Dollars Per Month", 'bar', $dollar_values_probable)->options(['backgroundColor' => $chart_colors[0]]);
+=======
       if ($chart_type == 'won_prob')
       {
         $dollar_values_won = array_values($total_dollars_won); 
@@ -445,7 +450,7 @@ class ProjectController extends Controller
         $chart->dataset("Won Project Dollars Per Month", 'bar', $dollar_values_won)->options(['backgroundColor' => $chart_colors[1]]);
         $chart->dataset("Probable Project Dollars Per Month", 'bar', $dollar_values_probable)->options(['backgroundColor' => $chart_colors[0]]);
       }
-
+>>>>>>> bar_graph_switch
       $options = [];
       $options['scales']['xAxes'][]['stacked'] = true;
       $options['scales']['yAxes'][]['stacked'] = true;
