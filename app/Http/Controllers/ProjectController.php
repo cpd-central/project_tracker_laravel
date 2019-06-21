@@ -336,6 +336,15 @@ class ProjectController extends Controller
                 $project_per_month_dollars[$month] = $per_month_dollars;
               }
             }
+          }
+          else
+          {
+            $per_month_dollars = $project_dollars / $num_months;
+              $project_per_month_dollars = array();
+              foreach($project_months as $month)
+              {
+                $project_per_month_dollars[$month] = $per_month_dollars;
+              }
             $project['per_month_dollars'] = $project_per_month_dollars;
           }
         }
