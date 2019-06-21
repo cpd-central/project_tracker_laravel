@@ -345,8 +345,8 @@ class ProjectController extends Controller
               {
                 $project_per_month_dollars[$month] = $per_month_dollars;
               }
-            $project['per_month_dollars'] = $project_per_month_dollars;
           }
+          $project['per_month_dollars'] = $project_per_month_dollars;
         }
       }
       //get the max end date and min start date
