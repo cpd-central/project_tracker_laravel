@@ -24,6 +24,7 @@
 </br>
 @stop 
 
+@section('page-title', 'Won Project Summary')
 @section('table-title', 'Monthly Breakdown By Project')
 @section('table-header')
 <table class="table table-striped">
