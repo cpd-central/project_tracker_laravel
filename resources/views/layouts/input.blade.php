@@ -1,5 +1,11 @@
 <?php
 
+    /**
+   * Checks if array $typeArray is not null and then checks to see if $type is in $typeArray.
+   * @param $type - variable to be checked if its in $typeArray. 
+   * @param $typeArray - array that contains keywords of boxes that are checked.
+   * @return "checked"
+   */
   function check_project_box2($type, $typeArray) {
     if($typeArray == null || $typeArray == "") {
       return false;
@@ -13,10 +19,20 @@
     }
   }
 
+  /**
+   * Returns the array of $project['monthlypercent']
+   * @return $project['monthlypercent']
+   */
   function get_array(){
     return $project['monthlypercent'];
   }
 
+  /**
+   * Returns the integer representation of the month difference between two dates.
+   * @param $dateFrom
+   * @param $dateTo
+   * @return an Integer
+   */
   function monthDiff($dateFrom, $dateTo) {
         return $dateTo.getMonth() - $dateFrom.getMonth() + 
         (12 * ($dateTo.getFullYear() - $dateFrom.getFullYear())) + 1;

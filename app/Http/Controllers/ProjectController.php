@@ -60,7 +60,7 @@ class ProjectController extends Controller
    * @param $req - Request variable with attributes to be assigned to $project.
    * @param $month - an option parameter. 
    */
-  protected function validate_request($req, $month = null)
+  protected function validate_request($req)
   {
     $this->validate($req, [
       'cegproposalauthor' => 'required',
@@ -68,7 +68,7 @@ class ProjectController extends Controller
       'clientcontactname' => 'required'
     ]);
 
-    if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable' || $month != null){ 
+    if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable'){ 
       $this->validate($req, [
         'dollarvalueinhouse' => 'required',
         'datentp' => 'required',
@@ -132,20 +132,6 @@ class ProjectController extends Controller
       $date_string = $php_datetime->format('Y-m-d');
     }
     return $date_string;
-  }
-
-  /**
-   * Checks if array $typeArray is not null and then checks to see if $type is in $typeArray.
-   * @param $type - variable to be checked if its in $typeArray. 
-   * @param $typeArray - array that contains keywords of boxes that are checked.
-   * @return "checked"
-   */
-  protected function check_project_box($type, $typeArray) {
-    if(isset($typeArray)) {
-      if(in_array($type, $typeArray)) {
-        return "checked";
-      }
-    }
   }
 
   /**
@@ -213,24 +199,19 @@ class ProjectController extends Controller
    */
   public function create(Request $request)
   {
-    $this->validate_request($request, $request['']);
+    $this->validate_request($request);
     $project = new Project();
     $project->created_by = auth()->user()->email;
     $this->store($project, $request);
     return redirect('/projectindex')->with('Success!', 'Project has been successfully added.');
   }
 
-  public function percentPerMonth(Request $request)
-  {
-    //$this->validate_request($request);
-    //$start_end = $this->get_project_start_end($request);
-    //$start_date = $start_end['start'];
-    //$end_date = $start_end['end']; 
-    //$project_months = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');
-    //$num_months = count($project_months);
-    return view('pages.percentpermonth');
-  }
-
+  /**
+   * Updates a project in the database that was edited with the new changes.
+   * @param $request - Request variable with attributes to be assigned to $project.
+   * @param $id - the unique id of the project to be updated.
+   * @return redirect /projectindex
+   */
   public function update(Request $request, $id)
   {
     $this->validate_request($request);   
@@ -239,6 +220,13 @@ class ProjectController extends Controller
     return redirect('/projectindex')->with('Success!', 'Project has been successfully updated');
   }
 
+  /**
+   * If the current user has a role that is not a user, all projects are retrieved to be viewed. 
+   * Otherwise, the projects retrieved are the ones only the user role type user is associated with, such
+   * as their name matching the cegproposalauthor, their name matching the projectmanager field, or
+   * their email matching the created_by field stored in the project.
+   * @return view projectindex
+   */
   public function index()
   {
     if(auth()->user()->role != "user"){
@@ -259,6 +247,12 @@ class ProjectController extends Controller
     }
   }
 
+  /**
+   * Converts the mongo UTC datetime that comes out of the database to a php datetime and returns 
+   * the start and end datetimes.
+   * @param $proj - used to get the datentp and dateenergization.
+   * @return array containing $start & $end
+   */
   protected function get_project_start_end($proj)
   {
     //convert the mongo UTC datetime that comes out of the database to a php datetime 
@@ -267,6 +261,15 @@ class ProjectController extends Controller
     return ['start' => $start, 'end' => $end];
   }
 
+  /**
+   * Formats an array with a monthly interval from start to end date in order to display
+   * the monthly budget for a project on indexwon().
+   * @param $start
+   * @param $end
+   * @param $int - used as a monthly interval
+   * @param $format
+   * @return array $arr
+   */
   protected function get_date_interval_array($start, $end, $int, $format)
   {
     $interval = DateInterval::createFromDateString($int);
@@ -280,6 +283,13 @@ class ProjectController extends Controller
     return $arr;
   }
 
+  /**
+   * Array to display the monthly budget.
+   * @param $project
+   * @param $dollars_arr
+   * @param $months
+   * @return $dollars_arr
+   */
   protected function add_dollars($project, $dollars_arr, $months)
   {
     $dollars_arr = $dollars_arr + $project['per_month_dollars'];
@@ -290,6 +300,13 @@ class ProjectController extends Controller
     return $dollars_arr; 
   }
 
+  /**
+   * Queries for project status type 'Won' & 'Probable', just 'Won', or only 'Probable'. If user role is type 
+   * user, then only projects they are associated with will show. Creates Bar graph at top and
+   * organizes page by a row for each project split into monthly budgets for future dates.
+   * If there are no projects in the query, returns and displays message stating no projects were found.
+   * @return view pages.wonprojectsummary
+   */
   public function indexwon(Request $request)
   {
     if(auth()->user()->role != 'user'){
@@ -527,7 +544,12 @@ class ProjectController extends Controller
   }
 
 
-
+/**
+ * Queries database by text field search. For users, it will only show the results on the projects
+ * the user is associated with. For other roles, shows all project results.
+ * @param $request - Request variable with attributes to be assigned to $project.
+ * @return view projectindex
+ */
   public function search(Request $request)
   {
     $term = $request['search'];
@@ -543,6 +565,12 @@ class ProjectController extends Controller
     }
   }
 
+  /**
+   * Queries the database with the passed parameter $id to find the project
+   * with the same id and displays it so the information can be edited.
+   * @param $id
+   * @return view editproject
+   */
   public function edit_project($id)
   {
     $project = Project::find($id);
@@ -550,7 +578,11 @@ class ProjectController extends Controller
     return view('pages.editproject', compact('project'));
   }
 
-
+  /**
+  * Queries the database by project code and returns an hours graph for the project.
+  * @param $request - Request variable with attributes to be assigned to $project.
+  * @return array contains labels and dateset
+  */
   public function hours_graph(Request $request)
   {
     $projects = DB::collection('hours_by_project')->get()->sortBy('code');
@@ -619,6 +651,11 @@ class ProjectController extends Controller
     } 
   }
 
+  /**
+   * Finds a project in the database by $id and deletes it from the database.
+   * @param $id
+   * @return redirect /projectindex
+   */
   public function destroy($id)
   {
     $project = Project::find($id);

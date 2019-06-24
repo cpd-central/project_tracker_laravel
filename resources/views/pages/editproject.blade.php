@@ -1,4 +1,11 @@
 <?php
+
+  /**
+   * Checks if array $typeArray is not null and then checks to see if $type is in $typeArray.
+   * @param $type - variable to be checked if its in $typeArray. 
+   * @param $typeArray - array that contains keywords of boxes that are checked.
+   * @return "checked"
+   */
   function check_project_box($type, $typeArray) {
     if(isset($typeArray)) {
       if(in_array($type, $typeArray)) {
