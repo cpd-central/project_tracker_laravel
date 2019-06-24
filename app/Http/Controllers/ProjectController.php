@@ -288,7 +288,6 @@ class ProjectController extends Controller
    * @param $project
    * @param $dollars_arr
    * @param $months
-   * @return $dollars_arr
    */
   protected function add_dollars($project, $dollars_arr, $months)
   {
