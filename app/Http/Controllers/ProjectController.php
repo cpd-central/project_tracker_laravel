@@ -299,6 +299,14 @@ class ProjectController extends Controller
     return $dollars_arr; 
   }
 
+  protected function longQueriesIndexWon($status){
+    return Project::where('projectstatus',$status)->where(function($query){
+      $query->where('cegproposalauthor', auth()->user()->name)
+            ->orWhere('projectmanager', auth()->user()->name)
+            ->orWhere('created_by', auth()->user()->email);
+    });
+  }
+
   /**
    * Queries for project status type 'Won' & 'Probable', just 'Won', or only 'Probable'. If user role is type 
    * user, then only projects they are associated with will show. Creates Bar graph at top and
@@ -324,35 +332,22 @@ class ProjectController extends Controller
     }
     else{
       if($request['projectstatus'] == 'Won'){
-        $projects=Project::where('projectstatus','Won')->where(function($query){
-          $query->where('cegproposalauthor', auth()->user()->name)
-                ->orWhere('projectmanager', auth()->user()->name)
-                ->orWhere('created_by', auth()->user()->email);
-        })->get();
+        $projects=($this->longQueriesIndexWon('Won'))->get();
         $projectStatus = "Won";
       }
       else if($request['projectstatus'] == 'Probable'){
-        $projects=Project::where('projectstatus','Probable')->where(function($query){
-          $query->where('cegproposalauthor', auth()->user()->name)
-                ->orWhere('projectmanager', auth()->user()->name)
-                ->orWhere('created_by', auth()->user()->email);
-        })->get();
+        $projects=($this->longQueriesIndexWon('Probable'))->get();
         $projectStatus = "Probable";
       }
       else{
         $projects=Project::where(function($query) {
-          $query->where('projectstatus','Won')->where(function($query2){
+          $query->where('projectstatus','Won')->orWhere('projectstatus','Won');
+        })
+        ->where(function($query2) {
           $query2->where('cegproposalauthor', auth()->user()->name)
                 ->orWhere('projectmanager', auth()->user()->name)
                 ->orWhere('created_by', auth()->user()->email);
-        }); })
-        ->orWhere(function($query) {
-          $query->where('projectstatus','Probable')->where(function($query2){
-          $query2->where('cegproposalauthor', auth()->user()->name)
-                ->orWhere('projectmanager', auth()->user()->name)
-                ->orWhere('created_by', auth()->user()->email);
-        }); })->get();
-        //$projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
+        })->get();
         $projectStatus = "All";
       }
     }
