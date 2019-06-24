@@ -552,13 +552,25 @@ class ProjectController extends Controller
   public function search(Request $request)
   {
     $term = $request['search'];
-    if (isset($term)) { 
+    if (isset($term)) {
       $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
-      foreach ($projects as $project) {
-        $project = $this->displayFormat($project);
+      if(auth()->user()->role != 'user'){ 
+        foreach ($projects as $project) {
+          $project = $this->displayFormat($project);
+        }
+      }
+      else{
+        foreach ($projects as $key => $project) {
+          if($project['created_by'] == auth()->user()->email || $project['cegproposalauthor'] == auth()->user()->name || $project['projectmanager'] == auth()->user()->name) {
+              $project = $this->displayFormat($project);
+            }
+          else{
+            unset($projects[$key]);
+            }
+        }
       }
       return view('pages.projectindex', compact('projects')); 
-    }
+      }
     else {
       return redirect('/projectindex')->with('Please enter a search term to search.');
     }
