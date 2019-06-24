@@ -4,7 +4,11 @@ var numFields;
 var start_month;
 var start_year;
 
+/**
+ * Sets up the document to be ready as soon as the page loads up.
+ */
 $(document).ready(function() {
+    //if datentp field is focused on then unfocused, formats the date then checks if both dates inputted. 
     $("#datentp").on('blur', function() {
       removeFields();
       datentp = format('#datentp');
@@ -12,6 +16,7 @@ $(document).ready(function() {
       check();
     });
 
+    //if dateenergization field is focused on then unfocused, formats the date then checks if both dates inputted. 
     $("#dateenergization").on('blur', function() {
       removeFields();
       datentp = format('#datentp');
@@ -19,6 +24,7 @@ $(document).ready(function() {
       check();
     });
 
+    //if fields are changed, add the total % box
     $("#dynamic_field").on('change', function() {
       if(datentp != 0 && dateenergization != 0) {
         addTotalBox();
@@ -26,6 +32,10 @@ $(document).ready(function() {
     });
   });
 
+  /**
+   * If both dates are inputted, converts them to Date variables and calls monthDiff
+   * and calculateFields on them.
+   */
   function check() {
     if(datentp != 0 && dateenergization != 0) {
       datentp = new Date(datentp);                   
@@ -34,6 +44,11 @@ $(document).ready(function() {
     }
   }
 
+  /**
+   * Reformats the date received in order to be converted to Date variable.
+   * If it's null, returns 0.
+   * @param {*} id 
+   */
   function format(id) {
     var values = $(id).val();
     var dateArr = values.split('-');
@@ -43,15 +58,28 @@ $(document).ready(function() {
     return 0;
   }
 
+  /**
+   * removes all rows in the dynamic_field.
+   */
   function removeFields() {
     $("#dynamic_field tr").remove(); 
   }
 
+  /**
+   * Gets the month difference between two dates.
+   * @param {*} dateFrom 
+   * @param {*} dateTo 
+   */
   function monthDiff(dateFrom, dateTo) {
     return dateTo.getMonth() - dateFrom.getMonth() + 
     (12 * (dateTo.getFullYear() - dateFrom.getFullYear())) + 1;
   }
 
+  /**
+   * Calculates the number of input fields needed using the $var variable which represents the number of
+   * months. Assigns 4 input fields to a row.
+   * @param {*} $var 
+   */
   function calculateFields($var){
     numFields = $var;
     var row = $var / 4;             //4 text boxes per row
@@ -106,7 +134,11 @@ $(document).ready(function() {
     }
     addTotalBox();
   }
-
+  
+/**
+ * Adds all the inputted fields together and displays that total in a box which is colored red if its not equal to
+ * 100%, and colored green if it is.
+ */
   function addTotalBox() {
     $("#total_box").remove();
     if($('#datentp').val() && $('#dateenergization').val()){
