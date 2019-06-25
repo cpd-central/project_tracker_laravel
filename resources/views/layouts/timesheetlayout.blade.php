@@ -1,7 +1,12 @@
 <!doctype html>
 <style>
 .table th {
-    text-align: center;   
+    text-align: center;
+    font-size: 12px;   
+ }
+
+ .table input {
+   font-size: 12px;
  }
 
  </style>
@@ -19,7 +24,8 @@
         </br>
         <h2><b>@yield('title')</b></h2>
         </div>
-
+        <form method="post">
+          @csrf
         <div>
                 <table class="table table-sm overflow-auto" id="dynamic_field">
                         <thead>
@@ -44,17 +50,17 @@
                         </thead>
                         <?php $array = array('General and Admin', 'Staff Meetings and HR', 'Research and Training', 'Formal EDU', 'General Marketing') ?>
                         @for($row = 0; $row < count($array); $row++)
-                        <tr>
+                      <tr id="row{{$row}}">
                             <td>
                                 <input type="text" class="form-control" name="{{$array[$row]}}" value="{{$array[$row]}}" readonly>
                             </td>
                             @for($i = 1; $i <= 14; $i++)
                             <td>
-                            <input type="number"  step="0.25" min="0"  class="form-control" id="{{$array[$row]}}Day{{$i}}" name="{{$array[$row]}}Day{{$i}}" value=""/>
+                            <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}Day{{$i}}" value=""/>
                             </td>
                             @endfor
                             <td>
-                                    <input type="text" class="form-control" name="{{$array[$row]}} code" value="CEG" readonly>
+                                    <input type="text" class="form-control" name="{{$array[$row]}} code" value="code" readonly>
                             </td>
                         </tr>   
                         @endfor 
@@ -67,8 +73,11 @@
                 <div class="form-group col-md-4">
                   <button id="remove" class="btn btn-danger float-right">Remove Row</button>
                 </div>
+                <div class="form-group col-md-4">
+                  <button type="submit" id="submit" class="btn btn-success float-right">submit</button>
+                </div>
               </div>
-
+            </form>
 
 
 
@@ -78,6 +87,7 @@
     var r = 0;
 
     $(document).ready(function() {
+      addTotal();
         $("#add").on('click', function() {
             r++;
             addRow();
@@ -86,12 +96,16 @@
         $("#remove").on('click', function() {
             removeRow();  
         });
+
+        $("#dynamic_field").on('change',function() {
+            addTotal();
+        });
     });
 
     function addRow(){
         var tr = '<tr id="dynamic_row'+r+'">' +
                     '<td>' +
-                     '<input type="text" class="form-control" name="added row" value="">' +
+                     '<input type="text" class="form-control" name="Product Description added row '+r+'" value="">' +
                      '</td>';
                      for(var i = 1; i <= 14; i++){
             var tr = tr + '<td>' +
@@ -110,6 +124,27 @@
       r--;
       }
     }
+
+    function addTotal(){
+      for(var w = 0; w < 5; w++){
+        $('#total'+w+'').remove();
+      }
+
+      
+      for(var w = 0; w < 5; w++){
+        var total = 0;
+        for(var n = 1; n <= 14; n++){
+          var string = '#row'+w+'Day'+n;
+          if(!isNaN(parseInt($(string).val()))) {
+            total += parseInt($(string).val());
+          }
+        } 
+        var td = '<td id="total'+w+'">' +
+          '<input type="number"  step="0.25" min="0"  class="form-control" id="total'+w+'" name="total'+w+'" value="'+total+'" readonly />' +
+          '</td>';
+          $('#row'+w+'').append(td);
+      }
+    }     
     </script>
 
   </body>

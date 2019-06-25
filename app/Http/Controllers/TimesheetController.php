@@ -22,9 +22,12 @@ class TimesheetController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $timesheet = new Timesheet();
+        $timesheet->user = auth()->user()->email;
+        $this->store($timesheet, $request);
+        return redirect('/projectindex');
     }
 
     /**
@@ -33,9 +36,14 @@ class TimesheetController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($timesheet, $request)
     {
-        //
+        $timesheet->generalandadmin = $request->get('General and Admin');
+        $timesheet->staffmeetingsandhr = $request->get('Staff Meetings and HR');
+        $timesheet->researchandtraining = $request->get('Research and Training');
+        $timesheet->formaledu = $request->get('Formal EDU');
+        $timesheet->generalmarketing = $request->get('General Marketing');
+        $timesheet->save();
     }
 
     /**
