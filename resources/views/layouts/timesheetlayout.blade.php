@@ -42,18 +42,19 @@
                             <th>Code</th>
                           </tr>
                         </thead>
-                        @for($row = 1; $row <= 10; $row++)
+                        <?php $array = array('General and Admin', 'Staff Meetings and HR', 'Research and Training', 'Formal EDU', 'General Marketing') ?>
+                        @for($row = 0; $row < count($array); $row++)
                         <tr>
                             <td>
-                                <input type="text" class="form-control" name="General and Admin" value="General and Admin" readonly>
+                                <input type="text" class="form-control" name="{{$array[$row]}}" value="{{$array[$row]}}" readonly>
                             </td>
                             @for($i = 1; $i <= 14; $i++)
                             <td>
-                            <input type="number"  step="0.25" min="0"  class="form-control" id="generalandadminDay{{$i}}" name="generalandadminDay{{$i}}" value=""/>
+                            <input type="number"  step="0.25" min="0"  class="form-control" id="{{$array[$row]}}Day{{$i}}" name="{{$array[$row]}}Day{{$i}}" value=""/>
                             </td>
                             @endfor
                             <td>
-                                    <input type="text" class="form-control" name="General and Admin code" value="CEG" readonly>
+                                    <input type="text" class="form-control" name="{{$array[$row]}} code" value="CEG" readonly>
                             </td>
                         </tr>   
                         @endfor 
@@ -63,6 +64,9 @@
                 <div class="form-group col-md-4">
                   <button id="add" class="btn btn-primary float-right">Add Row</button>
                 </div>
+                <div class="form-group col-md-4">
+                  <button id="remove" class="btn btn-danger float-right">Remove Row</button>
+                </div>
               </div>
 
 
@@ -71,14 +75,21 @@
 
     <script type="text/javascript">
 
+    var r = 0;
+
     $(document).ready(function() {
         $("#add").on('click', function() {
+            r++;
             addRow();
         }); 
+
+        $("#remove").on('click', function() {
+            removeRow();  
+        });
     });
 
     function addRow(){
-        var tr = '<tr>' +
+        var tr = '<tr id="dynamic_row'+r+'">' +
                     '<td>' +
                      '<input type="text" class="form-control" name="added row" value="">' +
                      '</td>';
@@ -91,6 +102,13 @@
                         '<input type="text" class="form-control" name="codeadd'+i+'" value="">' +
                      '</td>';
                      $('#dynamic_field').append(tr);
+    }
+
+    function removeRow(){
+      if (r >= 1){
+      $('#dynamic_row'+r+'').last().remove();  
+      r--;
+      }
     }
     </script>
 
