@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 
 class TimesheetController extends Controller
 {
+    protected function databasePrep($req){
+        
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -38,11 +42,11 @@ class TimesheetController extends Controller
      */
     public function store($timesheet, $request)
     {
-        $timesheet->generalandadmin = $request->get('General and Admin');
-        $timesheet->staffmeetingsandhr = $request->get('Staff Meetings and HR');
-        $timesheet->researchandtraining = $request->get('Research and Training');
-        $timesheet->formaledu = $request->get('Formal EDU');
-        $timesheet->generalmarketing = $request->get('General Marketing');
+        $timesheet->generalandadmin = $request->get('row0');
+        $timesheet->staffmeetingsandhr = $request->get('row1');
+        $timesheet->researchandtraining = $request->get('row2');
+        $timesheet->formaledu = $request->get('row3');
+        $timesheet->generalmarketing = $request->get('row4');
         $timesheet->save();
     }
 
