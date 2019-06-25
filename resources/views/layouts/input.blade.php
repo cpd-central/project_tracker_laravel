@@ -141,7 +141,7 @@
                             }?>
                           <td>{{$month[$mm].$year}}</td>
                                         <td>
-                                            <input type="number" step="0.01" class="form-control" min="0.01" max="1.00" id="{{'month'.$mm.'year'.$year}}" name="monthly_percent[]" value="{{$project['monthlypercent'][$i]}}" />
+                                            <input type="number" step="0.01" class="form-control" min="0.00" max="1.00" id="{{'month'.$mm.'year'.$year}}" name="monthly_percent[]" value="{{$project['monthlypercent'][$i]}}" />
                                         </td>
                                     <?php $mm++;
                                           $i++;
