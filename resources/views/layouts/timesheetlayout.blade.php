@@ -119,7 +119,7 @@
     function addRow(){
         var tr = '<tr id="row'+row+'">' +
                     '<td>' +
-                     '<input type="text" class="form-control" name="Product Description row '+row+'" value="">' +
+                     '<input type="text" class="form-control" name="Product Description row '+row+'" value="" required>' +
                      '</td>';
                      for(var i = 1; i <= 14; i++){
             var tr = tr + '<td>' +
@@ -127,7 +127,7 @@
                             '</td>';
                     }
            var tr = tr + '<td>' +
-                        '<input type="text" class="form-control" name="codeadd'+row+'" value="">' +
+                        '<input type="text" class="form-control" name="codeadd'+row+'" value="" required>' +
                      '</td>' +
                      '<td>' +
                         '<button type="button" id="row'+row+'" class="btn btn-danger btn_remove">-</button>' +
@@ -166,7 +166,7 @@
       for(var n = 1; n <= 14; n++){
         var total = 0;
         for(var w = 0; w <= row; w++){
-          var string = '#row'+w+'['+n+']';
+          var string = '#row'+w+'Day'+n+'';
           if(!isNaN(parseFloat($(string).val()))) {
             total += parseFloat($(string).val());
           }

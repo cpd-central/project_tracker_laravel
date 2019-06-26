@@ -78,7 +78,12 @@ class TimesheetController extends Controller
                         $string = $request->get('Product_Description_row_'.$row);
                         $arr[$string] = $this->databasePrep($request->get('row'.$row));
                         $code = $request->get('codeadd'.$row);
-                        $timesheet->$code = $arr;
+                        if($timesheet->$code != null){
+                            $timesheet->$code = array_merge($timesheet->$code, $arr);   //might need to be fixed in future with edit
+                        }
+                        else{
+                            $timesheet->$code = $arr;
+                        }
                     }
                 }
                 $row++;
@@ -87,26 +92,22 @@ class TimesheetController extends Controller
         $timesheet->save();
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Timesheet  $timesheet
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Timesheet $timesheet)
+
+    public function check(Request $request)
     {
-        //
+        // $result = Timesheet::where('user', auth()->user()->email);
+        // if($result){
+        //     $this->edit($result);
+        // }
+        // else{
+        //    $this->index();
+        //}
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Timesheet  $timesheet
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Timesheet $timesheet)
+
+    public function edit($timesheet)
     {
-        //
+        return view('pages.timesheet', compact('timesheet'));
     }
 
     /**
@@ -118,7 +119,7 @@ class TimesheetController extends Controller
      */
     public function update(Request $request, Timesheet $timesheet)
     {
-        //
+    
     }
 
     /**
