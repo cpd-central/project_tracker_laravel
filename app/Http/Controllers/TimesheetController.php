@@ -72,12 +72,14 @@ class TimesheetController extends Controller
             $row = 5;
             for($i = 0; $i < $total_number_presses; $i++){
                 $string = 'row5';
-                if(array_sum($request->get('row'.$row)) > 0){
-                    $arr = array();
-                    $string = $request->get('Product_Description_row_'.$row);
-                    $arr[$string] = $this->databasePrep($request->get('row'.$row));
-                    $code = $request->get('codeadd'.$row);
-                    $timesheet->$code = $arr;
+                if($request->get('row'.$row) != null){
+                    if(array_sum($request->get('row'.$row)) > 0){
+                        $arr = array();
+                        $string = $request->get('Product_Description_row_'.$row);
+                        $arr[$string] = $this->databasePrep($request->get('row'.$row));
+                        $code = $request->get('codeadd'.$row);
+                        $timesheet->$code = $arr;
+                    }
                 }
                 $row++;
             }
