@@ -92,6 +92,7 @@
 
     <script type="text/javascript">
     var row = 4;
+    total_button_presses = 0;
     $(document).ready(function() {
       columnTotal();
       addRowTotal();
@@ -100,6 +101,7 @@
             addRow();
             columnTotal();
             addRowTotal();
+            hiddenField();
         }); 
 
         $("#dynamic_field").on('click', '.btn_remove', function() {
@@ -121,7 +123,7 @@
                      '</td>';
                      for(var i = 1; i <= 14; i++){
             var tr = tr + '<td>' +
-                     '<input type="number"  step="0.25" min="0"  class="form-control" id="row'+row+'Day'+i+'" name="row'+row+'Day'+i+'" value=""/>' +
+                     '<input type="number"  step="0.25" min="0"  class="form-control" id="row'+row+'Day'+i+'" name="row'+row+'[]" value=""/>' +
                             '</td>';
                     }
            var tr = tr + '<td>' +
@@ -164,7 +166,7 @@
       for(var n = 1; n <= 14; n++){
         var total = 0;
         for(var w = 0; w <= row; w++){
-          var string = '#row'+w+'Day'+n;
+          var string = '#row'+w+'['+n+']';
           if(!isNaN(parseFloat($(string).val()))) {
             total += parseFloat($(string).val());
           }
@@ -180,6 +182,17 @@
             '<input type="number"  step="0.25" min="0"  class="form-control" id="coltotal15" name="coltotal15" value="'+grand_total+'" readonly />' +
           '</td>';
       $('#dynamic_field').append(tr);
+    }
+
+    function hiddenField(){
+      total_button_presses++;
+      $('#total_button_presses_row').remove();
+      var input = '<tr id="total_button_presses_row">' +
+                    '<td>' +
+                    '<input type="hidden" id="total_button_presses" name="total_button_presses" value="'+total_button_presses+'" readonly />' +
+                    '</td>' +
+                    '</tr>';
+      $('#dynamic_field').append(input);
     }
     </script>
   </body>

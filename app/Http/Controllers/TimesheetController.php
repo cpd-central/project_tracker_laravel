@@ -7,8 +7,16 @@ use Illuminate\Http\Request;
 
 class TimesheetController extends Controller
 {
-    protected function databasePrep($req){
-        
+    protected function databasePrep($array){
+        if($array){
+            foreach($array as $day){
+              if($day == null || $day ==""){
+                $day = 0;
+              }
+            }
+          array_walk($array, function(&$x){$x = (float)($x);});
+        }
+        return $array;
     }
 
     /**
@@ -41,12 +49,39 @@ class TimesheetController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store($timesheet, $request)
-    {
-        $timesheet->generalandadmin = $request->get('row0');
-        $timesheet->staffmeetingsandhr = $request->get('row1');
-        $timesheet->researchandtraining = $request->get('row2');
-        $timesheet->formaledu = $request->get('row3');
-        $timesheet->generalmarketing = $request->get('row4');
+    {   //Store code CEG
+        $CEG = array();
+        $CEG['General and Admin'] = $this->databasePrep($request->get('row0'));
+        $CEG['Staff Meetings and HR'] = $this->databasePrep($request->get('row1'));
+        $timesheet->CEG = $CEG;
+        //Store Code CEGTRNG
+        $CEGTRNG = array();
+        $CEGTRNG['Research and Training'] = $this->databasePrep($request->get('row2'));
+        $timesheet->CEGTRNG = $CEGTRNG;
+        //Store Code CEGEDU
+        $CEGEDU = array();
+        $CEGEDU['Formal EDU'] = $this->databasePrep($request->get('row3'));
+        $timesheet->CEGEDU = $CEGEDU;
+        //Store Code CEGMKTG
+        $CEGMKTG = array();
+        $CEGMKTG['General Marketing'] = $this->databasePrep($request->get('row4'));
+        $timesheet->CEGMKTG = $CEGMKTG;
+        //Added rows
+        $total_number_presses = (int) $request->get('total_button_presses');
+        if($total_number_presses != 0) {
+            $row = 5;
+            for($i = 0; $i < $total_number_presses; $i++){
+                $string = 'row5';
+                if(array_sum($request->get('row'.$row)) > 0){
+                    $arr = array();
+                    $string = $request->get('Product_Description_row_'.$row);
+                    $arr[$string] = $this->databasePrep($request->get('row'.$row));
+                    $code = $request->get('codeadd'.$row);
+                    $timesheet->$code = $arr;
+                }
+                $row++;
+            }
+        }
         $timesheet->save();
     }
 
