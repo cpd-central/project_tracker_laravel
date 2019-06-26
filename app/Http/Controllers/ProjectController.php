@@ -285,7 +285,7 @@ class ProjectController extends Controller
       //dd($request); 
       if (!isset($request['switch_chart_button'])) 
       {
-        $chart_type = 'projects';
+        $chart_type = 'won_prob';
       }
       else
       { 

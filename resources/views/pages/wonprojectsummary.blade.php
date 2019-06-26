@@ -14,9 +14,9 @@
     @if ($chart_type == 'projects')
       <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="won_prob"><button class="btn btn-primary" name="button" type="submit" value="Won/Probable View">Won/Probable View</button>
     @elseif ($chart_type == 'won_prob')
-      <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="projects"><button class="btn btn-primary" name="button" type="submit" value="Won/Probable View">Projects View</button>
+      <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="projects"><button class="btn btn-primary" name="button" type="submit" value="Projects View">Projects View</button>
     @else
-      <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="projects"><button class="btn btn-primary" name="button" type="submit" value="Won/Probable View">Projects View</button>
+      <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="projects"><button class="btn btn-primary" name="button" type="submit" value="Projects View">Projets View</button>
     @endif
   @endisset
 </form>
