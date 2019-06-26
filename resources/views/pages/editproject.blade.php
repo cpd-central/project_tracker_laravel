@@ -1,4 +1,11 @@
 <?php
+
+  /**
+   * Checks if array $typeArray is not null and then checks to see if $type is in $typeArray.
+   * @param $type - variable to be checked if its in $typeArray. 
+   * @param $typeArray - array that contains keywords of boxes that are checked.
+   * @return "checked"
+   */
   function check_project_box($type, $typeArray) {
     if(isset($typeArray)) {
       if(in_array($type, $typeArray)) {
@@ -9,6 +16,7 @@
 ?>
 @extends('layouts.input')
 
+@section('page-title', 'Edit Project')
 @section('title', 'Project Update Form')
 @section('h4proposal', 'Edit Project - Proposal Details')
 @section('h4won', 'Edit Project - Won Details')
@@ -103,20 +111,30 @@
 @if ($project['projectstatus'] == 'Won') 
   <option>Proposed</option>
   <option selected="selected">Won</option>
+  <option>Probable</option>
   <option>Expired</option>
 @elseif ($project['projectstatus'] == 'Expired')
   <option>Proposed</option>
   <option>Won</option>
+  <option>Probable</option>
   <option selected="selected">Expired</option>
+@elseif ($project['projectstatus'] == 'Probable')
+  <option>Proposed</option>
+  <option>Won</option>
+  <option selected="selected">Probable</option>
+  <option>Expired</option>
 @else
   <option selected="selected">Proposed</option>
   <option>Won</option>
+  <option>Probable</option>
   <option>Expired</option>
 @endif
 @stop
 
 @section('projectcode', $project['projectcode'])
 @section('projectmanager', $project['projectmanager'])
+@section('projectnotes', $project['projectnotes'])
+
 
 
 

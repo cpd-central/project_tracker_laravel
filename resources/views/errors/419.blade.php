@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<title>Error 419</title>
 @include('includes.navbar')
 <body>
   <div class="container"> 

@@ -27,6 +27,11 @@ class ProjectController extends Controller
       $this->middleware('auth');
   }
   
+  /**
+   * Stores attributes from the $req to $project and is saved to the database.
+   * @param $project - variable type Project to be saved to the database.
+   * @param $req - Request variable with attributes to be assigned to $project.
+   */
   protected function store($project, $req)
   {
     $project->cegproposalauthor= $req->get('cegproposalauthor');
@@ -39,14 +44,22 @@ class ProjectController extends Controller
     $project->dateproposed = $this->strToDate($req->get('dateproposed'));
     $project->datentp = $this->strToDate($req->get('datentp'));
     $project->dateenergization = $this->strToDate($req->get('dateenergization'));
+    $project->monthlypercent = $this->floatConversion($req->get('monthly_percent'));
     $project->projecttype = $req->get('projecttype_checklist');
     $project->epctype = $req->get('epctype_checklist');
     $project->projectstatus = $req->get('projectstatus');
     $project->projectcode = $req->get('projectcode');
     $project->projectmanager = $req->get('projectmanager');
+    $project->projectnotes = $req->get('projectnotes');
     $project->save();
   }
 
+  /**
+   * Requires certain fields to be filled in and validates. If statement for Won and Probable 
+   * which results in more requirements. If required fields not provided, route is redirected back to page.
+   * @param $req - Request variable with attributes to be assigned to $project.
+   * @param $month - an option parameter. 
+   */
   protected function validate_request($req)
   {
     $this->validate($req, [
@@ -54,8 +67,38 @@ class ProjectController extends Controller
       'projectname' => 'required',
       'clientcontactname' => 'required'
     ]);
+
+    if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable'){ 
+      $this->validate($req, [
+        'dollarvalueinhouse' => 'required',
+        'datentp' => 'required',
+        'dateenergization' => 'required'
+      ]);
+    }
   }
 
+  /**
+   * Calls other functions to reformat the data for display..
+   * @param $project - project whose attributes are being reformatted for display.
+   * @return $project
+   */
+  protected function displayFormat($project)
+  {
+    $project['mwsize'] = $this->intDisplay($project['mwsize']);
+    $project['voltage'] = $this->intDisplay($project['voltage']);
+    $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
+    $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
+    $project['datentp'] = $this->dateToStr($project['datentp']);
+    $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+    return $project;
+  }
+
+  /**
+   * Converts the date inputted string to a variable type Date. Stores it in the database.
+   * If the received date is null, the date is set to the string "None".
+   * @param $date_string - string to be converted to a variable type Date.
+   * @return $date
+   */
   protected function strToDate($date_string)
   {
     if (isset($date_string))
@@ -70,7 +113,13 @@ class ProjectController extends Controller
     return $date;
   }
 
-  protected function dateToStr($mongo_date)
+  /**
+   * Converts the Date variable $mongo_date to a string in order to be displayed properly.
+   * Reformats the String to 'Year-month-day'.
+   * @param $mongo_date - date received from mongoDB. 
+   * @return $date_string
+   */
+  public static function dateToStr($mongo_date)
   {
     if (is_string($mongo_date))
     {
@@ -85,22 +134,12 @@ class ProjectController extends Controller
     return $date_string;
   }
 
-  protected function projectStatusCheck(Request $req) {
-    if($req['projectstatus'] == 'Won'){
-      if($req['datentp'] == null || $req['dateenergization'] == null) {
-        return -1;
-      }
-    }
-    return 0;
-  }
-
-  protected function check_project_box($type, $typeArray) {
-    if(isset($typeArray)) {
-      if(in_array($type, $typeArray)) {
-        return "checked";
-      }
-    }
-  }
+  /**
+   * Checks if inputted number field was left blank. Assigns the number -1 and
+   * parses it from String to Integer.
+   * @param $integer - inputted number to be checked and converted. 
+   * @return $integer
+   */
   protected function intCheck($integer)
   {
     if($integer == null || $integer == ""){
@@ -109,6 +148,12 @@ class ProjectController extends Controller
       return ((int)$integer);
   }
 
+  /**
+  * If the number from the database was -1, it was originally null. Changes the value to null
+  * and return its.
+  * @param $integer - integer received from mongoDB. 
+  * @return $integer
+  */
   protected function intDisplay($integer)
   {
     if($integer == -1)
@@ -118,124 +163,96 @@ class ProjectController extends Controller
     return $integer;
   }
 
+  /**
+   * Converts inputted monthly percents into a float. If percent input is
+   * null, assigns it 0. array_walk converts all array values to floats.
+   * @param $percents - array of inputted monthly percent fields. 
+   * @return $percents
+   */
+  protected function floatConversion($percents){
+    if($percents){
+      foreach($percents as $percent){
+        if($percent == null || $percent ==""){
+          $percent = 0;
+        }
+      } 
+    array_walk($percents, function(&$x){$x = (float)($x);});
+    }
+    return $percents;
+  }
+
+  /**
+   * Returns a view of the newproject blade page.
+   * @return view pages.newproject
+   */
   public function new_project()
   {
     return view('pages.newproject');
   }
 
-
+  /**
+   * Creates a new project to be stored in the database. Validates the 
+   * $request and assigns the user that created it to the project along with the $request
+   * attributes. Redirects the route to the project index page.
+   * @param $req - Request variable with attributes to be assigned to $project. 
+   * @return redirect /projectindex
+   */
   public function create(Request $request)
   {
     $this->validate_request($request);
-    $testNum = $this->projectStatusCheck($request);
-    $projectType = $request['projecttype_checklist'];
-    $epcType = $request['epctype_checklist'];
-    if($testNum == -1) {
-      return redirect('/newproject')
-        ->with('message','Please enter a Date NTP & a Date Energization.')
-        ->with('cegproposalauthor', $request['cegproposalauthor'])              //hardcoded
-        ->with('projectname', $request['projectname'])                          //hardcoded
-        ->with('clientcontactname', $request['clientcontactname'])              //hardcoded
-        ->with('clientcompany', $request['clientcompany'])                      //hardcoded
-        ->with('mwsize', $request['mwsize'])                                    //hardcoded
-        ->with('voltage', $request['voltage'])                                  //hardcoded
-        ->with('dollarvalueinhouse', $request['dollarvalueinhouse'])            //hardcoded
-        ->with('dateproposed', $request['dateproposed'])                        //hardcoded
-        ->with('datentp', $request['datentp'])                                  //hardcoded
-        ->with('dateenergization', $request['dateenergization'])                //hardcoded
-
-        ->with('Wind', $this->check_project_box('Wind', $projectType))
-        ->with('Solar', $this->check_project_box('Solar', $projectType))
-        ->with('Storage', $this->check_project_box('Storage', $projectType))
-        ->with('Array', $this->check_project_box('Array', $projectType))
-        ->with('Transmission', $this->check_project_box('Transmission', $projectType))
-        ->with('Substation', $this->check_project_box('Substation', $projectType))
-        ->with('Distribution', $this->check_project_box('Distribution', $projectType))
-        ->with('SCADA', $this->check_project_box('SCADA', $projectType))
-        ->with('Study', $this->check_project_box('Study', $projectType))
-
-        ->with('Electrical Engineering', $this->check_project_box('Electrical Engineering', $epcType))
-        ->with('Civil Engineering', $this->check_project_box('Civil Engineering', $epcType))
-        ->with('Structural/Mechanical Engineering', $this->check_project_box('Structural/Mechanical Engineering', $epcType))
-        ->with('Procurement', $this->check_project_box('Procurement', $epcType))
-        ->with('Construction', $this->check_project_box('Construction', $epcType))
-
-
-        ->with('projectstatus', $request['projectstatus'])                      //hardcoded
-        ->with('projectcode', $request['projectcode'])                          //hardcoded 
-        ->with('projectmanager', $request['projectmanager']);                 //hardcoded
-
-    }
-    else{
     $project = new Project();
+    $project->created_by = auth()->user()->email;
     $this->store($project, $request);
     return redirect('/projectindex')->with('Success!', 'Project has been successfully added.');
-    }
   }
 
+  /**
+   * Updates a project in the database that was edited with the new changes.
+   * @param $request - Request variable with attributes to be assigned to $project.
+   * @param $id - the unique id of the project to be updated.
+   * @return redirect /projectindex
+   */
   public function update(Request $request, $id)
   {
     $this->validate_request($request);   
-    $testNum = $this->projectStatusCheck($request);
-    $projectType = $request['projecttype_checklist'];
-    $epcType = $request['epctype_checklist'];
-    $project = Project::find($id);
-    
-    if($testNum == -1) {
-      return redirect('/editproject/'.$id)
-      ->with('message','Please enter a Date NTP & a Date Energization.')
-      ->with('cegproposalauthor', $request['cegproposalauthor'])              //hardcoded
-      ->with('projectname', $request['projectname'])                          //hardcoded
-      ->with('clientcontactname', $request['clientcontactname'])              //hardcoded
-      ->with('clientcompany', $request['clientcompany'])                      //hardcoded
-      ->with('mwsize', $request['mwsize'])                                    //hardcoded
-      ->with('voltage', $request['voltage'])                                  //hardcoded
-      ->with('dollarvalueinhouse', $request['dollarvalueinhouse'])            //hardcoded
-      ->with('dateproposed', $request['dateproposed'])                        //hardcoded
-      ->with('datentp', $request['datentp'])                                  //hardcoded
-      ->with('dateenergization', $request['dateenergization'])                //hardcoded
-
-      ->with('Wind', $this->check_project_box('Wind', $projectType))
-      ->with('Solar', $this->check_project_box('Solar', $projectType))
-      ->with('Storage', $this->check_project_box('Storage', $projectType))
-      ->with('Array', $this->check_project_box('Array', $projectType))
-      ->with('Transmission', $this->check_project_box('Transmission', $projectType))
-      ->with('Substation', $this->check_project_box('Substation', $projectType))
-      ->with('Distribution', $this->check_project_box('Distribution', $projectType))
-      ->with('SCADA', $this->check_project_box('SCADA', $projectType))
-      ->with('Study', $this->check_project_box('Study', $projectType))
-
-      ->with('Electrical Engineering', $this->check_project_box('Electrical Engineering', $epcType))
-      ->with('Civil Engineering', $this->check_project_box('Civil Engineering', $epcType))
-      ->with('Structural/Mechanical Engineering', $this->check_project_box('Structural/Mechanical Engineering', $epcType))
-      ->with('Procurement', $this->check_project_box('Procurement', $epcType))
-      ->with('Construction', $this->check_project_box('Construction', $epcType))
-
-
-      ->with('projectstatus', $request['projectstatus'])                      //hardcoded
-      ->with('projectcode', $request['projectcode'])                          //hardcoded 
-      ->with('projectmanager', $request['projectmanager']);                 //hardcoded
-    }else{
+    $project = Project::find($id);  
     $this->store($project, $request);
     return redirect('/projectindex')->with('Success!', 'Project has been successfully updated');
+  }
+
+  /**
+   * If the current user has a role that is not a user, all projects are retrieved to be viewed. 
+   * Otherwise, the projects retrieved are the ones only the user role type user is associated with, such
+   * as their name matching the cegproposalauthor, their name matching the projectmanager field, or
+   * their email matching the created_by field stored in the project.
+   * @return view projectindex
+   */
+  public function index()
+  {
+    if(auth()->user()->role != "user"){
+      $projects=Project::all();
+      foreach($projects as $project)
+      {
+        $project = $this->displayFormat($project);
+      } 
+      return view('pages.projectindex', compact('projects'));
+    }
+    else{
+      $projects=Project::where('cegproposalauthor', auth()->user()->name)->orWhere('projectmanager', auth()->user()->name)->orWhere('created_by', auth()->user()->email)->get();
+      foreach($projects as $project)
+      {
+        $project = $this->displayFormat($project);
+      } 
+      return view('pages.projectindex', compact('projects'));
     }
   }
 
-  public function index()
-  {
-    $projects=Project::all();
-    foreach($projects as $project)
-    {
-      $project['mwsize'] = $this->intDisplay($project['mwsize']);
-      $project['voltage'] = $this->intDisplay($project['voltage']);
-      $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
-      $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
-      $project['datentp'] = $this->dateToStr($project['datentp']);
-      $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
-    } 
-    return view('pages.projectindex', compact('projects'));
-  }
-
+  /**
+   * Converts the mongo UTC datetime that comes out of the database to a php datetime and returns 
+   * the start and end datetimes.
+   * @param $proj - used to get the datentp and dateenergization.
+   * @return array containing $start & $end
+   */
   protected function get_project_start_end($proj)
   {
     //convert the mongo UTC datetime that comes out of the database to a php datetime 
@@ -244,6 +261,15 @@ class ProjectController extends Controller
     return ['start' => $start, 'end' => $end];
   }
 
+  /**
+   * Formats an array with a monthly interval from start to end date in order to display
+   * the monthly budget for a project on indexwon().
+   * @param $start
+   * @param $end
+   * @param $int - used as a monthly interval
+   * @param $format
+   * @return array $arr
+   */
   protected function get_date_interval_array($start, $end, $int, $format)
   {
     $interval = DateInterval::createFromDateString($int);
@@ -257,11 +283,86 @@ class ProjectController extends Controller
     return $arr;
   }
 
-  public function indexwon()
+  /**
+   * Array to display the monthly budget.
+   * @param $project
+   * @param $dollars_arr
+   * @param $months
+   */
+  protected function add_dollars($project, $dollars_arr, $months)
   {
-    $projects=Project::all()->where('projectstatus','Won');
+    $dollars_arr = $dollars_arr + $project['per_month_dollars'];
+    foreach ($months as $month)
+    {
+      $dollars_arr[$month] = round($dollars_arr[$month] + $project['per_month_dollars'][$month], 0);
+    }
+    return $dollars_arr; 
+  }
+
+  protected function longQueriesIndexWon($status){
+    return Project::where('projectstatus',$status)->where(function($query){
+      $query->where('cegproposalauthor', auth()->user()->name)
+            ->orWhere('projectmanager', auth()->user()->name)
+            ->orWhere('created_by', auth()->user()->email);
+    });
+  }
+
+  /**
+   * Queries for project status type 'Won' & 'Probable', just 'Won', or only 'Probable'. If user role is type 
+   * user, then only projects they are associated with will show. Creates Bar graph at top and
+   * organizes page by a row for each project split into monthly budgets for future dates.
+   * If there are no projects in the query, returns and displays message stating no projects were found.
+   * @return view pages.wonprojectsummary
+   */
+  public function indexwon(Request $request)
+  {
+    if(auth()->user()->role != 'user'){
+      if($request['projectstatus'] == 'Won'){
+        $projects=Project::all()->where('projectstatus','Won');
+        $projectStatus = "Won";
+      }
+      else if($request['projectstatus'] == 'Probable'){
+        $projects=Project::all()->where('projectstatus','Probable');
+        $projectStatus = "Probable";
+      }
+      else{
+        $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
+        $projectStatus = "All";
+      }
+    }
+    else{
+      if($request['projectstatus'] == 'Won'){
+        $projects=($this->longQueriesIndexWon('Won'))->get();
+        $projectStatus = "Won";
+      }
+      else if($request['projectstatus'] == 'Probable'){
+        $projects=($this->longQueriesIndexWon('Probable'))->get();
+        $projectStatus = "Probable";
+      }
+      else{
+        $projects=Project::where(function($query) {
+          $query->where('projectstatus','Won')->orWhere('projectstatus','Won');
+        })
+        ->where(function($query2) {
+          $query2->where('cegproposalauthor', auth()->user()->name)
+                ->orWhere('projectmanager', auth()->user()->name)
+                ->orWhere('created_by', auth()->user()->email);
+        })->get();
+        $projectStatus = "All";
+      }
+    }
+
     if (count($projects) > 0)
-    { 
+    {
+      //dd($request); 
+      if (!isset($request['switch_chart_button'])) 
+      {
+        $chart_type = 'won_prob';
+      }
+      else
+      { 
+        $chart_type = $request['switch_chart_button'];
+      } 
       //1. Get Max end date in order to establish the # of columns needed for the table
       //Also, get smallest start date to establish the beginning of the array 
       $start_dates = array();
@@ -279,13 +380,57 @@ class ProjectController extends Controller
         //need to use the specific start and end for this project 
         $project_months = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');
         $num_months = count($project_months);
-        $per_month_dollars = $project_dollars / $num_months;
-        $project_per_month_dollars = array();
-        foreach($project_months as $month)
-        {
-          $project_per_month_dollars[$month] = $per_month_dollars;
+        if($num_months <= 0){
+          $project_per_month_dollars = array();
+          foreach($project_months as $month)
+          {
+            $project_per_month_dollars[$month] = 0;
+          }
+          $project['per_month_dollars'] = $project_per_month_dollars;
         }
-        $project['per_month_dollars'] = $project_per_month_dollars;
+        else
+        {
+          if (isset($project['monthlypercent']))
+          {
+            //check if all values in the monthly percent array are 0 or if there are non zero elements
+            $temp = array_filter($project['monthlypercent']);
+            if (count($temp) > 0)
+            {
+              $project_per_month_dollars = array();
+              $i = 0;
+              foreach($project_months as $month)
+              {
+                //the only real difference between this and the else, is that we do the per month calc for
+                //each iteration of the foreach loop, rather than all at once.
+                //This could be cleaned up if we had 'monthlypercent' be an associative array with the 
+                //month as the key
+                $per_month_dollars = $project_dollars * $project['monthlypercent'][$i];
+                $project_per_month_dollars[$month] = $per_month_dollars;
+                $i++;
+              }
+            }
+            //if not, do a flat distribution
+            else
+            {
+              $per_month_dollars = $project_dollars / $num_months;
+              $project_per_month_dollars = array();
+              foreach($project_months as $month)
+              {
+                $project_per_month_dollars[$month] = $per_month_dollars;
+              }
+            }
+          }
+          else
+          {
+            $per_month_dollars = $project_dollars / $num_months;
+              $project_per_month_dollars = array();
+              foreach($project_months as $month)
+              {
+                $project_per_month_dollars[$month] = $per_month_dollars;
+              }
+          }
+          $project['per_month_dollars'] = $project_per_month_dollars;
+        }
       }
       //get the max end date and min start date
       $earliest_start = min($start_dates);
@@ -312,10 +457,13 @@ class ProjectController extends Controller
         'rgb(54, 162, 235, 0.4)',
         'rgb(255, 205, 86, 0.4)',
         'rgb(153, 102, 255, 0.4)'];
-      //$max_color_counter = count($chart_colors) - 1;
-      //$color_counter = 0; 
+      $max_color_counter = count($chart_colors) - 1;
+      $color_counter = 0; 
       //now loop through the projects again and update the array to have the months we are displaying, and fill with zeros for the rest
-      $total_dollars = array();
+      $total_dollars_won = array();
+      $total_dollars_probable = array();
+      $total_dollars_total = array();
+
       foreach($projects as $project)
       {
         //find first key of month array
@@ -336,51 +484,52 @@ class ProjectController extends Controller
           } 
         }
         //now re-write the project data with the new array 
-        $project['per_month_dollars'] = $new_project_per_month_dollars;  
-        $total_dollars = $total_dollars + $project['per_month_dollars'];  
-        foreach ($months as $month)
+        $project['per_month_dollars'] = $new_project_per_month_dollars;
+        if ($project['projectstatus'] == 'Won')
         {
-          $total_dollars[$month] = round($total_dollars[$month] + $project['per_month_dollars'][$month], 0);
+          $total_dollars_won = $this->add_dollars($project, $total_dollars_won, $months);
         }
-        //need these three lines for proper date formatting 
-        $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
-        $project['datentp'] = $this->dateToStr($project['datentp']);
-        $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
-        $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
-        //add the project hours to the chart as a dataset 
-        //$dollar_values = array_slice(array_values($project['per_month_dollars']), 0, 12);
-        //$chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options([
-        //  'scales' => [
-        //    'xAxes' => [ 
-        //      'stacked' => 'true'],
-        //    'yAxes' => [
-        //      'stacked' => 'false', 
-        //      'ticks' => [
-        //        'beginAtZero' => 'true']]],
-        //  'backgroundColor' => $chart_colors[1]]);
-        //$color_counter++;
-        //if ($color_counter > $max_color_counter)
-        //{
-        //  $color_counter = 0;
-        //} 
+        else 
+        {
+          $total_dollars_probable = $this->add_dollars($project, $total_dollars_probable, $months);
+        }
+        //formats the project data in order to display properly
+        $project = $this->displayFormat($project);
+
+        if ($chart_type == 'projects')
+        {
+          //add the project hours to the chart as a dataset 
+          $dollar_values = array_values($project['per_month_dollars']);
+          $chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options(['backgroundColor' => $chart_colors[$color_counter]]);
+          $color_counter++;
+          if ($color_counter > $max_color_counter)
+          {
+            $color_counter = 0;
+          }
+        }
       }
-      $dollar_values = array_values($total_dollars); 
-      $chart->dataset("Total Project Dollars Per Month", 'bar', $dollar_values)->options([
-        'scales' => [
-            'xAxes' => [ 
-              'stacked' => 'true'],
-            'yAxes' => [
-              'stacked' => 'false', 
-              'ticks' => [
-                'beginAtZero' => 'true']]],
-          'backgroundColor' => $chart_colors[1]]);
+      
+      $total_dollars = $total_dollars_won + $total_dollars_probable; 
+      if ($chart_type == 'won_prob')
+      {
+        $dollar_values_won = array_values($total_dollars_won); 
+        $dollar_values_probable = array_values($total_dollars_probable);
+        $chart->dataset("Won Project Dollars Per Month", 'bar', $dollar_values_won)->options(['backgroundColor' => $chart_colors[1]]);
+        $chart->dataset("Probable Project Dollars Per Month", 'bar', $dollar_values_probable)->options(['backgroundColor' => $chart_colors[0]]);
+      }
+
+      $options = [];
+      $options['scales']['xAxes'][]['stacked'] = true;
+      $options['scales']['yAxes'][]['stacked'] = true;
+      $chart->options($options);
+      #dd($chart); 
       //format total dollars with commas
       //foreach($months as $month)
       //{
       //  $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
       //} 
 
-      return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart')); 
+      return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart', 'projectStatus', 'chart_type')); 
     }
     else 
     {
@@ -389,40 +538,57 @@ class ProjectController extends Controller
   }
 
 
-
+/**
+ * Queries database by text field search. For users, it will only show the results on the projects
+ * the user is associated with. For other roles, shows all project results.
+ * @param $request - Request variable with attributes to be assigned to $project.
+ * @return view projectindex
+ */
   public function search(Request $request)
   {
     $term = $request['search'];
-    if (isset($term)) { 
+    if (isset($term)) {
       $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
-      foreach ($projects as $project) {
-        $project['mwsize'] = $this->intDisplay($project['mwsize']);
-        $project['voltage'] = $this->intDisplay($project['voltage']);
-        $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
-        $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
-        $project['datentp'] = $this->dateToStr($project['datentp']);
-        $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+      if(auth()->user()->role != 'user'){ 
+        foreach ($projects as $project) {
+          $project = $this->displayFormat($project);
+        }
+      }
+      else{
+        foreach ($projects as $key => $project) {
+          if($project['created_by'] == auth()->user()->email || $project['cegproposalauthor'] == auth()->user()->name || $project['projectmanager'] == auth()->user()->name) {
+              $project = $this->displayFormat($project);
+            }
+          else{
+            unset($projects[$key]);
+            }
+        }
       }
       return view('pages.projectindex', compact('projects')); 
-    }
+      }
     else {
       return redirect('/projectindex')->with('Please enter a search term to search.');
     }
   }
 
+  /**
+   * Queries the database with the passed parameter $id to find the project
+   * with the same id and displays it so the information can be edited.
+   * @param $id
+   * @return view editproject
+   */
   public function edit_project($id)
   {
     $project = Project::find($id);
-    $project['mwsize'] = $this->intDisplay($project['mwsize']);
-    $project['voltage'] = $this->intDisplay($project['voltage']);
-    $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
-    $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
-    $project['datentp'] = $this->dateToStr($project['datentp']);
-    $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+    $project = $this->displayFormat($project);
     return view('pages.editproject', compact('project'));
   }
 
-
+  /**
+  * Queries the database by project code and returns an hours graph for the project.
+  * @param $request - Request variable with attributes to be assigned to $project.
+  * @return array contains labels and dateset
+  */
   public function hours_graph(Request $request)
   {
     $projects = DB::collection('hours_by_project')->get()->sortBy('code');
@@ -491,6 +657,11 @@ class ProjectController extends Controller
     } 
   }
 
+  /**
+   * Finds a project in the database by $id and deletes it from the database.
+   * @param $id
+   * @return redirect /projectindex
+   */
   public function destroy($id)
   {
     $project = Project::find($id);

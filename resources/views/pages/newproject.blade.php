@@ -1,9 +1,9 @@
 @extends('layouts.input')
 
+@section('page-title', 'New Project')
 @section('title', 'Project Insert Form')
 @section('h4proposal', 'New Project - Proposal Details')
 @section('h4won', 'New Project - Won Details')
-
 
 @section('cegproposalauthor', '')
 @section('projectname', '')
@@ -20,11 +20,13 @@
 @section('projectstatus')
   <option>Proposed</option>
   <option>Won</option>
+  <option>Probable</option>
   <option>Expired</option>
 @stop
 
 @section('projectcode', '')
 @section('projectmanager', '')
+@section('projectnotes', '')
 
 
 

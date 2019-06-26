@@ -39,21 +39,42 @@ class ProjectController extends Controller
     $project->dateproposed = $this->strToDate($req->get('dateproposed'));
     $project->datentp = $this->strToDate($req->get('datentp'));
     $project->dateenergization = $this->strToDate($req->get('dateenergization'));
+    $project->monthlypercent = $this->floatConversion($req->get('monthly_percent'));
     $project->projecttype = $req->get('projecttype_checklist');
     $project->epctype = $req->get('epctype_checklist');
     $project->projectstatus = $req->get('projectstatus');
     $project->projectcode = $req->get('projectcode');
     $project->projectmanager = $req->get('projectmanager');
+    $project->projectnotes = $req->get('projectnotes');
     $project->save();
   }
 
-  protected function validate_request($req)
+  protected function validate_request($req, $month = null)
   {
     $this->validate($req, [
       'cegproposalauthor' => 'required',
       'projectname' => 'required',
       'clientcontactname' => 'required'
     ]);
+
+    if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable' || $month != null){         //Randy's edit for Project Won, must require dates & dollar value.
+      $this->validate($req, [
+        'dollarvalueinhouse' => 'required',
+        'datentp' => 'required',
+        'dateenergization' => 'required'
+      ]);
+    }
+  }
+
+  protected function displayFormat($project)
+  {
+    $project['mwsize'] = $this->intDisplay($project['mwsize']);
+    $project['voltage'] = $this->intDisplay($project['voltage']);
+    $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
+    $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
+    $project['datentp'] = $this->dateToStr($project['datentp']);
+    $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+    return $project;
   }
 
   protected function strToDate($date_string)
@@ -70,7 +91,7 @@ class ProjectController extends Controller
     return $date;
   }
 
-  protected function dateToStr($mongo_date)
+  public static function dateToStr($mongo_date)
   {
     if (is_string($mongo_date))
     {
@@ -85,23 +106,14 @@ class ProjectController extends Controller
     return $date_string;
   }
 
-<<<<<<< HEAD
-  protected function projectStatusCheck(Request $req) {
-    if($req['projectstatus'] == 'Won'){
-      if($req['datentp'] == null || $req['dateenergization'] == null) {
-        return -1;
-      }
-    }
-    return 0;
-  }
-
   protected function check_project_box($type, $typeArray) {
     if(isset($typeArray)) {
       if(in_array($type, $typeArray)) {
         return "checked";
       }
     }
-=======
+  }
+
   protected function intCheck($integer)
   {
     if($integer == null || $integer == ""){
@@ -117,7 +129,19 @@ class ProjectController extends Controller
       $integer = "";
     }
     return $integer;
->>>>>>> nullIntCheck
+  }
+
+  protected function floatConversion($percents){
+    if($percents){
+      foreach($percents as $percent){
+        if($percent == null || $percent ==""){
+          $percent = 0;
+        }
+        //$percent = ((float)$percent);     //This works, but as soon as out of foreach its a string
+      } 
+    array_walk($percents, function(&$x){$x = (float)($x);});
+    }
+    return $percents;
   }
 
   public function new_project()
@@ -128,114 +152,50 @@ class ProjectController extends Controller
 
   public function create(Request $request)
   {
-    $this->validate_request($request);
-    $testNum = $this->projectStatusCheck($request);
-    $projectType = $request['projecttype_checklist'];
-    $epcType = $request['epctype_checklist'];
-    if($testNum == -1) {
-      return redirect('/newproject')
-        ->with('message','Please enter a Date NTP & a Date Energization.')
-        ->with('cegproposalauthor', $request['cegproposalauthor'])              //hardcoded
-        ->with('projectname', $request['projectname'])                          //hardcoded
-        ->with('clientcontactname', $request['clientcontactname'])              //hardcoded
-        ->with('clientcompany', $request['clientcompany'])                      //hardcoded
-        ->with('mwsize', $request['mwsize'])                                    //hardcoded
-        ->with('voltage', $request['voltage'])                                  //hardcoded
-        ->with('dollarvalueinhouse', $request['dollarvalueinhouse'])            //hardcoded
-        ->with('dateproposed', $request['dateproposed'])                        //hardcoded
-        ->with('datentp', $request['datentp'])                                  //hardcoded
-        ->with('dateenergization', $request['dateenergization'])                //hardcoded
-
-        ->with('Wind', $this->check_project_box('Wind', $projectType))
-        ->with('Solar', $this->check_project_box('Solar', $projectType))
-        ->with('Storage', $this->check_project_box('Storage', $projectType))
-        ->with('Array', $this->check_project_box('Array', $projectType))
-        ->with('Transmission', $this->check_project_box('Transmission', $projectType))
-        ->with('Substation', $this->check_project_box('Substation', $projectType))
-        ->with('Distribution', $this->check_project_box('Distribution', $projectType))
-        ->with('SCADA', $this->check_project_box('SCADA', $projectType))
-        ->with('Study', $this->check_project_box('Study', $projectType))
-
-        ->with('Electrical Engineering', $this->check_project_box('Electrical Engineering', $epcType))
-        ->with('Civil Engineering', $this->check_project_box('Civil Engineering', $epcType))
-        ->with('Structural/Mechanical Engineering', $this->check_project_box('Structural/Mechanical Engineering', $epcType))
-        ->with('Procurement', $this->check_project_box('Procurement', $epcType))
-        ->with('Construction', $this->check_project_box('Construction', $epcType))
-
-
-        ->with('projectstatus', $request['projectstatus'])                      //hardcoded
-        ->with('projectcode', $request['projectcode'])                          //hardcoded 
-        ->with('projectmanager', $request['projectmanager']);                 //hardcoded
-
-    }
-    else{
+    $this->validate_request($request, $request['']);
     $project = new Project();
+    $project->created_by = auth()->user()->email;
     $this->store($project, $request);
     return redirect('/projectindex')->with('Success!', 'Project has been successfully added.');
-    }
+  }
+
+  public function percentPerMonth(Request $request)
+  {
+    //$this->validate_request($request);
+    //$start_end = $this->get_project_start_end($request);
+    //$start_date = $start_end['start'];
+    //$end_date = $start_end['end']; 
+    //$project_months = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');
+    //$num_months = count($project_months);
+    return view('pages.percentpermonth');
   }
 
   public function update(Request $request, $id)
   {
     $this->validate_request($request);   
-    $testNum = $this->projectStatusCheck($request);
-    $projectType = $request['projecttype_checklist'];
-    $epcType = $request['epctype_checklist'];
-    $project = Project::find($id);
-    
-    if($testNum == -1) {
-      return redirect('/editproject/'.$id)
-      ->with('message','Please enter a Date NTP & a Date Energization.')
-      ->with('cegproposalauthor', $request['cegproposalauthor'])              //hardcoded
-      ->with('projectname', $request['projectname'])                          //hardcoded
-      ->with('clientcontactname', $request['clientcontactname'])              //hardcoded
-      ->with('clientcompany', $request['clientcompany'])                      //hardcoded
-      ->with('mwsize', $request['mwsize'])                                    //hardcoded
-      ->with('voltage', $request['voltage'])                                  //hardcoded
-      ->with('dollarvalueinhouse', $request['dollarvalueinhouse'])            //hardcoded
-      ->with('dateproposed', $request['dateproposed'])                        //hardcoded
-      ->with('datentp', $request['datentp'])                                  //hardcoded
-      ->with('dateenergization', $request['dateenergization'])                //hardcoded
-
-      ->with('Wind', $this->check_project_box('Wind', $projectType))
-      ->with('Solar', $this->check_project_box('Solar', $projectType))
-      ->with('Storage', $this->check_project_box('Storage', $projectType))
-      ->with('Array', $this->check_project_box('Array', $projectType))
-      ->with('Transmission', $this->check_project_box('Transmission', $projectType))
-      ->with('Substation', $this->check_project_box('Substation', $projectType))
-      ->with('Distribution', $this->check_project_box('Distribution', $projectType))
-      ->with('SCADA', $this->check_project_box('SCADA', $projectType))
-      ->with('Study', $this->check_project_box('Study', $projectType))
-
-      ->with('Electrical Engineering', $this->check_project_box('Electrical Engineering', $epcType))
-      ->with('Civil Engineering', $this->check_project_box('Civil Engineering', $epcType))
-      ->with('Structural/Mechanical Engineering', $this->check_project_box('Structural/Mechanical Engineering', $epcType))
-      ->with('Procurement', $this->check_project_box('Procurement', $epcType))
-      ->with('Construction', $this->check_project_box('Construction', $epcType))
-
-
-      ->with('projectstatus', $request['projectstatus'])                      //hardcoded
-      ->with('projectcode', $request['projectcode'])                          //hardcoded 
-      ->with('projectmanager', $request['projectmanager']);                 //hardcoded
-    }else{
+    $project = Project::find($id);  
     $this->store($project, $request);
     return redirect('/projectindex')->with('Success!', 'Project has been successfully updated');
-    }
   }
 
   public function index()
   {
-    $projects=Project::all();
-    foreach($projects as $project)
-    {
-      $project['mwsize'] = $this->intDisplay($project['mwsize']);
-      $project['voltage'] = $this->intDisplay($project['voltage']);
-      $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
-      $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
-      $project['datentp'] = $this->dateToStr($project['datentp']);
-      $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
-    } 
-    return view('pages.projectindex', compact('projects'));
+    if(auth()->user()->role != "user"){
+      $projects=Project::all();
+      foreach($projects as $project)
+      {
+        $project = $this->displayFormat($project);
+      } 
+      return view('pages.projectindex', compact('projects'));
+    }
+    else{
+      $projects=Project::where('cegproposalauthor', auth()->user()->name)->orWhere('projectmanager', auth()->user()->name)->orWhere('created_by', auth()->user()->email)->get();
+      foreach($projects as $project)
+      {
+        $project = $this->displayFormat($project);
+      } 
+      return view('pages.projectindex', compact('projects'));
+    }
   }
 
   protected function get_project_start_end($proj)
@@ -259,127 +219,255 @@ class ProjectController extends Controller
     return $arr;
   }
 
-  public function indexwon()
+  protected function add_dollars($project, $dollars_arr, $months)
   {
-    $projects=Project::all()->where('projectstatus','Won');
-    //1. Get Max end date in order to establish the # of columns needed for the table
-    //Also, get smallest start date to establish the beginning of the array 
-    $start_dates = array();
-    $end_dates = array();
-    foreach($projects as $project)
+    $dollars_arr = $dollars_arr + $project['per_month_dollars'];
+    foreach ($months as $month)
     {
-      $start_end = $this->get_project_start_end($project);
-      $start_date = $start_end['start'];
-      $end_date = $start_end['end']; 
-      //put these in the arrays of all start and end dates
-      array_push($start_dates, $start_date);
-      array_push($end_dates, $end_date);
-      //get the total dollars and divide by number of months.  create an array of that for this specific project 
-      $project_dollars = $project['dollarvalueinhouse'];
-      //need to use the specific start and end for this project 
-      $project_months = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');
-      $num_months = count($project_months);
-      $per_month_dollars = $project_dollars / $num_months;
-      $project_per_month_dollars = array();
-      foreach($project_months as $month)
-      {
-        $project_per_month_dollars[$month] = $per_month_dollars;
-      }
-      $project['per_month_dollars'] = $project_per_month_dollars;
+      $dollars_arr[$month] = round($dollars_arr[$month] + $project['per_month_dollars'][$month], 0);
     }
-    //get the max end date and min start date
-    $earliest_start = min($start_dates);
-    $latest_end = max($end_dates);
-    //create an array of months between these two dates 
-    $months = $this->get_date_interval_array($earliest_start, $latest_end, '1 month', 'M-y'); 
+    return $dollars_arr; 
+  }
 
-    $today = date('M-y'); 
-    //find today in the array of months and remove everything before it 
-    $search_index = array_search($today, $months); 
-    for ($i=0; $i<$search_index; $i++)
-    {
-      unset($months[$i]);
+  public function indexwon(Request $request)
+  {
+    if(auth()->user()->role != 'user'){
+      if($request['projectstatus'] == 'Won'){
+        $projects=Project::all()->where('projectstatus','Won');
+        $projectStatus = "Won";
+      }
+      else if($request['projectstatus'] == 'Probable'){
+        $projects=Project::all()->where('projectstatus','Probable');
+        $projectStatus = "Probable";
+      }
+      else{
+        $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
+        $projectStatus = "All";
+      }
     }
-    //create chart and add the months as labels 
-    $chart = new HoursChart; 
-    #$month_values = array_slice(array_values($months), 0, 12);
-    $month_values = array_values($months);
-    $chart->labels($month_values);
-    $chart_colors = [
-      'rgb(255, 99, 132, 0.4)',
-      'rgb(75, 192, 192, 0.4)',
-      'rgb(255, 159, 64, 0.4)',
-      'rgb(54, 162, 235, 0.4)',
-      'rgb(255, 205, 86, 0.4)',
-      'rgb(153, 102, 255, 0.4)'];
-    //$max_color_counter = count($chart_colors) - 1;
-    //$color_counter = 0; 
-    //now loop through the projects again and update the array to have the months we are displaying, and fill with zeros for the rest
-    $total_dollars = array();
-    foreach($projects as $project)
+    else{
+      if($request['projectstatus'] == 'Won'){
+        $projects=Project::where('projectstatus','Won')->where(function($query){
+          $query->where('cegproposalauthor', auth()->user()->name)
+                ->orWhere('projectmanager', auth()->user()->name)
+                ->orWhere('created_by', auth()->user()->email);
+        })->get();
+        $projectStatus = "Won";
+      }
+      else if($request['projectstatus'] == 'Probable'){
+        $projects=Project::where('projectstatus','Probable')->where(function($query){
+          $query->where('cegproposalauthor', auth()->user()->name)
+                ->orWhere('projectmanager', auth()->user()->name)
+                ->orWhere('created_by', auth()->user()->email);
+        })->get();
+        $projectStatus = "Probable";
+      }
+      else{
+        $projects=Project::where(function($query) {
+          $query->where('projectstatus','Won')->where(function($query2){
+          $query2->where('cegproposalauthor', auth()->user()->name)
+                ->orWhere('projectmanager', auth()->user()->name)
+                ->orWhere('created_by', auth()->user()->email);
+        }); })
+        ->orWhere(function($query) {
+          $query->where('projectstatus','Probable')->where(function($query2){
+          $query2->where('cegproposalauthor', auth()->user()->name)
+                ->orWhere('projectmanager', auth()->user()->name)
+                ->orWhere('created_by', auth()->user()->email);
+        }); })->get();
+        //$projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
+        $projectStatus = "All";
+      }
+    }
+
+    if (count($projects) > 0)
     {
-      //find first key of month array
-      $first_month = array_key_first($months);
-      $new_project_per_month_dollars = array(); 
-      foreach($months as $month)
+      //dd($request); 
+      if (!isset($request['switch_chart_button'])) 
       {
-        //check if each month is in the current project's array.  If it is, then simply put the existing value in the new array
-        //if it isn't, put zero in the new array 
-        if (array_key_exists($month, $project['per_month_dollars']))
-        { 
-          //round to 0 decimals 
-          $new_project_per_month_dollars[$month] = round($project['per_month_dollars'][$month], 0);
+        $chart_type = 'projects';
+      }
+      else
+      { 
+        $chart_type = $request['switch_chart_button'];
+      } 
+      //1. Get Max end date in order to establish the # of columns needed for the table
+      //Also, get smallest start date to establish the beginning of the array 
+      $start_dates = array();
+      $end_dates = array();
+      foreach($projects as $project)
+      {
+        $start_end = $this->get_project_start_end($project);
+        $start_date = $start_end['start'];
+        $end_date = $start_end['end']; 
+        //put these in the arrays of all start and end dates
+        array_push($start_dates, $start_date);
+        array_push($end_dates, $end_date);
+        //get the total dollars and divide by number of months.  create an array of that for this specific project 
+        $project_dollars = $project['dollarvalueinhouse'];
+        //need to use the specific start and end for this project 
+        $project_months = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');
+        $num_months = count($project_months);
+        if($num_months <= 0){
+          $project_per_month_dollars = array();
+          foreach($project_months as $month)
+          {
+            $project_per_month_dollars[$month] = 0;
+          }
+          $project['per_month_dollars'] = $project_per_month_dollars;
+        }
+        else{
+          if (isset($project['monthlypercent']))
+          {
+            //check if all values in the monthly percent array are 0 or if there are non zero elements
+            $temp = array_filter($project['monthlypercent']);
+            if (count($temp) > 0)
+            {
+              $project_per_month_dollars = array();
+              $i = 0;
+              foreach($project_months as $month)
+              {
+                //the only real difference between this and the else, is that we do the per month calc for
+                //each iteration of the foreach loop, rather than all at once.
+                //This could be cleaned up if we had 'monthlypercent' be an associative array with the 
+                //month as the key
+                $per_month_dollars = $project_dollars * $project['monthlypercent'][$i];
+                $project_per_month_dollars[$month] = $per_month_dollars;
+                $i++;
+              }
+            }
+            //if not, do a flat distribution
+            else
+            {
+              $per_month_dollars = $project_dollars / $num_months;
+              $project_per_month_dollars = array();
+              foreach($project_months as $month)
+              {
+                $project_per_month_dollars[$month] = $per_month_dollars;
+              }
+            }
+          }
+          else
+          {
+            $per_month_dollars = $project_dollars / $num_months;
+              $project_per_month_dollars = array();
+              foreach($project_months as $month)
+              {
+                $project_per_month_dollars[$month] = $per_month_dollars;
+              }
+          }
+          $project['per_month_dollars'] = $project_per_month_dollars;
+        }
+      }
+      //get the max end date and min start date
+      $earliest_start = min($start_dates);
+      $latest_end = max($end_dates);
+      //create an array of months between these two dates 
+      $months = $this->get_date_interval_array($earliest_start, $latest_end, '1 month', 'M-y'); 
+
+      $today = date('M-y'); 
+      //find today in the array of months and remove everything before it 
+      $search_index = array_search($today, $months); 
+      for ($i=0; $i<$search_index; $i++)
+      {
+        unset($months[$i]);
+      }
+      //create chart and add the months as labels 
+      $chart = new HoursChart; 
+      #$month_values = array_slice(array_values($months), 0, 12);
+      $month_values = array_values($months);
+      $chart->labels($month_values);
+      $chart_colors = [
+        'rgb(255, 99, 132, 0.4)',
+        'rgb(75, 192, 192, 0.4)',
+        'rgb(255, 159, 64, 0.4)',
+        'rgb(54, 162, 235, 0.4)',
+        'rgb(255, 205, 86, 0.4)',
+        'rgb(153, 102, 255, 0.4)'];
+      $max_color_counter = count($chart_colors) - 1;
+      $color_counter = 0; 
+      //now loop through the projects again and update the array to have the months we are displaying, and fill with zeros for the rest
+      $total_dollars_won = array();
+      $total_dollars_probable = array();
+      $total_dollars_total = array();
+
+      foreach($projects as $project)
+      {
+        //find first key of month array
+        $first_month = array_key_first($months);
+        $new_project_per_month_dollars = array(); 
+        foreach($months as $month)
+        {
+          //check if each month is in the current project's array.  If it is, then simply put the existing value in the new array
+          //if it isn't, put zero in the new array 
+          if (array_key_exists($month, $project['per_month_dollars']))
+          { 
+            //round to 0 decimals 
+            $new_project_per_month_dollars[$month] = round($project['per_month_dollars'][$month], 0);
+          }
+          else 
+          {
+            $new_project_per_month_dollars[$month] = 0;
+          } 
+        }
+        //now re-write the project data with the new array 
+        $project['per_month_dollars'] = $new_project_per_month_dollars;
+        if ($project['projectstatus'] == 'Won')
+        {
+          $total_dollars_won = $this->add_dollars($project, $total_dollars_won, $months);
         }
         else 
         {
-          $new_project_per_month_dollars[$month] = 0;
-        } 
-      }
-      //now re-write the project data with the new array 
-      $project['per_month_dollars'] = $new_project_per_month_dollars;  
-      $total_dollars = $total_dollars + $project['per_month_dollars'];  
-      foreach ($months as $month)
-      {
-        $total_dollars[$month] = round($total_dollars[$month] + $project['per_month_dollars'][$month], 0);
-      }
-      //need these three lines for proper date formatting 
-      $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
-      $project['datentp'] = $this->dateToStr($project['datentp']);
-      $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
-      //add the project hours to the chart as a dataset 
-      //$dollar_values = array_slice(array_values($project['per_month_dollars']), 0, 12);
-      //$chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options([
-      //  'scales' => [
-      //    'xAxes' => [ 
-      //      'stacked' => 'true'],
-      //    'yAxes' => [
-      //      'stacked' => 'false', 
-      //      'ticks' => [
-      //        'beginAtZero' => 'true']]],
-      //  'backgroundColor' => $chart_colors[1]]);
-      //$color_counter++;
-      //if ($color_counter > $max_color_counter)
-      //{
-      //  $color_counter = 0;
-      //} 
-    }
-    $dollar_values = array_values($total_dollars); 
-    $chart->dataset("Total Project Dollars Per Month", 'bar', $dollar_values)->options([
-      'scales' => [
-          'xAxes' => [ 
-            'stacked' => 'true'],
-          'yAxes' => [
-            'stacked' => 'false', 
-            'ticks' => [
-              'beginAtZero' => 'true']]],
-        'backgroundColor' => $chart_colors[1]]);
-    //format total dollars with commas
-    //foreach($months as $month)
-    //{
-    //  $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
-    //} 
+          $total_dollars_probable = $this->add_dollars($project, $total_dollars_probable, $months);
+        }
+        //formats the project data in order to display properly
+        $project = $this->displayFormat($project);
 
-    return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart')); 
+        if ($chart_type == 'projects')
+        {
+          //add the project hours to the chart as a dataset 
+          $dollar_values = array_values($project['per_month_dollars']);
+          $chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options(['backgroundColor' => $chart_colors[$color_counter]]);
+          $color_counter++;
+          if ($color_counter > $max_color_counter)
+          {
+            $color_counter = 0;
+          }
+        }
+      }
+      
+      $total_dollars = $total_dollars_won + $total_dollars_probable; 
+<<<<<<< HEAD
+      $dollar_values_won = array_values($total_dollars_won);
+      $dollar_values_probable = array_values($total_dollars_probable);
+      $chart->dataset("Won Project Dollars Per Month", 'bar', $dollar_values_won)->options(['backgroundColor' => $chart_colors[1]]);
+      $chart->dataset("Probable Project Dollars Per Month", 'bar', $dollar_values_probable)->options(['backgroundColor' => $chart_colors[0]]);
+=======
+      if ($chart_type == 'won_prob')
+      {
+        $dollar_values_won = array_values($total_dollars_won); 
+        $dollar_values_probable = array_values($total_dollars_probable);
+        $chart->dataset("Won Project Dollars Per Month", 'bar', $dollar_values_won)->options(['backgroundColor' => $chart_colors[1]]);
+        $chart->dataset("Probable Project Dollars Per Month", 'bar', $dollar_values_probable)->options(['backgroundColor' => $chart_colors[0]]);
+      }
+>>>>>>> bar_graph_switch
+      $options = [];
+      $options['scales']['xAxes'][]['stacked'] = true;
+      $options['scales']['yAxes'][]['stacked'] = true;
+      $chart->options($options);
+      #dd($chart); 
+      //format total dollars with commas
+      //foreach($months as $month)
+      //{
+      //  $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
+      //} 
+
+      return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart', 'projectStatus', 'chart_type')); 
+    }
+    else 
+    {
+      return view('pages.wonprojectsummary', compact('projects'));
+    }
   }
 
 
@@ -390,12 +478,7 @@ class ProjectController extends Controller
     if (isset($term)) { 
       $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
       foreach ($projects as $project) {
-        $project['mwsize'] = $this->intDisplay($project['mwsize']);
-        $project['voltage'] = $this->intDisplay($project['voltage']);
-        $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
-        $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
-        $project['datentp'] = $this->dateToStr($project['datentp']);
-        $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+        $project = $this->displayFormat($project);
       }
       return view('pages.projectindex', compact('projects')); 
     }
@@ -407,12 +490,7 @@ class ProjectController extends Controller
   public function edit_project($id)
   {
     $project = Project::find($id);
-    $project['mwsize'] = $this->intDisplay($project['mwsize']);
-    $project['voltage'] = $this->intDisplay($project['voltage']);
-    $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
-    $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
-    $project['datentp'] = $this->dateToStr($project['datentp']);
-    $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+    $project = $this->displayFormat($project);
     return view('pages.editproject', compact('project'));
   }
 
@@ -474,7 +552,6 @@ class ProjectController extends Controller
     if (isset($chart_info))
     {
       $chart = new HoursChart;
-      dd($chart_info['labels']);
       $chart->labels($chart_info['labels']);
       $chart->dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2])->options([
         'borderColor'=>'#3cba9f', 'fill' => False]);

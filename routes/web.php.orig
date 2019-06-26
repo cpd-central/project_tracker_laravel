@@ -15,11 +15,20 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+#Stevewashere
 Route::get('/newproject', 'ProjectController@new_project')->name('pages.newproject')->middleware('verified');
 Route::post('/newproject', 'ProjectController@create')->middleware('verified');
 
+<<<<<<< HEAD
 Route::get('/projectindex', 'ProjectController@index')->name('pages.projectindex')->middleware('verified');
+Route::post('/projectindex', 'ProjectController@search')->middleware('verified');
+=======
+//percentPerMonth Route
+Route::get('/percentpermonth','ProjectController@percentPerMonth');
+
+Route::get('/projectindex', 'ProjectController@index')->name('pages.projectindex');
 Route::post('/projectindex', 'ProjectController@search');
+>>>>>>> jqueryPercentMonthly
 
 Route::get('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummary')->middleware('verified');
 Route::post('/wonprojectsummary', 'ProjectController@search')->middleware('verified');
