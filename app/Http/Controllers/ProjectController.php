@@ -492,11 +492,11 @@ class ProjectController extends Controller
 
   public function hours_graph(Request $request)
   {
-    $projects = DB::collection('hours_by_project')->get()->sortBy('code');
+    $projects = Project::whereRaw(['projectcode' => ['$ne' => null]])->get()->sortBy('code');
 
     function get_chart_info($id)
     {
-      $selected_project = DB::collection('hours_by_project')->where('_id', $id)->first();
+      $selected_project = Project::where('_id', $id)->first();
 
       if ($selected_project)
       {
