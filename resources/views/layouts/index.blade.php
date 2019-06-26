@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+  <title id="page-title">@yield('page-title')</title>
   <head>
     @include('includes.navbar')
   </head>

@@ -13,6 +13,7 @@
   </div>
   @stop
 
+  @section('page-title', 'Project Index')
   @section('table-title', 'Project Index')
   @section('table-header')
   <table class="table table-striped">
