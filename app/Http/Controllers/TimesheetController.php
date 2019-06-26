@@ -95,12 +95,12 @@ class TimesheetController extends Controller
 
     public function check(Request $request)
     {
-        // $result = Timesheet::where('user', auth()->user()->email);
-        // if($result){
-        //     $this->edit($result);
-        // }
-        // else{
-        //    $this->index();
+        $timesheet = Timesheet::where('user', auth()->user()->email)->get();
+        //if($timesheet){
+        //    $this->edit($timesheet);
+        //}
+        //else{
+            return view('pages.timesheet');
         //}
     }
 

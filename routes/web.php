@@ -44,7 +44,7 @@ Route::get('/home', 'ProjectController@index')->name('home')->middleware('verifi
 #save this for later, for now, home will redirect to project index
 #Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/timesheet', 'TimesheetController@index')->name('pages.timesheet')->middleware('verified');
+Route::get('/timesheet', 'TimesheetController@check')->name('pages.timesheet')->middleware('verified');
 Route::post('/timesheet', 'TimesheetController@create')->name('pages.timesheetSave')->middleware('verified');
 //Route::post('/timesheet', 'TimesheetController@index')->name('pages.timesheetSearch')->middleware('verified');
 
