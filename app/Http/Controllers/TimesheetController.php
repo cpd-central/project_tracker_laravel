@@ -93,15 +93,15 @@ class TimesheetController extends Controller
     }
 
 
-    public function check(Request $request)
+    public function check()
     {
         $timesheet = Timesheet::where('user', auth()->user()->email)->get();
-        //if($timesheet){
-        //    $this->edit($timesheet);
-        //}
-        //else{
-            return view('pages.timesheet');
-        //}
+        if($timesheet){
+            return $this->edit($timesheet);
+        }
+        else{
+            return $this->index();
+        }
     }
 
 
