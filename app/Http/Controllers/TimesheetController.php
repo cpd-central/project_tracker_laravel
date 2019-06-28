@@ -71,6 +71,8 @@ class TimesheetController extends Controller
         $total_number_presses = (int) $request->get('total_button_presses');
         if($total_number_presses != 0) {
             $row = 5;
+            $arrayCodes = array();
+            $descriptions = array();
             for($i = 0; $i < $total_number_presses; $i++){
                 $string = 'row5';
                 if($request->get('row'.$row) != null){
@@ -79,6 +81,17 @@ class TimesheetController extends Controller
                         $string = $request->get('Product_Description_row_'.$row);
                         $arr[$string] = $this->databasePrep($request->get('row'.$row));
                         $code = $request->get('codeadd'.$row);
+
+                        if(array_key_exists($code, $arrayCodes)){
+                            $descriptions = $arrayCodes[$code];
+                            array_push($descriptions, $string);
+                            $arrayCodes[$code] = $descriptions;
+                        }
+                        else{
+                            $descriptions = array();
+                            array_push($descriptions, $string);
+                            $arrayCodes[$code] = $descriptions;
+                        }
                         if($timesheet->$code != null){
                             $timesheet->$code = array_merge($timesheet->$code, $arr);   //might need to be fixed in future with edit
                         }
@@ -89,6 +102,7 @@ class TimesheetController extends Controller
                 }
                 $row++;
             }
+            $timesheet->codes = $arrayCodes;
         }
         $timesheet->save();
     }

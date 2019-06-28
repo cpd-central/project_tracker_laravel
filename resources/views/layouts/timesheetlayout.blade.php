@@ -59,9 +59,9 @@
                         <?php $code = array('CEG', 'CEG', 'CEGTRNG', 'CEGEDU', 'CEGMKTG') ?>
                         @for($row = 0; $row < count($array); $row++)  
                         @if(isset($timesheet))
-                        <?php $codeOffset = $code[$row]?>         
-                        <?php $descOffset = $array[$row]?>
-                        <?php $dayarray = $timesheet[$codeOffset][$descOffset] ?>
+                        <?php $codeOffset = $code[$row];         
+                              $descOffset = $array[$row];
+                              $dayarray = $timesheet[$codeOffset][$descOffset] ?>
                         @endif
                       <tr id="row{{$row}}">
                             <td style="width: 12%">
@@ -80,7 +80,37 @@
                             </td>
                         </tr>   
                         @endfor 
-
+                        @if(isset($timesheet))
+                          @if(count($timesheet['codes']) > 0)
+                          <?php $row = 5 ?>
+                            @for($i = 0; $i < count(array_keys($timesheet['codes'])); $i++)
+                              <?php $codeKeyArray = array_keys($timesheet['codes']);
+                              $code = $codeKeyArray[$i] ?>
+                              @if(count($timesheet[$code]) > 0)
+                                @for($index = 0; $index < count(array_keys($timesheet[$code])); $index++)
+                                  <?php $productDesc = array_keys($timesheet[$code])?> 
+                                  <tr id="row{{$row}}">
+                                      <td style="width: 12%">
+                                          <input type="text" class="form-control" name="Custom row {{$index}}" value="<?=$productDesc[$index]?>" readonly>
+                                      </td>
+                                      @for($day = 1; $day <= 14; $day++)
+                                      <td style="width: 5%">
+                                        <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="<?=$timesheet[$code][$productDesc[$index]][$day - 1]?>"/>
+                                      </td>
+                                      @endfor
+                                      <td style="width: 7%">
+                                        <input type="text" class="form-control" name="codeadd {{$row}}" value="<?=$codeKeyArray[$i]?>" readonly>
+                                      </td>
+                                      <td>
+                                        <button type="button" class="btn btn-warning text-warning">_</button>
+                                      </td>
+                                  </tr>   
+                                  <?php $row++; ?>
+                                @endfor
+                              @endif
+                            @endfor
+                          @endif
+                        @endif
                     </table>
         </div>
         <div class="row">
@@ -97,7 +127,7 @@
 
 
     <script type="text/javascript">
-    var row = 4;
+    var row = "<?php echo $row ?>" -1;
     total_button_presses = 0;
     $(document).ready(function() {
       columnTotal();
