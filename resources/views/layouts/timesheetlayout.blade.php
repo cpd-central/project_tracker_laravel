@@ -80,7 +80,7 @@
                             </td>
                         </tr>   
                         @endfor 
-                        @if(isset($timesheet))
+                        @if(isset($timesheet['Additional_Codes']))
                           @if(count($timesheet['Additional_Codes']) > 0)
                           <?php $row = 5 ?>
                             @for($i = 0; $i < count(array_keys($timesheet['Additional_Codes'])); $i++)
