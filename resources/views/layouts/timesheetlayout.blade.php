@@ -81,17 +81,17 @@
                         </tr>   
                         @endfor 
                         @if(isset($timesheet))
-                          @if(count($timesheet['codes']) > 0)
+                          @if(count($timesheet['Additional_Codes']) > 0)
                           <?php $row = 5 ?>
-                            @for($i = 0; $i < count(array_keys($timesheet['codes'])); $i++)
-                              <?php $codeKeyArray = array_keys($timesheet['codes']);
+                            @for($i = 0; $i < count(array_keys($timesheet['Additional_Codes'])); $i++)
+                              <?php $codeKeyArray = array_keys($timesheet['Additional_Codes']);
                               $code = $codeKeyArray[$i] ?>
                               @if(count($timesheet[$code]) > 0)
                                 @for($index = 0; $index < count(array_keys($timesheet[$code])); $index++)
                                   <?php $productDesc = array_keys($timesheet[$code])?> 
                                   <tr id="row{{$row}}">
                                       <td style="width: 12%">
-                                          <input type="text" class="form-control" name="Custom row {{$index}}" value="<?=$productDesc[$index]?>" readonly>
+                                          <input type="text" class="form-control" name="Product Description row {{$row}}" value="<?=$productDesc[$index]?>">
                                       </td>
                                       @for($day = 1; $day <= 14; $day++)
                                       <td style="width: 5%">
@@ -99,10 +99,10 @@
                                       </td>
                                       @endfor
                                       <td style="width: 7%">
-                                        <input type="text" class="form-control" name="codeadd {{$row}}" value="<?=$codeKeyArray[$i]?>" readonly>
+                                        <input type="text" class="form-control" name="codeadd{{$row}}" value="<?=$codeKeyArray[$i]?>">
                                       </td>
-                                      <td>
-                                        <button type="button" class="btn btn-warning text-warning">_</button>
+                                      <td> 
+                                          <button type="button" id="row{{$row}}" class="btn btn-danger btn_remove">-</button>
                                       </td>
                                   </tr>   
                                   <?php $row++; ?>
@@ -132,12 +132,14 @@
     $(document).ready(function() {
       columnTotal();
       addRowTotal();
+      hiddenField();
         $("#add").on('click', function() {
             row++;
             addRow();
             columnTotal();
             addRowTotal();
-            hiddenField();
+            hiddenField();       
+            total_button_presses++;
         }); 
 
         $("#dynamic_field").on('click', '.btn_remove', function() {
@@ -221,11 +223,13 @@
     }
 
     function hiddenField(){
-      total_button_presses++;
       $('#total_button_presses_row').remove();
       var input = '<tr id="total_button_presses_row">' +
                     '<td>' +
                     '<input type="hidden" id="total_button_presses" name="total_button_presses" value="'+total_button_presses+'" readonly />' +
+                    '</td>' +
+                    '<td>' +
+                    '<input type="hidden" id="row_total" name="row_total" value="'+row+'" readonly />' +
                     '</td>' +
                     '</tr>';
       $('#dynamic_field').append(input);

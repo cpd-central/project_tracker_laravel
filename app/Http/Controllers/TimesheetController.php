@@ -68,19 +68,17 @@ class TimesheetController extends Controller
         $CEGMKTG['General Marketing'] = $this->databasePrep($request->get('row4'));
         $timesheet->CEGMKTG = $CEGMKTG;
         //Added rows
-        $total_number_presses = (int) $request->get('total_button_presses');
-        if($total_number_presses != 0) {
-            $row = 5;
+        $row = (int) $request->get('row_total');
+        if($row > 4) {
             $arrayCodes = array();
             $descriptions = array();
-            for($i = 0; $i < $total_number_presses; $i++){
-                $string = 'row5';
-                if($request->get('row'.$row) != null){
-                    if(array_sum($request->get('row'.$row)) > 0){
+            for($i = 5; $i <= $row; $i++){
+                if($request->get('row'.$i) != null){
+                    if(array_sum($request->get('row'.$i)) > 0){
                         $arr = array();
-                        $string = $request->get('Product_Description_row_'.$row);
-                        $arr[$string] = $this->databasePrep($request->get('row'.$row));
-                        $code = $request->get('codeadd'.$row);
+                        $string = $request->get('Product_Description_row_'.$i);
+                        $arr[$string] = $this->databasePrep($request->get('row'.$i));
+                        $code = $request->get('codeadd'.$i);
 
                         if(array_key_exists($code, $arrayCodes)){
                             $descriptions = $arrayCodes[$code];
@@ -100,9 +98,8 @@ class TimesheetController extends Controller
                         }
                     }
                 }
-                $row++;
             }
-            $timesheet->codes = $arrayCodes;
+            $timesheet->Additional_Codes = $arrayCodes;
         }
         $timesheet->save();
     }
