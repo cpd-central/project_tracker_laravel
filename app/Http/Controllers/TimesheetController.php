@@ -95,8 +95,9 @@ class TimesheetController extends Controller
 
     public function check()
     {
-        $timesheet = Timesheet::where('user', auth()->user()->email)->get();
-        if($timesheet){
+        $collection = Timesheet::where('user', auth()->user()->email)->get();
+        if($collection->contains('Timesheet')){
+            $timesheet = $collection[0];
             return $this->edit($timesheet);
         }
         else{
