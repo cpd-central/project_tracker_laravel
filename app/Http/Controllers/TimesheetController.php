@@ -19,6 +19,7 @@ class TimesheetController extends Controller
         return $array;
     }
 
+
     /**
      * Display a listing of the resource.
      *
@@ -96,7 +97,7 @@ class TimesheetController extends Controller
     public function check()
     {
         $collection = Timesheet::where('user', auth()->user()->email)->get();
-        if($collection->contains('Timesheet')){
+        if(!$collection->isEmpty()){
             $timesheet = $collection[0];
             return $this->edit($timesheet);
         }

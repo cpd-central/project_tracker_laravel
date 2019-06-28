@@ -58,16 +58,18 @@
                         <?php $array = array('General and Admin', 'Staff Meetings and HR', 'Research and Training', 'Formal EDU', 'General Marketing') ?>
                         <?php $code = array('CEG', 'CEG', 'CEGTRNG', 'CEGEDU', 'CEGMKTG') ?>
                         @for($row = 0; $row < count($array); $row++)  
+                        @if(isset($timesheet))
                         <?php $codeOffset = $code[$row]?>         
                         <?php $descOffset = $array[$row]?>
                         <?php $dayarray = $timesheet[$codeOffset][$descOffset] ?>
+                        @endif
                       <tr id="row{{$row}}">
                             <td style="width: 12%">
                                 <input type="text" class="form-control" name="{{$array[$row]}}" value="{{$array[$row]}}" readonly>
                             </td>
                             @for($i = 1; $i <= 14; $i++)
                             <td style="width: 5%">
-                            <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}[]" value="@if($dayarray[$i - 1]){{$dayarray[$i - 1]}}@endif"/>
+                            <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}[]" value="@if(isset($dayarray[$i - 1])){{$dayarray[$i - 1]}}@endif"/>
                             </td>
                             @endfor
                             <td style="width: 7%">
