@@ -14,12 +14,11 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
-#class User extends Eloquent implements AuthenticatableContract, MustVerifyEmailContract, CanResetPasswordContract
-class User extends Eloquent implements AuthenticatableContract, CanResetPasswordContract
+class User extends Eloquent implements AuthenticatableContract, MustVerifyEmailContract, CanResetPasswordContract
 {
   use Authenticatable;	
   use Notifiable;
-  #use MustVerifyEmail;
+  use MustVerifyEmail;
   use CanResetPassword;
 
   protected $connection = 'mongodb';
