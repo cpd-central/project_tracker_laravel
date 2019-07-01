@@ -99,7 +99,9 @@ class TimesheetController extends Controller
                     }
                 }
             }
-            $timesheet->Additional_Codes = $arrayCodes;
+            if(count($arrayCodes) > 0){
+                $timesheet->Additional_Codes = $arrayCodes;
+            }
         }
         $timesheet->save();
     }

@@ -128,7 +128,6 @@
 
     <script type="text/javascript">
     var row = "<?php echo $row ?>" -1;
-    total_button_presses = 0;
     $(document).ready(function() {
       columnTotal();
       addRowTotal();
@@ -139,12 +138,12 @@
             columnTotal();
             addRowTotal();
             hiddenField();       
-            total_button_presses++;
         }); 
 
         $("#dynamic_field").on('click', '.btn_remove', function() {
             var button_id = $(this).attr("id");
             $('#'+button_id+'').remove();
+            hiddenField();
             columnTotal();
         });
 
@@ -223,11 +222,8 @@
     }
 
     function hiddenField(){
-      $('#total_button_presses_row').remove();
-      var input = '<tr id="total_button_presses_row">' +
-                    '<td>' +
-                    '<input type="hidden" id="total_button_presses" name="total_button_presses" value="'+total_button_presses+'" readonly />' +
-                    '</td>' +
+      $('#total_rows').remove();
+      var input = '<tr id="total_rows">' +
                     '<td>' +
                     '<input type="hidden" id="row_total" name="row_total" value="'+row+'" readonly />' +
                     '</td>' +
