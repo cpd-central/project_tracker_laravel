@@ -65,7 +65,18 @@
       <td>{{ $project['dateenergization'] }}</td>
       <td>{{ $project['projectstatus']}}</td > 
       <td>{{ $project['projectcode'] }}</td>
-      <td>{{ $project['projectmanager'] }}</td>
+      <td><?php $projectmanagers = "";
+        if($project['projectmanager'] != null){
+          for($i=1; $i <= count($project['projectmanager']); $i++){
+            if($i == count($project['projectmanager'])){
+              $projectmanagers = $projectmanagers.$project['projectmanager'][$i-1];
+            }
+            else{
+              $projectmanagers = $projectmanagers.$project['projectmanager'][$i-1].', ';
+            }
+          }
+        }
+        echo $projectmanagers?></td>
     </tr>
     @endforeach 
     @stop

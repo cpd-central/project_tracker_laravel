@@ -172,11 +172,14 @@ class ProjectController extends Controller
    */
   protected function managerCheck($managers)
   {
-    $managerList = list();
-    if(isset($manager)){
-
+    if(isset($managers)){
+      $managerList = explode(',', $managers);
+      array_walk($managerList, function(&$x){$x = trim($x);});
+      return $managerList;
     }
-    return $managerList;
+    else{
+      return null;
+    }
   }
 
   /**
@@ -579,7 +582,21 @@ class ProjectController extends Controller
   {
     $term = $request['search'];
     if (isset($term)) {
-      $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
+      // $projectsAll = Project::all();
+      // $projectsManagers = collect([]);
+      // foreach($projectsAll as $project){
+      //   if($project['projectmanager'] != null){
+      //     for($i=0; $i < count($project['projectmanager']); $i++){
+      //       if($project['projectmanager'][$i] == auth()->user()->name){
+      //         $projectsManagers->push($project['projectmanager'][$i]);
+      //       }
+      //     }
+      //   }
+      // }
+      $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get(); 
+      // foreach($projectsManagers as $pm){
+      //   $projects->merge($pm);
+      // }
       if(auth()->user()->role != 'user'){ 
         foreach ($projects as $project) {
           $project = $this->displayFormat($project);
