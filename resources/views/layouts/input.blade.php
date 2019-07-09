@@ -97,11 +97,11 @@
         <div class="row">
           <div class="form-group col-md-4">
             <label for="mwsize">MW Size:</label>
-            <input type="number" class="form-control" name="mwsize" value="@if(old('mwsize')){{ old('mwsize') }}@else<?= $__env->yieldContent('mwsize')?>@endif">
+            <input type="number" class="form-control" step=0.001 name="mwsize" value="@if(old('mwsize')){{ old('mwsize') }}@else<?= $__env->yieldContent('mwsize')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="voltage">Voltage:</label>
-            <input type="number" class="form-control" name="voltage" value="@if(old('voltage')){{ old('voltage') }}@else<?= $__env->yieldContent('voltage')?>@endif">
+            <input type="number" class="form-control" step=0.001 name="voltage" value="@if(old('voltage')){{ old('voltage') }}@else<?= $__env->yieldContent('voltage')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="dollarvalueinhouse">Dollar Value (in-house expense):</label>

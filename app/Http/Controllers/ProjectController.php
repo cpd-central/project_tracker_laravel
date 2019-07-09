@@ -38,8 +38,8 @@ class ProjectController extends Controller
     $project->projectname= $req->get('projectname');
     $project->clientcontactname= $req->get('clientcontactname');
     $project->clientcompany = $req->get('clientcompany');
-    $project->mwsize = $this->intCheck($req->get('mwsize'));
-    $project->voltage = $this->intCheck($req->get('voltage'));
+    $project->mwsize = $this->floatCheck($req->get('mwsize'));
+    $project->voltage = $this->floatCheck($req->get('voltage'));
     $project->dollarvalueinhouse = $this->intCheck($req->get('dollarvalueinhouse'));
     $project->dateproposed = $this->strToDate($req->get('dateproposed'));
     $project->datentp = $this->strToDate($req->get('datentp'));
@@ -84,9 +84,9 @@ class ProjectController extends Controller
    */
   protected function displayFormat($project)
   {
-    $project['mwsize'] = $this->intDisplay($project['mwsize']);
-    $project['voltage'] = $this->intDisplay($project['voltage']);
-    $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
+    $project['mwsize'] = $this->numDisplay($project['mwsize']);
+    $project['voltage'] = $this->numDisplay($project['voltage']);
+    $project['dollarvalueinhouse'] = $this->numDisplay($project['dollarvalueinhouse']);
     $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
     $project['datentp'] = $this->dateToStr($project['datentp']);
     $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
@@ -148,19 +148,33 @@ class ProjectController extends Controller
       return ((int)$integer);
   }
 
+    /**
+   * Checks if inputted number field was left blank. Assigns the number -1 and
+   * parses it from String to Integer.
+   * @param $integer - inputted number to be checked and converted. 
+   * @return $integer
+   */
+  protected function floatCheck($float)
+  {
+    if($float == null || $float == ""){
+        $float = -1;
+    }
+      return ((float)$float);
+  }
+
   /**
   * If the number from the database was -1, it was originally null. Changes the value to null
   * and return its.
   * @param $integer - integer received from mongoDB. 
   * @return $integer
   */
-  protected function intDisplay($integer)
+  protected function numDisplay($num)
   {
-    if($integer == -1)
+    if($num == -1)
     {
-      $integer = "";
+      $num = "";
     }
-    return $integer;
+    return $num;
   }
 
   /**
