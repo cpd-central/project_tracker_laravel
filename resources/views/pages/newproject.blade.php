@@ -24,6 +24,7 @@
   <option>Won</option>
   <option>Probable</option>
   <option>Expired</option>
+  <option>Done and Billing Complete</option>
 @stop
 
 @section('projectcode', '')

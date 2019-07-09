@@ -115,21 +115,31 @@
   <option selected="selected">Won</option>
   <option>Probable</option>
   <option>Expired</option>
+  <option>Done and Billing Complete</option>
 @elseif ($project['projectstatus'] == 'Expired')
   <option>Proposed</option>
   <option>Won</option>
   <option>Probable</option>
   <option selected="selected">Expired</option>
+  <option>Done and Billing Complete</option>
 @elseif ($project['projectstatus'] == 'Probable')
   <option>Proposed</option>
   <option>Won</option>
   <option selected="selected">Probable</option>
   <option>Expired</option>
+  <option>Done and Billing Complete</option>
+@elseif ($project['projectstatus'] == 'Done and Billing Complete')
+  <option>Proposed</option>
+  <option>Won</option>
+  <option>Probable</option>
+  <option>Expired</option>
+  <option selected="selected">Done and Billing Complete</option>
 @else
   <option selected="selected">Proposed</option>
   <option>Won</option>
   <option>Probable</option>
   <option>Expired</option>
+  <option>Done and Billing Complete</option>
 @endif
 @stop
 
