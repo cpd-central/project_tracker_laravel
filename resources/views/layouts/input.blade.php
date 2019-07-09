@@ -73,20 +73,25 @@
             <label for="cegproposalauther">CEG Proposal Author</label>
           <input type="text" class="form-control" name="cegproposalauthor" value="@if(old('cegproposalauthor')){{ old('cegproposalauthor') }} @else<?= $__env->yieldContent('cegproposalauthor')?>@endif">
           </div>
-        </div>
-        <div class="row">
           <div class="form-group col-md-4">
             <label for="projectname">Project Name:</label>
-
-
             <input type="text" class="form-control" name="projectname" value="@if(old('projectname')){{ old('projectname') }} @else<?= $__env->yieldContent('projectname')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="clientcontactname">Client Contact Name:</label>
             <input type="text" class="form-control" name="clientcontactname" value="@if(old('clientcontactname')){{ old('clientcontactname') }} @else<?= $__env->yieldContent('clientcontactname')?>@endif">
           </div>
-          
+        </div>
 
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="state">State:</label>
+            <input type="text" class="form-control" name="state" value="@if(old('state')){{ old('state') }} @else<?= $__env->yieldContent('state')?>@endif">
+          </div>	
+        <div class="form-group col-md-4">
+          <label for="utility">Utility:</label>
+          <input type="text" class="form-control" name="utility" value="@if(old('utility')){{ old('utility') }} @else<?= $__env->yieldContent('utility')?>@endif">
+        </div>	
           <div class="form-group col-md-4">
             <label for="clientcompany">Client Company:</label>
             <input type="text" class="form-control" name="clientcompany" value="@if(old('clientcompany')){{ old('clientcompany') }} @else<?= $__env->yieldContent('clientcompany')?>@endif">

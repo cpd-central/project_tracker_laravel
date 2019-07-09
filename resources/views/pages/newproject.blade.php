@@ -8,6 +8,8 @@
 @section('cegproposalauthor', '')
 @section('projectname', '')
 @section('clientcompany', '')
+@section('state', '')
+@section('utility', '')
 @section('clientcontactname', '')
 @section('mwsize', '')
 @section('voltage', '')

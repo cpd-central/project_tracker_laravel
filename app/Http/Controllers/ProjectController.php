@@ -38,6 +38,8 @@ class ProjectController extends Controller
     $project->projectname= $req->get('projectname');
     $project->clientcontactname= $req->get('clientcontactname');
     $project->clientcompany = $req->get('clientcompany');
+    $project->state = $req->get('state');
+    $project->utility = $req->get('utility');
     $project->mwsize = $this->floatCheck($req->get('mwsize'));
     $project->voltage = $this->floatCheck($req->get('voltage'));
     $project->dollarvalueinhouse = $this->intCheck($req->get('dollarvalueinhouse'));

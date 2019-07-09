@@ -24,6 +24,8 @@
 @section('cegproposalauthor', $project['cegproposalauthor'])
 @section('projectname', $project['projectname'])
 @section('clientcontactname', $project['clientcontactname'])
+@section('state', $project['state'])
+@section('utility', $project['utility'])
 @section('clientcompany', $project['clientcompany'])
 @section('mwsize', $project['mwsize'])
 @section('voltage', $project['voltage'])

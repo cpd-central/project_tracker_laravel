@@ -23,6 +23,8 @@
         <th>Project Name</th>
         <th>Client Contact</th>
         <th>Client Company</th>
+        <th>State</th>
+        <th>Utility</th>
         <th>MW</th>
         <th>Voltage</th> 
         <th>CEG In-house Budget</th>
@@ -50,6 +52,8 @@
       <td>{{ $project['projectname']}}</td >
       <td>{{ $project['clientcontactname'] }}</td>
       <td>{{ $project['clientcompany'] }}</td>
+      <td>{{ $project['state'] }}</td>
+      <td>{{ $project['utility'] }}</td>
       <td>{{ $project['mwsize'] }}</td>
       <td>{{ $project['voltage'] }}</td>  
       @if (is_string($project['dollarvalueinhouse'])) 
