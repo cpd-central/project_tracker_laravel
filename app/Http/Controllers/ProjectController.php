@@ -492,7 +492,7 @@ class ProjectController extends Controller
 
   public function hours_graph(Request $request)
   {
-    $projects = Project::whereRaw(['projectcode' => ['$ne' => null]])->get()->sortBy('code');
+    $projects = Project::whereRaw(['$and' => array(['projectcode' => ['$ne' => null]], ['hours_data' => ['$exists' => 'true']])])->get()->sortBy('projectname');
 
     function get_chart_info($id)
     {
