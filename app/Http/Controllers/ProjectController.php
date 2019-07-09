@@ -51,7 +51,7 @@ class ProjectController extends Controller
     $project->epctype = $req->get('epctype_checklist');
     $project->projectstatus = $req->get('projectstatus');
     $project->projectcode = $req->get('projectcode');
-    $project->projectmanager = $req->get('projectmanager');
+    $project->projectmanager = $this->managerCheck($req->get('projectmanager'));
     $project->projectnotes = $req->get('projectnotes');
     $project->save();
   }
@@ -150,11 +150,11 @@ class ProjectController extends Controller
       return ((int)$integer);
   }
 
-    /**
+  /**
    * Checks if inputted number field was left blank. Assigns the number -1 and
-   * parses it from String to Integer.
-   * @param $integer - inputted number to be checked and converted. 
-   * @return $integer
+   * parses it from String to Float.
+   * @param $float - inputted number to be checked and converted. 
+   * @return $float
    */
   protected function floatCheck($float)
   {
@@ -162,6 +162,21 @@ class ProjectController extends Controller
         $float = -1;
     }
       return ((float)$float);
+  }
+
+  /**
+   * Checks if multiple managers were inputted seperated by commas, then stores
+   * them in a list.
+   * @param $managers - inputted number to be checked and converted. 
+   * @return $managerList
+   */
+  protected function managerCheck($managers)
+  {
+    $managerList = list();
+    if(isset($manager)){
+
+    }
+    return $managerList;
   }
 
   /**
