@@ -41,9 +41,9 @@ class ProjectController extends Controller
     $project->mwsize = $this->intCheck($req->get('mwsize'));
     $project->voltage = $this->intCheck($req->get('voltage'));
     $project->dollarvalueinhouse = $this->intCheck($req->get('dollarvalueinhouse'));
-    $project->dateproposed = $this->strToDate($req->get('dateproposed'));
-    $project->datentp = $this->strToDate($req->get('datentp'));
-    $project->dateenergization = $this->strToDate($req->get('dateenergization'));
+    $project->dateproposed = $this->strToDate($req->get('dateproposed'), null);
+    $project->datentp = $this->strToDate($req->get('datentp'), null);
+    $project->dateenergization = $this->strToDate($req->get('dateenergization'), $req->get('dateenergizationunknown'));
     $project->monthlypercent = $this->floatConversion($req->get('monthly_percent'));
     $project->projecttype = $req->get('projecttype_checklist');
     $project->epctype = $req->get('epctype_checklist');
@@ -72,7 +72,7 @@ class ProjectController extends Controller
       $this->validate($req, [
         'dollarvalueinhouse' => 'required',
         'datentp' => 'required',
-        'dateenergization' => 'required'
+        'dateenergization' => 'required_unless:dateenergizationunknown,on'
       ]);
     }
   }
@@ -99,7 +99,7 @@ class ProjectController extends Controller
    * @param $date_string - string to be converted to a variable type Date.
    * @return $date
    */
-  protected function strToDate($date_string)
+  protected function strToDate($date_string, $unknown)
   {
     if (isset($date_string))
     {
@@ -108,7 +108,12 @@ class ProjectController extends Controller
       $date = new UTCDateTime($php_date->getTimestamp() * 1000);
     }
     else {
-      $date = "None";
+      if(isset($unknown)){
+        $date = "Unknown";
+      }
+      else{
+        $date = "None";
+      }
     }
     return $date;
   }
@@ -341,7 +346,7 @@ class ProjectController extends Controller
       }
       else{
         $projects=Project::where(function($query) {
-          $query->where('projectstatus','Won')->orWhere('projectstatus','Won');
+          $query->where('projectstatus','Won')->orWhere('projectstatus','Probable');
         })
         ->where(function($query2) {
           $query2->where('cegproposalauthor', auth()->user()->name)
@@ -367,8 +372,12 @@ class ProjectController extends Controller
       //Also, get smallest start date to establish the beginning of the array 
       $start_dates = array();
       $end_dates = array();
-      foreach($projects as $project)
+      foreach($projects as $key => $project)
       {
+        if($project['dateenergization'] == "Unknown"){
+          unset($projects[$key]);
+          continue;
+        }
         $start_end = $this->get_project_start_end($project);
         $start_date = $start_end['start'];
         $end_date = $start_end['end']; 
@@ -431,6 +440,9 @@ class ProjectController extends Controller
           }
           $project['per_month_dollars'] = $project_per_month_dollars;
         }
+      }
+      if(empty($start_dates)){
+        return view('pages.wonprojectsummary', compact('projects'));
       }
       //get the max end date and min start date
       $earliest_start = min($start_dates);
