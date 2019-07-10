@@ -582,21 +582,7 @@ class ProjectController extends Controller
   {
     $term = $request['search'];
     if (isset($term)) {
-      // $projectsAll = Project::all();
-      // $projectsManagers = collect([]);
-      // foreach($projectsAll as $project){
-      //   if($project['projectmanager'] != null){
-      //     for($i=0; $i < count($project['projectmanager']); $i++){
-      //       if($project['projectmanager'][$i] == auth()->user()->name){
-      //         $projectsManagers->push($project['projectmanager'][$i]);
-      //       }
-      //     }
-      //   }
-      // }
-      $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get(); 
-      // foreach($projectsManagers as $pm){
-      //   $projects->merge($pm);
-      // }
+      $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
       if(auth()->user()->role != 'user'){ 
         foreach ($projects as $project) {
           $project = $this->displayFormat($project);
@@ -604,12 +590,17 @@ class ProjectController extends Controller
       }
       else{
         foreach ($projects as $key => $project) {
-          if($project['created_by'] == auth()->user()->email || $project['cegproposalauthor'] == auth()->user()->name || $project['projectmanager'] == auth()->user()->name) {
+          if($project['created_by'] == auth()->user()->email || $project['cegproposalauthor'] == auth()->user()->name) {
+            $project = $this->displayFormat($project);
+          }
+          elseif(isset($project['projectmanager']) && is_array($project['projectmanager'])){
+            if(in_array(auth()->user()->name, $project['projectmanager'])){
               $project = $this->displayFormat($project);
             }
+          }
           else{
             unset($projects[$key]);
-            }
+          }
         }
       }
       return view('pages.projectindex', compact('projects')); 
