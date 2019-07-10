@@ -19,6 +19,13 @@ class TimesheetController extends Controller
         return $array;
     }
 
+    protected function getArrayOfDates($string){
+        $str_arr = explode ("/", $string);
+        $startDateArr = explode ("-", $str_arr[0]);
+        //$endDateArr = explode ("-", $str_arr[1]);
+        dd($startDateArr);
+    }
+
 
     /**
      * Display a listing of the resource.
@@ -50,23 +57,37 @@ class TimesheetController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store($timesheet, $request)
-    {   //Store code CEG
+    {   //Get datarange
+        $daterangeName = "1-Jul/14-Jul";
+        $arrayOfDates = $this->getArrayOfDates($daterangeName);
+        $daterangeArray = array();
+        //Store code CEG
         $CEG = array();
         $CEG['General and Admin'] = $this->databasePrep($request->get('row0'));
         $CEG['Staff Meetings and HR'] = $this->databasePrep($request->get('row1'));
-        $timesheet->CEG = $CEG;
+        $daterangeArray['CEG'] = $CEG;
+        //$timesheet->CEG = $CEG;
+
         //Store Code CEGTRNG
         $CEGTRNG = array();
         $CEGTRNG['Research and Training'] = $this->databasePrep($request->get('row2'));
-        $timesheet->CEGTRNG = $CEGTRNG;
+        $daterangeArray['CEGTRNG'] = $CEGTRNG;
+        //$timesheet->CEGTRNG = $CEGTRNG;
+
         //Store Code CEGEDU
         $CEGEDU = array();
         $CEGEDU['Formal EDU'] = $this->databasePrep($request->get('row3'));
-        $timesheet->CEGEDU = $CEGEDU;
+        $daterangeArray['CEGEDU'] = $CEGEDU;
+        //$timesheet->CEGEDU = $CEGEDU;
+
         //Store Code CEGMKTG
         $CEGMKTG = array();
         $CEGMKTG['General Marketing'] = $this->databasePrep($request->get('row4'));
-        $timesheet->CEGMKTG = $CEGMKTG;
+        $daterangeArray['CEGMKTG'] = $CEGMKTG;
+        //$timesheet->CEGMKTG = $CEGMKTG;
+
+        $timesheet->$daterangeName = $daterangeArray;
+
         //Added rows
         $row = (int) $request->get('row_total');
         if($row > 4) {
@@ -91,18 +112,21 @@ class TimesheetController extends Controller
                             $arrayCodes[$code] = $descriptions;
                         }
                         if($timesheet->$code != null){
-                            $timesheet->$code = array_merge($timesheet->$code, $arr);   //might need to be fixed in future with edit
+                            $daterangeArray = array_merge($daterangeArray, $arr);   //might need to be fixed in future with edit
                         }
                         else{
-                            $timesheet->$code = $arr;
+                            $daterangeArray = $arr;
                         }
                     }
                 }
             }
             if(count($arrayCodes) > 0){
-                $timesheet->Additional_Codes = $arrayCodes;
+                $Additional_Codes = $arrayCodes;
+                array_push($daterangeArray, $Additional_Codes);
+                $timesheet->$daterangeName = $daterangeArray;
             }
         }
+        dd($timesheet);
         $timesheet->save();
     }
 

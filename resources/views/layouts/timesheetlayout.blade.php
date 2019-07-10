@@ -28,28 +28,29 @@
         </br>
         </br>
         <h2><b>@yield('title')</b></h2>
+        @yield('select')
         </div>
         <div>
           <form method="POST">
-            @csrf
+              @csrf
                 <table class="table table-sm overflow-auto" id="dynamic_field">
                         <thead>
                           <tr> 
                             <th>Product Description</th>
-                            <th>Day 1</th>
-                            <th>Day 2</th>
-                            <th>Day 3</th>
-                            <th>Day 4</th>
-                            <th>Day 5</th>
-                            <th>Day 6</th>
-                            <th>Day 7</th>
-                            <th>Day 8</th>
-                            <th>Day 9</th>
-                            <th>Day 10</th>
-                            <th>Day 11</th>
-                            <th>Day 12</th>
-                            <th>Day 13</th>
-                            <th>Day 14</th>
+                            <th>1-Jul</th>
+                            <th>2-Jul</th>
+                            <th>3-Jul</th>
+                            <th>4-Jul</th>
+                            <th>5-Jul</th>
+                            <th>6-Jul</th>
+                            <th>7-Jul</th>                            
+                            <th>8-Jul</th>                            
+                            <th>9-Jul</th>
+                            <th>10-Jul</th>
+                            <th>11-Jul</th>
+                            <th>12-Jul</th>
+                            <th>13-Jul</th>
+                            <th>14-Jul</th>
                             <th>Code</th>
                             <th style="width: 2.9%"></th>
                             <th>Total</th>
