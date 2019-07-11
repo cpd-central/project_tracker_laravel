@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class TimesheetController extends Controller
 {
-    protected function databasePrep($array){
+    protected function databasePrep($array, $arrayOfDates){
         if($array){
             foreach($array as $day){
               if($day == null || $day ==""){
@@ -16,14 +16,37 @@ class TimesheetController extends Controller
             }
           array_walk($array, function(&$x){$x = (float)($x);});
         }
-        return $array;
+        $formattedArray = array();
+        for($i = 0; $i < 14; $i++){
+            $formattedArray[$arrayOfDates[$i]] = $array[$i];
+        }
+        return $formattedArray;
     }
 
     protected function getArrayOfDates($string){
+        $monthArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
         $str_arr = explode ("/", $string);
+        $arrayOfDates = array();
+        //array_push($arrayOfDates, $str_arr[0]);
         $startDateArr = explode ("-", $str_arr[0]);
         //$endDateArr = explode ("-", $str_arr[1]);
-        dd($startDateArr);
+        $dayNum = $startDateArr[0];
+        $month = $startDateArr[1];
+        for($i = 0; $i < 14; $i++){
+            $dateString = $dayNum.'-'.$month;
+            array_push($arrayOfDates, $dateString);
+            $dayNum += 1;
+            if($month == 'Jan' || $month == 'Mar' || $month == 'May' 
+            || $month == 'Jul' || $month == 'Aug' || $month == 'Oct' 
+            || $month == 'Sep'){
+                if($dayNum > 31){
+                    $dayNum = 1;
+                    $key = array_search($month, $monthArray);
+                    $month = $monthArray[$key + 1];
+                }
+            }
+        }
+        return $arrayOfDates;
     }
 
 
@@ -63,26 +86,26 @@ class TimesheetController extends Controller
         $daterangeArray = array();
         //Store code CEG
         $CEG = array();
-        $CEG['General and Admin'] = $this->databasePrep($request->get('row0'));
-        $CEG['Staff Meetings and HR'] = $this->databasePrep($request->get('row1'));
+        $CEG['General and Admin'] = $this->databasePrep($request->get('row0'), $arrayOfDates);
+        $CEG['Staff Meetings and HR'] = $this->databasePrep($request->get('row1'), $arrayOfDates);
         $daterangeArray['CEG'] = $CEG;
         //$timesheet->CEG = $CEG;
 
         //Store Code CEGTRNG
         $CEGTRNG = array();
-        $CEGTRNG['Research and Training'] = $this->databasePrep($request->get('row2'));
+        $CEGTRNG['Research and Training'] = $this->databasePrep($request->get('row2'), $arrayOfDates);
         $daterangeArray['CEGTRNG'] = $CEGTRNG;
         //$timesheet->CEGTRNG = $CEGTRNG;
 
         //Store Code CEGEDU
         $CEGEDU = array();
-        $CEGEDU['Formal EDU'] = $this->databasePrep($request->get('row3'));
+        $CEGEDU['Formal EDU'] = $this->databasePrep($request->get('row3'), $arrayOfDates);
         $daterangeArray['CEGEDU'] = $CEGEDU;
         //$timesheet->CEGEDU = $CEGEDU;
 
         //Store Code CEGMKTG
         $CEGMKTG = array();
-        $CEGMKTG['General Marketing'] = $this->databasePrep($request->get('row4'));
+        $CEGMKTG['General Marketing'] = $this->databasePrep($request->get('row4'), $arrayOfDates);
         $daterangeArray['CEGMKTG'] = $CEGMKTG;
         //$timesheet->CEGMKTG = $CEGMKTG;
 
@@ -98,7 +121,7 @@ class TimesheetController extends Controller
                     if(array_sum($request->get('row'.$i)) > 0){
                         $arr = array();
                         $string = $request->get('Product_Description_row_'.$i);
-                        $arr[$string] = $this->databasePrep($request->get('row'.$i));
+                        $arr[$string] = $this->databasePrep($request->get('row'.$i), $arrayOfDates);
                         $code = $request->get('codeadd'.$i);
 
                         if(array_key_exists($code, $arrayCodes)){
