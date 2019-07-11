@@ -589,12 +589,17 @@ class ProjectController extends Controller
         }
       }
       else{
+        $user_email = auth()->user()->email;
+        $user_name = auth()->user()->name;
         foreach ($projects as $key => $project) {
-          if($project['created_by'] == auth()->user()->email || $project['cegproposalauthor'] == auth()->user()->name) {
+          if($project['created_by'] == $user_email || $project['cegproposalauthor'] == $user_name) {
             $project = $this->displayFormat($project);
           }
-          elseif(isset($project['projectmanager']) && is_array($project['projectmanager'])){
-            if(in_array(auth()->user()->name, $project['projectmanager'])){
+          elseif(isset($project['projectmanager'])){
+            if(is_array($project['projectmanager']) && in_array($user_name, $project['projectmanager'])){
+              $project = $this->displayFormat($project);
+            }
+            elseif($project['projectmanager'] == $user_name){
               $project = $this->displayFormat($project);
             }
           }
