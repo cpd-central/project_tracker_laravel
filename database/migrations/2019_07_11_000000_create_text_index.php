@@ -25,7 +25,6 @@ class CreateTextIndex extends Migration
           "projectmanager" => "text",
           "state" => "text",
           "utility" => "text"
-
         ],
         'project_full_text',
         null,
