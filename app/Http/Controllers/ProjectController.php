@@ -62,18 +62,26 @@ class ProjectController extends Controller
    */
   protected function validate_request($req)
   {
+    $messages = array(
+      'cegproposalauthor.required' => 'The CEG Proposal Author is required.',
+      'projectname.required' => 'The Project Name is required.',
+      'clientcontactname.required' => 'The Client Contact Name is required.',
+      'dollarvalueinhouse.required' => 'The Dollar Value in-house expense is required.',
+      'datentp.required' => 'The Date of Notice To Proceed is required',
+      'dateenergization.required_unless' => 'The Date of Energization is required unless Date of Energization Unknown is checked.'
+    );
     $this->validate($req, [
       'cegproposalauthor' => 'required',
       'projectname' => 'required',
       'clientcontactname' => 'required'
-    ]);
+    ], $messages);
 
     if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable'){ 
       $this->validate($req, [
         'dollarvalueinhouse' => 'required',
         'datentp' => 'required',
         'dateenergization' => 'required_unless:dateenergizationunknown,on'
-      ]);
+      ], $messages);
     }
   }
 
