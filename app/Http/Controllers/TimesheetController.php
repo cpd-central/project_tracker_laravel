@@ -49,15 +49,21 @@ class TimesheetController extends Controller
         return $arrayOfDates;
     }
 
+    protected function getDates(){
+        $time = date("Y-m-d H:i:s");
+        $php_date = new \DateTime($time, new \DateTimeZone('America/Chicago'));
+        return new UTCDateTime($php_date->getTimestamp() * 1000);
+    }
+
 
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($date)
     {
-        return view('pages.timesheet');
+        return view('pages.timesheet', compact('date'));
     }
 
     /**
@@ -156,20 +162,21 @@ class TimesheetController extends Controller
 
     public function check()
     {
+        $date = getDate();
         $collection = Timesheet::where('user', auth()->user()->email)->get();
         if(!$collection->isEmpty()){
             $timesheet = $collection[0];
-            return $this->edit($timesheet);
+            return $this->edit($timesheet, $date);
         }
         else{
-            return $this->index();
+            return $this->index($date);
         }
     }
 
 
-    public function edit($timesheet)
+    public function edit($timesheet, $date)
     {
-        return view('pages.timesheet', compact('timesheet'));
+        return view('pages.timesheet', compact('timesheet', 'date'));
     }
 
     /**

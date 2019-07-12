@@ -1,3 +1,18 @@
+<?php 
+if(isset($date) && is_array($date)){
+  $interval = \DateInterval::createFromDateString('1 day');
+  $period = new DatePeriod((((int)$date[0]) - 1209600), $interval, $date[0]); //not working, needs to be string date i think
+
+  $arr = array();
+  foreach($period as $dt)
+  {
+    array_push($arr, $dt->format('d-m'));
+  }
+  dd($arr);
+}
+
+?>
+
 <!doctype html>
 <style>
 .table th {
