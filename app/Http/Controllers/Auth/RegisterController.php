@@ -48,11 +48,14 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+        $message = array(
+            'email.regex' => "Please provide email ending in '@ceg-engineers.com' or '@ceg.mn'"
+        );
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'regex:(@ceg-engineers.com|@ceg.mn)', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+        ], $message);
     }
 
     /**

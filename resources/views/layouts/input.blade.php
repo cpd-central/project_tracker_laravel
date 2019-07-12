@@ -126,6 +126,7 @@
           <div class="form-group col-md-4">
             <label for="dateenergization">Date of Energization:</label>
             <input type="date" class="form-control" id="dateenergization" name="dateenergization" value="@if(old('dateenergization'))<?= old('dateenergization') ?>@else<?= $__env->yieldContent('dateenergization')?>@endif">
+          <input type="checkbox" id="dateenergizationunknown" name="dateenergizationunknown" @if(old('dateenergizationunknown') == "on"){{"checked"}}@else @if(isset($project['dateenergization']) && $project['dateenergization'] == "Unknown"){{"checked"}} @endif @endif><small>Date of Energization Unknown</small>
           </div>
         </div>
 

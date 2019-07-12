@@ -28,7 +28,7 @@
 @section('table-header')
 <table class="table table-striped">
   <thead>
-    <tr> 
+    <tr>
       @if (count($projects))
       <form action="{{ route('pages.wonprojectsummarySearch') }}" method="POST">
         @csrf
