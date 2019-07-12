@@ -38,8 +38,10 @@ class ProjectController extends Controller
     $project->projectname= $req->get('projectname');
     $project->clientcontactname= $req->get('clientcontactname');
     $project->clientcompany = $req->get('clientcompany');
-    $project->mwsize = $this->intCheck($req->get('mwsize'));
-    $project->voltage = $this->intCheck($req->get('voltage'));
+    $project->state = $req->get('state');
+    $project->utility = $req->get('utility');
+    $project->mwsize = $this->floatCheck($req->get('mwsize'));
+    $project->voltage = $this->floatCheck($req->get('voltage'));
     $project->dollarvalueinhouse = $this->intCheck($req->get('dollarvalueinhouse'));
     $project->dateproposed = $this->strToDate($req->get('dateproposed'));
     $project->datentp = $this->strToDate($req->get('datentp'));
@@ -49,7 +51,7 @@ class ProjectController extends Controller
     $project->epctype = $req->get('epctype_checklist');
     $project->projectstatus = $req->get('projectstatus');
     $project->projectcode = $req->get('projectcode');
-    $project->projectmanager = $req->get('projectmanager');
+    $project->projectmanager = $this->managerCheck($req->get('projectmanager'));
     $project->projectnotes = $req->get('projectnotes');
     $project->save();
   }
@@ -84,9 +86,9 @@ class ProjectController extends Controller
    */
   protected function displayFormat($project)
   {
-    $project['mwsize'] = $this->intDisplay($project['mwsize']);
-    $project['voltage'] = $this->intDisplay($project['voltage']);
-    $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
+    $project['mwsize'] = $this->numDisplay($project['mwsize']);
+    $project['voltage'] = $this->numDisplay($project['voltage']);
+    $project['dollarvalueinhouse'] = $this->numDisplay($project['dollarvalueinhouse']);
     $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
     $project['datentp'] = $this->dateToStr($project['datentp']);
     $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
@@ -149,18 +151,50 @@ class ProjectController extends Controller
   }
 
   /**
+   * Checks if inputted number field was left blank. Assigns the number -1 and
+   * parses it from String to Float.
+   * @param $float - inputted number to be checked and converted. 
+   * @return $float
+   */
+  protected function floatCheck($float)
+  {
+    if($float == null || $float == ""){
+        $float = -1;
+    }
+      return ((float)$float);
+  }
+
+  /**
+   * Checks if multiple managers were inputted seperated by commas, then stores
+   * them in a list.
+   * @param $managers - inputted number to be checked and converted. 
+   * @return $managerList
+   */
+  protected function managerCheck($managers)
+  {
+    if(isset($managers)){
+      $managerList = explode(',', $managers);
+      array_walk($managerList, function(&$x){$x = trim($x);});
+      return $managerList;
+    }
+    else{
+      return null;
+    }
+  }
+
+  /**
   * If the number from the database was -1, it was originally null. Changes the value to null
   * and return its.
   * @param $integer - integer received from mongoDB. 
   * @return $integer
   */
-  protected function intDisplay($integer)
+  protected function numDisplay($num)
   {
-    if($integer == -1)
+    if($num == -1)
     {
-      $integer = "";
+      $num = "";
     }
-    return $integer;
+    return $num;
   }
 
   /**
@@ -555,13 +589,23 @@ class ProjectController extends Controller
         }
       }
       else{
+        $user_email = auth()->user()->email;
+        $user_name = auth()->user()->name;
         foreach ($projects as $key => $project) {
-          if($project['created_by'] == auth()->user()->email || $project['cegproposalauthor'] == auth()->user()->name || $project['projectmanager'] == auth()->user()->name) {
+          if($project['created_by'] == $user_email || $project['cegproposalauthor'] == $user_name) {
+            $project = $this->displayFormat($project);
+          }
+          elseif(isset($project['projectmanager'])){
+            if(is_array($project['projectmanager']) && in_array($user_name, $project['projectmanager'])){
               $project = $this->displayFormat($project);
             }
+            elseif($project['projectmanager'] == $user_name){
+              $project = $this->displayFormat($project);
+            }
+          }
           else{
             unset($projects[$key]);
-            }
+          }
         }
       }
       return view('pages.projectindex', compact('projects')); 

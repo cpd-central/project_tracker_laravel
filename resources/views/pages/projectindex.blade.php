@@ -23,6 +23,8 @@
         <th>Project Name</th>
         <th>Client Contact</th>
         <th>Client Company</th>
+        <th>State</th>
+        <th>Utility</th>
         <th>MW</th>
         <th>Voltage</th> 
         <th>CEG In-house Budget</th>
@@ -50,6 +52,8 @@
       <td>{{ $project['projectname']}}</td >
       <td>{{ $project['clientcontactname'] }}</td>
       <td>{{ $project['clientcompany'] }}</td>
+      <td>{{ $project['state'] }}</td>
+      <td>{{ $project['utility'] }}</td>
       <td>{{ $project['mwsize'] }}</td>
       <td>{{ $project['voltage'] }}</td>  
       @if (is_string($project['dollarvalueinhouse'])) 
@@ -61,7 +65,23 @@
       <td>{{ $project['dateenergization'] }}</td>
       <td>{{ $project['projectstatus']}}</td > 
       <td>{{ $project['projectcode'] }}</td>
-      <td>{{ $project['projectmanager'] }}</td>
+      <td><?php $projectmanagers = "";
+        if($project['projectmanager'] != null){
+          if(is_array($project['projectmanager'])){
+            for($i=1; $i <= count($project['projectmanager']); $i++){
+              if($i == count($project['projectmanager'])){
+                $projectmanagers = $projectmanagers.$project['projectmanager'][$i-1];
+              }
+              else{
+                $projectmanagers = $projectmanagers.$project['projectmanager'][$i-1].', ';
+              }
+            }
+          }
+          else{
+            $projectmanagers = $project['projectmanager'];
+          }
+        }
+        echo $projectmanagers?></td>
     </tr>
     @endforeach 
     @stop

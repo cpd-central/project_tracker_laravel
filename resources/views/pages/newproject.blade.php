@@ -8,6 +8,8 @@
 @section('cegproposalauthor', '')
 @section('projectname', '')
 @section('clientcompany', '')
+@section('state', '')
+@section('utility', '')
 @section('clientcontactname', '')
 @section('mwsize', '')
 @section('voltage', '')
@@ -22,6 +24,7 @@
   <option>Won</option>
   <option>Probable</option>
   <option>Expired</option>
+  <option>Done and Billing Complete</option>
 @stop
 
 @section('projectcode', '')
