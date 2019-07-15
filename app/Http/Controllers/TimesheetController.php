@@ -142,18 +142,18 @@ class TimesheetController extends Controller
                             array_push($descriptions, $string);
                             $arrayCodes[$code] = $descriptions;
                         }
-                        if($timesheet->$code != null){
-                            $daterangeArray = array_merge($daterangeArray, $arr);   //might need to be fixed in future with edit
+                        if(isset($codes[$code])){
+                            array_merge($codes[$code], $arr);   //might need to be fixed in future with edit
                         }
                         else{
-                            $daterangeArray = $arr;
+                            $codes[$code] = $arr;
                         }
                     }
                 }
             }
             if(count($arrayCodes) > 0){
                 $Additional_Codes = $arrayCodes;
-                array_push($daterangeArray, $Additional_Codes);
+                $codes["Additional_Codes"] = $Additional_Codes;
             }
         }
         $timesheet->Codes = $codes;
