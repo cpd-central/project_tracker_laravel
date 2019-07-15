@@ -68,7 +68,7 @@ if(isset($date)){
                         @if(isset($timesheet))
                         <?php $codeOffset = $code[$row];         
                               $descOffset = $array[$row];
-                              $dayarray = $timesheet[$codeOffset][$descOffset] ?>
+                              $dayarray = $timesheet['Codes'][$codeOffset][$descOffset]?>
                         @endif
                       <tr id="row{{$row}}">
                             <td style="width: 12%">
@@ -76,7 +76,7 @@ if(isset($date)){
                             </td>
                             @for($i = 1; $i <= 14; $i++)
                             <td style="width: 5%">
-                            <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}[]" value="@if(isset($dayarray[$i - 1])){{$dayarray[$i - 1]}}@endif"/>
+                            <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}[]" value="@if(isset($dayarray[$arr[$i-1]])){{$dayarray[$arr[$i-1]]}}@endif"/>
                             </td>
                             @endfor
                             <td style="width: 7%">
@@ -87,23 +87,24 @@ if(isset($date)){
                             </td>
                         </tr>   
                         @endfor 
-                        @if(isset($timesheet['Additional_Codes']))
-                          @if(count($timesheet['Additional_Codes']) > 0)
+                        @if(isset($timesheet['Codes']['Additional_Codes']))
+                          @if(count($timesheet['Codes']['Additional_Codes']) > 0)
                           <?php $row = 5 ?>
-                            @for($i = 0; $i < count(array_keys($timesheet['Additional_Codes'])); $i++)
-                              <?php $codeKeyArray = array_keys($timesheet['Additional_Codes']);
+                            @for($i = 0; $i < count(array_keys($timesheet['Codes']['Additional_Codes'])); $i++)
+                              <?php $codeKeyArray = array_keys($timesheet['Codes']['Additional_Codes']);
                               $code = $codeKeyArray[$i] ?>
-                              @if(count($timesheet[$code]) > 0)
-                                @for($index = 0; $index < count(array_keys($timesheet[$code])); $index++)
-                                  <?php $productDesc = array_keys($timesheet[$code])?> 
+                              @if(count($timesheet['Codes']['Additional_Codes']) > 0)
+                                @for($index = 0; $index < count(array_keys($timesheet['Codes']['Additional_Codes'])); $index++)
+                                  <?php $productDesc = array_keys($timesheet['Codes'][$code])?> 
                                   <tr id="row{{$row}}">
                                       <td style="width: 12%">
                                           <input type="text" class="form-control" name="Product Description row {{$row}}" value="<?=$productDesc[$index]?>">
                                       </td>
                                       @for($day = 1; $day <= 14; $day++)
                                       <td style="width: 5%">
-                                        <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="<?=$timesheet[$code][$productDesc[$index]][$day - 1]?>"/>
-                                      </td>
+                                      <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="@if(isset($timesheet['Codes'][$codeKeyArray[$i]][$productDesc[$index]][$arr[$day - 1]])){{$timesheet['Codes'][$codeKeyArray[$i]][$productDesc[$index]][$arr[$day - 1]]}}@endif"/>
+                                      </td>   
+                                      <?php $string = 'Codes' ?>  
                                       @endfor
                                       <td style="width: 7%">
                                         <input type="text" class="form-control" name="codeadd{{$row}}" value="<?=$codeKeyArray[$i]?>">
