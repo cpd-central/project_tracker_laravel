@@ -1,16 +1,18 @@
 <?php 
-if(isset($date) && is_array($date)){
+if(isset($date)){
+  $end = clone $date;
+  $start = $date->sub(new DateInterval('P13D'));
+  $start->setTime(0,0,0);
+  $end->setTime(0,0,1);                       //By setting the day to an extra second, it includes the last day.
   $interval = \DateInterval::createFromDateString('1 day');
-  $period = new DatePeriod((((int)$date[0]) - 1209600), $interval, $date[0]); //not working, needs to be string date i think
-
+  $period = new DatePeriod($start, $interval, $end);
   $arr = array();
   foreach($period as $dt)
   {
-    array_push($arr, $dt->format('d-m'));
+    array_push($arr, $dt->format('j-M'));
   }
-  dd($arr);
+  //dd($arr);
 }
-
 ?>
 
 <!doctype html>
@@ -52,20 +54,9 @@ if(isset($date) && is_array($date)){
                         <thead>
                           <tr> 
                             <th>Product Description</th>
-                            <th>1-Jul</th>
-                            <th>2-Jul</th>
-                            <th>3-Jul</th>
-                            <th>4-Jul</th>
-                            <th>5-Jul</th>
-                            <th>6-Jul</th>
-                            <th>7-Jul</th>                            
-                            <th>8-Jul</th>                            
-                            <th>9-Jul</th>
-                            <th>10-Jul</th>
-                            <th>11-Jul</th>
-                            <th>12-Jul</th>
-                            <th>13-Jul</th>
-                            <th>14-Jul</th>
+                            <?php for($i = 0; $i < 14; $i++){ ?>
+                            <th><?=$arr[$i]?></th>
+                            <?php } ?>
                             <th>Code</th>
                             <th style="width: 2.9%"></th>
                             <th>Total</th>
@@ -127,6 +118,10 @@ if(isset($date) && is_array($date)){
                             @endfor
                           @endif
                         @endif
+                        <?php
+                        foreach($arr as $date) { ?>
+                          <input type="hidden" name="daterange[]" value="<?=$date?>"/>
+                        <?php }?>
                     </table>
         </div>
         <div class="row">
