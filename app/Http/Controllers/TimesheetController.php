@@ -28,39 +28,12 @@ class TimesheetController extends Controller
         return $formattedArray;
     }
 
-    // protected function getArrayOfDates($string){
-    //     $monthArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-    //     $str_arr = explode ("/", $string);
-    //     $arrayOfDates = array();
-    //     //array_push($arrayOfDates, $str_arr[0]);
-    //     $startDateArr = explode ("-", $str_arr[0]);
-    //     //$endDateArr = explode ("-", $str_arr[1]);
-    //     $dayNum = $startDateArr[0];
-    //     $month = $startDateArr[1];
-    //     for($i = 0; $i < 14; $i++){
-    //         $dateString = $dayNum.'-'.$month;
-    //         array_push($arrayOfDates, $dateString);
-    //         $dayNum += 1;
-    //         if($month == 'Jan' || $month == 'Mar' || $month == 'May' 
-    //         || $month == 'Jul' || $month == 'Aug' || $month == 'Oct' 
-    //         || $month == 'Sep'){
-    //             if($dayNum > 31){
-    //                 $dayNum = 1;
-    //                 $key = array_search($month, $monthArray);
-    //                 $month = $monthArray[$key + 1];
-    //             }
-    //         }
-    //     }
-    //     return $arrayOfDates;
-    //}
-
     protected function getDate(){
         $time = date("Y-m-d H:i:s");
         $php_date = new \DateTime($time, new \DateTimeZone('America/Chicago'));
         //$date = new UTCDateTime($php_date->getTimestamp() * 1000);
         return $php_date;
     }
-
 
     /**
      * Display a listing of the resource.
@@ -161,7 +134,6 @@ class TimesheetController extends Controller
         $timesheet->save();
     }
 
-
     public function check()
     {
         $date = $this->getDate();
@@ -174,7 +146,6 @@ class TimesheetController extends Controller
             return $this->index($date);
         }
     }
-
 
     public function edit($timesheet, $date)
     {
