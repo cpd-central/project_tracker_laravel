@@ -72,16 +72,16 @@ class TimesheetController extends Controller
         return view('pages.timesheet', compact('date'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
-        $timesheet = new Timesheet();
-        $timesheet->user = auth()->user()->email;
-        $this->store($timesheet, $request);
+    public function timesheetSave(Request $request, $id = null){
+        $timesheet = Timesheet::find($id);
+        if($timesheet){
+            $this->store($timesheet, $request);
+        }
+        else{
+            $timesheet = new Timesheet();
+            $timesheet->user = auth()->user()->email;
+            $this->store($timesheet, $request);
+        }
         return redirect('/projectindex');
     }
 
@@ -179,18 +179,6 @@ class TimesheetController extends Controller
     public function edit($timesheet, $date)
     {
         return view('pages.timesheet', compact('timesheet', 'date'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Timesheet  $timesheet
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Timesheet $timesheet)
-    {
-    
     }
 
     /**
