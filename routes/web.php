@@ -45,7 +45,6 @@ Route::get('/home', 'ProjectController@index')->name('home')->middleware('verifi
 
 Route::get('/timesheet', 'TimesheetController@check')->name('pages.timesheet')->middleware('verified');
 Route::post('/timesheet', 'TimesheetController@create')->name('pages.timesheetSave')->middleware('verified');
-//Route::post('/timesheet', 'TimesheetController@index')->name('pages.timesheetSearch')->middleware('verified');
 
 
 

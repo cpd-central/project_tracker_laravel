@@ -94,15 +94,15 @@ if(isset($date)){
                               <?php $codeKeyArray = array_keys($timesheet['Codes']['Additional_Codes']);
                               $code = $codeKeyArray[$i] ?>
                               @if(count($timesheet['Codes']['Additional_Codes']) > 0)
-                                @for($index = 0; $index < count(array_keys($timesheet['Codes']['Additional_Codes'])); $index++)
-                                  <?php $productDesc = array_keys($timesheet['Codes'][$code])?> 
+                                @for($index = 0; $index < count(array_keys($timesheet['Codes']['Additional_Codes'][$code])); $index++)
+                                  <?php $desc = $timesheet['Codes']['Additional_Codes'][$code][$index]?> 
                                   <tr id="row{{$row}}">
                                       <td style="width: 12%">
-                                          <input type="text" class="form-control" name="Product Description row {{$row}}" value="<?=$productDesc[$index]?>">
+                                          <input type="text" class="form-control" name="Product Description row {{$row}}" value="<?=$desc?>">
                                       </td>
                                       @for($day = 1; $day <= 14; $day++)
                                       <td style="width: 5%">
-                                      <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="@if(isset($timesheet['Codes'][$codeKeyArray[$i]][$productDesc[$index]][$arr[$day - 1]])){{$timesheet['Codes'][$codeKeyArray[$i]][$productDesc[$index]][$arr[$day - 1]]}}@endif"/>
+                                      <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="@if(isset($timesheet['Codes'][$codeKeyArray[$i]][$desc][$arr[$day - 1]])){{$timesheet['Codes'][$codeKeyArray[$i]][$desc][$arr[$day - 1]]}}@endif"/>
                                       </td>   
                                       <?php $string = 'Codes' ?>  
                                       @endfor

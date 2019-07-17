@@ -92,7 +92,8 @@ class TimesheetController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store($timesheet, $request)
-    {   $codes = array();
+    {   //dd($request);
+        $codes = array();
         //Store code CEG
         $daterangeArray = $request->get('daterange');
         $CEG = array();
@@ -143,7 +144,7 @@ class TimesheetController extends Controller
                             $arrayCodes[$code] = $descriptions;
                         }
                         if(isset($codes[$code])){
-                            array_merge($codes[$code], $arr);   //might need to be fixed in future with edit
+                            $codes[$code] = array_merge($codes[$code], $arr);   //might need to be fixed in future with edit
                         }
                         else{
                             $codes[$code] = $arr;
