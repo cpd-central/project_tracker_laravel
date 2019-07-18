@@ -13,6 +13,7 @@
         <style>
             html, body {
                 background-image: url("../img/Oak Tree Wind Sunset (6).JPG");
+                background-size: cover;
                 background-color: #fff;
                 color: #636b6f;
                 font-family: 'Nunito', sans-serif;

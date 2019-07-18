@@ -38,7 +38,7 @@ Route::delete('{id}', 'ProjectController@destroy')->middleware('verified');
 
 Auth::routes(['verify' => true]);
 
-Route::get('/home', 'ProjectController@index')->name('home')->middleware('verified');
+Route::get('/home', 'HomeController@index')->name('home')->middleware('verified');
 
 #save this for later, for now, home will redirect to project index
 #Route::get('/home', 'HomeController@index')->name('home');

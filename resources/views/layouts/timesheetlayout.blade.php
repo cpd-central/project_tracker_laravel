@@ -39,7 +39,7 @@ if(isset($date)){
   <title id="page-title">@yield('page-title')</title>
   <head>
     @include('includes.navbar')
-  </head>
+  </head> 
   <body>
         <div class="container">
         </br>
