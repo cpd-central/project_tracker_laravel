@@ -10,12 +10,14 @@
 <script src="{{ asset('js/app.js') }}" defer></script>
 
 <?php use App\Timesheet;
-$collection = Timesheet::where('user', auth()->user()->email)->get();
-if(!$collection->isEmpty()){
+if(null !== auth()->user()){
+  $collection = Timesheet::where('user', auth()->user()->email)->get();
+  if(!$collection->isEmpty()){
     $timesheet = $collection[0];
-}
-else{
-  $timesheet = null;
+  }
+  else{
+    $timesheet = null;
+  }
 }?>
 
 <!-- Fonts -->
