@@ -33,11 +33,14 @@ width: 400px;
 background-color: rgba(0,0,0,0.5) !important;
 }
 
-
 .card-header h3{
 color: white;
+text-align: center;
 }
 
+.form-group{
+text-align: center;
+}
 
 .input-group-prepend span{
 width: 50px;
@@ -49,19 +52,6 @@ border:0 !important;
 input:focus{
 outline: 0 0 0 0  !important;
 box-shadow: 0 0 0 0 !important;
-
-}
-
-.remember{
-color: white;
-}
-
-.remember input
-{
-width: 20px;
-height: 20px;
-margin-left: 15px;
-margin-right: 5px;
 }
 
 .login_btn{
@@ -74,18 +64,9 @@ width: 200px;
 color: black;
 background-color: white;
 }
-
-.links{
-color: white;
-}
-
-.links a{
-margin-left: 4px;
-}
 </style>
 <head>
 	<title>Dashboard</title>
-   <!--Made with love by Mutiullah Samim -->
    
 	<!--Bootsrap 4 CDN-->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -104,15 +85,19 @@ margin-left: 4px;
 				<h3>Dashboard</h3>
 			</div>
 			<div class="card-body">
-					<div class="form-group">
+					<div class="form-group" style="height:33%">
                         <a href={{ route('pages.projectindex') }} class="btn login_btn">Project Index</a>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="height:33%">
                         <a href={{ route('pages.timesheet', $timesheet['_id']) }} class="btn login_btn">Timesheet</a>
                     </div>
-                    <div class="form-group">
-                        <a href={{ route('logout') }} class="btn login_btn">Logout</a>
-                    </div>
+                    <div class="form-group" style="height:33%">
+                        <a href={{ route('logout') }} class="btn login_btn" onclick="event.preventDefault();
+						document.getElementById('logout-form').submit();">Logout</a>
+					</div>
+					<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+						@csrf
+					  </form>
 			</div>
 			<div class="card-footer">				
 			</div>
