@@ -527,7 +527,7 @@ class ProjectController extends Controller
         {
           //check if each month is in the current project's array.  If it is, then simply put the existing value in the new array
           //if it isn't, put zero in the new array 
-          if (array_key_exists($month, $project['per_month_dollars']))
+          if (array_key_exists($month, $project['p2dbc0e9e83401b9867c4d524f34968af-16ffd509-9531298ber_month_dollars']))
           { 
             //round to 0 decimals 
             $new_project_per_month_dollars[$month] = round($project['per_month_dollars'][$month], 0);
@@ -655,11 +655,11 @@ class ProjectController extends Controller
   */
   public function hours_graph(Request $request)
   {
-    $projects = DB::collection('hours_by_project')->get()->sortBy('code');
+    $projects = Project::whereRaw(['$and' => array(['projectcode' => ['$ne' => null]], ['hours_data' => ['$exists' => 'true']])])->get()->sortBy('projectname');
 
     function get_chart_info($id)
     {
-      $selected_project = DB::collection('hours_by_project')->where('_id', $id)->first();
+      $selected_project = Project::where('_id', $id)->first();
 
       if ($selected_project)
       {
