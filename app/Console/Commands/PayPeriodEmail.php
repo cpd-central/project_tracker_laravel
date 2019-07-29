@@ -9,7 +9,7 @@ class PayPeriodEmail extends Command
   public function queue_users()
   {
     $users = User::all();
-    
+
     foreach ($users as $user) {
       $data = [
         'name' => $user['name'],
@@ -40,11 +40,6 @@ class PayPeriodEmail extends Command
     $this->data = $data;
   }
 
-  /**
-   * Execute the console command.
-   *
-   * @return mixed
-   */
   public function handle()
   {
     $data = $this->data;
