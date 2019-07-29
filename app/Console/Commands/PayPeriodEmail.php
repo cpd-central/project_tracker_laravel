@@ -19,18 +19,18 @@ class PayPeriodEmail extends Command
   #  }
   #  Queue::push(new PayPeriodEmail($data));
   #}
-  #/**
-  # * The name and signature of the console command.
-  # *
-  # * @var string
-  # */
-  #protected $signature = 'command:payperiodemail';
+  /**
+   * The name and signature of the console command.
+   *
+   * @var string
+   */
+  protected $signature = 'command:payperiodemail';
 
-  #/**
-  # * The console command description.
-  # *
-  # * @var string
-  # */
+  /**
+   * The console command description.
+   *
+   * @var string
+   */
   #protected $description = 'Command description';
 
   #protected $data;
