@@ -6,48 +6,48 @@ use Illuminate\Console\Command;
 
 class PayPeriodEmail extends Command
 {
-  public function queue_users()
-  {
-    $users = User::all();
+  #public function queue_users()
+  #{
+  #  $users = User::all();
 
-    foreach ($users as $user) {
-      $data = [
-        'name' => $user['name'],
-        'email' => $user['email'],
-        'subject' => 'Reminder - 2 Week Pay Period Due',
-      ];
-    }
-    Queue::push(new PayPeriodEmail($data));
-  }
-  /**
-   * The name and signature of the console command.
-   *
-   * @var string
-   */
-  protected $signature = 'command:payperiodemail';
+  #  foreach ($users as $user) {
+  #    $data = [
+  #      'name' => $user['name'],
+  #      'email' => $user['email'],
+  #      'subject' => 'Reminder - 2 Week Pay Period Due',
+  #    ];
+  #  }
+  #  Queue::push(new PayPeriodEmail($data));
+  #}
+  #/**
+  # * The name and signature of the console command.
+  # *
+  # * @var string
+  # */
+  #protected $signature = 'command:payperiodemail';
 
-  /**
-   * The console command description.
-   *
-   * @var string
-   */
-  protected $description = 'Command description';
+  #/**
+  # * The console command description.
+  # *
+  # * @var string
+  # */
+  #protected $description = 'Command description';
 
-  protected $data;
+  #protected $data;
 
-  public function __construct($data)
-  {
-    $this->data = $data;
-  }
+  #public function __construct($data)
+  #{
+  #  $this->data = $data;
+  #}
 
-  public function handle()
-  {
-    $data = $this->data;
+  #public function handle()
+  #{
+  #  $data = $this->data;
 
-    Mail::send('emails.reminder_html', $data, function($message) use ($data)
-    {
-      $message->to($data['email'], $data['name']);
-      $message->subject($data['subject']);
-    });
-  }
+  #  Mail::send('emails.reminder_html', $data, function($message) use ($data)
+  #  {
+  #    $message->to($data['email'], $data['name']);
+  #    $message->subject($data['subject']);
+  #  });
+  #}
 }
