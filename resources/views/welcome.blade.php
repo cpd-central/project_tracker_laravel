@@ -50,10 +50,16 @@
                 font-size: 84px;
             }
 
+            .gradient {
+                background: -webkit-linear-gradient(#999, #000);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
             .links > a {
                 color: #636b6f;
                 padding: 0 25px;
-                font-size: 13px;
+                font-size: 18px;
                 font-weight: 600;
                 letter-spacing: .1rem;
                 text-decoration: none;
@@ -61,14 +67,14 @@
             }
 
             .m-b-md {
-                margin-bottom: 30px;
+                margin-bottom: 50px;
             }
         </style>
     </head>
     <body>
        <div class="flex-center position-ref full-height">
             @if (Route::has('login'))
-                <div class="top-right links">
+                <div class="top-right links gradient">
                     @auth
                         <a href="{{ url('/home') }}">Home</a>
                     @else
@@ -82,11 +88,11 @@
             @endif
 
             <div class="content">
-                <div class="title m-b-md">
+                <div class="title gradient m-b-md">
                    CEG Project Tracker 
                 </div>
 
-                <div class="links">
+                <div class="links gradient">
                     <a href="https://www.ceg.mn/" target="_blank">Website</a>
                 </div>
             </div>
