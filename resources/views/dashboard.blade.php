@@ -83,13 +83,16 @@ background-color: white;
 				<h3>Dashboard</h3>
 			</div>
 			<div class="card-body">
-					<div class="form-group" style="height:33%">
+					<div class="form-group" style="height:23%">
                         <a href={{ route('pages.projectindex') }} class="btn login_btn">Project Index</a>
                     </div>
-                    <div class="form-group" style="height:33%">
+                    <div class="form-group" style="height:23%">
                         <a href={{ route('pages.timesheet', $timesheet['_id']) }} class="btn login_btn">Timesheet</a>
+					</div>
+					<div class="form-group" style="height:23%">
+                        <a href={{ route('pages.roles') }} class="btn login_btn">Roles</a>
                     </div>
-                    <div class="form-group" style="height:33%">
+                    <div class="form-group" style="height:23%">
                         <a href={{ route('logout') }} class="btn login_btn" onclick="event.preventDefault();
 						document.getElementById('logout-form').submit();">Logout</a>
 					</div>

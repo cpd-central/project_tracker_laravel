@@ -48,18 +48,11 @@ Route::get('/home', 'HomeController@index')->name('home')->middleware('verified'
 Route::get('/timesheet/{id?}', 'TimesheetController@check')->name('pages.timesheet')->middleware('verified');
 Route::post('/timesheet/{id?}', 'TimesheetController@timesheetSave')->name('pages.timesheetSave')->middleware('verified');
 
-// use App\Timesheet;
-/* Route::get('/timesheet/{$id?}', function(){
-    $collection = Timesheet::where('user', auth()->user()->email)->get();
-    if(!$collection->isEmpty()){
-        $timesheet = $collection[0];
-        return route('pages.timesheet', $timesheet['_id']);
-    }
-    else{
-        return route('pages.timesheet', $id=null);
-    }
-})->name('pages.timesheettest')->middleware('verified');
- */
+Route::get('/roles', 'HomeController@edit_roles')->name('pages.roles')->middleware('verified');
+//Route::delete('{id}', 'HomeController@destroy')->middleware('verified');
+Route::post('/roles', 'HomeController@update')->name('pages.rolesUpdate')->middleware('verified');
+
+
 
 
 
