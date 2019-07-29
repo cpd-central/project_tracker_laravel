@@ -703,10 +703,9 @@ class ProjectController extends Controller
       else
       {
       return Null;
-      } 
+      }
     }
-    
-    
+
     $chart_info = get_chart_info($request['project_id']);
     if (isset($chart_info))
     {
@@ -717,10 +716,10 @@ class ProjectController extends Controller
         'borderColor'=>'#3cba9f', 'fill' => False]);
       return view('pages.hoursgraph', compact('projects', 'chart'));
     }
-    else 
+    else
     {
       return view('pages.hoursgraph', compact('projects'));
-    } 
+    }
   }
 
   /**
