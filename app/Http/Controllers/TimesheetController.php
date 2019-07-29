@@ -105,6 +105,16 @@ class TimesheetController extends Controller
             $CEGMKTG['General Marketing'] += $this->arrayFormat($CEGMKTG['General Marketing'], $timesheet['Codes']['CEGMKTG']['General Marketing'], $daterangeArray);
             $codes['CEGMKTG'] = $CEGMKTG;
 
+            // //Store old additional codes
+            // if(isset($timesheet['Codes']["Additional_Codes"])){
+            //     $codes["Additional_Codes"] = $timesheet['Codes']["Additional_Codes"];
+            //     foreach($codes["Additional_Codes"] as $add_code){
+
+            //     }
+            // }
+
+            
+
             //Added rows
             $row = (int) $request->get('row_total');
             if($row > 4) {
@@ -147,7 +157,7 @@ class TimesheetController extends Controller
                 }
                 if(count($arrayCodes) > 0){
                     $Additional_Codes = $arrayCodes;
-                    $codes["Additional_Codes"] = $Additional_Codes;
+                    $codes["Additional_Codes"] += $Additional_Codes;
                 }
             }
             $timesheet->Codes = $codes;

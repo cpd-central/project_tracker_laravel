@@ -9,7 +9,7 @@ if(isset($date)){
   $arr = array();
   foreach($period as $dt)
   {
-    array_push($arr, $dt->format('j-M'));
+    array_push($arr, $dt->format('j-M-y'));
   }
   //dd($arr);
 }
