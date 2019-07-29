@@ -660,7 +660,8 @@ class ProjectController extends Controller
     function get_chart_info($id)
     {
       $selected_project = Project::where('_id', $id)->first();
-
+      $selected_project_name = $selected_project['projectname'];
+      $selected_project_id = $selected_project['_id'];
       if ($selected_project)
       {
         $hours_data = $selected_project['hours_data'];
@@ -697,7 +698,7 @@ class ProjectController extends Controller
       $labels_arr_start_end = array_slice($labels_arr, $start_key, $end_key - $start_key + 1);
       $labels = $labels_arr_start_end;
       $dataset = array($selected_project['code'] . ' Hours', 'line', $hours_arr_start_end); 
-      return array('labels' => $labels, 'dataset' => $dataset); 
+      return array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}  - Past Hours"); 
       }
       else
       {
@@ -710,6 +711,7 @@ class ProjectController extends Controller
     if (isset($chart_info))
     {
       $chart = new HoursChart;
+      $chart->title($chart_info['title']);
       $chart->labels($chart_info['labels']);
       $chart->dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2])->options([
         'borderColor'=>'#3cba9f', 'fill' => False]);
