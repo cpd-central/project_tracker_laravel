@@ -33,11 +33,6 @@ class PayPeriodEmail extends Command
    */
   protected $description = 'Command description';
 
-  /**
-   * Create a new command instance.
-   *
-   * @return void
-   */
   protected $data;
 
   public function __construct($data)
