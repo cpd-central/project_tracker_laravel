@@ -40,7 +40,7 @@ class CreateTextIndex extends Migration
             "projectmanager" => 1,
             "state" => 1,
             "utility" => 1,
-            "projectcode" => "text"
+            "projectcode" => 1
           ],
           'name' => 'project_full_text'
         ] 
