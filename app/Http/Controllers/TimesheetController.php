@@ -40,8 +40,20 @@ class TimesheetController extends Controller
             if((!isset($new_array[$date])) && isset($old_array[$date])){
                 unset($old_array[$date]);
             }
+            elseif((isset($new_array[$date])) && isset($old_array[$date])){
+                $old_array[$date] = $new_array[$date];
+            }
         }
         return $old_array;
+    }
+
+    protected function erase_last_2_weeks($array, $daterangeArray){
+        foreach($daterangeArray as $date){
+            if(isset($array[$date])){
+                unset($array[$date]);
+            }
+        }
+        return $array;
     }
 
     /**
@@ -76,7 +88,11 @@ class TimesheetController extends Controller
     public function store($timesheet, $request)
     {   if($timesheet['Codes']){                //Enter this if there was a previous timesheet
             //dd($request);
-            $codes = array();
+            $codes = $timesheet['Codes'];
+            if(isset($codes['Additional_Codes'])){
+                unset($codes['Additional_Codes']);
+            }
+
             //Store code CEG
             $daterangeArray = $request->get('daterange');
             $CEG = array();
@@ -85,6 +101,15 @@ class TimesheetController extends Controller
 
             $CEG['Staff Meetings and HR'] = $this->databasePrep($this->formatArray($request->get('row1'), $daterangeArray));
             $CEG['Staff Meetings and HR'] += $this->arrayFormat($CEG['Staff Meetings and HR'], $timesheet['Codes']['CEG']['Staff Meetings and HR'], $daterangeArray);
+
+            // if(isset($timesheet['Codes']['CEG']) && count($timesheet['Codes']['CEG']) > 2){
+            //     $CEG_keys = array_keys($timesheet['Codes']['CEG']);
+            //     foreach($CEG_keys as $CEG_additional){
+            //         if(!array_key_exists($CEG_additional, $CEG)){
+            //             $CEG[$CEG_additional] = $timesheet['Codes']['CEG'][$CEG_additional];
+            //         }
+            //     }
+            // }
             $codes['CEG'] = $CEG;
 
             //Store Code CEGTRNG
@@ -105,13 +130,22 @@ class TimesheetController extends Controller
             $CEGMKTG['General Marketing'] += $this->arrayFormat($CEGMKTG['General Marketing'], $timesheet['Codes']['CEGMKTG']['General Marketing'], $daterangeArray);
             $codes['CEGMKTG'] = $CEGMKTG;
 
-            // //Store old additional codes
-            // if(isset($timesheet['Codes']["Additional_Codes"])){
-            //     $codes["Additional_Codes"] = $timesheet['Codes']["Additional_Codes"];
-            //     foreach($codes["Additional_Codes"] as $add_code){
-
-            //     }
-            // }
+            
+            //Store old additional codes EXCEPT LAST TWO WEEKS
+            if(isset($timesheet['Codes']["Additional_Codes"])){
+                $codes["Additional_Codes"] = $timesheet['Codes']["Additional_Codes"];
+                $code_keys = array_keys($codes["Additional_Codes"]);
+                foreach($code_keys as $key){
+                    foreach($codes["Additional_Codes"] as $add_code){
+                        for($i=0; $i < count($add_code); $i++){
+                            if(isset($timesheet['Codes'][$key][$add_code[$i]])){
+                                $codes[$key][$add_code[$i]] = $timesheet['Codes'][$key][$add_code[$i]];
+                                $codes[$key][$add_code[$i]] = $this->erase_last_2_weeks($codes[$key][$add_code[$i]], $daterangeArray);
+                            }
+                        }
+                    }
+                 }
+             }
 
             
 
@@ -157,7 +191,7 @@ class TimesheetController extends Controller
                 }
                 if(count($arrayCodes) > 0){
                     $Additional_Codes = $arrayCodes;
-                    $codes["Additional_Codes"] += $Additional_Codes;
+                    $codes["Additional_Codes"] = $Additional_Codes;
                 }
             }
             $timesheet->Codes = $codes;
