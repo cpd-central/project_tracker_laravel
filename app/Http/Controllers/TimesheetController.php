@@ -141,6 +141,14 @@ class TimesheetController extends Controller
                             if(isset($timesheet['Codes'][$key][$add_code[$i]])){
                                 $codes[$key][$add_code[$i]] = $timesheet['Codes'][$key][$add_code[$i]];
                                 $codes[$key][$add_code[$i]] = $this->erase_last_2_weeks($codes[$key][$add_code[$i]], $daterangeArray);
+                                if(count($codes[$key][$add_code[$i]]) == 0){
+                                    unset($codes[$key][$add_code[$i]]);
+                                }
+                                if($key != "CEG" && $key != "CEGTRNG" && $key != "CEGEDU" && $key != "CEGMKTG"){
+                                    if(count($codes[$key]) == 0){
+                                        unset($codes[$key]);
+                                    }
+                                }
                             }
                         }
                     }
@@ -183,17 +191,12 @@ class TimesheetController extends Controller
                         }
                     }
                 }
-                $keys_old = array_keys($timesheet['Codes']);
-                foreach($keys_old as $key){
-                    if(!isset($codes[$key]) && $key != "Additional_Codes"){
-                        $codes[$key] = $timesheet['Codes'][$key];
-                    }
-                }
                 if(count($arrayCodes) > 0){
                     $Additional_Codes = $arrayCodes;
                     $codes["Additional_Codes"] = $Additional_Codes;
                 }
             }
+            dd($codes);
             $timesheet->Codes = $codes;
             $timesheet->save();
         }
