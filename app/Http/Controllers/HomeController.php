@@ -44,6 +44,12 @@ class HomeController extends Controller
     public function update(Request $request)
     {
         $users = User::all();
-        echo("hello");
+        foreach($users as $user){
+            $stringSplit = explode(".", $user['email']);
+            $string = $stringSplit[0]."_".$stringSplit[1];
+            $user['role'] = $request[$string];
+            $user->save();
+        }
+        return redirect('/home');
     }
 }

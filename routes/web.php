@@ -49,7 +49,7 @@ Route::get('/timesheet/{id?}', 'TimesheetController@check')->name('pages.timeshe
 Route::post('/timesheet/{id?}', 'TimesheetController@timesheetSave')->name('pages.timesheetSave')->middleware('verified');
 
 Route::get('/roles', 'HomeController@edit_roles')->name('pages.roles')->middleware('verified');
-//Route::delete('{id}', 'HomeController@destroy')->middleware('verified');
+//Route::delete('/roles', 'HomeController@destroy')->middleware('verified');
 Route::post('/roles', 'HomeController@update')->name('pages.rolesUpdate')->middleware('verified');
 
 
