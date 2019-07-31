@@ -143,19 +143,20 @@ class TimesheetController extends Controller
                                 $codes[$key][$add_code[$i]] = $this->erase_last_2_weeks($codes[$key][$add_code[$i]], $daterangeArray);
                                 if(count($codes[$key][$add_code[$i]]) == 0){
                                     unset($codes[$key][$add_code[$i]]);
+                                    //unset($codes["Additional_Codes"][$key]);
                                 }
                                 if($key != "CEG" && $key != "CEGTRNG" && $key != "CEGEDU" && $key != "CEGMKTG"){
                                     if(count($codes[$key]) == 0){
                                         unset($codes[$key]);
                                     }
                                 }
+                                unset($codes["Additional_Codes"][$key]);
                             }
                         }
                     }
                  }
+                 unset($codes["Additional_Codes"]);
              }
-
-            
 
             //Added rows
             $row = (int) $request->get('row_total');
@@ -196,7 +197,6 @@ class TimesheetController extends Controller
                     $codes["Additional_Codes"] = $Additional_Codes;
                 }
             }
-            dd($codes);
             $timesheet->Codes = $codes;
             $timesheet->save();
         }
