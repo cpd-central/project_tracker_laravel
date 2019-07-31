@@ -35,10 +35,11 @@ class HomeController extends Controller
 
     public function destroy($id)
     {
-        dd($id);
-        $user = User::find($id);
-        $user->delete();
-        return redirect('pages.roles');
+        if(isset($id)){
+            $user = User::find($id);
+            $user->delete();
+        }
+        return redirect('/home');
     }
 
     public function update(Request $request)

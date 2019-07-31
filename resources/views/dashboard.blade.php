@@ -75,6 +75,19 @@ background-color: white;
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
 </head>
+
+<?php
+if(auth()->user()->role == "proposer" || auth()->user()->role == "admin"){
+	$style_string = "height:33%";
+}
+elseif(auth()->user()->role == "sudo"){
+	$style_string = "height:23%";
+}
+else{
+	$style_string = "height:45%";
+}
+?>
+
 <body>
 <div class="container">
 	<div class="d-flex justify-content-center h-100">
@@ -83,16 +96,20 @@ background-color: white;
 				<h3>Dashboard</h3>
 			</div>
 			<div class="card-body">
-					<div class="form-group" style="height:23%">
+				<?php if(auth()->user()->role != "user") {?>
+					<div class="form-group" style="{{$style_string}}">
                         <a href={{ route('pages.projectindex') }} class="btn login_btn">Project Index</a>
                     </div>
-                    <div class="form-group" style="height:23%">
+					<?php } ?>
+                    <div class="form-group" style="{{$style_string}}">
                         <a href={{ route('pages.timesheet', $timesheet['_id']) }} class="btn login_btn">Timesheet</a>
 					</div>
-					<div class="form-group" style="height:23%">
+					<?php if(auth()->user()->role == "sudo") {?>
+					<div class="form-group" style="{{$style_string}}">
                         <a href={{ route('pages.roles') }} class="btn login_btn">Roles</a>
-                    </div>
-                    <div class="form-group" style="height:23%">
+					</div>
+					<?php } ?>
+                    <div class="form-group" style="{{$style_string}}">
                         <a href={{ route('logout') }} class="btn login_btn" onclick="event.preventDefault();
 						document.getElementById('logout-form').submit();">Logout</a>
 					</div>
