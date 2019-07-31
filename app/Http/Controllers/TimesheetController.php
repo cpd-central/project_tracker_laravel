@@ -197,7 +197,6 @@ class TimesheetController extends Controller
                     $codes["Additional_Codes"] = $Additional_Codes;
                 }
             }
-            dd($codes);
             $timesheet->Codes = $codes;
             $timesheet->save();
         }

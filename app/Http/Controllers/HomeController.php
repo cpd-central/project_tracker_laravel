@@ -46,6 +46,9 @@ class HomeController extends Controller
     {
         $users = User::all();
         foreach($users as $user){
+            if($user['role'] == 'sudo'){
+                continue;
+            }
             $stringSplit = explode(".", $user['email']);
             $string = $stringSplit[0]."_".$stringSplit[1];
             $user['role'] = $request[$string];
