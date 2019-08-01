@@ -562,7 +562,12 @@ class ProjectController extends Controller
       $options = [];
       $options['scales']['xAxes'][]['stacked'] = true;
       $options['scales']['yAxes'][]['stacked'] = true;
+      $options['legend']['labels']['boxWidth'] = 10;
+      $options['legend']['labels']['padding'] = 6;
+      #$options['maintainAspectRatio'] = false;
       $chart->options($options);
+      $chart->height(600);
+      #$chart->width(1200);
       #dd($chart); 
       //format total dollars with commas
       //foreach($months as $month)
@@ -589,7 +594,8 @@ class ProjectController extends Controller
   {
     $term = $request['search'];
     if (isset($term)) {
-      $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
+      //$projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
+      $projects = Project::whereRaw(['$text' => ['$search' => "{$term}"]])->get();
       //if(auth()->user()->role != 'user'){ 
         foreach ($projects as $project) {
           $project = $this->displayFormat($project);
