@@ -575,6 +575,8 @@ class ProjectController extends Controller
       $options = [];
       $options['scales']['xAxes'][]['stacked'] = true;
       $options['scales']['yAxes'][]['stacked'] = true;
+      $options['legend']['labels']['boxWidth'] = 10;
+      $options['legend']['labels']['padding'] = 6;
       #$options['maintainAspectRatio'] = false;
       $chart->options($options);
       $chart->height(600);
