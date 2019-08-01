@@ -594,9 +594,11 @@ class ProjectController extends Controller
   {
     $term = $request['search'];
     if (isset($term)) {
-      //$projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
-      //$projects = Project::whereRaw(['$text' => ['$search' => "{$term}"]])->get();
-      $projects = Project::where('cegproposalauthor', 'regexp', "/$term/")->get();
+      //$projects = Project::whereRaw(['$text' => ['$regex' => "{$term}"]])->get();
+      //$projects = Project::whereRaw('$text', 'regexp', "/$term/")->get();
+
+      $projects = Project::whereRaw(['$text' => ['$search' => "{$term}"]])->get();
+      //$projects = Project::where('text', 'regexp', "/$term/")->get();
       //if(auth()->user()->role != 'user'){ 
         foreach ($projects as $project) {
           $project = $this->displayFormat($project);
