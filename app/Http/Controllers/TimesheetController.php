@@ -76,7 +76,7 @@ class TimesheetController extends Controller
             $timesheet->user = auth()->user()->email;
             $this->store($timesheet, $request);
         }
-        return redirect('/projectindex');
+        return redirect('/home');
     }
 
     /**
