@@ -594,11 +594,24 @@ class ProjectController extends Controller
   {
     $term = $request['search'];
     if (isset($term)) {
-      $projects = Project::whereRaw(['$text' => ['$regex' => "{$term}"]])->get();
-      //$projects = Project::whereRaw('$text', 'regexp', "/$term/")->get();
+      //$projects = Project::whereRaw(['$text' => ['$regex' => "{$term}"]])->get();
+      //$projects = Project::whereRaw("CONCAT('text') LIKE ?", array("'%'.$term.'%'"))->get();
 
+      //$projects = Project::whereRaw("MATCH('text')AGAINST('*'.$term.'*')")->get();
+      //$projects = Project::whereRaw('$text', 'regexp', "/$term/")->get();
       //$projects = Project::whereRaw(['$text' => ['$search' => "{$term}"]])->get();
-      //$projects = Project::where('text', 'regexp', "/$term/")->get();
+      $projects = Project::where('cegproposalauthor', 'regexp', "/$term/i")
+                  ->orWhere('projectname', 'regexp', "/$term/i")
+                  ->orWhere('clientcontactname', 'regexp', "/$term/i")
+                  ->orWhere('clientcompany', 'regexp', "/$term/i")
+                  ->orWhere('projectstatus', 'regexp', "/$term/i")
+                  ->orWhere('projectcode', 'regexp', "/$term/i")
+                  ->orWhere('projectmanager', 'regexp', "/$term/i")
+                  ->orWhere('state', 'regexp', "/$term/i")
+                  ->orWhere('utility', 'regexp', "/$term/i")
+                  ->orWhere('projecttype', 'regexp', "/$term/i")
+                  ->orWhere('epctype', 'regexp', "/$term/i")
+                  ->get();
       //if(auth()->user()->role != 'user'){ 
         foreach ($projects as $project) {
           $project = $this->displayFormat($project);
