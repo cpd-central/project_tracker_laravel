@@ -276,22 +276,12 @@ class ProjectController extends Controller
    */
   public function index()
   {
-    if(auth()->user()->role != "user"){
-      $projects=Project::all();
-      foreach($projects as $project)
-      {
-        $project = $this->displayFormat($project);
-      } 
-      return view('pages.projectindex', compact('projects'));
-    }
-    else{
-      $projects=Project::where('cegproposalauthor', auth()->user()->name)->orWhere('projectmanager', auth()->user()->name)->orWhere('created_by', auth()->user()->email)->get();
-      foreach($projects as $project)
-      {
-        $project = $this->displayFormat($project);
-      } 
-      return view('pages.projectindex', compact('projects'));
-    }
+    $projects=Project::all();
+    foreach($projects as $project)
+    {
+      $project = $this->displayFormat($project);
+    } 
+    return view('pages.projectindex', compact('projects'));
   }
 
   /**
@@ -346,13 +336,13 @@ class ProjectController extends Controller
     return $dollars_arr; 
   }
 
-  protected function longQueriesIndexWon($status){
-    return Project::where('projectstatus',$status)->where(function($query){
-      $query->where('cegproposalauthor', auth()->user()->name)
-            ->orWhere('projectmanager', auth()->user()->name)
-            ->orWhere('created_by', auth()->user()->email);
-    });
-  }
+  // protected function longQueriesIndexWon($status){
+  //   return Project::where('projectstatus',$status)->where(function($query){
+  //     $query->where('cegproposalauthor', auth()->user()->name)
+  //           ->orWhere('projectmanager', auth()->user()->name)
+  //           ->orWhere('created_by', auth()->user()->email);
+  //   });
+  // }    Keep incase we re-implement role
 
   /**
    * Queries for project status type 'Won' & 'Probable', just 'Won', or only 'Probable'. If user role is type 
@@ -363,7 +353,6 @@ class ProjectController extends Controller
    */
   public function indexwon(Request $request)
   {
-    if(auth()->user()->role != 'user'){
       if($request['projectstatus'] == 'Won'){
         $projects=Project::all()->where('projectstatus','Won');
         $projectStatus = "Won";
@@ -376,28 +365,26 @@ class ProjectController extends Controller
         $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
         $projectStatus = "All";
       }
-    }
-    else{
-      if($request['projectstatus'] == 'Won'){
-        $projects=($this->longQueriesIndexWon('Won'))->get();
-        $projectStatus = "Won";
-      }
-      else if($request['projectstatus'] == 'Probable'){
-        $projects=($this->longQueriesIndexWon('Probable'))->get();
-        $projectStatus = "Probable";
-      }
-      else{
-        $projects=Project::where(function($query) {
-          $query->where('projectstatus','Won')->orWhere('projectstatus','Probable');
-        })
-        ->where(function($query2) {
-          $query2->where('cegproposalauthor', auth()->user()->name)
-                ->orWhere('projectmanager', auth()->user()->name)
-                ->orWhere('created_by', auth()->user()->email);
-        })->get();
-        $projectStatus = "All";
-      }
-    }
+    // else{
+    //   if($request['projectstatus'] == 'Won'){
+    //     $projects=($this->longQueriesIndexWon('Won'))->get();
+    //     $projectStatus = "Won";
+    //   }
+    //   else if($request['projectstatus'] == 'Probable'){
+    //     $projects=($this->longQueriesIndexWon('Probable'))->get();
+    //     $projectStatus = "Probable";
+    //   }
+    //   else{
+    //     $projects=Project::where(function($query) {
+    //       $query->where('projectstatus','Won')->orWhere('projectstatus','Probable');
+    //     })
+    //     ->where(function($query2) {
+    //       $query2->where('cegproposalauthor', auth()->user()->name)
+    //             ->orWhere('projectmanager', auth()->user()->name)
+    //             ->orWhere('created_by', auth()->user()->email);
+    //     })->get();
+    //     $projectStatus = "All";
+    //   }                              Keep incase we re-implement user role
 
     if (count($projects) > 0)
     {
@@ -575,7 +562,12 @@ class ProjectController extends Controller
       $options = [];
       $options['scales']['xAxes'][]['stacked'] = true;
       $options['scales']['yAxes'][]['stacked'] = true;
+      $options['legend']['labels']['boxWidth'] = 10;
+      $options['legend']['labels']['padding'] = 6;
+      #$options['maintainAspectRatio'] = false;
       $chart->options($options);
+      $chart->height(600);
+      #$chart->width(1200);
       #dd($chart); 
       //format total dollars with commas
       //foreach($months as $month)
@@ -602,32 +594,33 @@ class ProjectController extends Controller
   {
     $term = $request['search'];
     if (isset($term)) {
-      $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
-      if(auth()->user()->role != 'user'){ 
+      //$projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
+      $projects = Project::whereRaw(['$text' => ['$search' => "{$term}"]])->get();
+      //if(auth()->user()->role != 'user'){ 
         foreach ($projects as $project) {
           $project = $this->displayFormat($project);
         }
-      }
-      else{
-        $user_email = auth()->user()->email;
-        $user_name = auth()->user()->name;
-        foreach ($projects as $key => $project) {
-          if($project['created_by'] == $user_email || $project['cegproposalauthor'] == $user_name) {
-            $project = $this->displayFormat($project);
-          }
-          elseif(isset($project['projectmanager'])){
-            if(is_array($project['projectmanager']) && in_array($user_name, $project['projectmanager'])){
-              $project = $this->displayFormat($project);
-            }
-            elseif($project['projectmanager'] == $user_name){
-              $project = $this->displayFormat($project);
-            }
-          }
-          else{
-            unset($projects[$key]);
-          }
-        }
-      }
+      //}
+      // else{
+      //   $user_email = auth()->user()->email;
+      //   $user_name = auth()->user()->name;
+      //   foreach ($projects as $key => $project) {
+      //     if($project['created_by'] == $user_email || $project['cegproposalauthor'] == $user_name) {
+      //       $project = $this->displayFormat($project);
+      //     }
+      //     elseif(isset($project['projectmanager'])){
+      //       if(is_array($project['projectmanager']) && in_array($user_name, $project['projectmanager'])){
+      //         $project = $this->displayFormat($project);
+      //       }
+      //       elseif($project['projectmanager'] == $user_name){
+      //         $project = $this->displayFormat($project);
+      //       }
+      //     }
+      //     else{
+      //       unset($projects[$key]);
+      //     }
+      //   }
+      // }
       return view('pages.projectindex', compact('projects')); 
       }
     else {
