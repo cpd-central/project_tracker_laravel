@@ -73,20 +73,25 @@
             <label for="cegproposalauther">CEG Proposal Author</label>
           <input type="text" class="form-control" name="cegproposalauthor" value="@if(old('cegproposalauthor')){{ old('cegproposalauthor') }} @else<?= $__env->yieldContent('cegproposalauthor')?>@endif">
           </div>
-        </div>
-        <div class="row">
           <div class="form-group col-md-4">
             <label for="projectname">Project Name:</label>
-
-
             <input type="text" class="form-control" name="projectname" value="@if(old('projectname')){{ old('projectname') }} @else<?= $__env->yieldContent('projectname')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="clientcontactname">Client Contact Name:</label>
             <input type="text" class="form-control" name="clientcontactname" value="@if(old('clientcontactname')){{ old('clientcontactname') }} @else<?= $__env->yieldContent('clientcontactname')?>@endif">
           </div>
-          
+        </div>
 
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="state">State:</label>
+            <input type="text" class="form-control" name="state" value="@if(old('state')){{ old('state') }} @else<?= $__env->yieldContent('state')?>@endif">
+          </div>	
+        <div class="form-group col-md-4">
+          <label for="utility">Utility:</label>
+          <input type="text" class="form-control" name="utility" value="@if(old('utility')){{ old('utility') }} @else<?= $__env->yieldContent('utility')?>@endif">
+        </div>	
           <div class="form-group col-md-4">
             <label for="clientcompany">Client Company:</label>
             <input type="text" class="form-control" name="clientcompany" value="@if(old('clientcompany')){{ old('clientcompany') }} @else<?= $__env->yieldContent('clientcompany')?>@endif">
@@ -97,11 +102,11 @@
         <div class="row">
           <div class="form-group col-md-4">
             <label for="mwsize">MW Size:</label>
-            <input type="number" class="form-control" name="mwsize" value="@if(old('mwsize')){{ old('mwsize') }}@else<?= $__env->yieldContent('mwsize')?>@endif">
+            <input type="number" class="form-control" step=0.001 name="mwsize" value="@if(old('mwsize')){{ old('mwsize') }}@else<?= $__env->yieldContent('mwsize')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="voltage">Voltage:</label>
-            <input type="number" class="form-control" name="voltage" value="@if(old('voltage')){{ old('voltage') }}@else<?= $__env->yieldContent('voltage')?>@endif">
+            <input type="number" class="form-control" step=0.001 name="voltage" value="@if(old('voltage')){{ old('voltage') }}@else<?= $__env->yieldContent('voltage')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="dollarvalueinhouse">Dollar Value (in-house expense):</label>
@@ -121,6 +126,7 @@
           <div class="form-group col-md-4">
             <label for="dateenergization">Date of Energization:</label>
             <input type="date" class="form-control" id="dateenergization" name="dateenergization" value="@if(old('dateenergization'))<?= old('dateenergization') ?>@else<?= $__env->yieldContent('dateenergization')?>@endif">
+          <input type="checkbox" id="dateenergizationunknown" name="dateenergizationunknown" @if(old('dateenergizationunknown') == "on"){{"checked"}}@else @if(isset($project['dateenergization']) && $project['dateenergization'] == "Unknown"){{"checked"}} @endif @endif><small>Date of Energization Unknown</small>
           </div>
         </div>
 
@@ -266,21 +272,31 @@
                   <option selected="selected">Won</option>
                   <option>Probable</option>
                   <option>Expired</option>
+                  <option>Done and Billing Complete</option>
                 @elseif (old('projectstatus') == 'Expired')
                   <option>Proposed</option>
                   <option>Won</option>
                   <option>Probable</option>
                   <option selected="selected">Expired</option>
+                  <option>Done and Billing Complete</option>
                 @elseif (old('projectstatus') == 'Probable')
                   <option>Proposed</option>
                   <option>Won</option>
                   <option selected="selected">Probable</option>
                   <option>Expired</option>
+                  <option>Done and Billing Complete</option>
+                @elseif (old('projectstatus') == 'Done and Billing Complete')
+                  <option>Proposed</option>
+                  <option>Won</option>
+                  <option>Probable</option>
+                  <option>Expired</option>
+                  <option selected="selected">Done and Billing Complete</option>
                 @else
                   <option selected="selected">Proposed</option>
                   <option>Won</option>
                   <option>Probable</option>
                   <option>Expired</option>
+                  <option>Done and Billing Complete</option>
                 @endif
               @else
                 @yield('projectstatus')

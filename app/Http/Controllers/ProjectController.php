@@ -38,18 +38,20 @@ class ProjectController extends Controller
     $project->projectname= $req->get('projectname');
     $project->clientcontactname= $req->get('clientcontactname');
     $project->clientcompany = $req->get('clientcompany');
-    $project->mwsize = $this->intCheck($req->get('mwsize'));
-    $project->voltage = $this->intCheck($req->get('voltage'));
+    $project->state = $req->get('state');
+    $project->utility = $req->get('utility');
+    $project->mwsize = $this->floatCheck($req->get('mwsize'));
+    $project->voltage = $this->floatCheck($req->get('voltage'));
     $project->dollarvalueinhouse = $this->intCheck($req->get('dollarvalueinhouse'));
-    $project->dateproposed = $this->strToDate($req->get('dateproposed'));
-    $project->datentp = $this->strToDate($req->get('datentp'));
-    $project->dateenergization = $this->strToDate($req->get('dateenergization'));
+    $project->dateproposed = $this->strToDate($req->get('dateproposed'), null);
+    $project->datentp = $this->strToDate($req->get('datentp'), null);
+    $project->dateenergization = $this->strToDate($req->get('dateenergization'), $req->get('dateenergizationunknown'));
     $project->monthlypercent = $this->floatConversion($req->get('monthly_percent'));
     $project->projecttype = $req->get('projecttype_checklist');
     $project->epctype = $req->get('epctype_checklist');
     $project->projectstatus = $req->get('projectstatus');
     $project->projectcode = $req->get('projectcode');
-    $project->projectmanager = $req->get('projectmanager');
+    $project->projectmanager = $this->managerCheck($req->get('projectmanager'));
     $project->projectnotes = $req->get('projectnotes');
     $project->save();
   }
@@ -62,18 +64,26 @@ class ProjectController extends Controller
    */
   protected function validate_request($req)
   {
+    $messages = array(
+      'cegproposalauthor.required' => 'The CEG Proposal Author is required.',
+      'projectname.required' => 'The Project Name is required.',
+      'clientcontactname.required' => 'The Client Contact Name is required.',
+      'dollarvalueinhouse.required' => 'The Dollar Value in-house expense is required.',
+      'datentp.required' => 'The Date of Notice To Proceed is required',
+      'dateenergization.required_unless' => 'The Date of Energization is required unless Date of Energization Unknown is checked.'
+    );
     $this->validate($req, [
       'cegproposalauthor' => 'required',
       'projectname' => 'required',
       'clientcontactname' => 'required'
-    ]);
+    ], $messages);
 
     if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable'){ 
       $this->validate($req, [
         'dollarvalueinhouse' => 'required',
         'datentp' => 'required',
-        'dateenergization' => 'required'
-      ]);
+        'dateenergization' => 'required_unless:dateenergizationunknown,on'
+      ], $messages);
     }
   }
 
@@ -84,9 +94,9 @@ class ProjectController extends Controller
    */
   protected function displayFormat($project)
   {
-    $project['mwsize'] = $this->intDisplay($project['mwsize']);
-    $project['voltage'] = $this->intDisplay($project['voltage']);
-    $project['dollarvalueinhouse'] = $this->intDisplay($project['dollarvalueinhouse']);
+    $project['mwsize'] = $this->numDisplay($project['mwsize']);
+    $project['voltage'] = $this->numDisplay($project['voltage']);
+    $project['dollarvalueinhouse'] = $this->numDisplay($project['dollarvalueinhouse']);
     $project['dateproposed'] = $this->dateToStr($project['dateproposed']);
     $project['datentp'] = $this->dateToStr($project['datentp']);
     $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
@@ -99,7 +109,7 @@ class ProjectController extends Controller
    * @param $date_string - string to be converted to a variable type Date.
    * @return $date
    */
-  protected function strToDate($date_string)
+  protected function strToDate($date_string, $unknown)
   {
     if (isset($date_string))
     {
@@ -108,7 +118,12 @@ class ProjectController extends Controller
       $date = new UTCDateTime($php_date->getTimestamp() * 1000);
     }
     else {
-      $date = "None";
+      if(isset($unknown)){
+        $date = "Unknown";
+      }
+      else{
+        $date = "None";
+      }
     }
     return $date;
   }
@@ -149,18 +164,50 @@ class ProjectController extends Controller
   }
 
   /**
+   * Checks if inputted number field was left blank. Assigns the number -1 and
+   * parses it from String to Float.
+   * @param $float - inputted number to be checked and converted. 
+   * @return $float
+   */
+  protected function floatCheck($float)
+  {
+    if($float == null || $float == ""){
+        $float = -1;
+    }
+      return ((float)$float);
+  }
+
+  /**
+   * Checks if multiple managers were inputted seperated by commas, then stores
+   * them in a list.
+   * @param $managers - inputted number to be checked and converted. 
+   * @return $managerList
+   */
+  protected function managerCheck($managers)
+  {
+    if(isset($managers)){
+      $managerList = explode(',', $managers);
+      array_walk($managerList, function(&$x){$x = trim($x);});
+      return $managerList;
+    }
+    else{
+      return null;
+    }
+  }
+
+  /**
   * If the number from the database was -1, it was originally null. Changes the value to null
   * and return its.
   * @param $integer - integer received from mongoDB. 
   * @return $integer
   */
-  protected function intDisplay($integer)
+  protected function numDisplay($num)
   {
-    if($integer == -1)
+    if($num == -1)
     {
-      $integer = "";
+      $num = "";
     }
-    return $integer;
+    return $num;
   }
 
   /**
@@ -229,22 +276,12 @@ class ProjectController extends Controller
    */
   public function index()
   {
-    if(auth()->user()->role != "user"){
-      $projects=Project::all();
-      foreach($projects as $project)
-      {
-        $project = $this->displayFormat($project);
-      } 
-      return view('pages.projectindex', compact('projects'));
-    }
-    else{
-      $projects=Project::where('cegproposalauthor', auth()->user()->name)->orWhere('projectmanager', auth()->user()->name)->orWhere('created_by', auth()->user()->email)->get();
-      foreach($projects as $project)
-      {
-        $project = $this->displayFormat($project);
-      } 
-      return view('pages.projectindex', compact('projects'));
-    }
+    $projects=Project::all();
+    foreach($projects as $project)
+    {
+      $project = $this->displayFormat($project);
+    } 
+    return view('pages.projectindex', compact('projects'));
   }
 
   /**
@@ -299,13 +336,13 @@ class ProjectController extends Controller
     return $dollars_arr; 
   }
 
-  protected function longQueriesIndexWon($status){
-    return Project::where('projectstatus',$status)->where(function($query){
-      $query->where('cegproposalauthor', auth()->user()->name)
-            ->orWhere('projectmanager', auth()->user()->name)
-            ->orWhere('created_by', auth()->user()->email);
-    });
-  }
+  // protected function longQueriesIndexWon($status){
+  //   return Project::where('projectstatus',$status)->where(function($query){
+  //     $query->where('cegproposalauthor', auth()->user()->name)
+  //           ->orWhere('projectmanager', auth()->user()->name)
+  //           ->orWhere('created_by', auth()->user()->email);
+  //   });
+  // }    Keep incase we re-implement role
 
   /**
    * Queries for project status type 'Won' & 'Probable', just 'Won', or only 'Probable'. If user role is type 
@@ -316,7 +353,6 @@ class ProjectController extends Controller
    */
   public function indexwon(Request $request)
   {
-    if(auth()->user()->role != 'user'){
       if($request['projectstatus'] == 'Won'){
         $projects=Project::all()->where('projectstatus','Won');
         $projectStatus = "Won";
@@ -329,28 +365,26 @@ class ProjectController extends Controller
         $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
         $projectStatus = "All";
       }
-    }
-    else{
-      if($request['projectstatus'] == 'Won'){
-        $projects=($this->longQueriesIndexWon('Won'))->get();
-        $projectStatus = "Won";
-      }
-      else if($request['projectstatus'] == 'Probable'){
-        $projects=($this->longQueriesIndexWon('Probable'))->get();
-        $projectStatus = "Probable";
-      }
-      else{
-        $projects=Project::where(function($query) {
-          $query->where('projectstatus','Won')->orWhere('projectstatus','Won');
-        })
-        ->where(function($query2) {
-          $query2->where('cegproposalauthor', auth()->user()->name)
-                ->orWhere('projectmanager', auth()->user()->name)
-                ->orWhere('created_by', auth()->user()->email);
-        })->get();
-        $projectStatus = "All";
-      }
-    }
+    // else{
+    //   if($request['projectstatus'] == 'Won'){
+    //     $projects=($this->longQueriesIndexWon('Won'))->get();
+    //     $projectStatus = "Won";
+    //   }
+    //   else if($request['projectstatus'] == 'Probable'){
+    //     $projects=($this->longQueriesIndexWon('Probable'))->get();
+    //     $projectStatus = "Probable";
+    //   }
+    //   else{
+    //     $projects=Project::where(function($query) {
+    //       $query->where('projectstatus','Won')->orWhere('projectstatus','Probable');
+    //     })
+    //     ->where(function($query2) {
+    //       $query2->where('cegproposalauthor', auth()->user()->name)
+    //             ->orWhere('projectmanager', auth()->user()->name)
+    //             ->orWhere('created_by', auth()->user()->email);
+    //     })->get();
+    //     $projectStatus = "All";
+    //   }                              Keep incase we re-implement user role
 
     if (count($projects) > 0)
     {
@@ -367,8 +401,12 @@ class ProjectController extends Controller
       //Also, get smallest start date to establish the beginning of the array 
       $start_dates = array();
       $end_dates = array();
-      foreach($projects as $project)
+      foreach($projects as $key => $project)
       {
+        if($project['dateenergization'] == "Unknown"){
+          unset($projects[$key]);
+          continue;
+        }
         $start_end = $this->get_project_start_end($project);
         $start_date = $start_end['start'];
         $end_date = $start_end['end']; 
@@ -431,6 +469,9 @@ class ProjectController extends Controller
           }
           $project['per_month_dollars'] = $project_per_month_dollars;
         }
+      }
+      if(empty($start_dates)){
+        return view('pages.wonprojectsummary', compact('projects'));
       }
       //get the max end date and min start date
       $earliest_start = min($start_dates);
@@ -521,7 +562,12 @@ class ProjectController extends Controller
       $options = [];
       $options['scales']['xAxes'][]['stacked'] = true;
       $options['scales']['yAxes'][]['stacked'] = true;
+      $options['legend']['labels']['boxWidth'] = 10;
+      $options['legend']['labels']['padding'] = 6;
+      #$options['maintainAspectRatio'] = false;
       $chart->options($options);
+      $chart->height(600);
+      #$chart->width(1200);
       #dd($chart); 
       //format total dollars with commas
       //foreach($months as $month)
@@ -548,22 +594,33 @@ class ProjectController extends Controller
   {
     $term = $request['search'];
     if (isset($term)) {
-      $projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
-      if(auth()->user()->role != 'user'){ 
+      //$projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
+      $projects = Project::whereRaw(['$text' => ['$search' => "{$term}"]])->get();
+      //if(auth()->user()->role != 'user'){ 
         foreach ($projects as $project) {
           $project = $this->displayFormat($project);
         }
-      }
-      else{
-        foreach ($projects as $key => $project) {
-          if($project['created_by'] == auth()->user()->email || $project['cegproposalauthor'] == auth()->user()->name || $project['projectmanager'] == auth()->user()->name) {
-              $project = $this->displayFormat($project);
-            }
-          else{
-            unset($projects[$key]);
-            }
-        }
-      }
+      //}
+      // else{
+      //   $user_email = auth()->user()->email;
+      //   $user_name = auth()->user()->name;
+      //   foreach ($projects as $key => $project) {
+      //     if($project['created_by'] == $user_email || $project['cegproposalauthor'] == $user_name) {
+      //       $project = $this->displayFormat($project);
+      //     }
+      //     elseif(isset($project['projectmanager'])){
+      //       if(is_array($project['projectmanager']) && in_array($user_name, $project['projectmanager'])){
+      //         $project = $this->displayFormat($project);
+      //       }
+      //       elseif($project['projectmanager'] == $user_name){
+      //         $project = $this->displayFormat($project);
+      //       }
+      //     }
+      //     else{
+      //       unset($projects[$key]);
+      //     }
+      //   }
+      // }
       return view('pages.projectindex', compact('projects')); 
       }
     else {
@@ -591,12 +648,13 @@ class ProjectController extends Controller
   */
   public function hours_graph(Request $request)
   {
-    $projects = DB::collection('hours_by_project')->get()->sortBy('code');
+    $projects = Project::whereRaw(['$and' => array(['projectcode' => ['$ne' => null]], ['hours_data' => ['$exists' => 'true']])])->get()->sortBy('projectname');
 
     function get_chart_info($id)
     {
-      $selected_project = DB::collection('hours_by_project')->where('_id', $id)->first();
-
+      $selected_project = Project::where('_id', $id)->first();
+      $selected_project_name = $selected_project['projectname'];
+      $selected_project_id = $selected_project['_id'];
       if ($selected_project)
       {
         $hours_data = $selected_project['hours_data'];
@@ -633,28 +691,28 @@ class ProjectController extends Controller
       $labels_arr_start_end = array_slice($labels_arr, $start_key, $end_key - $start_key + 1);
       $labels = $labels_arr_start_end;
       $dataset = array($selected_project['code'] . ' Hours', 'line', $hours_arr_start_end); 
-      return array('labels' => $labels, 'dataset' => $dataset); 
+      return array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}  - Past Hours"); 
       }
       else
       {
       return Null;
-      } 
+      }
     }
-    
-    
+
     $chart_info = get_chart_info($request['project_id']);
     if (isset($chart_info))
     {
       $chart = new HoursChart;
+      $chart->title($chart_info['title']);
       $chart->labels($chart_info['labels']);
       $chart->dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2])->options([
         'borderColor'=>'#3cba9f', 'fill' => False]);
       return view('pages.hoursgraph', compact('projects', 'chart'));
     }
-    else 
+    else
     {
       return view('pages.hoursgraph', compact('projects'));
-    } 
+    }
   }
 
   /**
