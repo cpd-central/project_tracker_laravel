@@ -14,7 +14,7 @@
   @stop
 
   @section('sort')
-  <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.projectindexSort') }}"> 
+  <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.projectindex') }}"> 
     @csrf 
     <select id="sort" name='sort' class="form-control" onchange="this.form.submit()">
     <option @if(!isset($term))selected @endif>-----Select-----</option>

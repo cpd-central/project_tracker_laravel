@@ -276,9 +276,15 @@ class ProjectController extends Controller
    */
   public function index(Request $request)
   {
+    $projects = $this->search($request);
     $term = $request['sort'];
+    if(isset($projects)){
+      if(isset($term) && $term != "-----Select-----"){
+        
+      }
+    }
     if(isset($term)){
-      dd($request);
+        //dd($request);
         $projects=Project::orderBy($term)->get();
     }
     else{
@@ -628,11 +634,8 @@ class ProjectController extends Controller
       //     }
       //   }
       // }
-      return view('pages.projectindex', compact('projects')); 
+      return $projects; 
       }
-    else {
-      return redirect('/projectindex')->with('Please enter a search term to search.');
-    }
   }
 
   /**
