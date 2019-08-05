@@ -19,7 +19,10 @@ Route::get('/newproject', 'ProjectController@new_project')->name('pages.newproje
 Route::post('/newproject', 'ProjectController@create')->middleware('verified');
 
 Route::get('/projectindex', 'ProjectController@index')->name('pages.projectindex')->middleware('verified');
-Route::post('/projectindex', 'ProjectController@search');
+Route::post('/projectindex', 'ProjectController@search')->middleware('verified');
+
+//Sort Route
+Route::get('/projectindex/{term?}', 'ProjectController@index')->name('pages.projectindexSort');
 
 Route::get('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummary')->middleware('verified');
 Route::post('/wonprojectsummary', 'ProjectController@search')->middleware('verified');

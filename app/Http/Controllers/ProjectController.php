@@ -274,14 +274,21 @@ class ProjectController extends Controller
    * their email matching the created_by field stored in the project.
    * @return view projectindex
    */
-  public function index()
+  public function index(Request $request)
   {
-    $projects=Project::all();
+    $term = $request['sort'];
+    if(isset($term)){
+      dd($request);
+        $projects=Project::orderBy($term)->get();
+    }
+    else{
+      $projects=Project::all();
+    }
     foreach($projects as $project)
     {
       $project = $this->displayFormat($project);
     } 
-    return view('pages.projectindex', compact('projects'));
+    return view('pages.projectindex', compact('projects', 'term'));
   }
 
   /**
