@@ -5,9 +5,9 @@
   <br />
   <!-- Search Bar Form -->
   <div class="active-pink-3 active-pink-4 mb-4">
-      <form class="form-inline md-form mr-auto mb-4" method="post" action="{{ action('ProjectController@search') }}"> 
+      <form class="form-inline md-form mr-auto mb-4" method="post" action="{{ route('pages.projectindex') }}"> 
           @csrf 
-          <input name="search" class="form-control mr-sm-2" type="text" placeholder="Search Projects" aria-label="Search">
+          <input name="search" class="form-control mr-sm-2" type="text" placeholder="Search Projects" aria-label="Search" value='@if(isset($search)){{$search}}@endif'>
           <button class="btn aqua-gradient btn-rounded btn-sm my-0" type="submit">Search</button> 
         </form> 
   </div>

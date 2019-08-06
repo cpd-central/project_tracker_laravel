@@ -276,16 +276,10 @@ class ProjectController extends Controller
    */
   public function index(Request $request)
   {
-    $projects = $this->search($request);
+    $search = $request['search'];
     $term = $request['sort'];
-    if(isset($projects)){
-      if(isset($term) && $term != "-----Select-----"){
-        
-      }
-    }
-    if(isset($term)){
-        //dd($request);
-        $projects=Project::orderBy($term)->get();
+    if(isset($search) || (isset($term) && $term != "-----Select-----")){
+      $projects = $this->search($search, $term);
     }
     else{
       $projects=Project::all();
@@ -294,7 +288,7 @@ class ProjectController extends Controller
     {
       $project = $this->displayFormat($project);
     } 
-    return view('pages.projectindex', compact('projects', 'term'));
+    return view('pages.projectindex', compact('projects', 'term', 'search'));
   }
 
   /**
@@ -603,39 +597,20 @@ class ProjectController extends Controller
  * @param $request - Request variable with attributes to be assigned to $project.
  * @return view projectindex
  */
-  public function search(Request $request)
+  public function search($search_term, $sort_term)
   {
-    $term = $request['search'];
-    if (isset($term)) {
-      //$projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
-      $projects = Project::whereRaw(['$text' => ['$search' => "{$term}"]])->get();
-      //if(auth()->user()->role != 'user'){ 
-        foreach ($projects as $project) {
-          $project = $this->displayFormat($project);
-        }
-      //}
-      // else{
-      //   $user_email = auth()->user()->email;
-      //   $user_name = auth()->user()->name;
-      //   foreach ($projects as $key => $project) {
-      //     if($project['created_by'] == $user_email || $project['cegproposalauthor'] == $user_name) {
-      //       $project = $this->displayFormat($project);
-      //     }
-      //     elseif(isset($project['projectmanager'])){
-      //       if(is_array($project['projectmanager']) && in_array($user_name, $project['projectmanager'])){
-      //         $project = $this->displayFormat($project);
-      //       }
-      //       elseif($project['projectmanager'] == $user_name){
-      //         $project = $this->displayFormat($project);
-      //       }
-      //     }
-      //     else{
-      //       unset($projects[$key]);
-      //     }
-      //   }
-      // }
-      return $projects; 
+    if (isset($search_term)) {
+      if (isset($sort_term) && $sort_term != "-----Select-----"){
+        $projects = Project::whereRaw(['$text' => ['$search' => "{$search_term}"]])->orderBy($sort_term)->get();
       }
+      else{
+        $projects = Project::whereRaw(['$text' => ['$search' => "{$search_term}"]])->get();
+      }
+    }
+    else{
+      $projects = Project::orderBy($sort_term)->get();
+    }
+    return $projects;
   }
 
   /**
