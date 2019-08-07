@@ -141,7 +141,6 @@ if(isset($date)){
 
 
 
-
     <script type="text/javascript">
     var row = "<?php echo $row ?>" -1;
     $(document).ready(function() {
@@ -174,6 +173,7 @@ if(isset($date)){
             return false;
           }
         });
+
     });
 
     function addRow(){
@@ -244,6 +244,7 @@ if(isset($date)){
       $('#dynamic_field').append(tr);
     }
 
+    //Need this row total so laravel knows how many rows to look for data when it submits.
     function hiddenField(){
       $('#total_rows').remove();
       var input = '<tr id="total_rows">' +
