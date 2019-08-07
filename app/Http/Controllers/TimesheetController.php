@@ -76,7 +76,8 @@ class TimesheetController extends Controller
             $timesheet->user = auth()->user()->email;
             $this->store($timesheet, $request);
         }
-        return redirect('/home');
+        $message = "Success! Timesheet was saved.";
+        return $this->check($message);
     }
 
     /**
@@ -266,22 +267,22 @@ class TimesheetController extends Controller
         }
     }
 
-    public function check()
+    public function check($message = null)
     {
         $date = $this->getDate();
         $collection = Timesheet::where('user', auth()->user()->email)->get();
         if(!$collection->isEmpty()){
             $timesheet = $collection[0];
-            return $this->edit($timesheet, $date);
+            return $this->edit($timesheet, $date, $message);
         }
         else{
             return $this->index($date);
         }
     }
 
-    public function edit($timesheet, $date)
+    public function edit($timesheet, $date, $message = null)
     {
-        return view('pages.timesheet', compact('timesheet', 'date'));
+        return view('pages.timesheet', compact('timesheet', 'date', 'message'));
     }
 
     /**
