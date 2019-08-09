@@ -138,9 +138,6 @@ if(isset($date)){
                   </div>
               </div>
             </form>
-
-
-
     <script type="text/javascript">
     var row = "<?php echo $row ?>" -1;
     $(document).ready(function() {
