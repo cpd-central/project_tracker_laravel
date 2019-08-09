@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Timesheet;
 use Illuminate\Http\Request;
-use MongoDB\BSON\UTCDateTime;
 
 class TimesheetController extends Controller
 {
+    /**
+     * Prepares the Array of dates to be saved to database.
+     * If the date is null, blank, or 0, it is taken out.
+     * @return $array
+     */
     protected function databasePrep($array){
         if($array){
             foreach($array as $key => $day){
@@ -20,6 +24,10 @@ class TimesheetController extends Controller
         return $array;
     }
 
+    /**
+     * Assigns dates with their corresponding hours.
+     * @return $formattedArray
+     */
     protected function formatArray($array, $daterange){
         $formattedArray = array();
         for($i = 0; $i < 14; $i++){
@@ -28,13 +36,20 @@ class TimesheetController extends Controller
         return $formattedArray;
     }
 
+    /**
+     * Gets todays date to determine the date range when rendering the timesheet page.
+     * @return $php_date
+     */
     protected function getDate(){
         $time = date("Y-m-d H:i:s");
         $php_date = new \DateTime($time, new \DateTimeZone('America/Chicago'));
-        //$date = new UTCDateTime($php_date->getTimestamp() * 1000);
         return $php_date;
     }
 
+    /**
+     * Combines the old Timesheet data with the new so that it keeps all data across time.
+     * @return array reformatted new array with old data.
+     */
     protected function arrayFormat($new_array, $old_array, $daterangeArray){
         foreach($daterangeArray as $date){
             if((!isset($new_array[$date])) && isset($old_array[$date])){
@@ -47,6 +62,11 @@ class TimesheetController extends Controller
         return $old_array;
     }
 
+    /**
+     * Gets rid of the code in the last 2 weeks because its old data. Will get readded if its still in the
+     * request. This helps overwrite new data with old data.
+     * @return array
+     */
     protected function erase_last_2_weeks($array, $daterangeArray){
         foreach($daterangeArray as $date){
             if(isset($array[$date])){
@@ -57,15 +77,20 @@ class TimesheetController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Returns the timesheet view with the data compacted so
+     * the date range can be created.
+     * @return view pages.timesheet
      */
     public function index($date)
     {
         return view('pages.timesheet', compact('date'));
     }
 
+    /**
+     * Determines if there's a timesheet saved or not. Stores the timesheet or creates a new one to be stored
+     * with a message to notify the user it was successfully saved to the database.
+     * @return $this->check($message)
+     */
     public function timesheetSave(Request $request, $id = null){
         $timesheet = Timesheet::find($id);
         if($timesheet){
@@ -81,10 +106,7 @@ class TimesheetController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * Stores the Timesheet to the database.
      */
     public function store($timesheet, $request)
     {   if($timesheet['Codes']){                //Enter this if there was a previous timesheet
@@ -103,14 +125,6 @@ class TimesheetController extends Controller
             $CEG['Staff Meetings and HR'] = $this->databasePrep($this->formatArray($request->get('row1'), $daterangeArray));
             $CEG['Staff Meetings and HR'] += $this->arrayFormat($CEG['Staff Meetings and HR'], $timesheet['Codes']['CEG']['Staff Meetings and HR'], $daterangeArray);
 
-            // if(isset($timesheet['Codes']['CEG']) && count($timesheet['Codes']['CEG']) > 2){
-            //     $CEG_keys = array_keys($timesheet['Codes']['CEG']);
-            //     foreach($CEG_keys as $CEG_additional){
-            //         if(!array_key_exists($CEG_additional, $CEG)){
-            //             $CEG[$CEG_additional] = $timesheet['Codes']['CEG'][$CEG_additional];
-            //         }
-            //     }
-            // }
             $codes['CEG'] = $CEG;
 
             //Store Code CEGTRNG
@@ -267,6 +281,11 @@ class TimesheetController extends Controller
         }
     }
 
+    /**
+     * Checks to see if the user has a timesheet already.
+     * @parameter $message for notifying the user the timesheet saved.
+     * @return view pages.timesheet
+     */
     public function check($message = null)
     {
         $date = $this->getDate();
@@ -280,19 +299,14 @@ class TimesheetController extends Controller
         }
     }
 
+    /**
+     * Returns the timesheet view with the data compacted so
+     * the date range can be created, the timesheet to be edited, and message if it was just saved.
+     * @parameter $timesheet, $date, $message
+     * @return view pages.timesheet
+     */
     public function edit($timesheet, $date, $message = null)
     {
         return view('pages.timesheet', compact('timesheet', 'date', 'message'));
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Timesheet  $timesheet
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Timesheet $timesheet)
-    {
-        //
     }
 }
