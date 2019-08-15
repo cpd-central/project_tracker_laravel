@@ -30,6 +30,27 @@ if(isset($date)){
    font-size: 12px;
  }
 
+ table.center {
+    margin-left:auto; 
+    margin-right:auto;
+  }
+
+ .fixed_header tbody{
+  display:block;
+  overflow:auto;
+  height:200px;
+  width:100%;
+}
+
+.fixed_header thead tr th{
+  display:block;
+  text-align: center;
+}
+
+.fixed_header thead{
+  background: black;
+  color:#fff;
+}
  </style>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -134,10 +155,30 @@ if(isset($date)){
                   <button type="button" id="add" class="btn btn-primary float-right">Add Row</button>
                 </div>
                 <div class="form-group col-md-4">
-                    <button type="submit" id="remove" class="btn btn-success float-right">Submit</button>
+                    <button type="submit" id="remove" class="btn btn-success float-right" onclick="return confirm('Make sure your descriptions and code is correct. Are you sure you want to submit?')">Submit</button>
                   </div>
               </div>
             </form>
+              <table class="fixed_header center">
+                <thead>
+                  <tr>
+                    <th>
+                      Reference List
+                    </th>
+                  </tr>
+                </thead>
+              <?php if(isset($reference_list)){
+                      foreach($reference_list[0]['codes'] as $key => $element){?>
+                <tr>
+                  <td>
+                    {{$key}} 
+                  </td>
+                  <td>
+                    {{$element}}
+                  </td>
+                </tr>
+                      <?php }
+              } ?>
     <script type="text/javascript">
     var row = "<?php echo $row ?>" -1;
     $(document).ready(function() {

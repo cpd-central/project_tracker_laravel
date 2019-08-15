@@ -290,12 +290,13 @@ class TimesheetController extends Controller
     {
         $date = $this->getDate();
         $collection = Timesheet::where('user', auth()->user()->email)->get();
+        $reference_list = Timesheet::where('name', 'reference_page')->get(); //Only works on production
         if(!$collection->isEmpty()){
             $timesheet = $collection[0];
-            return $this->edit($timesheet, $date, $message);
+            return $this->edit($timesheet, $date, $message, $reference_list);
         }
         else{
-            return $this->index($date);
+            return $this->index($date, $reference_list);
         }
     }
 
@@ -305,8 +306,8 @@ class TimesheetController extends Controller
      * @parameter $timesheet, $date, $message
      * @return view pages.timesheet
      */
-    public function edit($timesheet, $date, $message = null)
+    public function edit($timesheet, $date, $message = null, $reference_list)
     {
-        return view('pages.timesheet', compact('timesheet', 'date', 'message'));
+        return view('pages.timesheet', compact('timesheet', 'date', 'message', 'reference_list'));
     }
 }
