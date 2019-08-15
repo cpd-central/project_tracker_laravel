@@ -168,10 +168,15 @@ foreach($reference_list[0]['codes'] as $key => $desc){
             </form>
               <table class="fixed_header center" id="reference_field">
               </table>
+              <div align="center" id="reference_field_btns">
+                <button type="button" id="btn_sort" class="btn btn-primary btn_sort">A-Z</button>
+              </div>
     <script type="text/javascript">
     var row = "<?php echo $row ?>" -1;
     var reference_desc = <?php echo json_encode($reference_desc); ?>;
     var reference_code = <?php echo json_encode($reference_code); ?>;
+    var array = [];
+    make_array();
     $(document).ready(function() {
       columnTotal();
       addRowTotal();
@@ -197,6 +202,12 @@ foreach($reference_list[0]['codes'] as $key => $desc){
           addRowTotal();
         });
 
+        $("#reference_field_btns").on('click', '.btn_sort', function() {
+          $("#reference_field tbody").remove();
+          $("#reference_field thead").remove();
+          referenceTable();
+        });
+
         $(window).keydown(function(event){
           if(event.keyCode == 13) {
             event.preventDefault();
@@ -205,6 +216,12 @@ foreach($reference_list[0]['codes'] as $key => $desc){
         });
 
     });
+
+    function make_array(){  
+      for(var y = 0; y < reference_desc.length; y++){
+        array[reference_desc[y]] = reference_code[y];
+      }
+    }
 
     function referenceTable(){
         var tableRef = '<thead>' +
@@ -217,7 +234,7 @@ foreach($reference_list[0]['codes'] as $key => $desc){
         for(var z = 0; z < reference_desc.length; z++){
           var tableRef = tableRef + '<tr>' +
                   '<td>' +
-                      reference_code[z] + 
+                      array[reference_desc[z]] + 
                   '</td>' +
                   '<td>' +
                       reference_desc[z] +
