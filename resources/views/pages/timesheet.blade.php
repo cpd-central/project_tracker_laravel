@@ -12,6 +12,13 @@ if(isset($date)){
     array_push($arr, $dt->format('j-M-y'));
   }
 }
+
+$reference_desc = array();
+$reference_code = array();
+foreach($reference_list[0]['codes'] as $key => $desc){
+  array_push($reference_desc, $desc);
+  array_push($reference_code, $key);
+}
 ?>
 
 <!doctype html>
@@ -159,32 +166,17 @@ if(isset($date)){
                   </div>
               </div>
             </form>
-              <table class="fixed_header center">
-                <thead>
-                  <tr>
-                    <th>
-                      Reference List
-                    </th>
-                  </tr>
-                </thead>
-              <?php if(isset($reference_list)){
-                      foreach($reference_list[0]['codes'] as $key => $element){?>
-                <tr>
-                  <td>
-                    {{$key}} 
-                  </td>
-                  <td>
-                    {{$element}}
-                  </td>
-                </tr>
-                      <?php }
-              } ?>
+              <table class="fixed_header center" id="reference_field">
+              </table>
     <script type="text/javascript">
     var row = "<?php echo $row ?>" -1;
+    var reference_desc = <?php echo json_encode($reference_desc); ?>;
+    var reference_code = <?php echo json_encode($reference_code); ?>;
     $(document).ready(function() {
       columnTotal();
       addRowTotal();
       hiddenField();
+      referenceTable();
         $("#add").on('click', function() {
             row++;
             addRow();
@@ -213,6 +205,27 @@ if(isset($date)){
         });
 
     });
+
+    function referenceTable(){
+        var tableRef = '<thead>' +
+                  '<tr>' +
+                    '<th>' +
+                      'Reference List' +
+                    '</th>' +
+                  '</tr>' +
+                '</thead>';
+        for(var z = 0; z < reference_desc.length; z++){
+          var tableRef = tableRef + '<tr>' +
+                  '<td>' +
+                      reference_code[z] + 
+                  '</td>' +
+                  '<td>' +
+                      reference_desc[z] +
+                  '</td>' +
+                '</tr>';
+        }
+      $('#reference_field').append(tableRef);
+    }
 
     function addRow(){
         var tr = '<tr id="row'+row+'">' +
