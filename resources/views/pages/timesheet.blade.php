@@ -19,6 +19,7 @@ foreach($reference_list[0]['codes'] as $key => $desc){
   array_push($reference_desc, $desc);
   array_push($reference_code, $key);
 }
+array_multisort($reference_desc, $reference_code);
 ?>
 
 <!doctype html>
@@ -168,9 +169,6 @@ foreach($reference_list[0]['codes'] as $key => $desc){
             </form>
               <table class="fixed_header center" id="reference_field">
               </table>
-              <div align="center" id="reference_field_btns">
-                <button type="button" id="btn_sort" class="btn btn-primary btn_sort">A-Z</button>
-              </div>
     <script type="text/javascript">
     var row = "<?php echo $row ?>" -1;
     var reference_desc = <?php echo json_encode($reference_desc); ?>;
@@ -200,12 +198,6 @@ foreach($reference_list[0]['codes'] as $key => $desc){
         $("#dynamic_field").on('change',function() {
           columnTotal();
           addRowTotal();
-        });
-
-        $("#reference_field_btns").on('click', '.btn_sort', function() {
-          $("#reference_field tbody").remove();
-          $("#reference_field thead").remove();
-          referenceTable();
         });
 
         $(window).keydown(function(event){

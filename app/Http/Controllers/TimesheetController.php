@@ -290,7 +290,7 @@ class TimesheetController extends Controller
     {
         $date = $this->getDate();
         $collection = Timesheet::where('user', auth()->user()->email)->get();
-        $reference_list = Timesheet::where('name', 'reference_page')->get(); //Only works on production
+        $reference_list = Timesheet::where('name', 'reference_list')->get(); //Only works on production
         if(!$collection->isEmpty()){
             $timesheet = $collection[0];
             return $this->edit($timesheet, $date, $message, $reference_list);
