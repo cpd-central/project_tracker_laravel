@@ -687,11 +687,13 @@ class ProjectController extends Controller
       end($hours_array_filtered);
       $end_key = key($hours_array_filtered);
 
+      $total_hours = array_sum($hours_arr);
+
       $hours_arr_start_end = array_slice($hours_arr, $start_key, $end_key - $start_key + 1);
       $labels_arr_start_end = array_slice($labels_arr, $start_key, $end_key - $start_key + 1);
       $labels = $labels_arr_start_end;
-      $dataset = array($selected_project['code'] . ' Hours', 'line', $hours_arr_start_end); 
-      return array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}  - Past Hours"); 
+      $dataset = array($selected_project['code'] . " Total: {$total_hours}", 'line', $hours_arr_start_end);
+      return array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}  - Past Hours");
       }
       else
       {
@@ -705,8 +707,15 @@ class ProjectController extends Controller
       $chart = new HoursChart;
       $chart->title($chart_info['title']);
       $chart->labels($chart_info['labels']);
-      $chart->dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2])->options([
-        'borderColor'=>'#3cba9f', 'fill' => False]);
+      $chart->dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2]);
+      $options = [];
+      $options['elements']['line']['borderColor'] = '#3cba9f';
+      $options['elements']['point']['borderColor'] = '#3cba9f';
+      $options['elements']['line']['fill'] = false;
+      $options['legend']['position'] = 'right';
+      $options['legend']['labels']['boxWidth'] = 0;
+      $options['legend']['labels']['fontStyle'] = 'bold';
+      $chart->options($options);
       return view('pages.hoursgraph', compact('projects', 'chart'));
     }
     else
