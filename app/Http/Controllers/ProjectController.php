@@ -597,7 +597,7 @@ class ProjectController extends Controller
  * @param $request - Request variable with attributes to be assigned to $project.
  * @return view projectindex
  */
-  public function search($sort_term, $search_term)
+  public function search($search_term, $sort_term)
   {
     if (isset($search_term)) {
       if (isset($sort_term) && $sort_term != "-----Select-----"){
@@ -612,6 +612,7 @@ class ProjectController extends Controller
                     ->orWhere('utility', 'regexp', "/$search_term/i")
                     ->orWhere('projecttype', 'regexp', "/$search_term/i")
                     ->orWhere('epctype', 'regexp', "/$search_term/i")
+                    ->orderBy($sort_term)
                     ->get();
       }
       else {
@@ -632,7 +633,7 @@ class ProjectController extends Controller
     else {
       $projects = Project::orderBy($sort_term)->get();
     }
-    //if(auth()->user()->role != 'user'){ 
+
     foreach ($projects as $project) {
       $project = $this->displayFormat($project);
     }
