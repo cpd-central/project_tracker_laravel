@@ -88,19 +88,19 @@ array_multisort($reference_desc, $reference_code);
                           <tr> 
                             <th>Product Description</th>
                             <?php for($i = 0; $i < 14; $i++){ ?>
-                            <th><?=$arr[$i]?></th>
+                            <th><?= $arr[$i]?></th>
                             <?php } ?>
                             <th>Code</th>
                             <th style="width: 2.9%"></th>
                             <th>Total</th>
                           </tr>
                         </thead>
-                        <?php $array = array('General and Admin', 'Staff Meetings and HR', 'Research and Training', 'Formal EDU', 'General Marketing') ?>
-                        <?php $code = array('CEG', 'CEG', 'CEGTRNG', 'CEGEDU', 'CEGMKTG') ?>
+                        <?php $array = array('Holiday', 'PTO', 'General and Admin', 'Staff Meetings and HR', 'Research and Training', 'Formal EDU', 'General Marketing') ?>
+                        <?php $code = array('CEG', 'CEG', 'CEG', 'CEG', 'CEGTRNG', 'CEGEDU', 'CEGMKTG') ?>
                         @for($row = 0; $row < count($array); $row++)  
                         @if(isset($timesheet))
                         <?php $codeOffset = $code[$row];         
-                              $descOffset = $array[$row];
+                              $descOffset = $array[$row]; 
                               $dayarray = $timesheet['Codes'][$codeOffset][$descOffset]?>
                         @endif
                       <tr id="row{{$row}}">
