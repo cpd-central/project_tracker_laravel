@@ -122,6 +122,7 @@ array_multisort($reference_desc, $reference_code);
                         @endfor 
                         @if(isset($timesheet['Codes']['Additional_Codes']))
                           @if(count($timesheet['Codes']['Additional_Codes']) > 0)
+                          <!-- Number of default non-billables + 1 -->
                           <?php $row = 7 ?>
                             @for($i = 0; $i < count(array_keys($timesheet['Codes']['Additional_Codes'])); $i++)
                               <?php $codeKeyArray = array_keys($timesheet['Codes']['Additional_Codes']);
