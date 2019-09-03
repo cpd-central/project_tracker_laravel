@@ -81,9 +81,9 @@ class TimesheetController extends Controller
      * the date range can be created.
      * @return view pages.timesheet
      */
-    public function index($date)
+    public function index($date, $reference_list)
     {
-        return view('pages.timesheet', compact('date'));
+        return view('pages.timesheet', compact('date', 'reference_list'));
     }
 
     /**
@@ -119,29 +119,35 @@ class TimesheetController extends Controller
             //Store code CEG
             $daterangeArray = $request->get('daterange');
             $CEG = array();
-            $CEG['General and Admin'] = $this->databasePrep($this->formatArray($request->get('row0'), $daterangeArray));
+            $CEG['Holiday'] = $this->databasePrep($this->formatArray($request->get('row0'), $daterangeArray));
+            $CEG['Holiday'] += $this->arrayFormat($CEG['Holiday'], $timesheet['Codes']['CEG']['Holiday'], $daterangeArray);           
+
+            $CEG['PTO'] = $this->databasePrep($this->formatArray($request->get('row1'), $daterangeArray));
+            $CEG['PTO'] += $this->arrayFormat($CEG['PTO'], $timesheet['Codes']['CEG']['PTO'], $daterangeArray);
+            
+            $CEG['General and Admin'] = $this->databasePrep($this->formatArray($request->get('row2'), $daterangeArray));
             $CEG['General and Admin'] += $this->arrayFormat($CEG['General and Admin'], $timesheet['Codes']['CEG']['General and Admin'], $daterangeArray);
 
-            $CEG['Staff Meetings and HR'] = $this->databasePrep($this->formatArray($request->get('row1'), $daterangeArray));
+            $CEG['Staff Meetings and HR'] = $this->databasePrep($this->formatArray($request->get('row3'), $daterangeArray));
             $CEG['Staff Meetings and HR'] += $this->arrayFormat($CEG['Staff Meetings and HR'], $timesheet['Codes']['CEG']['Staff Meetings and HR'], $daterangeArray);
 
             $codes['CEG'] = $CEG;
 
             //Store Code CEGTRNG
             $CEGTRNG = array();
-            $CEGTRNG['Research and Training'] = $this->databasePrep($this->formatArray($request->get('row2'), $daterangeArray));
+            $CEGTRNG['Research and Training'] = $this->databasePrep($this->formatArray($request->get('row4'), $daterangeArray));
             $CEGTRNG['Research and Training'] += $this->arrayFormat($CEGTRNG['Research and Training'], $timesheet['Codes']['CEGTRNG']['Research and Training'], $daterangeArray);
             $codes['CEGTRNG'] = $CEGTRNG;
 
             //Store Code CEGEDU
             $CEGEDU = array();
-            $CEGEDU['Formal EDU'] = $this->databasePrep($this->formatArray($request->get('row3'), $daterangeArray));
+            $CEGEDU['Formal EDU'] = $this->databasePrep($this->formatArray($request->get('row5'), $daterangeArray));
             $CEGEDU['Formal EDU'] += $this->arrayFormat($CEGEDU['Formal EDU'], $timesheet['Codes']['CEGEDU']['Formal EDU'], $daterangeArray);
             $codes['CEGEDU'] = $CEGEDU;
 
             //Store Code CEGMKTG
             $CEGMKTG = array();
-            $CEGMKTG['General Marketing'] = $this->databasePrep($this->formatArray($request->get('row4'), $daterangeArray));
+            $CEGMKTG['General Marketing'] = $this->databasePrep($this->formatArray($request->get('row6'), $daterangeArray));
             $CEGMKTG['General Marketing'] += $this->arrayFormat($CEGMKTG['General Marketing'], $timesheet['Codes']['CEGMKTG']['General Marketing'], $daterangeArray);
             $codes['CEGMKTG'] = $CEGMKTG;
 
@@ -175,10 +181,10 @@ class TimesheetController extends Controller
 
             //Added rows
             $row = (int) $request->get('row_total');
-            if($row > 4) {
+            if($row > 6) {
                 $arrayCodes = array();
                 $descriptions = array();
-                for($i = 5; $i <= $row; $i++){
+                for($i = 7; $i <= $row; $i++){
                     if($request->get('row'.$i) != null){
                         if(array_sum($request->get('row'.$i)) > 0){
                             $arr = array();
@@ -220,31 +226,33 @@ class TimesheetController extends Controller
             //Store code CEG
             $daterangeArray = $request->get('daterange');
             $CEG = array();
-            $CEG['General and Admin'] = $this->databasePrep($this->formatArray($request->get('row0'), $daterangeArray));
-            $CEG['Staff Meetings and HR'] = $this->databasePrep($this->formatArray($request->get('row1'), $daterangeArray));
+            $CEG['Holiday'] = $this->databasePrep($this->formatArray($request->get('row0'), $daterangeArray)); 
+            $CEG['PTO'] = $this->databasePrep($this->formatArray($request->get('row1'), $daterangeArray));
+            $CEG['General and Admin'] = $this->databasePrep($this->formatArray($request->get('row2'), $daterangeArray));
+            $CEG['Staff Meetings and HR'] = $this->databasePrep($this->formatArray($request->get('row3'), $daterangeArray));
             $codes['CEG'] = $CEG;
 
             //Store Code CEGTRNG
             $CEGTRNG = array();
-            $CEGTRNG['Research and Training'] = $this->databasePrep($this->formatArray($request->get('row2'), $daterangeArray));
+            $CEGTRNG['Research and Training'] = $this->databasePrep($this->formatArray($request->get('row4'), $daterangeArray));
             $codes['CEGTRNG'] = $CEGTRNG;
 
             //Store Code CEGEDU
             $CEGEDU = array();
-            $CEGEDU['Formal EDU'] = $this->databasePrep($this->formatArray($request->get('row3'), $daterangeArray));
+            $CEGEDU['Formal EDU'] = $this->databasePrep($this->formatArray($request->get('row5'), $daterangeArray));
             $codes['CEGEDU'] = $CEGEDU;
 
             //Store Code CEGMKTG
             $CEGMKTG = array();
-            $CEGMKTG['General Marketing'] = $this->databasePrep($this->formatArray($request->get('row4'), $daterangeArray));
+            $CEGMKTG['General Marketing'] = $this->databasePrep($this->formatArray($request->get('row6'), $daterangeArray));
             $codes['CEGMKTG'] = $CEGMKTG;
 
             //Added rows
             $row = (int) $request->get('row_total');
-            if($row > 4) {
+            if($row > 6) {
                 $arrayCodes = array();
                 $descriptions = array();
-                for($i = 5; $i <= $row; $i++){
+                for($i = 7; $i <= $row; $i++){
                     if($request->get('row'.$i) != null){
                         if(array_sum($request->get('row'.$i)) > 0){
                             $arr = array();
@@ -289,7 +297,7 @@ class TimesheetController extends Controller
     public function check($message = null)
     {
         $date = $this->getDate();
-        $collection = Timesheet::where('user', auth()->user()->email)->get();
+        $collection = Timesheet::where('user', auth()->user()->email)->get(); 
         $reference_list = Timesheet::where('name', 'reference_list')->get(); //Only works on production
         if(!$collection->isEmpty()){
             $timesheet = $collection[0];
