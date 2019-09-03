@@ -181,8 +181,8 @@ class TimesheetController extends Controller
 
             //Added rows
             $row = (int) $request->get('row_total');
-            if($row > 6) {
-                $arrayCodes = array();
+            if($row > 6) { 
+                $arrayCodes = array(); 
                 $descriptions = array();
                 for($i = 7; $i <= $row; $i++){
                     if($request->get('row'.$i) != null){
