@@ -8,15 +8,18 @@
       <form class="form-inline md-form mr-auto mb-4" method="post" action="{{ route('pages.projectindex') }}"> 
           @csrf 
           <input name="search" class="form-control mr-sm-2" type="text" placeholder="Search Projects" aria-label="Search" value='@if(isset($search)){{$search}}@endif'>
-          <button class="btn aqua-gradient btn-rounded btn-sm my-0" type="submit">Search</button> 
+          <button class="btn aqua-gradient btn-rounded btn-sm my-0" type="submit">Submit</button> 
         </form> 
   </div>
   @stop
 
   @section('sort')
   <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.projectindex') }}"> 
-    @csrf 
-    <select id="sort" name='sort' class="form-control" onchange="this.form.submit()">
+    @csrf  
+    <div class="form-group col-md-12">
+      <input id="invert" name="invert" class="form-control" type="checkbox" @if(isset($invert))checked @endif value="flip"/>Flip Sort Order 
+    </div> 
+    <select id="sort" name='sort' class="form-control">
     <option @if(!isset($term))selected @endif>-----Select-----</option>
     <option @if(isset($term) && $term == "cegproposalauthor")selected @endif value="cegproposalauthor">CEG Proposal Author</option>
     <option @if(isset($term) && $term == "projectname")selected @endif value="projectname">Project Name</option>
