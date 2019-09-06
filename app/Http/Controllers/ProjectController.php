@@ -642,7 +642,7 @@ class ProjectController extends Controller
       }
     }
     else {
-      $projects = Project::orderBy($sort_term, $asc_desc)->get();
+      $projects = $not_expired_projects->orderBy($sort_term, $asc_desc)->get();
     }
 
     foreach ($projects as $project) {
