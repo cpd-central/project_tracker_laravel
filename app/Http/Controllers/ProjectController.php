@@ -274,14 +274,22 @@ class ProjectController extends Controller
    * their email matching the created_by field stored in the project.
    * @return view projectindex
    */
-  public function index()
+  public function index(Request $request)
   {
-    $projects=Project::all();
+    $search = $request['search'];
+    $term = $request['sort'];
+    $invert = $request['invert']; 
+    if(isset($search) || (isset($term) && $term != "-----Select-----")){
+      $projects = $this->search($search, $term, $invert);
+    }
+    else{
+      $projects=Project::all();
+    }
     foreach($projects as $project)
     {
       $project = $this->displayFormat($project);
     } 
-    return view('pages.projectindex', compact('projects'));
+    return view('pages.projectindex', compact('projects', 'term', 'search', 'invert'));
   }
 
   /**
@@ -590,42 +598,57 @@ class ProjectController extends Controller
  * @param $request - Request variable with attributes to be assigned to $project.
  * @return view projectindex
  */
-  public function search(Request $request)
+  public function search($search_term, $sort_term, $invert)
   {
-    $term = $request['search'];
-    if (isset($term)) {
-      //$projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
-      $projects = Project::whereRaw(['$text' => ['$search' => "{$term}"]])->get();
-      //if(auth()->user()->role != 'user'){ 
-        foreach ($projects as $project) {
-          $project = $this->displayFormat($project);
-        }
-      //}
-      // else{
-      //   $user_email = auth()->user()->email;
-      //   $user_name = auth()->user()->name;
-      //   foreach ($projects as $key => $project) {
-      //     if($project['created_by'] == $user_email || $project['cegproposalauthor'] == $user_name) {
-      //       $project = $this->displayFormat($project);
-      //     }
-      //     elseif(isset($project['projectmanager'])){
-      //       if(is_array($project['projectmanager']) && in_array($user_name, $project['projectmanager'])){
-      //         $project = $this->displayFormat($project);
-      //       }
-      //       elseif($project['projectmanager'] == $user_name){
-      //         $project = $this->displayFormat($project);
-      //       }
-      //     }
-      //     else{
-      //       unset($projects[$key]);
-      //     }
-      //   }
-      // }
-      return view('pages.projectindex', compact('projects')); 
-      }
-    else {
-      return redirect('/projectindex')->with('Please enter a search term to search.');
+    $not_expired_projects = Project::where(array(['projectstatus', '<>', 'Expired'])); 
+    
+    if(isset($invert))
+    {
+      $asc_desc = 'desc';
     }
+    else
+    {
+      $asc_desc = 'asc';
+    }
+    if (isset($search_term)) {
+      if (isset($sort_term) && $sort_term != "-----Select-----"){
+        $projects = $not_expired_projects->where('cegproposalauthor', 'regexp', "/$search_term/i")
+                    ->orWhere('projectname', 'regexp', "/$search_term/i")
+                    ->orWhere('clientcontactname', 'regexp', "/$search_term/i")
+                    ->orWhere('clientcompany', 'regexp', "/$search_term/i")
+                    ->orWhere('projectstatus', 'regexp', "/$search_term/i")
+                    ->orWhere('projectcode', 'regexp', "/$search_term/i")
+                    ->orWhere('projectmanager', 'regexp', "/$search_term/i")
+                    ->orWhere('state', 'regexp', "/$search_term/i")
+                    ->orWhere('utility', 'regexp', "/$search_term/i")
+                    ->orWhere('projecttype', 'regexp', "/$search_term/i")
+                    ->orWhere('epctype', 'regexp', "/$search_term/i")
+                    ->orderBy($sort_term, $asc_desc)
+                    ->get();
+      }
+      else {
+        $projects = Project::where('cegproposalauthor', 'regexp', "/$search_term/i")
+                    ->orWhere('projectname', 'regexp', "/$search_term/i")
+                    ->orWhere('clientcontactname', 'regexp', "/$search_term/i")
+                    ->orWhere('clientcompany', 'regexp', "/$search_term/i")
+                    ->orWhere('projectstatus', 'regexp', "/$search_term/i")
+                    ->orWhere('projectcode', 'regexp', "/$search_term/i")
+                    ->orWhere('projectmanager', 'regexp', "/$search_term/i")
+                    ->orWhere('state', 'regexp', "/$search_term/i")
+                    ->orWhere('utility', 'regexp', "/$search_term/i")
+                    ->orWhere('projecttype', 'regexp', "/$search_term/i")
+                    ->orWhere('epctype', 'regexp', "/$search_term/i")
+                    ->get();
+      }
+    }
+    else {
+      $projects = $not_expired_projects->orderBy($sort_term, $asc_desc)->get();
+    }
+
+    foreach ($projects as $project) {
+      $project = $this->displayFormat($project);
+    }
+    return $projects;
   }
 
   /**
@@ -687,11 +710,13 @@ class ProjectController extends Controller
       end($hours_array_filtered);
       $end_key = key($hours_array_filtered);
 
+      $total_hours = array_sum($hours_arr);
+
       $hours_arr_start_end = array_slice($hours_arr, $start_key, $end_key - $start_key + 1);
       $labels_arr_start_end = array_slice($labels_arr, $start_key, $end_key - $start_key + 1);
       $labels = $labels_arr_start_end;
-      $dataset = array($selected_project['code'] . ' Hours', 'line', $hours_arr_start_end); 
-      return array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}  - Past Hours"); 
+      $dataset = array($selected_project['code'] . " Total: {$total_hours}", 'line', $hours_arr_start_end);
+      return array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}  - Past Hours");
       }
       else
       {
@@ -705,8 +730,15 @@ class ProjectController extends Controller
       $chart = new HoursChart;
       $chart->title($chart_info['title']);
       $chart->labels($chart_info['labels']);
-      $chart->dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2])->options([
-        'borderColor'=>'#3cba9f', 'fill' => False]);
+      $chart->dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2]);
+      $options = [];
+      $options['elements']['line']['borderColor'] = '#3cba9f';
+      $options['elements']['point']['borderColor'] = '#3cba9f';
+      $options['elements']['line']['fill'] = false;
+      $options['legend']['position'] = 'right';
+      $options['legend']['labels']['boxWidth'] = 0;
+      $options['legend']['labels']['fontStyle'] = 'bold';
+      $chart->options($options);
       return view('pages.hoursgraph', compact('projects', 'chart'));
     }
     else

@@ -8,6 +8,8 @@
       <div id="main">
       </br>
       </br>
+      
+      @yield('sort') 
       <div class="container">
       @yield('toptool')
         @if (\Session::has('success'))

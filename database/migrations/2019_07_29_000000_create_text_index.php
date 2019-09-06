@@ -25,7 +25,6 @@ class CreateTextIndex extends Migration
           "projectmanager" => "text",
           "state" => "text",
           "utility" => "text",
-          "projectcode" => "text",
           "projecttype" => "text",
           "epctype" => "text"
         ],
@@ -42,7 +41,6 @@ class CreateTextIndex extends Migration
             "projectmanager" => 1,
             "state" => 1,
             "utility" => 1,
-            "projectcode" => 1,
             "projecttype" => 1,
             "epctype" => 1
           ],
