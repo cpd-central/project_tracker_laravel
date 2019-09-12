@@ -55,6 +55,7 @@
         @else 
           <div class="box red"></div> 
         @endif 
+        
         <ul class="navbar-nav ml-auto">
           <!-- Authentication Links -->
           @guest
