@@ -16,6 +16,19 @@
 <!-- Styles -->
 <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
+<style>
+  .box {
+    width: 50px;
+    height: 25px;
+  }
+  .red {
+    background: #f00;
+  } 
+  .green {
+    background: #0f0;
+  }
+</style>
+
 <div id="app">
   <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
     <div class="container">
@@ -33,6 +46,15 @@
         </ul>
 
         <!-- Right Side of Navbar -->
+        <!-- Indicate if timesheet has been sent yet or not --> 
+        <div>Timesheet Sent Status: </div> 
+
+        <?php $pay_period_sent = \App\Timesheet::where('user', auth()->user()->email)->get()[0]->pay_period_sent ?>      
+        @if ($pay_period_sent)
+          <div class="box green"></div>
+        @else 
+          <div class="box red"></div> 
+        @endif 
         <ul class="navbar-nav ml-auto">
           <!-- Authentication Links -->
           @guest
