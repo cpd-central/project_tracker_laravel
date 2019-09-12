@@ -19,7 +19,7 @@
 <style>
   .box {
     width: 50px;
-    height: 25px;
+    height: 40px;
   }
   .red {
     background: #f00;
@@ -45,17 +45,7 @@
 
         </ul>
 
-        <!-- Right Side of Navbar -->
-        <!-- Indicate if timesheet has been sent yet or not --> 
-        <div>Timesheet Sent Status: </div> 
-
-        <?php $pay_period_sent = \App\Timesheet::where('user', auth()->user()->email)->get()[0]->pay_period_sent ?>      
-        @if ($pay_period_sent)
-          <div class="box green"></div>
-        @else 
-          <div class="box red"></div> 
-        @endif 
-        
+        <!-- Right Side of Navbar -->        
         <ul class="navbar-nav ml-auto">
           <!-- Authentication Links -->
           @guest
@@ -68,6 +58,19 @@
           </li>
           @endif
           @else
+ 
+          <?php $pay_period_sent = \App\Timesheet::where('user', auth()->user()->email)->get()[0]->pay_period_sent ?>      
+          <li class="nav-item">
+            <a class="nav-link">Timesheet Sent Status: </a>
+          </li>
+          <li class="nav-item">
+            @if ($pay_period_sent)
+              <div class="nav-link box green"></div>
+            @else
+              <div class="nav-link box red"></div>
+            @endif
+          </li>
+
           <?php if(auth()->user()->role != "user"){?>
           <li class="nav-item">
             <a class="nav-link" href="{{ route('pages.newproject') }}">New Project</a>
