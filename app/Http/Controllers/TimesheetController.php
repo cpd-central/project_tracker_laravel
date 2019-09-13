@@ -81,7 +81,7 @@ class TimesheetController extends Controller
      * the date range can be created.
      * @return view pages.timesheet
      */
-    public function index($date, $reference_list, $time_until_billing)
+    public function index($date, $reference_list)
     {
         return view('pages.timesheet', compact('date', 'reference_list', 'time_until_billing'));
     }
@@ -297,18 +297,15 @@ class TimesheetController extends Controller
     public function check($message = null)
     {
         $date = $this->getDate();
-        $today = $this->getDate(); 
-        $billing_start_date = $today->modify('first day of next month');
-        $time_until_billing = date_diff($billing_start_date, $date)->days;
-        
+
         $collection = Timesheet::where('user', auth()->user()->email)->get(); 
         $reference_list = Timesheet::where('name', 'reference_list')->get(); //Only works on production
         if(!$collection->isEmpty()){
             $timesheet = $collection[0];
-            return $this->edit($timesheet, $date, $message, $reference_list, $time_until_billing);
+            return $this->edit($timesheet, $date, $message, $reference_list);
         }
         else{
-            return $this->index($date, $reference_list, $time_until_billing);
+            return $this->index($date, $reference_list);
         }
     }
 
@@ -318,7 +315,7 @@ class TimesheetController extends Controller
      * @parameter $timesheet, $date, $message
      * @return view pages.timesheet
      */
-    public function edit($timesheet, $date, $message = null, $reference_list, $time_until_billing)
+    public function edit($timesheet, $date, $message = null, $reference_list)
     {
         return view('pages.timesheet', compact('timesheet', 'date', 'message', 'reference_list', 'time_until_billing'));
     }

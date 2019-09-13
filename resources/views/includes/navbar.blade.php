@@ -16,6 +16,21 @@
 <!-- Styles -->
 <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
+<style>
+  .box { 
+    position: relative; 
+    top: 10px; 
+    width: 25px;
+    height: 20px;
+  }
+  .red {
+    background: #f00;
+  } 
+  .green {
+    background: #0f0;
+  }
+</style>
+
 <div id="app">
   <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
     <div class="container">
@@ -32,7 +47,7 @@
 
         </ul>
 
-        <!-- Right Side of Navbar -->
+        <!-- Right Side of Navbar -->        
         <ul class="navbar-nav ml-auto">
           <!-- Authentication Links -->
           @guest
@@ -45,6 +60,31 @@
           </li>
           @endif
           @else
+          <?php 
+            $date = new \DateTime(date("Y-m-d H:i:s"), new \DateTimeZone('America/Chicago'));
+            $today = new \DateTime(date("Y-m-d H:i:s"), new \DateTimeZone('America/Chicago')); 
+            $billing_start_date = $date->modify('first day of next month');
+            $time_until_billing = date_diff($billing_start_date, $today)->days;
+          ?>
+          <li class="nav-item">
+            @if ($time_until_billing < 7) 
+              <a class="nav-link"><font color="red">Days Until Billing: {{ $time_until_billing }}</font></a>
+            @else
+              <a class="nav-link">Days Until Billing: {{ $time_until_billing }}</font></a>
+            @endif 
+          </li>
+          <?php $pay_period_sent = \App\Timesheet::where('user', auth()->user()->email)->get()[0]->pay_period_sent ?>      
+          <li class="nav-item">
+            <a class="nav-link">Timesheet Sent Status: </a>
+          </li>
+          <li class="nav-item">
+            @if ($pay_period_sent)
+              <div class="nav-link box green"></div>
+            @else
+              <div class="nav-link box red"></div>
+            @endif
+          </li>
+
           <?php if(auth()->user()->role != "user"){?>
           <li class="nav-item">
             <a class="nav-link" href="{{ route('pages.newproject') }}">New Project</a>

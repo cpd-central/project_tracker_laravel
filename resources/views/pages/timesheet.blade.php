@@ -79,7 +79,6 @@ array_multisort($reference_desc, $reference_code);
           </br>
         @endif
         <h2><b>Timesheet</b></h2>
-        <h4><b>Days Until Billing Starts: {{ $time_until_billing }}</b></h4> 
         </div>
         <div>   
           <form method="POST">
