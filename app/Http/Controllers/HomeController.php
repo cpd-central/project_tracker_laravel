@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\User;
 
 class HomeController extends Controller
 {
@@ -23,6 +24,36 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        return view('dashboard');
+    }
+
+    public function edit_roles()
+    {
+        $users = User::all();
+        return view('pages.roles', compact('users'));
+    }
+
+    public function destroy($id)
+    {
+        if(isset($id)){
+            $user = User::find($id);
+            $user->delete();
+        }
+        return redirect('/home');
+    }
+
+    public function update(Request $request)
+    {
+        $users = User::all();
+        foreach($users as $user){
+            if($user['role'] == 'sudo'){
+                continue;
+            }
+            $stringSplit = explode(".", $user['email']);
+            $string = $stringSplit[0]."_".$stringSplit[1];
+            $user['role'] = $request[$string];
+            $user->save();
+        }
+        return redirect('/home');
     }
 }
