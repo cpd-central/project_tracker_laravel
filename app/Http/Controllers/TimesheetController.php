@@ -83,7 +83,7 @@ class TimesheetController extends Controller
      */
     public function index($date, $reference_list)
     {
-        return view('pages.timesheet', compact('date', 'reference_list', 'time_until_billing'));
+        return view('pages.timesheet', compact('date', 'reference_list'));
     }
 
     /**
@@ -317,6 +317,6 @@ class TimesheetController extends Controller
      */
     public function edit($timesheet, $date, $message = null, $reference_list)
     {
-        return view('pages.timesheet', compact('timesheet', 'date', 'message', 'reference_list', 'time_until_billing'));
+        return view('pages.timesheet', compact('timesheet', 'date', 'message', 'reference_list'));
     }
 }
