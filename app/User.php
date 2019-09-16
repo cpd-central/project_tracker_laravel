@@ -29,7 +29,7 @@ class User extends Eloquent implements AuthenticatableContract, MustVerifyEmailC
    * @var array
    */
   protected $fillable = [
-    'name', 'email', 'password', 'role', 'pay_period_sent'
+    'name', 'email', 'password', 'role',
   ];
 
   /**
