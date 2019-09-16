@@ -99,6 +99,7 @@ class TimesheetController extends Controller
         else{
             $timesheet = new Timesheet();
             $timesheet->user = auth()->user()->email;
+            $timesheet->pay_period_sent = True; 
             $this->store($timesheet, $request);
         }
         $message = "Success! Timesheet was saved.";

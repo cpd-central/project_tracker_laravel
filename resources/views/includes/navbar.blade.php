@@ -89,7 +89,15 @@
               <a class="nav-link">Days Until Billing: {{ $time_until_billing }}</font></a>
             @endif 
           </li>
-          <?php $pay_period_sent = \App\Timesheet::where('user', auth()->user()->email)->get()[0]->pay_period_sent ?>      
+          <?php $user_timesheet = \App\Timesheet::where('user', auth()->user()->email)->get();
+                if (count($user_timesheet) > 0)
+                {
+                  $pay_period_sent = $user_timesheet[0]->pay_period_sent;
+                } 
+                else{
+                  $pay_period_sent = False;
+                }
+                ?>      
           <li class="nav-item">
             <a class="nav-link">Timesheet Sent Status: </a>
           </li>
