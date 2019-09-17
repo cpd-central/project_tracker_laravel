@@ -83,7 +83,7 @@ array_multisort($reference_desc, $reference_code);
         <div>   
           <form method="POST">
               @csrf
-                <table class="table table-sm overflow-auto" id="dynamic_field">
+                <table class="table table-responsive overflow-auto" id="dynamic_field">
                         <thead>
                           <tr> 
                             <th>Product Description</th>
