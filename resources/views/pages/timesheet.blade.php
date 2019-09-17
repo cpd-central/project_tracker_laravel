@@ -24,6 +24,12 @@ array_multisort($reference_desc, $reference_code);
 
 <!doctype html>
 <style>
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{
+  -webkit-appearance: none;
+  margin:0;
+}
+
 .table th {
     text-align: center;
     font-size: 12px;   
@@ -83,7 +89,7 @@ array_multisort($reference_desc, $reference_code);
         <div>   
           <form method="POST">
               @csrf
-                <table class="table table-responsive overflow-auto" id="dynamic_field">
+                <table class="table table-sm overflow-auto" id="dynamic_field">
                         <thead>
                           <tr> 
                             <th>Product Description</th>
@@ -108,7 +114,7 @@ array_multisort($reference_desc, $reference_code);
                                 <input type="text" class="form-control" name="{{$array[$row]}}" value="{{$array[$row]}}" readonly>
                             </td>
                             @for($i = 1; $i <= 14; $i++)
-                            <td style="width: 5%">
+                            <td style="width: 6%">
                             <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}[]" value="@if(isset($dayarray[$arr[$i-1]])){{$dayarray[$arr[$i-1]]}}@endif"/>
                             </td>
                             @endfor
