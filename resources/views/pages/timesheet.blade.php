@@ -24,6 +24,7 @@ array_multisort($reference_desc, $reference_code);
 
 <!doctype html>
 <style>
+
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button{
   -webkit-appearance: none;
@@ -41,7 +42,7 @@ input[type=number]::-webkit-outer-spin-button{
 }
 
  .table input {
-   font-size: 12px;
+   font-size: 10px;
  }
 
  table.center {
@@ -115,7 +116,7 @@ input[type=number]::-webkit-outer-spin-button{
                             </td>
                             @for($i = 1; $i <= 14; $i++)
                             <td style="width: 6%">
-                            <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}[]" value="@if(isset($dayarray[$arr[$i-1]])){{$dayarray[$arr[$i-1]]}}@endif"/>
+                            <input type="number" step="0.25" min="0" class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}[]" value="@if(isset($dayarray[$arr[$i-1]])){{$dayarray[$arr[$i-1]]}}@endif"/>
                             </td>
                             @endfor
                             <td style="width: 7%">
