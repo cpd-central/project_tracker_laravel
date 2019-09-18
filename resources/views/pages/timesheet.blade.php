@@ -42,7 +42,7 @@ input[type=number]::-webkit-outer-spin-button{
 }
 
  .table input {
-   font-size: 10px;
+   font-size: 8px;
  }
 
  table.center {
