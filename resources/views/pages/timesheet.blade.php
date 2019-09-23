@@ -111,15 +111,15 @@ input[type=number]::-webkit-outer-spin-button{
                               $dayarray = $timesheet['Codes'][$codeOffset][$descOffset]?>
                         @endif
                       <tr id="row{{$row}}">
-                            <td style="width: 12%">
+                            <td style="width: 8%">
                                 <input type="text" class="form-control" name="{{$array[$row]}}" value="{{$array[$row]}}" readonly>
                             </td>
                             @for($i = 1; $i <= 14; $i++)
-                            <td style="width: 6%">
+                            <td style="width: 5%">
                             <input type="number" step="0.25" min="0" class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}[]" value="@if(isset($dayarray[$arr[$i-1]])){{$dayarray[$arr[$i-1]]}}@endif"/>
                             </td>
                             @endfor
-                            <td style="width: 7%">
+                            <td style="width: 8%">
                             <input type="text" class="form-control" name="{{$array[$row]}} code" value="{{$code[$row]}}" readonly>
                             </td>
                             <td>
@@ -138,7 +138,7 @@ input[type=number]::-webkit-outer-spin-button{
                                 @for($index = 0; $index < count(array_keys($timesheet['Codes']['Additional_Codes'][$code])); $index++)
                                   <?php $desc = $timesheet['Codes']['Additional_Codes'][$code][$index]?> 
                                   <tr id="row{{$row}}">
-                                      <td style="width: 12%">
+                                      <td style="width: 8%">
                                           <input type="text" class="form-control" name="Product Description row {{$row}}" value="<?=$desc?>">
                                       </td>
                                       @for($day = 1; $day <= 14; $day++)
@@ -147,7 +147,7 @@ input[type=number]::-webkit-outer-spin-button{
                                       </td>   
                                       <?php $string = 'Codes' ?>  
                                       @endfor
-                                      <td style="width: 7%">
+                                      <td style="width: 8%">
                                         <input type="text" class="form-control" name="codeadd{{$row}}" value="<?=$codeKeyArray[$i]?>">
                                       </td>
                                       <td> 
