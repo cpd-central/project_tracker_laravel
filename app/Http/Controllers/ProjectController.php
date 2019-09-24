@@ -554,8 +554,6 @@ class ProjectController extends Controller
         {
           $total_dollars_probable = $this->add_dollars($project, $total_dollars_probable, $months);
         }
-        //formats the project data in order to display properly
-        $project = $this->displayFormat($project);
 
         if ($chart_type == 'projects')
         {
@@ -568,17 +566,21 @@ class ProjectController extends Controller
             $color_counter = 0;
           }
         }
+        //formats the project data in order to display properly
+        $project = $this->displayFormat($project);
+        
+        //need to clone the project to update the database without affecting the project to be displayed
+        $project_to_save = clone $project;
+        //Need the dates to be converted back to mongo dates
         #check if we have an old per_month_dollars.  if we do, we want to combine the new one with the old one before saving, in order to not override old months
         if (isset($old_per_month_dollars))
         {
-          $project['per_month_dollars'] = array_merge($old_per_month_dollars, $project['per_month_dollars']);
+          $project_to_save['per_month_dollars'] = array_merge($old_per_month_dollars, $project['per_month_dollars']);
         }
-
-        //Need the dates to be converted back to mongo dates
-        $project->dateproposed = $this->strToDate($project['dateproposed'], null);
-        $project->datentp = $this->strToDate($project['datentp'], null);
-        $project->dateenergization = $this->strToDate($project['dateenergization'], null);
-        $project->save();
+        $project_to_save->dateproposed = $this->strToDate($project['dateproposed'], null);
+        $project_to_save->datentp = $this->strToDate($project['datentp'], null);
+        $project_to_save->dateenergization = $this->strToDate($project['dateenergization'], null);
+        $project_to_save->save();
       }
       
       $total_dollars = $total_dollars_won + $total_dollars_probable; 
@@ -605,7 +607,7 @@ class ProjectController extends Controller
       //{
       //  $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
       //} 
-      
+
       return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart', 'projectStatus', 'chart_type')); 
     }
     else 
