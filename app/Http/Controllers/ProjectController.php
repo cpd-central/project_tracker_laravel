@@ -113,9 +113,17 @@ class ProjectController extends Controller
   {
     if (isset($date_string))
     {
-      $php_date = new \DateTime($date_string, new \DateTimeZone('America/Chicago'));
-      //note this is a mongodb UTCDateTime 
-      $date = new UTCDateTime($php_date->getTimestamp() * 1000);
+      #this is just in case a "none" or "unknown" energization slips in as a won project 
+      if ($date_string == "None" or $date_string == "Unknown")
+      {
+        return $date_string;
+      } 
+      else 
+      {
+        $php_date = new \DateTime($date_string, new \DateTimeZone('America/Chicago'));
+        //note this is a mongodb UTCDateTime 
+        $date = new UTCDateTime($php_date->getTimestamp() * 1000);
+      } 
     }
     else {
       if(isset($unknown)){
@@ -396,7 +404,6 @@ class ProjectController extends Controller
 
     if (count($projects) > 0)
     {
-      //dd($request); 
       if (!isset($request['switch_chart_button'])) 
       {
         $chart_type = 'won_prob';
@@ -410,7 +417,7 @@ class ProjectController extends Controller
       $start_dates = array();
       $end_dates = array();
       foreach($projects as $key => $project)
-      {
+      { 
         if($project['dateenergization'] == "Unknown"){
           unset($projects[$key]);
           continue;
@@ -534,6 +541,7 @@ class ProjectController extends Controller
         }
         //now re-write the project data with the new array 
         $project['per_month_dollars'] = $new_project_per_month_dollars;
+
         if ($project['projectstatus'] == 'Won')
         {
           $total_dollars_won = $this->add_dollars($project, $total_dollars_won, $months);
@@ -556,6 +564,11 @@ class ProjectController extends Controller
             $color_counter = 0;
           }
         }
+        //Need the dates to be converted back to mongo dates
+        $project->dateproposed = $this->strToDate($project['dateproposed'], null);
+        $project->datentp = $this->strToDate($project['datentp'], null);
+        $project->dateenergization = $this->strToDate($project['dateenergization'], null);
+        $project->save();
       }
       
       $total_dollars = $total_dollars_won + $total_dollars_probable; 
@@ -582,7 +595,7 @@ class ProjectController extends Controller
       //{
       //  $total_dollars[$month] = number_format($total_dollars[$month], 0, '.', ',');
       //} 
-
+      
       return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart', 'projectStatus', 'chart_type')); 
     }
     else 
