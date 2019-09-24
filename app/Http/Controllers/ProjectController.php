@@ -418,6 +418,10 @@ class ProjectController extends Controller
       $end_dates = array();
       foreach($projects as $key => $project)
       { 
+        if (isset($project['per_month_dollars']))
+        {
+          $old_per_month_dollars = $project['per_month_dollars'];
+        } 
         if($project['dateenergization'] == "Unknown"){
           unset($projects[$key]);
           continue;
@@ -564,6 +568,12 @@ class ProjectController extends Controller
             $color_counter = 0;
           }
         }
+        #check if we have an old per_month_dollars.  if we do, we want to combine the new one with the old one before saving, in order to not override old months
+        if (isset($old_per_month_dollars))
+        {
+          $project['per_month_dollars'] = array_merge($old_per_month_dollars, $project['per_month_dollars']);
+        }
+
         //Need the dates to be converted back to mongo dates
         $project->dateproposed = $this->strToDate($project['dateproposed'], null);
         $project->datentp = $this->strToDate($project['datentp'], null);
