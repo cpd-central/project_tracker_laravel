@@ -119,7 +119,7 @@ table.center {
                                 <input type="text" class="form-control" name="{{$array[$row]}}" value="{{$array[$row]}}" readonly>
                             </td>
                             @for($i = 1; $i <= 14; $i++)
-                            <td style="width: 5%">
+                            <td style="width: 3%">
                             <input type="number" step="0.25" min="0" class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}[]" value="@if(isset($dayarray[$arr[$i-1]])){{$dayarray[$arr[$i-1]]}}@endif"/>
                             </td>
                             @endfor
@@ -146,7 +146,7 @@ table.center {
                                           <input type="text" class="form-control" name="Product Description row {{$row}}" value="<?=$desc?>">
                                       </td>
                                       @for($day = 1; $day <= 14; $day++)
-                                      <td style="width: 5%">
+                                      <td style="width: 3%">
                                       <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="@if(isset($timesheet['Codes'][$codeKeyArray[$i]][$desc][$arr[$day - 1]])){{$timesheet['Codes'][$codeKeyArray[$i]][$desc][$arr[$day - 1]]}}@endif"/>
                                       </td>   
                                       <?php $string = 'Codes' ?>  
