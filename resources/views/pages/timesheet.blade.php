@@ -34,12 +34,13 @@ input[type=number]::-webkit-outer-spin-button{
 .table th {
     text-align: center;
     font-size: 12px;   
- }
+}
 
 .table td {
   padding: 0px;
   margin: 0px; 
   text-align: left;
+  min-width: 75px;
 }
 
 .table input {
@@ -94,7 +95,7 @@ table.center {
         <div>   
           <form method="POST">
               @csrf
-                <table class="table table-sm" id="dynamic_field">
+                <table class="table table-sm overflow-auto" id="dynamic_field">
                         <thead>
                           <tr> 
                             <th>Product Description</th>
