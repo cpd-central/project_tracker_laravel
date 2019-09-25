@@ -31,19 +31,26 @@ input[type=number]::-webkit-outer-spin-button{
   margin:0;
 }
 
+
+
+
 .table th {
     text-align: center;
     font-size: 12px;   
  }
 
- .table td {
+.table td {
   padding: 0px;
+  margin: 0px; 
   text-align: left;
 }
 
- .table input {
-   font-size: 12px;
- }
+.table input {
+  font-size: 12px;
+  width: 100%; 
+  padding: 5px;
+  margin: 1px;
+}
 
  table.center {
     margin-left:auto; 
