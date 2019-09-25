@@ -39,7 +39,7 @@ input[type=number]::-webkit-outer-spin-button{
 .table td {
   padding: 0px; 
   text-align: left;
-  min-width: 100px;
+  min-width: 90px;
 }
 
 .table input {
