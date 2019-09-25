@@ -7,9 +7,11 @@ if(isset($date)){
   $interval = \DateInterval::createFromDateString('1 day');
   $period = new DatePeriod($start, $interval, $end);
   $arr = array();
+  $header_arr = array(); 
   foreach($period as $dt)
   {
-    array_push($arr, $dt->format('D j-M-y'));
+    array_push($arr, $dt->format('j-M-y'));
+    array_push($header_arr, $dt->format('D j-M-y'));
   }
 }
 
@@ -94,7 +96,7 @@ table.center {
                           <tr> 
                             <th>Product Description</th>
                             <?php for($i = 0; $i < 14; $i++){ ?>
-                            <th><?= $arr[$i]?></th>
+                            <th><?= $header_arr[$i]?></th>
                             <?php } ?>
                             <th>Code</th>
                             <th style="width: 2.9%"></th>
