@@ -31,9 +31,6 @@ input[type=number]::-webkit-outer-spin-button{
   margin:0;
 }
 
-
-
-
 .table th {
     text-align: center;
     font-size: 12px;   
@@ -48,16 +45,16 @@ input[type=number]::-webkit-outer-spin-button{
 .table input {
   font-size: 12px;
   width: 100%; 
-  padding: 5px;
+  padding: 3px;
   margin: 1px;
 }
 
- table.center {
-    margin-left:auto; 
-    margin-right:auto;
-  }
+table.center {
+  margin-left:auto; 
+  margin-right:auto;
+}
 
- .fixed_header tbody{
+.fixed_header tbody{
   display:block;
   overflow:auto;
   height:200px;
@@ -73,7 +70,7 @@ input[type=number]::-webkit-outer-spin-button{
   background: black;
   color:#fff;
 }
- </style>
+</style>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
@@ -97,7 +94,7 @@ input[type=number]::-webkit-outer-spin-button{
         <div>   
           <form method="POST">
               @csrf
-                <table class="table table-sm overflow-auto" id="dynamic_field">
+                <table class="table table-sm" id="dynamic_field">
                         <thead>
                           <tr> 
                             <th>Product Description</th>
