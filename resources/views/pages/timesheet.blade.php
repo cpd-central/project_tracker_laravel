@@ -38,7 +38,6 @@ input[type=number]::-webkit-outer-spin-button{
 
 .table td {
   text-align: left;
-  min-width: 125px;
 }
 
 .table input {
@@ -111,15 +110,15 @@ table.center {
                               $dayarray = $timesheet['Codes'][$codeOffset][$descOffset]?>
                         @endif
                       <tr id="row{{$row}}">
-                            <td style="width: 8%">
+                            <td style="width: 8%; min-width: 125px;">
                                 <input type="text" class="form-control" name="{{$array[$row]}}" value="{{$array[$row]}}" readonly>
                             </td>
                             @for($i = 1; $i <= 14; $i++)
-                            <td style="width: 3%">
+                            <td style="width: 3%; min-width: 50px;">
                             <input type="number" step="0.25" min="0" class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}[]" value="@if(isset($dayarray[$arr[$i-1]])){{$dayarray[$arr[$i-1]]}}@endif"/>
                             </td>
                             @endfor
-                            <td style="width: 8%">
+                            <td style="width: 8%; min-width: 125px;">
                             <input type="text" class="form-control" name="{{$array[$row]}} code" value="{{$code[$row]}}" readonly>
                             </td>
                             <td>
