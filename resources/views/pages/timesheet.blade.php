@@ -114,7 +114,7 @@ table.center {
                                 <input type="text" class="form-control" name="{{$array[$row]}}" value="{{$array[$row]}}" readonly>
                             </td>
                             @for($i = 1; $i <= 14; $i++)
-                            <td style="width: 3%; min-width: 50px;">
+                            <td style="width: 3%; min-width: 75px;">
                             <input type="number" step="0.25" min="0" class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}[]" value="@if(isset($dayarray[$arr[$i-1]])){{$dayarray[$arr[$i-1]]}}@endif"/>
                             </td>
                             @endfor
