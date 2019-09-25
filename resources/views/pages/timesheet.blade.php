@@ -115,7 +115,7 @@ table.center {
                               $dayarray = $timesheet['Codes'][$codeOffset][$descOffset]?>
                         @endif
                       <tr id="row{{$row}}">
-                            <td style="width: 5%">
+                            <td style="width: 1%">
                                 <input type="text" class="form-control" name="{{$array[$row]}}" value="{{$array[$row]}}" readonly>
                             </td>
                             @for($i = 1; $i <= 14; $i++)
@@ -142,7 +142,7 @@ table.center {
                                 @for($index = 0; $index < count(array_keys($timesheet['Codes']['Additional_Codes'][$code])); $index++)
                                   <?php $desc = $timesheet['Codes']['Additional_Codes'][$code][$index]?> 
                                   <tr id="row{{$row}}">
-                                      <td style="width: 5%">
+                                      <td style="width: 1%">
                                           <input type="text" class="form-control" name="Product Description row {{$row}}" value="<?=$desc?>">
                                       </td>
                                       @for($day = 1; $day <= 14; $day++)
