@@ -37,17 +37,13 @@ input[type=number]::-webkit-outer-spin-button{
 }
 
 .table td {
-  padding: 0px;
-  margin: 0px; 
+  padding: 0px; 
   text-align: left;
   min-width: 75px;
 }
 
 .table input {
   font-size: 12px;
-  width: 100%; 
-  padding: 3px;
-  margin: 1px;
 }
 
 table.center {
