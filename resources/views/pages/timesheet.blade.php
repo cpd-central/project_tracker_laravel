@@ -141,7 +141,7 @@ table.center {
                                   <?php $desc = $timesheet['Codes']['Additional_Codes'][$code][$index]?> 
                                   <tr id="row{{$row}}">
                                       <td style="width: 8%">
-                                          <input type="text" class="form-control" name="Product Description row {{$row}}" value="<?=$desc?>">
+                                          <input type="text" class="form-control" id="row{{$row}}Day0" name="Product Description row {{$row}}" value="<?=$desc?>">
                                       </td>
                                       @for($day = 1; $day <= 14; $day++)
                                       <td style="width: 3%">
@@ -150,7 +150,7 @@ table.center {
                                       <?php $string = 'Codes' ?>  
                                       @endfor
                                       <td style="width: 8%">
-                                        <input type="text" class="form-control" name="codeadd{{$row}}" value="<?=$codeKeyArray[$i]?>">
+                                        <input type="text" class="form-control" id="row{{$row}}Day15" name="codeadd{{$row}}" value="<?=$codeKeyArray[$i]?>">
                                       </td>
                                       <td> 
                                           <button type="button" id="row{{$row}}" class="btn btn-danger btn_remove">-</button>
