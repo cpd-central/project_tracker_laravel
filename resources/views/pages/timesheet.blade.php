@@ -249,7 +249,7 @@ table.center {
     function addRow(){
         var tr = '<tr id="row'+row+'">' +
                     '<td>' +
-                     '<input type="text" class="form-control" name="Product Description row '+row+'" value="" required>' +
+                     '<input type="text" class="form-control" name="Product Description row '+row+'" id="row' + row + 'Day0" value="" required>' +
                      '</td>';
                      for(var i = 1; i <= 14; i++){
             var tr = tr + '<td>' +
@@ -257,7 +257,7 @@ table.center {
                             '</td>';
                     }
            var tr = tr + '<td>' +
-                        '<input type="text" class="form-control" name="codeadd'+row+'" value="" required>' +
+                        '<input type="text" class="form-control" name="codeadd'+row+'" id="row' + row + 'Day15" value="" required>' +
                      '</td>' +
                      '<td>' +
                         '<button type="button" id="row'+row+'" class="btn btn-danger btn_remove">-</button>' +
