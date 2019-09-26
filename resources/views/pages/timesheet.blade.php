@@ -71,12 +71,13 @@ table.center {
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
 <html>
   <title id="page-title">Timesheet</title>
   <head>
     @include('includes.navbar')
   </head> 
-  <body>
+  <body onclick="findStartField()">
         <div class="container">
         @if (isset($message) && $message == "Success! Timesheet was saved.")
           </br>
@@ -322,6 +323,70 @@ table.center {
                     '</td>' +
                     '</tr>';
       $('#dynamic_field').append(input);
+    }
+
+    //disable arrow key increment
+    document.getElementById('dynamic_field').addEventListener('keydown', function(e) {
+      if (e.which === 38 || e.which === 40) {
+        e.preventDefault();
+      }
+    })
+
+    //navigate with arrow keys
+    function findStartField(is_tab=null) {
+      var start = document.activeElement.id;
+      x = Number(start.substring(start.lastIndexOf("w") + 1, start.lastIndexOf("D")));
+      y = Number(start.substr(start.indexOf("y") + 1));
+
+      if (is_tab != null) {
+        y = y + 1;
+      } 
+    } 
+
+    document.getElementById("dynamic_field").addEventListener("click", findStartField);
+  
+    function dotheneedful(new_x, new_y) {
+        var new_id = String("row" + new_x + "Day" + new_y);
+        sibling = document.getElementById(new_id);
+        if (sibling != null) {
+          sibling.focus();
+          findStartField(null); 
+        }
+    } 
+
+    document.onkeydown = checkKey;
+
+    function checkKey(e) {
+      e = e || window.event;
+      if (e.keyCode == '38') {
+        //up arrow
+        var new_x = x - 1;
+        var new_y = y;
+        dotheneedful(new_x, new_y);
+      
+      } else if (e.keyCode == '40' || e.keyCode == '13') {
+        //down arrow or enter 
+        var new_x = x + 1;
+        var new_y = y;
+        dotheneedful(new_x, new_y);
+      
+      } else if (e.keyCode == '37') {
+        // left arrow 
+        var new_x = x;
+        var new_y = y - 1;
+        dotheneedful(new_x, new_y);
+
+      } else if (e.keyCode == '39') {
+        // right arrow
+        var new_x = x;
+        var new_y = y + 1;
+        dotheneedful(new_x, new_y);
+      
+      } 
+      else if (e.keyCode == '9') {
+        // when tab gets pressed, the active element will shift, so we don't need to do that.  we just need to get the new id.
+        findStartField(true);
+      }
     }
     </script>
   </body>
