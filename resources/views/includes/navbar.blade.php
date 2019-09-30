@@ -79,7 +79,7 @@
           <?php 
             $date = new \DateTime(date("Y-m-d H:i:s"), new \DateTimeZone('America/Chicago'));
             $today = new \DateTime(date("Y-m-d H:i:s"), new \DateTimeZone('America/Chicago')); 
-            $billing_start_date = $date->modify('first day of next month');
+            $billing_start_date = $date->modify('last day of this month');
             $time_until_billing = date_diff($billing_start_date, $today)->days;
           ?>
           <li class="nav-item">
