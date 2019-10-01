@@ -11,7 +11,7 @@
         </br>
         This is likely due to a double click on a project submission or deletion.
         </br>
-        To ensure your data is as you intend, please redirect to the <a href={{ route('pages.projectindex') }}>Project Index</a>
+        To ensure your data is as you intend, please redirect to the <a href={{ route('home') }}>Dashboard</a>.
         </br>
         If you believe you are seeing this page in error, please contact Jake Marsnik.
       </div>
