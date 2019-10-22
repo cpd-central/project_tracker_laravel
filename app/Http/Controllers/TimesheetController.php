@@ -155,7 +155,7 @@ class TimesheetController extends Controller
 
             
             //Store old additional codes EXCEPT LAST TWO WEEKS
-            dd($timesheet); 
+
             if(isset($timesheet['Codes']["Additional_Codes"])){
                 $codes["Additional_Codes"] = $timesheet['Codes']["Additional_Codes"];
                 $code_keys = array_keys($codes["Additional_Codes"]);
