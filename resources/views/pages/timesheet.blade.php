@@ -179,17 +179,26 @@ table.center {
             </form>
               <table class="fixed_header center" id="reference_field">
               </table>
+            <div class="container" id="sort_button">
+              
+            </div>
     <script type="text/javascript">
     var row = "<?php echo $row ?>" -1;
     var reference_desc = <?php echo json_encode($reference_desc); ?>;
     var reference_code = <?php echo json_encode($reference_code); ?>;
     var array = [];
-    make_array();
+    var description_code_sort = 'code';
+    make_array(description_code_sort);
     $(document).ready(function() {
       columnTotal();
       addRowTotal();
       hiddenField();
       referenceTable();
+        $('#sort').on('click', function() {
+          var sort_term = document.getElementById("sort").value; 
+          make_array(sort_term);
+          referenceTable(sort_term);
+        })
         $("#add").on('click', function() {
             row++;
             addRow();
@@ -219,13 +228,31 @@ table.center {
 
     });
 
-    function make_array(){  
+
+
+    function make_array(description_code_sort){  
       for(var y = 0; y < reference_desc.length; y++){
         array[reference_desc[y]] = reference_code[y];
       }
+      sorted_codes = Object.values(array).sort(); 
+      sorted_descriptions = Object.keys(array).sort();
+
+      if (description_code_sort === 'description') {
+        sorted_array = {};
+        for (var i = 0; i < Object.keys(array).length; i++) {
+          sorted_array[sorted_descriptions[i]] = array[sorted_descriptions[i]]
+        }
+      }
+      else if (description_code_sort === 'code') { 
+        sorted_array = {} 
+        for (var j = 0; j < Object.keys(array).length; j++) {
+          sorted_array[Object.keys(array).find(key => array[key] === sorted_codes[j])] = sorted_codes[j];
+        }
+      }
+
     }
 
-    function referenceTable(){
+    function referenceTable(sort_term){
         var tableRef = '<thead>' +
                   '<tr>' +
                     '<th>' +
@@ -233,17 +260,29 @@ table.center {
                     '</th>' +
                   '</tr>' +
                 '</thead>';
+        
         for(var z = 0; z < reference_desc.length; z++){
           var tableRef = tableRef + '<tr>' +
                   '<td>' +
-                      array[reference_desc[z]] + 
+                      sorted_array[Object.keys(sorted_array)[z]] + 
                   '</td>' +
                   '<td>' +
-                      reference_desc[z] +
+                      Object.keys(sorted_array)[z] +
                   '</td>' +
                 '</tr>';
         }
+        
+        if (sort_term === 'description') {
+          var sortButton = '<div class="row"><div class="col text-center"><button type="button" id="sort" class="btn btn-primary" value="description">Sort By Code</button></div></div>';         
+        } 
+        else if (sort_term === 'code') {
+          var sortButton = '<div class="row"><div class="col text-center"><button type="button" id="sort" class="btn btn-primary" value="code">Sort By Description</button></div></div>';
+        }
+        else {
+          var sortButton = '<div class="row"><div class="col text-center"><button type="button" id="sort" class="btn btn-primary" value="code">Sort By Description</button></div></div>';
+        }
       $('#reference_field').append(tableRef);
+      $('#sort_button').append(sortButton);        
     }
 
     function addRow(){
