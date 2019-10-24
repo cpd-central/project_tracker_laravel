@@ -177,8 +177,9 @@ table.center {
                   </div>
               </div>
             </form>
-              <table class="fixed_header center" id="reference_field">
-              </table>
+            <div class="container" id="reference_field">
+            
+            </div>
             <div class="container" id="sort_button">
               
             </div>
@@ -196,6 +197,7 @@ table.center {
       referenceTable();
         $('#sort').on('click', function() {
           var sort_term = document.getElementById("sort").value; 
+          console.log(sort_term); 
           make_array(sort_term);
           referenceTable(sort_term);
         })
@@ -253,7 +255,30 @@ table.center {
     }
 
     function referenceTable(sort_term){
-        var tableRef = '<thead>' +
+        var table = document.getElementById('reference_list');
+        var button = document.getElementById('button_div'); 
+
+        if (button != null) {
+          var child = button.lastElementChild;
+
+          while (child) {
+            child = child.lastElementChild;
+          }
+
+          button.remove();
+        }
+
+        if (table != null) { 
+          var child = table.lastElementChild;
+           
+          while (child) {
+            child = child.lastElementChild;
+          } 
+           
+          table.remove();
+        } 
+        var tableRef = '<table class="fixed_header center" id="reference_list">' + 
+                  '<thead>' +
                   '<tr>' +
                     '<th>' +
                       'Reference List' +
@@ -271,16 +296,19 @@ table.center {
                   '</td>' +
                 '</tr>';
         }
-        
+        var tableBreak = '</table>'; 
+        tableRef = tableRef + tableBreak;
+
         if (sort_term === 'description') {
-          var sortButton = '<div class="row"><div class="col text-center"><button type="button" id="sort" class="btn btn-primary" value="description">Sort By Code</button></div></div>';         
+          var sortButton = '<div class="row" id="button_div"><div class="col text-center"><button type="button" id="sort" class="btn btn-primary" value="code">Sort By Code</button></div></div>';         
         } 
         else if (sort_term === 'code') {
-          var sortButton = '<div class="row"><div class="col text-center"><button type="button" id="sort" class="btn btn-primary" value="code">Sort By Description</button></div></div>';
+          var sortButton = '<div class="row" id="button_div"><div class="col text-center"><button type="button" id="sort" class="btn btn-primary" value="description">Sort By Description</button></div></div>';
         }
         else {
-          var sortButton = '<div class="row"><div class="col text-center"><button type="button" id="sort" class="btn btn-primary" value="code">Sort By Description</button></div></div>';
+          var sortButton = '<div class="row" id="button_div"><div class="col text-center"><button type="button" id="sort" class="btn btn-primary" value="description">Sort By Description</button></div></div>';
         }
+      
       $('#reference_field').append(tableRef);
       $('#sort_button').append(sortButton);        
     }
