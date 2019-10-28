@@ -195,7 +195,7 @@ table.center {
       addRowTotal();
       hiddenField();
       referenceTable();
-        $('#sort').on('click', function() {
+        $('#sort_button').on('click', '#sort', function() { 
           var sort_term = document.getElementById("sort").value; 
           console.log(sort_term); 
           make_array(sort_term);
@@ -229,7 +229,6 @@ table.center {
         });
 
     });
-
 
 
     function make_array(description_code_sort){  
