@@ -1,20 +1,37 @@
 <?php 
-if(isset($date)){
-  $end = clone $date;
-  $start = $date->sub(new DateInterval('P13D'));
+if(isset($start_end_dates)) {
+  $start = $start_end_dates['start_date'];
+  $end = $start_end_dates['end_date'];
   $start->setTime(0,0,0);
-  $end->setTime(0,0,1);                       //By setting the day to an extra second, it includes the last day.
+  $end->setTime(0,0,1); 
   $interval = \DateInterval::createFromDateString('1 day');
   $period = new DatePeriod($start, $interval, $end);
   $arr = array();
-  $header_arr = array(); 
+  $header_arr = array();
   foreach($period as $dt)
   {
     array_push($arr, $dt->format('j-M-y'));
     array_push($header_arr, $dt->format('D j-M-y'));
   }
 }
-
+else {
+    if (isset($date)){
+    $end = clone $date;
+    //subtract 13 days from today ($date gets passed in from controller)
+    $start = $date->sub(new DateInterval('P13D'));
+    $start->setTime(0,0,0);
+    $end->setTime(0,0,1);                       //By setting the day to an extra second, it includes the last day.
+    $interval = \DateInterval::createFromDateString('1 day');
+    $period = new DatePeriod($start, $interval, $end);
+    $arr = array();
+    $header_arr = array(); 
+    foreach($period as $dt)
+    {
+      array_push($arr, $dt->format('j-M-y'));
+      array_push($header_arr, $dt->format('D j-M-y'));
+    }
+  }
+}
 $reference_desc = array();
 $reference_code = array();
 foreach($reference_list[0]['codes'] as $key => $desc){
@@ -89,9 +106,25 @@ table.center {
         @endif
         <h2><b>Timesheet</b></h2>
         </div>
+        </br> 
+        <div class="container"> 
+        <form method="POST">
+          @csrf
+          <div class="row">
+            <div class="form-group col-md-3"> 
+              <label for="startdate">Start Date:</label> 
+              <input type="date" class="form-control" id="startdate" name="startdate">
+            </div>
+            <div class="form-group col-md-3">
+              <label for="enddate">End Date:</label>
+              <input type="date" class="form-control" id="enddate" name="enddate">
+            </div> 
+            <div class="form-group col-md-3">
+              <button type="submit" name="action" class="btn btn-primary float-right" value="date_range">Update Date Range</button> 
+            </div>
+          </div> 
+        </div> 
         <div>   
-          <form method="POST">
-              @csrf
                 <table class="table table-sm overflow-auto" id="dynamic_field">
                         <thead>
                           <tr> 
@@ -173,7 +206,7 @@ table.center {
                   <button type="button" id="add" class="btn btn-primary float-right">Add Row</button>
                 </div>
                 <div class="form-group col-md-4">
-                    <button type="submit" id="remove" class="btn btn-success float-right" onclick="return confirm('Make sure your descriptions and code is correct. Are you sure you want to submit?')">Submit</button>
+                    <button type="submit" name="action" class="btn btn-success float-right" onclick="return confirm('Make sure your descriptions and code is correct. Are you sure you want to submit?')" value="submit">Submit</button>
                   </div>
               </div>
             </form>
