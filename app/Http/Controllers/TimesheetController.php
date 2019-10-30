@@ -30,7 +30,7 @@ class TimesheetController extends Controller
      */
     protected function formatArray($array, $daterange){
         $formattedArray = array();
-        for($i = 0; $i < 14; $i++){
+        for($i = 0; $i < count($array); $i++){
             $formattedArray[$daterange[$i]] = $array[$i];
         }
         return $formattedArray;

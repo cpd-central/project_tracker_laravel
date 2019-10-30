@@ -392,12 +392,13 @@ table.center {
 
     function columnTotal(){  
       var grand_total = 0;
-      for(var x = 0; x <= 17; x++){
+      var num_columns = "<?php echo count($arr) ?>";
+      for(var x = 0; x <= num_columns + 3; x++){
         $('#coltotal'+x+'').remove();
       }
 
       var tr = '<td id="coltotal0"></td>'
-      for(var n = 1; n <= 14; n++){
+      for(var n = 1; n <= num_columns; n++){
         var total = 0;
         for(var w = 0; w <= row; w++){
           var string = '#row'+w+'Day'+n+'';
