@@ -104,11 +104,15 @@ class TimesheetController extends Controller
             $end_date = new \DateTime($request['enddate'], new \DateTimeZone('America/Chicago')); 
             $start_end_dates = ['start_date' => $start_date, 'end_date' => $end_date];
         } 
-        
-        if ($action == 'date_range') {
+       
+        if ($action == 'date_reset') {
+            //reset the start and end dates to null if this was the button clicked 
+            return $this->check($message=null, $start_end_dates=null);
+        }
+        else if ($action == 'date_range') {
             return $this->check($message=null, $start_end_dates);            
         }
-        if ($action == 'submit') {
+        else if ($action == 'submit') {
             $timesheet = Timesheet::find($id);
             if($timesheet){
                 $this->store($timesheet, $request);
