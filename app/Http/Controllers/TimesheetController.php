@@ -81,7 +81,7 @@ class TimesheetController extends Controller
      * the date range can be created.
      * @return view pages.timesheet
      */
-    public function index($date, $reference_list)
+    public function index($date, $reference_list, $start_end_dates)
     {
         return view('pages.timesheet', compact('date', 'reference_list', 'start_end_dates'));
     }
@@ -94,9 +94,17 @@ class TimesheetController extends Controller
     public function timesheetSave(Request $request, $id = null){
         $action = $request->input('action');
         if ($action == 'date_range') {
-            $start_date = new \DateTime($request['startdate'], new \DateTimeZone('America/Chicago'));
-            $end_date = new \DateTime($request['enddate'], new \DateTimeZone('America/Chicago')); 
-            $start_end_dates = ['start_date' => $start_date, 'end_date' => $end_date];
+            $start_date = $request['startdate']; 
+            $end_date = $request['enddate'];
+            if ($start_date == null and $end_date == null) {
+                $start_end_dates = null; 
+            } 
+            else { 
+                $start_date = new \DateTime($request['startdate'], new \DateTimeZone('America/Chicago'));
+                $end_date = new \DateTime($request['enddate'], new \DateTimeZone('America/Chicago')); 
+                $start_end_dates = ['start_date' => $start_date, 'end_date' => $end_date];
+            } 
+            return $this->check($message=null, $start_end_dates);            
         }
         if ($action == 'submit') {
             $timesheet = Timesheet::find($id);
@@ -110,9 +118,9 @@ class TimesheetController extends Controller
                 $this->store($timesheet, $request);
             }
             $message = "Success! Timesheet was saved.";
+            return $this->check($message); 
         }
-
-        return $this->check($message, $start_end_dates);
+        #return $this->check();
     }
 
     /**
@@ -306,7 +314,7 @@ class TimesheetController extends Controller
      * @parameter $message for notifying the user the timesheet saved.
      * @return view pages.timesheet
      */
-    public function check(Request $request, $message = null, $start_end_dates = null)
+    public function check($message = null, $start_end_dates = null)
     {
         $date = $this->getDate();
 
@@ -327,7 +335,7 @@ class TimesheetController extends Controller
      * @parameter $timesheet, $date, $message
      * @return view pages.timesheet
      */
-    public function edit($timesheet, $date, $message = null, $reference_list)
+    public function edit($timesheet, $date, $message = null, $reference_list, $start_end_dates)
     {
         return view('pages.timesheet', compact('timesheet', 'date', 'message', 'reference_list', 'start_end_dates'));
     }

@@ -129,9 +129,14 @@ table.center {
                         <thead>
                           <tr> 
                             <th>Product Description</th>
-                            <?php for($i = 0; $i < 14; $i++){ ?>
+                            <?php 
+                            $i = 0; 
+                            foreach($header_arr as $head_part) {?>
                             <th><?= $header_arr[$i]?></th>
-                            <?php } ?>
+                            <?php 
+                            $i++;   
+                            } 
+                            ?>
                             <th>Code</th>
                             <th style="width: 2.9%"></th>
                             <th>Total</th>
@@ -149,7 +154,7 @@ table.center {
                             <td style="width: 8%; min-width: 125px;">
                                 <input type="text" class="form-control" name="{{$array[$row]}}" value="{{$array[$row]}}" readonly>
                             </td>
-                            @for($i = 1; $i <= 14; $i++)
+                            @for($i = 1; $i <= count($header_arr); $i++)
                             <td style="width: 3%; min-width: 60px;">
                             <input type="number" step="0.25" min="0" class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}[]" value="@if(isset($dayarray[$arr[$i-1]])){{$dayarray[$arr[$i-1]]}}@endif"/>
                             </td>
