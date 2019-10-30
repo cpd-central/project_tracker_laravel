@@ -95,14 +95,23 @@ class TimesheetController extends Controller
         $action = $request->input('action');
         $start_date = $request['startdate']; 
         $end_date = $request['enddate'];
-       
+
         if ($start_date == null and $end_date == null) {
+            $message = null; 
             $start_end_dates = null; 
         } 
         else { 
             $start_date = new \DateTime($request['startdate'], new \DateTimeZone('America/Chicago'));
             $end_date = new \DateTime($request['enddate'], new \DateTimeZone('America/Chicago')); 
-            $start_end_dates = ['start_date' => $start_date, 'end_date' => $end_date];
+            $difference = $end_date->diff($start_date)->format("%a") + 1; 
+            if ($difference > 14) {
+                $start_end_dates = null;
+                $message = "Date Range must be 14 days or fewer.";
+            }
+            else {
+                $message = null; 
+                $start_end_dates = ['start_date' => $start_date, 'end_date' => $end_date];
+            } 
         } 
        
         if ($action == 'date_reset') {
@@ -110,7 +119,8 @@ class TimesheetController extends Controller
             return $this->check($message=null, $start_end_dates=null);
         }
         else if ($action == 'date_range') {
-            return $this->check($message=null, $start_end_dates);            
+            //check if the date range is greater than 14 days
+            return $this->check($message, $start_end_dates);            
         }
         else if ($action == 'submit') {
             $timesheet = Timesheet::find($id);

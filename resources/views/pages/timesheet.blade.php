@@ -101,8 +101,11 @@ table.center {
           <div class="alert alert-success">
             <p>{{$message}}</p>
           </div>
-        @else
+        @elseif (isset($message) && $message == "Date Range must be 14 days or fewer.")
           </br>
+          <div class="alert alert-danger">
+            <p>{{$message}}</p>
+          </div> 
         @endif
         <h2><b>Timesheet</b></h2>
         </div>
