@@ -113,11 +113,11 @@ table.center {
           <div class="row">
             <div class="form-group col-md-3"> 
               <label for="startdate">Start Date:</label> 
-              <input type="date" class="form-control" id="startdate" name="startdate">
+              <input type="date" class="form-control" id="startdate" name="startdate" value="{{ $start->format('Y-m-d') }}"> 
             </div>
             <div class="form-group col-md-3">
               <label for="enddate">End Date:</label>
-              <input type="date" class="form-control" id="enddate" name="enddate">
+              <input type="date" class="form-control" id="enddate" name="enddate" value="{{ $end->format('Y-m-d') }}">
             </div> 
             <div class="form-group col-md-3">
               <button type="submit" name="action" class="btn btn-primary float-right" value="date_range">Update Date Range</button> 

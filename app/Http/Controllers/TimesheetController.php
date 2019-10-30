@@ -93,17 +93,19 @@ class TimesheetController extends Controller
      */
     public function timesheetSave(Request $request, $id = null){
         $action = $request->input('action');
+        $start_date = $request['startdate']; 
+        $end_date = $request['enddate'];
+       
+        if ($start_date == null and $end_date == null) {
+            $start_end_dates = null; 
+        } 
+        else { 
+            $start_date = new \DateTime($request['startdate'], new \DateTimeZone('America/Chicago'));
+            $end_date = new \DateTime($request['enddate'], new \DateTimeZone('America/Chicago')); 
+            $start_end_dates = ['start_date' => $start_date, 'end_date' => $end_date];
+        } 
+        
         if ($action == 'date_range') {
-            $start_date = $request['startdate']; 
-            $end_date = $request['enddate'];
-            if ($start_date == null and $end_date == null) {
-                $start_end_dates = null; 
-            } 
-            else { 
-                $start_date = new \DateTime($request['startdate'], new \DateTimeZone('America/Chicago'));
-                $end_date = new \DateTime($request['enddate'], new \DateTimeZone('America/Chicago')); 
-                $start_end_dates = ['start_date' => $start_date, 'end_date' => $end_date];
-            } 
             return $this->check($message=null, $start_end_dates);            
         }
         if ($action == 'submit') {
@@ -118,7 +120,7 @@ class TimesheetController extends Controller
                 $this->store($timesheet, $request);
             }
             $message = "Success! Timesheet was saved.";
-            return $this->check($message); 
+            return $this->check($message, $start_end_dates); 
         }
         #return $this->check();
     }
