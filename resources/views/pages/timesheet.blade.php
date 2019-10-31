@@ -41,6 +41,7 @@ foreach($reference_list[0]['codes'] as $key => $desc){
 array_multisort($reference_desc, $reference_code);
 ?>
 
+
 <!doctype html>
 <style>
 
@@ -101,7 +102,12 @@ table.center {
           <div class="alert alert-success">
             <p>{{$message}}</p>
           </div>
-        @elseif (isset($message) && $message == "Date Range must be 14 days or fewer.")
+        @elseif (isset($message) && $message == "Date Range must be 31 days or fewer.")
+          </br>
+          <div class="alert alert-danger">
+            <p>{{$message}}</p>
+          </div> 
+        @elseif (isset($message) && $message == "End Date must be after Start Date.")
           </br>
           <div class="alert alert-danger">
             <p>{{$message}}</p>
@@ -110,9 +116,9 @@ table.center {
         </br> 
         <h2><b>Timesheet</b></h2>
         </div>
-        </br> 
+        </br>  
+        <form method="POST"> 
         <div class="container"> 
-        <form method="POST">
           @csrf
           <div class="row">
             <div class="form-group col-md-3"> 
@@ -133,102 +139,102 @@ table.center {
           </div> 
         </div> 
         <div>   
-                <table class="table table-sm overflow-auto" id="dynamic_field">
-                        <thead>
-                          <tr> 
-                            <th>Product Description</th>
-                            <?php 
-                            $i = 0; 
-                            foreach($header_arr as $head_part) {?>
-                            <th><?= $header_arr[$i]?></th>
-                            <?php 
-                            $i++;   
-                            } 
-                            ?>
-                            <th>Code</th>
-                            <th style="width: 2.9%"></th>
-                            <th>Total</th>
-                          </tr>
-                        </thead>
-                        <?php $array = array('Holiday', 'PTO', 'General and Admin', 'Staff Meetings and HR', 'Research and Training', 'Formal EDU', 'General Marketing') ?>
-                        <?php $code = array('CEG', 'CEG', 'CEG', 'CEG', 'CEGTRNG', 'CEGEDU', 'CEGMKTG') ?>
-                        @for($row = 0; $row < count($array); $row++)  
-                        @if(isset($timesheet))
-                        <?php $codeOffset = $code[$row];         
-                              $descOffset = $array[$row]; 
-                              $dayarray = $timesheet['Codes'][$codeOffset][$descOffset]?>
+              <table class="table table-sm overflow-auto" id="dynamic_field">
+                      <thead>
+                        <tr> 
+                          <th>Product Description</th>
+                          <?php 
+                          $i = 0; 
+                          foreach($header_arr as $head_part) {?>
+                          <th><?= $header_arr[$i]?></th>
+                          <?php 
+                          $i++;   
+                          } 
+                          ?>
+                          <th>Code</th>
+                          <th style="width: 2.9%"></th>
+                          <th>Total</th>
+                        </tr>
+                      </thead>
+                      <?php $array = array('Holiday', 'PTO', 'General and Admin', 'Staff Meetings and HR', 'Research and Training', 'Formal EDU', 'General Marketing') ?>
+                      <?php $code = array('CEG', 'CEG', 'CEG', 'CEG', 'CEGTRNG', 'CEGEDU', 'CEGMKTG') ?>
+                      @for($row = 0; $row < count($array); $row++)  
+                      @if(isset($timesheet))
+                      <?php $codeOffset = $code[$row];         
+                            $descOffset = $array[$row]; 
+                            $dayarray = $timesheet['Codes'][$codeOffset][$descOffset]?>
+                      @endif
+                    <tr id="row{{$row}}">
+                          <td style="width: 8%; min-width: 125px;">
+                              <input type="text" class="form-control" name="{{$array[$row]}}" value="{{$array[$row]}}" readonly>
+                          </td>
+                          @for($i = 1; $i <= count($header_arr); $i++)
+                          <td style="width: 3%; min-width: 60px;">
+                          <input type="number" step="0.25" min="0" class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}[]" value="@if(isset($dayarray[$arr[$i-1]])){{$dayarray[$arr[$i-1]]}}@endif"/>
+                          </td>
+                          @endfor
+                          <td style="width: 8%; min-width: 125px;">
+                          <input type="text" class="form-control" name="{{$array[$row]}} code" value="{{$code[$row]}}" readonly>
+                          </td>
+                          <td>
+                          <button type="button" class="btn btn-warning text-warning">_</button>
+                          </td>
+                      </tr>   
+                      @endfor 
+                      @if(isset($timesheet['Codes']['Additional_Codes']))
+                        @if(count($timesheet['Codes']['Additional_Codes']) > 0)
+                        <!-- Number of default non-billables + 1 -->
+                        <?php $row = 7 ?>
+                          @for($i = 0; $i < count(array_keys($timesheet['Codes']['Additional_Codes'])); $i++)
+                            <?php $codeKeyArray = array_keys($timesheet['Codes']['Additional_Codes']);
+                            $code = $codeKeyArray[$i] ?>
+                            @if(count($timesheet['Codes']['Additional_Codes']) > 0)
+                              @for($index = 0; $index < count(array_keys($timesheet['Codes']['Additional_Codes'][$code])); $index++)
+                                <?php $desc = $timesheet['Codes']['Additional_Codes'][$code][$index]?> 
+                                <tr id="row{{$row}}">
+                                    <td style="width: 8%">
+                                        <input type="text" class="form-control" id="row{{$row}}Day0" name="Product Description row {{$row}}" value="<?=$desc?>">
+                                    </td>
+                                    @for($day = 1; $day <= count($arr); $day++)
+                                    <td style="width: 3%">
+                                    <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="@if(isset($timesheet['Codes'][$codeKeyArray[$i]][$desc][$arr[$day - 1]])){{$timesheet['Codes'][$codeKeyArray[$i]][$desc][$arr[$day - 1]]}}@endif"/>
+                                    </td>   
+                                    <?php $string = 'Codes' ?>  
+                                    @endfor
+                                    <td style="width: 8%">
+                                      <input type="text" class="form-control" id="row{{$row}}Day15" name="codeadd{{$row}}" value="<?=$codeKeyArray[$i]?>">
+                                    </td>
+                                    <td> 
+                                        <button type="button" id="row{{$row}}" class="btn btn-danger btn_remove">-</button>
+                                    </td>
+                                </tr>   
+                                <?php $row++; ?>
+                              @endfor
+                            @endif
+                          @endfor
                         @endif
-                      <tr id="row{{$row}}">
-                            <td style="width: 8%; min-width: 125px;">
-                                <input type="text" class="form-control" name="{{$array[$row]}}" value="{{$array[$row]}}" readonly>
-                            </td>
-                            @for($i = 1; $i <= count($header_arr); $i++)
-                            <td style="width: 3%; min-width: 60px;">
-                            <input type="number" step="0.25" min="0" class="form-control" id="row{{$row}}Day{{$i}}" name="row{{$row}}[]" value="@if(isset($dayarray[$arr[$i-1]])){{$dayarray[$arr[$i-1]]}}@endif"/>
-                            </td>
-                            @endfor
-                            <td style="width: 8%; min-width: 125px;">
-                            <input type="text" class="form-control" name="{{$array[$row]}} code" value="{{$code[$row]}}" readonly>
-                            </td>
-                            <td>
-                            <button type="button" class="btn btn-warning text-warning">_</button>
-                            </td>
-                        </tr>   
-                        @endfor 
-                        @if(isset($timesheet['Codes']['Additional_Codes']))
-                          @if(count($timesheet['Codes']['Additional_Codes']) > 0)
-                          <!-- Number of default non-billables + 1 -->
-                          <?php $row = 7 ?>
-                            @for($i = 0; $i < count(array_keys($timesheet['Codes']['Additional_Codes'])); $i++)
-                              <?php $codeKeyArray = array_keys($timesheet['Codes']['Additional_Codes']);
-                              $code = $codeKeyArray[$i] ?>
-                              @if(count($timesheet['Codes']['Additional_Codes']) > 0)
-                                @for($index = 0; $index < count(array_keys($timesheet['Codes']['Additional_Codes'][$code])); $index++)
-                                  <?php $desc = $timesheet['Codes']['Additional_Codes'][$code][$index]?> 
-                                  <tr id="row{{$row}}">
-                                      <td style="width: 8%">
-                                          <input type="text" class="form-control" id="row{{$row}}Day0" name="Product Description row {{$row}}" value="<?=$desc?>">
-                                      </td>
-                                      @for($day = 1; $day <= count($arr); $day++)
-                                      <td style="width: 3%">
-                                      <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="@if(isset($timesheet['Codes'][$codeKeyArray[$i]][$desc][$arr[$day - 1]])){{$timesheet['Codes'][$codeKeyArray[$i]][$desc][$arr[$day - 1]]}}@endif"/>
-                                      </td>   
-                                      <?php $string = 'Codes' ?>  
-                                      @endfor
-                                      <td style="width: 8%">
-                                        <input type="text" class="form-control" id="row{{$row}}Day15" name="codeadd{{$row}}" value="<?=$codeKeyArray[$i]?>">
-                                      </td>
-                                      <td> 
-                                          <button type="button" id="row{{$row}}" class="btn btn-danger btn_remove">-</button>
-                                      </td>
-                                  </tr>   
-                                  <?php $row++; ?>
-                                @endfor
-                              @endif
-                            @endfor
-                          @endif
-                        @endif
-                        <?php
-                        foreach($arr as $date) { ?>
-                          <input type="hidden" name="daterange[]" value="<?=$date?>"/>
-                        <?php }?>
-                    </table>
-        </div>
-        <div class="row">
-                <div class="form-group col-md-4">
-                  <button type="button" id="add" class="btn btn-primary float-right">Add Row</button>
-                </div>
-                <div class="form-group col-md-4">
-                    <button type="submit" name="action" class="btn btn-success float-right" onclick="return confirm('Make sure your descriptions and code is correct. Are you sure you want to submit?')" value="submit">Submit</button>
-                  </div>
+                      @endif
+                      <?php
+                      foreach($arr as $date) { ?>
+                        <input type="hidden" name="daterange[]" value="<?=$date?>"/>
+                      <?php }?>
+                  </table>
+      </div>
+      <div class="row">
+              <div class="form-group col-md-4">
+                <button type="button" id="add" class="btn btn-primary float-right">Add Row</button>
               </div>
-            </form>
-            <div class="container" id="reference_field">
+              <div class="form-group col-md-4">
+                  <button type="submit" name="action" class="btn btn-success float-right" onclick="return confirm('Make sure your descriptions and code is correct. Are you sure you want to submit?')" value="submit">Submit</button>
+                </div>
+            </div>
+          </form>
+          <div class="container" id="reference_field">
+          
+          </div>
+          <div class="container" id="sort_button">
             
-            </div>
-            <div class="container" id="sort_button">
-              
-            </div>
+          </div>
     <script type="text/javascript">
     var row = "<?php echo $row ?>" -1;
     var reference_desc = <?php echo json_encode($reference_desc); ?>;
@@ -430,13 +436,14 @@ table.center {
 
     //Need this row total so laravel knows how many rows to look for data when it submits.
     function hiddenField(){
-      $('#total_rows').remove();
+      $('#total_rows').remove(); 
       var input = '<tr id="total_rows">' +
                     '<td>' +
                     '<input type="hidden" id="row_total" name="row_total" value="'+row+'" readonly />' +
                     '</td>' +
                     '</tr>';
       $('#dynamic_field').append(input);
+      console.log(document.getElementById('row_total'));
     }
 
     //disable arrow key increment

@@ -92,6 +92,7 @@ class TimesheetController extends Controller
      * @return $this->check($message)
      */
     public function timesheetSave(Request $request, $id = null){
+
         $action = $request->input('action');
         $start_date = $request['startdate']; 
         $end_date = $request['enddate'];
@@ -104,10 +105,14 @@ class TimesheetController extends Controller
             $start_date = new \DateTime($request['startdate'], new \DateTimeZone('America/Chicago'));
             $end_date = new \DateTime($request['enddate'], new \DateTimeZone('America/Chicago')); 
             $difference = $end_date->diff($start_date)->format("%a") + 1; 
-            if ($difference > 14) {
+            if ($difference > 31) {
                 $start_end_dates = null;
-                $message = "Date Range must be 14 days or fewer.";
+                $message = "Date Range must be 31 days or fewer.";
             }
+            else if ($start_date > $end_date) {
+                $start_end_dates = null;
+                $message = "End Date must be after Start Date.";
+            } 
             else {
                 $message = null; 
                 $start_end_dates = ['start_date' => $start_date, 'end_date' => $end_date];
@@ -217,7 +222,6 @@ class TimesheetController extends Controller
 
             //Added rows
             $row = (int) $request->get('row_total');
-            #dd($row);
             if($row > 6) { 
                 $arrayCodes = array(); 
                 $descriptions = array();
