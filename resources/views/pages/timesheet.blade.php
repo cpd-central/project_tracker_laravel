@@ -107,6 +107,7 @@ table.center {
             <p>{{$message}}</p>
           </div> 
         @endif
+        </br> 
         <h2><b>Timesheet</b></h2>
         </div>
         </br> 
@@ -188,7 +189,7 @@ table.center {
                                       <td style="width: 8%">
                                           <input type="text" class="form-control" id="row{{$row}}Day0" name="Product Description row {{$row}}" value="<?=$desc?>">
                                       </td>
-                                      @for($day = 1; $day <= 14; $day++)
+                                      @for($day = 1; $day <= count($arr); $day++)
                                       <td style="width: 3%">
                                       <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="@if(isset($timesheet['Codes'][$codeKeyArray[$i]][$desc][$arr[$day - 1]])){{$timesheet['Codes'][$codeKeyArray[$i]][$desc][$arr[$day - 1]]}}@endif"/>
                                       </td>   
@@ -357,12 +358,14 @@ table.center {
       $('#sort_button').append(sortButton);        
     }
 
+    var num_columns = "<?php echo count($arr) ?>";
+
     function addRow(){
         var tr = '<tr id="row'+row+'">' +
                     '<td>' +
                      '<input type="text" class="form-control" name="Product Description row '+row+'" id="row' + row + 'Day0" value="" required>' +
                      '</td>';
-                     for(var i = 1; i <= 14; i++){
+                     for(var i = 1; i <= num_columns; i++){
             var tr = tr + '<td>' +
                      '<input type="number"  step="0.25" min="0"  class="form-control" id="row'+row+'Day'+i+'" name="row'+row+'[]" value=""/>' +
                             '</td>';
@@ -384,7 +387,7 @@ table.center {
       
       for(var w = 0; w <= row; w++){
         var total = 0;
-        for(var n = 1; n <= 14; n++){
+        for(var n = 1; n <= num_columns; n++){
           var string = '#row'+w+'Day'+n;
           if(!isNaN(parseFloat($(string).val()))) {
             total += parseFloat($(string).val());
@@ -399,7 +402,6 @@ table.center {
 
     function columnTotal(){  
       var grand_total = 0;
-      var num_columns = "<?php echo count($arr) ?>";
       for(var x = 0; x <= num_columns + 3; x++){
         $('#coltotal'+x+'').remove();
       }
