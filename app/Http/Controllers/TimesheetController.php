@@ -145,7 +145,7 @@ class TimesheetController extends Controller
     public function store($timesheet, $request)
     {   
         if($timesheet['Codes']){                //Enter this if there was a previous timesheet
-            //dd($request);
+
             $codes = $timesheet['Codes'];
             if(isset($codes['Additional_Codes'])){
                 unset($codes['Additional_Codes']);
@@ -217,6 +217,7 @@ class TimesheetController extends Controller
 
             //Added rows
             $row = (int) $request->get('row_total');
+            #dd($row);
             if($row > 6) { 
                 $arrayCodes = array(); 
                 $descriptions = array();
