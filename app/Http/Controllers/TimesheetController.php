@@ -105,9 +105,9 @@ class TimesheetController extends Controller
             $start_date = new \DateTime($request['startdate'], new \DateTimeZone('America/Chicago'));
             $end_date = new \DateTime($request['enddate'], new \DateTimeZone('America/Chicago')); 
             $difference = $end_date->diff($start_date)->format("%a") + 1; 
-            if ($difference > 31) {
+            if ($difference > 14) {
                 $start_end_dates = null;
-                $message = "Date Range must be 31 days or fewer.";
+                $message = "Date Range must be 14 days or fewer.";
             }
             else if ($start_date > $end_date) {
                 $start_end_dates = null;
