@@ -51,6 +51,13 @@ input[type=number]::-webkit-outer-spin-button{
   margin:0;
 }
 
+.date_btn {
+  position: relative;
+  top: 20px;
+  width: 145px;
+  height: 50px;
+}
+
 .table th {
     text-align: center;
     font-size: 12px;   
@@ -130,10 +137,10 @@ table.center {
               <input type="date" class="form-control" id="enddate" name="enddate" value="{{ $end->format('Y-m-d') }}">
             </div> 
             <div class="form-group col-md-2">
-              <button type="submit" name="action" class="btn btn-primary float-right" value="date_range">Update Date Range</button> 
+              <button type="submit" name="action" class="date_btn btn-primary float-right" value="date_range">Update Date Range</button> 
             </div> 
             <div class="form-group col-md-2">
-              <button type="submit" name="action" class="btn btn-primary float-right" value="date_reset">Reset Date Range</button> 
+              <button type="submit" name="action" class="date_btn btn-primary float-right" value="date_reset">Reset Date Range</button> 
             </div> 
             </div>
           </div> 
