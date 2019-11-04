@@ -128,8 +128,11 @@ class TimesheetController extends Controller
             return $this->check($message, $start_end_dates);            
         }
         else if ($action == 'submit') {
-            $timesheet = Timesheet::find($id);
-            if($timesheet){
+
+            $collection = Timesheet::where('user', auth()->user()->email)->get(); 
+            
+            if(!$collection->isEmpty()){
+                $timesheet = $collection[0]; 
                 $this->store($timesheet, $request);
             }
             else{

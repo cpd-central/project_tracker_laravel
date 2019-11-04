@@ -102,7 +102,7 @@ else{
                     </div>
 					<?php } ?>
                     <div class="form-group" style="{{$style_string}}">
-                        <a href={{ route('pages.timesheet', $timesheet['_id']) }} class="btn login_btn">Timesheet</a>
+                        <a href={{ route('pages.timesheet') }} class="btn login_btn">Timesheet</a>
 					</div>
 					<?php if(auth()->user()->role == "sudo") {?>
 					<div class="form-group" style="{{$style_string}}">
