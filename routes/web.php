@@ -45,8 +45,8 @@ Route::get('/home', 'HomeController@index')->name('home')->middleware('verified'
 
 
 
-Route::get('/timesheet/{id?}', 'TimesheetController@check')->name('pages.timesheet')->middleware('verified');
-Route::post('/timesheet/{id?}', 'TimesheetController@timesheetSave')->name('pages.timesheetSave')->middleware('verified');
+Route::get('/timesheet', 'TimesheetController@check')->name('pages.timesheet')->middleware('verified');
+Route::post('/timesheet', 'TimesheetController@timesheetSave')->name('pages.timesheetSave')->middleware('verified');
 
 Route::get('/roles', 'HomeController@edit_roles')->name('pages.roles')->middleware('verified', 'role');
 Route::get('/roles/{id}', 'HomeController@destroy')->name('pages.rolesDelete')->middleware('verified');
