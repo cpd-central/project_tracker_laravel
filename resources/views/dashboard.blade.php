@@ -84,7 +84,7 @@ elseif(auth()->user()->role == "sudo"){
 	$style_string = "height:23%";
 }
 else{
-	$style_string = "height:45%";
+	$style_string = "height:35%";
 }
 ?>
 
@@ -109,6 +109,11 @@ else{
                         <a href={{ route('pages.roles') }} class="btn login_btn">Roles</a>
 					</div>
 					<?php } ?>
+					<!--Corey adding link for timesheet sent status page-->
+					<div class="form-group" style="{{$style_string}}">
+                        <a href={{ route('pages.timesheetsentstatus') }} class="btn login_btn">Timesheet Sent Status</a>
+                    </div>
+					<!--End Corey new code-->
                     <div class="form-group" style="{{$style_string}}">
                         <a href={{ route('logout') }} class="btn login_btn" onclick="event.preventDefault();
 						document.getElementById('logout-form').submit();">Logout</a>
