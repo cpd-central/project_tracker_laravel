@@ -34,6 +34,8 @@ Route::post('/editproject/{id}', 'ProjectControl:ler@update')->middleware('verif
 
 Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified', 'role');
 
+Route::get('/pastyeargraph', 'ProjectController@past_year_chart')->name('pages.pastyeargraph')->middleware('verified', 'role');
+
 Route::delete('{id}', 'ProjectController@destroy')->middleware('verified');
 
 Auth::routes(['verify' => true]);

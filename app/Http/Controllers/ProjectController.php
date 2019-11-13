@@ -362,7 +362,10 @@ class ProjectController extends Controller
 
     public function past_year_chart(Request $request)
     {
-      return Null;
+      $projects = Project::whereRaw(['dollarvalueinhouse' => ['$exists' => 'true']])->get();
+      $start =  
+      dd($projects); 
+      return view('pages.pastyeargraph', compact('projects'));
     }
 
   /**
