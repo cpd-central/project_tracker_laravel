@@ -360,6 +360,11 @@ class ProjectController extends Controller
   //   });
   // }    Keep incase we re-implement role
 
+    public function past_year_chart(Request $request)
+    {
+      return Null;
+    }
+
   /**
    * Queries for project status type 'Won' & 'Probable', just 'Won', or only 'Probable'. If user role is type 
    * user, then only projects they are associated with will show. Creates Bar graph at top and
@@ -568,19 +573,6 @@ class ProjectController extends Controller
         }
         //formats the project data in order to display properly
         $project = $this->displayFormat($project);
-        
-        //need to clone the project to update the database without affecting the project to be displayed
-        $project_to_save = clone $project;
-        //Need the dates to be converted back to mongo dates
-        #check if we have an old per_month_dollars.  if we do, we want to combine the new one with the old one before saving, in order to not override old months
-        if (isset($old_per_month_dollars))
-        {
-          $project_to_save['per_month_dollars'] = array_merge($old_per_month_dollars, $project['per_month_dollars']);
-        }
-        $project_to_save->dateproposed = $this->strToDate($project['dateproposed'], null);
-        $project_to_save->datentp = $this->strToDate($project['datentp'], null);
-        $project_to_save->dateenergization = $this->strToDate($project['dateenergization'], null);
-        $project_to_save->save();
       }
       
       $total_dollars = $total_dollars_won + $total_dollars_probable; 
