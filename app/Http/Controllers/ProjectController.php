@@ -324,10 +324,10 @@ class ProjectController extends Controller
    * @return array $arr
    */
   protected function get_date_interval_array($start, $end, $int, $format)
-  {
+  { 
     $interval = DateInterval::createFromDateString($int);
     $period = new DatePeriod($start, $interval, $end);
-
+    
     $arr = array();
     foreach($period as $dt)
     {
@@ -363,8 +363,13 @@ class ProjectController extends Controller
     public function past_year_chart(Request $request)
     {
       $projects = Project::whereRaw(['dollarvalueinhouse' => ['$exists' => 'true']])->get();
-      $start =  
-      dd($projects); 
+      #end date of today 
+      $end_date = new \DateTime();
+      #start date 12 months ago
+      $end_clone = clone $end_date;
+      $start_date = $end_clone->modify("-12 months");
+      $months_to_chart = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');  
+
       return view('pages.pastyeargraph', compact('projects'));
     }
 
@@ -435,6 +440,7 @@ class ProjectController extends Controller
           continue;
         }
         $start_end = $this->get_project_start_end($project);
+        #dd($start_end); 
         $start_date = $start_end['start'];
         $end_date = $start_end['end']; 
         //put these in the arrays of all start and end dates
