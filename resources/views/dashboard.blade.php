@@ -104,16 +104,16 @@ else{
                     <div class="form-group" style="{{$style_string}}">
                         <a href={{ route('pages.timesheet', $timesheet['_id']) }} class="btn login_btn">Timesheet</a>
 					</div>
-					<?php if(auth()->user()->role == "sudo") {?>
-					<div class="form-group" style="{{$style_string}}">
-                        <a href={{ route('pages.roles') }} class="btn login_btn">Roles</a>
-					</div>
-					<?php } ?>
 					<!--Corey adding link for timesheet sent status page-->
 					<div class="form-group" style="{{$style_string}}">
                         <a href={{ route('pages.timesheetsentstatus') }} class="btn login_btn">Timesheet Sent Status</a>
                     </div>
 					<!--End Corey new code-->
+					<?php if(auth()->user()->role == "sudo") {?>
+					<div class="form-group" style="{{$style_string}}">
+                        <a href={{ route('pages.roles') }} class="btn login_btn">Roles</a>
+					</div>
+					<?php } ?>
                     <div class="form-group" style="{{$style_string}}">
                         <a href={{ route('logout') }} class="btn login_btn" onclick="event.preventDefault();
 						document.getElementById('logout-form').submit();">Logout</a>

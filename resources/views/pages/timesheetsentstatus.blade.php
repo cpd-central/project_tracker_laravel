@@ -6,7 +6,6 @@
 @section('table-title', 'Timesheet Sent Status')
 @section('page-title', 'Timesheet Sent Status')
 
-
 @section('table-header')
 
     <table class="table table-striped">
@@ -34,9 +33,9 @@
 	@endforeach 
     
 	<?php if ($timesheet['pay_period_sent'] == 1){ ?>
-		<td align="center">Yes</td>
+		<td style="background-color:#0f0;" align="center">Yes</td>
 	<?php } else { ?>
-		<td align="center">No</td>
+		<td style="background-color:#f00;" align="center">No</td>
 	<?php } ?>
 	</tr>
 @endforeach
