@@ -368,9 +368,89 @@ class ProjectController extends Controller
       #start date 12 months ago
       $end_clone = clone $end_date;
       $start_date = $end_clone->modify("-12 months");
-      $months_to_chart = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');  
+      $months_to_chart = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y'); 
+     
+      //create chart and add the months as labels 
+      $chart = new HoursChart; 
+      #$month_values = array_slice(array_values($months), 0, 12);
+      $month_values = array_values($months_to_chart);
+      $chart->labels($month_values);     
 
-      return view('pages.pastyeargraph', compact('projects'));
+      $chart_colors = [
+        'rgb(255, 99, 132, 0.4)',
+        'rgb(75, 192, 192, 0.4)',
+        'rgb(255, 159, 64, 0.4)',
+        'rgb(54, 162, 235, 0.4)',
+        'rgb(255, 205, 86, 0.4)',
+        'rgb(153, 102, 255, 0.4)'];
+      $max_color_counter = count($chart_colors) - 1;
+      $color_counter = 0;
+      
+      $total_dollars = array(); 
+      foreach($projects as $project) { 
+        $project_dollars = $project['dollarvalueinhouse'];
+        $num_months = count($months_to_chart); 
+        if (isset($project['monthlypercent'])) {
+            //check if all values in the monthly percent array are 0 or if there are non zero elements
+            $temp = array_filter($project['monthlypercent']);
+            if (count($temp) > 0) {
+              $project_per_month_dollars = array();
+              $i = 0;
+              foreach($months_to_chart as $month) {
+                //the only real difference between this and the else, is that we do the per month calc for
+                //each iteration of the foreach loop, rather than all at once.
+                //This could be cleaned up if we had 'monthlypercent' be an associative array with the 
+                //month as the key
+                //we now need to check if the month exists since we are now working with a fixed date range that may
+                //or may not exist for the project 
+                if (array_key_exists($i, $project['monthlypercent'])) {
+                  $per_month_dollars = $project_dollars * $project['monthlypercent'][$i];
+                }
+                else {
+                  $per_month_dollars = 0;
+                } 
+                $project_per_month_dollars[$month] = $per_month_dollars;
+                $i++;
+              }
+            }
+            //if not, do a flat distribution
+            else {
+              $per_month_dollars = $project_dollars / $num_months;
+              $project_per_month_dollars = array();
+              foreach($months_to_chart as $month)
+              {
+                $project_per_month_dollars[$month] = $per_month_dollars;
+              }
+            }
+          }
+          else {
+            $per_month_dollars = $project_dollars / $num_months;
+              $project_per_month_dollars = array();
+              foreach($months_to_chart as $month)
+              {
+                $project_per_month_dollars[$month] = $per_month_dollars;
+              }
+          }
+          $project['past_year_per_month_dollars'] = $project_per_month_dollars;
+          
+          $dollar_values = array_values($project['past_year_per_month_dollars']);
+          $chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options(['backgroundColor' => $chart_colors[$color_counter]]);
+          $color_counter++;
+          if ($color_counter > $max_color_counter)
+          {
+            $color_counter = 0;
+          }
+      }
+      $options = [];
+      $options['scales']['xAxes'][]['stacked'] = true;
+      $options['scales']['yAxes'][]['stacked'] = true;
+      $options['legend']['labels']['boxWidth'] = 10;
+      $options['legend']['labels']['padding'] = 6;
+      $options['legend']['display'] = false; 
+      #$options['maintainAspectRatio'] = false;
+      $chart->options($options);
+      $chart->height(600);
+      return view('pages.pastyeargraph', compact('projects', 'chart'));
     }
 
   /**
