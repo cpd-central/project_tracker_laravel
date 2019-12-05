@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Timesheet;
 use Illuminate\Http\Request;
+use UTCDateTime\DateTime;
+use UTCDateTime\DateTime\DateTimeZone;
+
+use DateInterval;
+use DatePeriod;
 
 class TimesheetController extends Controller
 {
@@ -81,9 +86,25 @@ class TimesheetController extends Controller
      * the date range can be created.
      * @return view pages.timesheet
      */
-    public function index($date, $reference_list, $start_end_dates)
+    public function index($date, $reference_list, $arr, $header_arr)
     {
-        return view('pages.timesheet', compact('date', 'reference_list', 'start_end_dates'));
+        return view('pages.timesheet', compact('date', 'reference_list', 'arr', 'header_arr'));
+    }
+
+    protected function get_dates($start, $end)
+    {
+        $start->setTime(0,0,0);
+        $end->setTime(0,0,1);
+        $interval = \DateInterval::createFromDateString('1 day');
+        $period = new DatePeriod($start, $interval, $end);
+        $arr = array();
+        $header_arr = array();
+        foreach($period as $dt)
+        {
+            array_push($arr, $dt->format('j-M-y'));
+            array_push($header_arr, $dt->format('D j-M-y'));
+        }
+        return array($arr, $header_arr);
     }
 
     /**
@@ -96,39 +117,56 @@ class TimesheetController extends Controller
         $action = $request->input('action');
         $start_date = $request['startdate']; 
         $end_date = $request['enddate'];
-
+        $today = $this->getDate();
+        $og_end = clone $today;
+        $og_start = $today->sub(new DateInterval('P13D'));
         if ($start_date == null and $end_date == null) {
             $message = null; 
-            $start_end_dates = null; 
+            $start = $og_start; 
+            $end = $og_end; 
+            $arrays = $this->get_dates($start, $end); 
+            $arr = $arrays[0];
+            $header_arr = $arrays[1];
         } 
         else { 
-            $start_date = new \DateTime($request['startdate'], new \DateTimeZone('America/Chicago'));
-            $end_date = new \DateTime($request['enddate'], new \DateTimeZone('America/Chicago')); 
-            $difference = $end_date->diff($start_date)->format("%a") + 1; 
+            $start = new \DateTime($request['startdate'], new \DateTimeZone('America/Chicago'));
+            $end = new \DateTime($request['enddate'], new \DateTimeZone('America/Chicago')); 
+            $difference = $end->diff($start)->format("%a") + 1; 
             if ($difference > 14) {
-                $start_end_dates = null;
+                $start = $og_start;
+                $end = $og_end; 
+                $arr = $this->get_dates($start, $end)[0];
+                $header_arr = $this->get_dates($start, $end)[1];
                 $message = "Date Range must be 14 days or fewer.";
             }
-            else if ($start_date > $end_date) {
-                $start_end_dates = null;
+            else if ($start > $end) {
+                $start = $og_start;
+                $end = $og_end; 
+                $arr = $this->get_dates($start, $end)[0];
+                $header_arr = $this->get_dates($start, $end)[1];
                 $message = "End Date must be after Start Date.";
             } 
             else {
                 $message = null; 
-                $start_end_dates = ['start_date' => $start_date, 'end_date' => $end_date];
+                $arr = $this->get_dates($start, $end)[0];  
+                $header_arr = $this->get_dates($start, $end)[1];
             } 
+            //we also need the original 14 day start and end
         } 
        
         if ($action == 'date_reset') {
             //reset the start and end dates to null if this was the button clicked 
-            return $this->check($message=null, $start_end_dates=null);
+            $start = $og_start;
+            $end = $og_end; 
+            $arr = $this->get_dates($start, $end)[0];
+            $header_arr = $this->get_dates($start, $end)[1];
+            return $this->check($start, $end, $arr, $header_arr, $message = null);
         }
         else if ($action == 'date_range') {
-            //check if the date range is greater than 14 days
-            return $this->check($message, $start_end_dates);            
+            //check if the date range is greater than 14 days 
+            return $this->check($start, $end, $arr, $header_arr, $message);            
         }
         else if ($action == 'submit') {
-
             $collection = Timesheet::where('user', auth()->user()->email)->get(); 
             
             if(!$collection->isEmpty()){
@@ -142,7 +180,7 @@ class TimesheetController extends Controller
                 $this->store($timesheet, $request);
             }
             $message = "Success! Timesheet was saved.";
-            return $this->check($message, $start_end_dates); 
+            return $this->check($start, $end, $arr, $header_arr, $message); 
         }
         #return $this->check();
     }
@@ -345,18 +383,26 @@ class TimesheetController extends Controller
      * @parameter $message for notifying the user the timesheet saved.
      * @return view pages.timesheet
      */
-    public function check($message = null, $start_end_dates = null)
+    public function check($start, $end, $arr = null, $header_arr = null, $message = null)
     {
+        if (!isset($arr) && !isset($header_arr))
+        {
+            $today = $this->getDate(); 
+            $end = clone $today;
+            $start = $today->sub(new DateInterval('P13D'));
+            $arr = $this->get_dates($start, $end)[0];
+            $header_arr = $this->get_dates($start, $end)[1];
+        } 
         $date = $this->getDate();
-
+        
         $collection = Timesheet::where('user', auth()->user()->email)->get(); 
         $reference_list = Timesheet::where('name', 'reference_list')->get(); //Only works on production
         if(!$collection->isEmpty()){
             $timesheet = $collection[0];
-            return $this->edit($timesheet, $date, $message, $reference_list, $start_end_dates);
+            return $this->edit($timesheet, $date, $message, $reference_list, $arr, $header_arr, $start, $end);
         }
         else{
-            return $this->index($date, $reference_list, $start_end_dates);
+            return $this->index($date, $reference_list, $arr, $header_arr, $start, $end);
         }
     }
 
@@ -366,8 +412,8 @@ class TimesheetController extends Controller
      * @parameter $timesheet, $date, $message
      * @return view pages.timesheet
      */
-    public function edit($timesheet, $date, $message = null, $reference_list, $start_end_dates)
+    public function edit($timesheet, $date, $message = null, $reference_list, $arr, $header_arr, $start, $end)
     {
-        return view('pages.timesheet', compact('timesheet', 'date', 'message', 'reference_list', 'start_end_dates'));
+        return view('pages.timesheet', compact('timesheet', 'date', 'message', 'reference_list', 'arr', 'header_arr', 'start', 'end'));
     }
 }
