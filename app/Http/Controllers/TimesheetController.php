@@ -69,7 +69,7 @@ class TimesheetController extends Controller
      */
     protected function erase_last_2_weeks($array, $daterangeArray){
         foreach($daterangeArray as $date){
-            if(isset($array[$date])){
+            if(isset($array[$date])){ 
                 unset($array[$date]);
             }
         }
@@ -199,13 +199,14 @@ class TimesheetController extends Controller
 
             if(isset($timesheet['Codes']["Additional_Codes"])){
                 $codes["Additional_Codes"] = $timesheet['Codes']["Additional_Codes"];
-                $code_keys = array_keys($codes["Additional_Codes"]);
+                $code_keys = array_keys($codes["Additional_Codes"]); 
                 foreach($code_keys as $key){
                     foreach($codes["Additional_Codes"] as $add_code){
                         for($i=0; $i < count($add_code); $i++){
-                            if(isset($timesheet['Codes'][$key][$add_code[$i]])){
+                            if(isset($timesheet['Codes'][$key][$add_code[$i]])){ 
                                 $codes[$key][$add_code[$i]] = $timesheet['Codes'][$key][$add_code[$i]];
                                 $codes[$key][$add_code[$i]] = $this->erase_last_2_weeks($codes[$key][$add_code[$i]], $daterangeArray);
+
                                 if(count($codes[$key][$add_code[$i]]) == 0){
                                     unset($codes[$key][$add_code[$i]]);
                                     //unset($codes["Additional_Codes"][$key]);
@@ -228,8 +229,9 @@ class TimesheetController extends Controller
             if($row > 6) { 
                 $arrayCodes = array(); 
                 $descriptions = array();
-                for($i = 7; $i <= $row; $i++){
-                    if($request->get('row'.$i) != null){
+                dd($request); 
+                for($i = 7; $i <= $row; $i++){ 
+                    if($request->get('row'.$i) != null){ 
                         if(array_sum($request->get('row'.$i)) > 0){
                             $arr = array();
                             $string = $request->get('Product_Description_row_'.$i);
@@ -320,6 +322,11 @@ class TimesheetController extends Controller
                             else{
                                 $codes[$code] = $arr;
                             }
+                        }
+                        else {
+                            //if the sum is not greater than 0, we need to check in the database if there is data for
+                            //this code / description for the original 14 day date range (today + 14 days)
+
                         }
                     }
                 }

@@ -1,9 +1,8 @@
 <?php 
-if(isset($start_end_dates)) {
-  $start = $start_end_dates['start_date'];
-  $end = $start_end_dates['end_date'];
+function get_dates($start, $end)
+{
   $start->setTime(0,0,0);
-  $end->setTime(0,0,1); 
+  $end->setTime(0,0,1);
   $interval = \DateInterval::createFromDateString('1 day');
   $period = new DatePeriod($start, $interval, $end);
   $arr = array();
@@ -13,23 +12,22 @@ if(isset($start_end_dates)) {
     array_push($arr, $dt->format('j-M-y'));
     array_push($header_arr, $dt->format('D j-M-y'));
   }
+  return array($arr, $header_arr);
+}
+if(isset($start_end_dates)) {
+  $is_original = false; 
+  $start = $start_end_dates['start_date'];
+  $end = $start_end_dates['end_date'];
+  $arr = get_dates($start, $end)[0];
+  $header_arr = get_dates($start, $end)[1];
 }
 else {
     if (isset($date)){
     $end = clone $date;
     //subtract 13 days from today ($date gets passed in from controller)
     $start = $date->sub(new DateInterval('P13D'));
-    $start->setTime(0,0,0);
-    $end->setTime(0,0,1);                       //By setting the day to an extra second, it includes the last day.
-    $interval = \DateInterval::createFromDateString('1 day');
-    $period = new DatePeriod($start, $interval, $end);
-    $arr = array();
-    $header_arr = array(); 
-    foreach($period as $dt)
-    {
-      array_push($arr, $dt->format('j-M-y'));
-      array_push($header_arr, $dt->format('D j-M-y'));
-    }
+    $arr = get_dates($start, $end)[0];
+    $header_arr = get_dates($start, $end)[1];
   }
 }
 $reference_desc = array();
