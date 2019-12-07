@@ -120,6 +120,7 @@ class TimesheetController extends Controller
         $today = $this->getDate();
         $og_end = clone $today;
         $og_start = $today->sub(new DateInterval('P13D'));
+        $og_date_range = $this->get_dates($og_start, $og_end)[0]; 
         if ($start_date == null and $end_date == null) {
             $message = null; 
             $start = $og_start; 
@@ -171,13 +172,13 @@ class TimesheetController extends Controller
             
             if(!$collection->isEmpty()){
                 $timesheet = $collection[0]; 
-                $this->store($timesheet, $request);
+                $this->store($timesheet, $request, $og_date_range);
             }
             else{
                 $timesheet = new Timesheet();
                 $timesheet->user = auth()->user()->email;
                 $timesheet->pay_period_sent = True; 
-                $this->store($timesheet, $request);
+                $this->store($timesheet, $request, $og_date_range);
             }
             $message = "Success! Timesheet was saved.";
             return $this->check($start, $end, $arr, $header_arr, $message); 
@@ -188,7 +189,7 @@ class TimesheetController extends Controller
     /**
      * Stores the Timesheet to the database.
      */
-    public function store($timesheet, $request)
+    public function store($timesheet, $request, $og_date_range)
     {   
         if($timesheet['Codes']){                //Enter this if there was a previous timesheet
 
@@ -267,14 +268,13 @@ class TimesheetController extends Controller
             if($row > 6) { 
                 $arrayCodes = array(); 
                 $descriptions = array();
-                dd($request); 
                 for($i = 7; $i <= $row; $i++){ 
                     if($request->get('row'.$i) != null){ 
+                        $arr = array();
+                        $string = $request->get('Product_Description_row_'.$i);
+                        $code = $request->get('codeadd'.$i);
+                        $arr[$string] = $this->databasePrep($this->formatArray($request->get('row'.$i), $daterangeArray));
                         if(array_sum($request->get('row'.$i)) > 0){
-                            $arr = array();
-                            $string = $request->get('Product_Description_row_'.$i);
-                            $code = $request->get('codeadd'.$i);
-                            $arr[$string] = $this->databasePrep($this->formatArray($request->get('row'.$i), $daterangeArray));
                             if(isset($timesheet['Codes'][$code][$string])){
                                 $arr[$string] += $this->arrayFormat($arr[$string], $timesheet['Codes'][$code][$string], $daterangeArray);
                             }
@@ -293,6 +293,25 @@ class TimesheetController extends Controller
                             }
                             else{
                                 $codes[$code] = $arr;
+                            }
+                        }
+                        else {
+                            // now we have to check if there is data in the original date range and keep those codes too                          
+                            foreach ($og_date_range as $date) {
+                                if (array_key_exists($date, $codes[$code][$string])) {
+                                    if(array_key_exists($code, $arrayCodes)) {
+                                        $descriptions = $arrayCodes[$code];
+                                        array_push($descriptions, $string);
+                                        $arrayCodes[$code] = $descriptions;
+                                    }
+                                    else {
+                                        $descriptions = array();
+                                        array_push($descriptions, $string);
+                                        $arrayCodes[$code] = $descriptions;
+                                    }
+                                    #break loop if we find a match
+                                    break;
+                                }
                             }
                         }
                     }
@@ -360,11 +379,6 @@ class TimesheetController extends Controller
                             else{
                                 $codes[$code] = $arr;
                             }
-                        }
-                        else {
-                            //if the sum is not greater than 0, we need to check in the database if there is data for
-                            //this code / description for the original 14 day date range (today + 14 days)
-
                         }
                     }
                 }
