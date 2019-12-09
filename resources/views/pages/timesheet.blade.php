@@ -97,11 +97,11 @@ table.center {
           <div class="row">
             <div class="form-group col-md-3"> 
               <label for="startdate">Start Date:</label> 
-              <input type="date" class="form-control" id="startdate" name="startdate" value="{{ $start->format('Y-m-d') }}"> 
+              <input type="date" class="form-control" id="startdate" name="startdate" value="{{ $start->format('Y-m-d') }}" onfocusout="two_weeks_out()"> 
             </div>
             <div class="form-group col-md-3">
               <label for="enddate">End Date:</label>
-              <input type="date" class="form-control" id="enddate" name="enddate" value="{{ $end->format('Y-m-d') }}">
+              <input type="date" class="form-control" id="enddate" name="enddate" value="{{ $end->format('Y-m-d') }}" onfocusout="two_weeks_back()">
             </div> 
             <div class="form-group col-md-2">
               <button type="submit" name="action" class="date_btn btn-primary float-right" value="date_range">Update Date Range</button> 
@@ -256,6 +256,36 @@ table.center {
 
     });
 
+    //automatically get a 14 day range if the date range is set
+    function create_new_date(old_date, out_or_back) {
+      new_date = new Date();
+      new_date.setFullYear(old_date.getYear() + 1900);
+      console.log(new_date); 
+      new_date.setMonth(old_date.getMonth());
+      if (out_or_back === 'out') {
+        new_date.setDate(old_date.getDate()+14);
+      }
+      else if (out_or_back === 'back') {
+        new_date.setDate(old_date.getDate()-12);
+      }
+      date_string = new Date(new_date.getTime() - (new_date.getTimezoneOffset() * 60000)).toISOString().split("T")[0]; 
+      return date_string;
+    }
+
+    //if the start date is set, we set the end date for two weeks out    
+    function two_weeks_out() {
+      var start_date = new Date(document.getElementById('startdate').value); 
+      var date_string = create_new_date(start_date, 'out');
+      document.getElementById('enddate').value = date_string; 
+    }
+
+    //if the end date is set, we set the start date for two weeks back
+    function two_weeks_back() {
+      var end_date = new Date(document.getElementById('enddate').value);
+      var date_string = create_new_date(end_date, 'back'); 
+      console.log(date_string); 
+      document.getElementById('startdate').value = date_string;
+    }
 
     function make_array(description_code_sort){  
       for(var y = 0; y < reference_desc.length; y++){
