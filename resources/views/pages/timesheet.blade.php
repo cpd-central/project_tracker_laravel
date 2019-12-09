@@ -1,37 +1,4 @@
 <?php 
-if(isset($start_end_dates)) {
-  $start = $start_end_dates['start_date'];
-  $end = $start_end_dates['end_date'];
-  $start->setTime(0,0,0);
-  $end->setTime(0,0,1); 
-  $interval = \DateInterval::createFromDateString('1 day');
-  $period = new DatePeriod($start, $interval, $end);
-  $arr = array();
-  $header_arr = array();
-  foreach($period as $dt)
-  {
-    array_push($arr, $dt->format('j-M-y'));
-    array_push($header_arr, $dt->format('D j-M-y'));
-  }
-}
-else {
-    if (isset($date)){
-    $end = clone $date;
-    //subtract 13 days from today ($date gets passed in from controller)
-    $start = $date->sub(new DateInterval('P13D'));
-    $start->setTime(0,0,0);
-    $end->setTime(0,0,1);                       //By setting the day to an extra second, it includes the last day.
-    $interval = \DateInterval::createFromDateString('1 day');
-    $period = new DatePeriod($start, $interval, $end);
-    $arr = array();
-    $header_arr = array(); 
-    foreach($period as $dt)
-    {
-      array_push($arr, $dt->format('j-M-y'));
-      array_push($header_arr, $dt->format('D j-M-y'));
-    }
-  }
-}
 $reference_desc = array();
 $reference_code = array();
 foreach($reference_list[0]['codes'] as $key => $desc){
