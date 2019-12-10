@@ -86,6 +86,11 @@ table.center {
           <div class="alert alert-danger">
             <p>{{$message}}</p>
           </div> 
+        @elseif (isset($message) && $message == "You have one or more duplicate code, description pair(s).  Please fix and re-submit.") 
+          </br>
+          <div class="alert alert-danger">
+            <p>{{$message}}</p>
+          </div>
         @endif
         </br> 
         <h2><b>Timesheet</b></h2>
