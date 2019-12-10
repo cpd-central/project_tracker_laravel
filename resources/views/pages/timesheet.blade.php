@@ -28,7 +28,7 @@ input[type=number]::-webkit-outer-spin-button{
 .table th {
     position: sticky; 
     top: 0;  
-    background-color: #eee; 
+    background-color: #f8f9fa; 
     text-align: center;
     font-size: 12px;   
 }
