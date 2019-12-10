@@ -71,25 +71,15 @@ table.center {
   </head> 
   <body onclick="findStartField()">
         <div class="container">
-        @if (isset($message) && $message == "Success! Timesheet was saved.")
-          </br>
-          <div class="alert alert-success">
-            <p>{{$message}}</p>
-          </div>
-        @elseif (isset($message) && $message == "Date Range must be 14 days or fewer.")
-          </br>
-          <div class="alert alert-danger">
-            <p>{{$message}}</p>
-          </div> 
-        @elseif (isset($message) && $message == "End Date must be after Start Date.")
-          </br>
-          <div class="alert alert-danger">
-            <p>{{$message}}</p>
-          </div> 
-        @elseif (isset($message) && $message == "You have one or more duplicate code, description pair(s).  Please fix and re-submit.") 
-          </br>
-          <div class="alert alert-danger">
-            <p>{{$message}}</p>
+        @if (isset($message))
+          @if ($message == "Success! Timesheet was saved.") 
+            </br>
+            <div class="alert alert-success">
+          @else
+            </br>
+            <div class="alert alert-danger">
+          @endif
+          <p>{{$message}}</p>
           </div>
         @endif
         </br> 
