@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Timesheet;
 use Illuminate\Http\Request;
+use UTCDateTime\DateTime;
+use UTCDateTime\DateTime\DateTimeZone;
+
+use DateInterval;
+use DatePeriod;
 
 class TimesheetController extends Controller
 {
@@ -69,7 +74,7 @@ class TimesheetController extends Controller
      */
     protected function erase_last_2_weeks($array, $daterangeArray){
         foreach($daterangeArray as $date){
-            if(isset($array[$date])){
+            if(isset($array[$date])){ 
                 unset($array[$date]);
             }
         }
@@ -81,68 +86,138 @@ class TimesheetController extends Controller
      * the date range can be created.
      * @return view pages.timesheet
      */
-    public function index($date, $reference_list, $start_end_dates)
+    public function index($date, $reference_list, $arr, $header_arr)
     {
-        return view('pages.timesheet', compact('date', 'reference_list', 'start_end_dates'));
+        return view('pages.timesheet', compact('date', 'reference_list', 'arr', 'header_arr'));
     }
 
+    protected function get_dates($start, $end)
+    {
+        $start->setTime(0,0,0);
+        $end->setTime(0,0,1);
+        $interval = \DateInterval::createFromDateString('1 day');
+        $period = new DatePeriod($start, $interval, $end);
+        $arr = array();
+        $header_arr = array();
+        foreach($period as $dt)
+        {
+            array_push($arr, $dt->format('j-M-y'));
+            array_push($header_arr, $dt->format('D j-M-y'));
+        }
+        return array($arr, $header_arr);
+    }
+
+    protected function duplicate_code_descriptions($req, $num_rows) {
+        $codes_descriptions = array();
+        for ($i=7; $i<=$num_rows; $i++) {
+            $code = $req->get('codeadd'.$i);
+            $description = $req->get('Product_Description_row_'.$i); 
+            #push the string "<CODE>, <DESCRIPTION>" into the array.  this way we can compare them 
+            array_push($codes_descriptions, $code . ", " . $description);
+        } 
+        //check for duplicates
+        if (count($codes_descriptions) !== count(array_unique($codes_descriptions))) {
+            //if the count is different, there are duplicates so return true  
+            return True; 
+        }
+        else {
+            return False;
+        } 
+    }
+    
     /**
      * Determines if there's a timesheet saved or not. Stores the timesheet or creates a new one to be stored
      * with a message to notify the user it was successfully saved to the database.
      * @return $this->check($message)
      */
     public function timesheetSave(Request $request, $id = null){
+        //check if we have more than 6 rows and if so, we check for duplicates
+        $row = (int) $request->get('row_total');
+        if($row > 6) { 
+            $has_duplicates = $this->duplicate_code_descriptions($request, $row);
+        } 
+        else {
+            $has_duplicates = False;
+        }
 
         $action = $request->input('action');
         $start_date = $request['startdate']; 
         $end_date = $request['enddate'];
-
+        $today = $this->getDate();
+        $og_end = clone $today;
+        $og_start = $today->sub(new DateInterval('P13D'));
+        $og_date_range = $this->get_dates($og_start, $og_end)[0]; 
+               
         if ($start_date == null and $end_date == null) {
             $message = null; 
-            $start_end_dates = null; 
+            $start = $og_start; 
+            $end = $og_end; 
+            $arrays = $this->get_dates($start, $end); 
+            $arr = $arrays[0];
+            $header_arr = $arrays[1];
         } 
         else { 
-            $start_date = new \DateTime($request['startdate'], new \DateTimeZone('America/Chicago'));
-            $end_date = new \DateTime($request['enddate'], new \DateTimeZone('America/Chicago')); 
-            $difference = $end_date->diff($start_date)->format("%a") + 1; 
+            $start = new \DateTime($request['startdate'], new \DateTimeZone('America/Chicago'));
+            $end = new \DateTime($request['enddate'], new \DateTimeZone('America/Chicago')); 
+            $difference = $end->diff($start)->format("%a") + 1; 
             if ($difference > 14) {
-                $start_end_dates = null;
+                $start = $og_start;
+                $end = $og_end; 
+                $arr = $this->get_dates($start, $end)[0];
+                $header_arr = $this->get_dates($start, $end)[1];
                 $message = "Date Range must be 14 days or fewer.";
             }
-            else if ($start_date > $end_date) {
-                $start_end_dates = null;
+            else if ($start > $end) {
+                $start = $og_start;
+                $end = $og_end; 
+                $arr = $this->get_dates($start, $end)[0];
+                $header_arr = $this->get_dates($start, $end)[1];
                 $message = "End Date must be after Start Date.";
             } 
             else {
                 $message = null; 
-                $start_end_dates = ['start_date' => $start_date, 'end_date' => $end_date];
+                $arr = $this->get_dates($start, $end)[0];  
+                $header_arr = $this->get_dates($start, $end)[1];
             } 
+            //we also need the original 14 day start and end
         } 
        
         if ($action == 'date_reset') {
             //reset the start and end dates to null if this was the button clicked 
-            return $this->check($message=null, $start_end_dates=null);
+            $start = $og_start;
+            $end = $og_end; 
+            $arr = $this->get_dates($start, $end)[0];
+            $header_arr = $this->get_dates($start, $end)[1];
+            return $this->check($start, $end, $arr, $header_arr, $message = null);
         }
         else if ($action == 'date_range') {
-            //check if the date range is greater than 14 days
-            return $this->check($message, $start_end_dates);            
+            //check if the date range is greater than 14 days 
+            return $this->check($start, $end, $arr, $header_arr, $message);            
         }
         else if ($action == 'submit') {
-
-            $collection = Timesheet::where('user', auth()->user()->email)->get(); 
+            if ($has_duplicates) {
+                $start = $og_start;
+                $end = $og_end;
+                $arr = $this->get_dates($start, $end)[0];
+                $header_arr = $this->get_dates($start, $end)[1]; 
+                $message = "You have one or more duplicate code, description pair(s).  Please fix and re-submit.";
+                return $this->check($start, $end, $arr, $header_arr, $message);
+            } 
             
+            $collection = Timesheet::where('user', auth()->user()->email)->get(); 
+
             if(!$collection->isEmpty()){
                 $timesheet = $collection[0]; 
-                $this->store($timesheet, $request);
+                $this->store($timesheet, $request, $og_date_range);
             }
             else{
                 $timesheet = new Timesheet();
                 $timesheet->user = auth()->user()->email;
                 $timesheet->pay_period_sent = True; 
-                $this->store($timesheet, $request);
+                $this->store($timesheet, $request, $og_date_range);
             }
             $message = "Success! Timesheet was saved.";
-            return $this->check($message, $start_end_dates); 
+            return $this->check($start, $end, $arr, $header_arr, $message); 
         }
         #return $this->check();
     }
@@ -150,7 +225,7 @@ class TimesheetController extends Controller
     /**
      * Stores the Timesheet to the database.
      */
-    public function store($timesheet, $request)
+    public function store($timesheet, $request, $og_date_range)
     {   
         if($timesheet['Codes']){                //Enter this if there was a previous timesheet
 
@@ -199,13 +274,14 @@ class TimesheetController extends Controller
 
             if(isset($timesheet['Codes']["Additional_Codes"])){
                 $codes["Additional_Codes"] = $timesheet['Codes']["Additional_Codes"];
-                $code_keys = array_keys($codes["Additional_Codes"]);
+                $code_keys = array_keys($codes["Additional_Codes"]); 
                 foreach($code_keys as $key){
                     foreach($codes["Additional_Codes"] as $add_code){
                         for($i=0; $i < count($add_code); $i++){
-                            if(isset($timesheet['Codes'][$key][$add_code[$i]])){
+                            if(isset($timesheet['Codes'][$key][$add_code[$i]])){ 
                                 $codes[$key][$add_code[$i]] = $timesheet['Codes'][$key][$add_code[$i]];
                                 $codes[$key][$add_code[$i]] = $this->erase_last_2_weeks($codes[$key][$add_code[$i]], $daterangeArray);
+
                                 if(count($codes[$key][$add_code[$i]]) == 0){
                                     unset($codes[$key][$add_code[$i]]);
                                     //unset($codes["Additional_Codes"][$key]);
@@ -228,13 +304,13 @@ class TimesheetController extends Controller
             if($row > 6) { 
                 $arrayCodes = array(); 
                 $descriptions = array();
-                for($i = 7; $i <= $row; $i++){
-                    if($request->get('row'.$i) != null){
+                for($i = 7; $i <= $row; $i++){ 
+                    if($request->get('row'.$i) != null){ 
+                        $arr = array();
+                        $string = $request->get('Product_Description_row_'.$i);
+                        $code = $request->get('codeadd'.$i);
+                        $arr[$string] = $this->databasePrep($this->formatArray($request->get('row'.$i), $daterangeArray));
                         if(array_sum($request->get('row'.$i)) > 0){
-                            $arr = array();
-                            $string = $request->get('Product_Description_row_'.$i);
-                            $code = $request->get('codeadd'.$i);
-                            $arr[$string] = $this->databasePrep($this->formatArray($request->get('row'.$i), $daterangeArray));
                             if(isset($timesheet['Codes'][$code][$string])){
                                 $arr[$string] += $this->arrayFormat($arr[$string], $timesheet['Codes'][$code][$string], $daterangeArray);
                             }
@@ -253,6 +329,25 @@ class TimesheetController extends Controller
                             }
                             else{
                                 $codes[$code] = $arr;
+                            }
+                        }
+                        else {
+                            // now we have to check if there is data in the original date range and keep those codes too                          
+                            foreach ($og_date_range as $date) {
+                                if (array_key_exists($date, $codes[$code][$string])) {
+                                    if(array_key_exists($code, $arrayCodes)) {
+                                        $descriptions = $arrayCodes[$code];
+                                        array_push($descriptions, $string);
+                                        $arrayCodes[$code] = $descriptions;
+                                    }
+                                    else {
+                                        $descriptions = array();
+                                        array_push($descriptions, $string);
+                                        $arrayCodes[$code] = $descriptions;
+                                    }
+                                    #break loop if we find a match
+                                    break;
+                                }
                             }
                         }
                     }
@@ -338,18 +433,26 @@ class TimesheetController extends Controller
      * @parameter $message for notifying the user the timesheet saved.
      * @return view pages.timesheet
      */
-    public function check($message = null, $start_end_dates = null)
+    public function check($start, $end, $arr = null, $header_arr = null, $message = null)
     {
+        if (!isset($arr) && !isset($header_arr))
+        {
+            $today = $this->getDate(); 
+            $end = clone $today;
+            $start = $today->sub(new DateInterval('P13D'));
+            $arr = $this->get_dates($start, $end)[0];
+            $header_arr = $this->get_dates($start, $end)[1];
+        } 
         $date = $this->getDate();
-
+        
         $collection = Timesheet::where('user', auth()->user()->email)->get(); 
         $reference_list = Timesheet::where('name', 'reference_list')->get(); //Only works on production
         if(!$collection->isEmpty()){
             $timesheet = $collection[0];
-            return $this->edit($timesheet, $date, $message, $reference_list, $start_end_dates);
+            return $this->edit($timesheet, $date, $message, $reference_list, $arr, $header_arr, $start, $end);
         }
         else{
-            return $this->index($date, $reference_list, $start_end_dates);
+            return $this->index($date, $reference_list, $arr, $header_arr, $start, $end);
         }
     }
 
@@ -359,8 +462,8 @@ class TimesheetController extends Controller
      * @parameter $timesheet, $date, $message
      * @return view pages.timesheet
      */
-    public function edit($timesheet, $date, $message = null, $reference_list, $start_end_dates)
+    public function edit($timesheet, $date, $message = null, $reference_list, $arr, $header_arr, $start, $end)
     {
-        return view('pages.timesheet', compact('timesheet', 'date', 'message', 'reference_list', 'start_end_dates'));
+        return view('pages.timesheet', compact('timesheet', 'date', 'message', 'reference_list', 'arr', 'header_arr', 'start', 'end'));
     }
 }
