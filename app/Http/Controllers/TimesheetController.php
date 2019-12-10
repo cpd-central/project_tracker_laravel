@@ -107,12 +107,37 @@ class TimesheetController extends Controller
         return array($arr, $header_arr);
     }
 
+    protected function duplicate_code_descriptions($req, $num_rows) {
+        $codes_descriptions = array();
+        for ($i=7; $i<=$num_rows; $i++) {
+            $code = $req->get('codeadd'.$i);
+            $description = $req->get('Product_Description_row_'.$i); 
+            #push the string "<CODE>, <DESCRIPTION>" into the array.  this way we can compare them 
+            array_push($codes_descriptions, $code . ", " . $description);
+        } 
+        //check for duplicates
+        if (count($codes_descriptions) !== count(array_unique($codes_descriptions))) {
+            //if the count is different, there are duplicates so return true  
+            return True; 
+        }
+        else {
+            return False;
+        } 
+    }
     /**
      * Determines if there's a timesheet saved or not. Stores the timesheet or creates a new one to be stored
      * with a message to notify the user it was successfully saved to the database.
      * @return $this->check($message)
      */
     public function timesheetSave(Request $request, $id = null){
+        //check if we have more than 6 rows and if so, we check for duplicates
+        $row = (int) $request->get('row_total');
+        if($row > 6) { 
+            $has_duplicates = $this->duplicate_code_descriptions($request, $row);
+        } 
+        else {
+            $has_duplicates = False;
+        }
 
         $action = $request->input('action');
         $start_date = $request['startdate']; 
@@ -121,6 +146,7 @@ class TimesheetController extends Controller
         $og_end = clone $today;
         $og_start = $today->sub(new DateInterval('P13D'));
         $og_date_range = $this->get_dates($og_start, $og_end)[0]; 
+               
         if ($start_date == null and $end_date == null) {
             $message = null; 
             $start = $og_start; 
@@ -168,8 +194,17 @@ class TimesheetController extends Controller
             return $this->check($start, $end, $arr, $header_arr, $message);            
         }
         else if ($action == 'submit') {
-            $collection = Timesheet::where('user', auth()->user()->email)->get(); 
+            if ($has_duplicates) {
+                $start = $og_start;
+                $end = $og_end;
+                $arr = $this->get_dates($start, $end)[0];
+                $header_arr = $this->get_dates($start, $end)[1]; 
+                $message = "You have one or more duplicate code, description pair(s).  Please fix and re-submit.";
+                return $this->check($start, $end, $arr, $header_arr, $message);
+            } 
             
+            $collection = Timesheet::where('user', auth()->user()->email)->get(); 
+
             if(!$collection->isEmpty()){
                 $timesheet = $collection[0]; 
                 $this->store($timesheet, $request, $og_date_range);
