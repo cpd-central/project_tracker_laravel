@@ -26,6 +26,9 @@ input[type=number]::-webkit-outer-spin-button{
 }
 
 .table th {
+    position: sticky; 
+    top: 0;  
+    background-color: #eee; 
     text-align: center;
     font-size: 12px;   
 }
