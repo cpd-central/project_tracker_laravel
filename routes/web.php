@@ -28,7 +28,7 @@ Route::post('/wonprojectsummary', 'ProjectController@search')->middleware('verif
 Route::post('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummarySearch');
 
 Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject')->middleware('verified');
-Route::post('/editproject/{id}', 'ProjectControl:ler@update')->middleware('verified');
+Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verified');
 
 
 
