@@ -86,9 +86,9 @@ class TimesheetController extends Controller
      * the date range can be created.
      * @return view pages.timesheet
      */
-    public function index($date, $reference_list, $arr, $header_arr)
+     public function index($date, $reference_list, $arr, $header_arr, $start, $end)
     {
-        return view('pages.timesheet', compact('date', 'reference_list', 'arr', 'header_arr'));
+        return view('pages.timesheet', compact('date', 'reference_list', 'arr', 'header_arr', 'start', 'end'));
     }
 
     protected function get_dates($start, $end)
