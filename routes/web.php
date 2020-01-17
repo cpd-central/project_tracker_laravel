@@ -21,18 +21,33 @@ Route::post('/newproject', 'ProjectController@create')->middleware('verified');
 Route::get('/projectindex', 'ProjectController@index')->name('pages.projectindex')->middleware('verified');
 Route::post('/projectindex', 'ProjectController@search');
 
+
+
+
 Route::get('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummary')->middleware('verified');
 Route::post('/wonprojectsummary', 'ProjectController@search')->middleware('verified');
 
 //Select Menu Route
 Route::post('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummarySearch');
 
+
+
+Route::get('/hoursgraph/', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified');
+Route::post('/hoursgraph/','ProjectController@blah')->middleware('verified');
+//Route::get('/hoursgraph', 'ProjectController@appending')->middleware('verified');
+//Select Menu Route
+//Route::post('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph');
+
+
+
+
+
 Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject')->middleware('verified');
 Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verified');
+//Route::post('/editproject/{id}', 'ProjectController@update2')->middleware('verified');
 
 
-
-Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified');
+//Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified');
 
 Route::delete('{id}', 'ProjectController@destroy')->middleware('verified');
 
