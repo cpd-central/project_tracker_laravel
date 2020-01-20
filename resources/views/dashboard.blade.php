@@ -78,13 +78,13 @@ background-color: white;
 
 <?php
 if(auth()->user()->role == "proposer" || auth()->user()->role == "admin"){
-	$style_string = "height:33%";
-}
-elseif(auth()->user()->role == "sudo"){
 	$style_string = "height:23%";
 }
+elseif(auth()->user()->role == "sudo"){
+	$style_string = "height:15%";
+}
 else{
-	$style_string = "height:45%";
+	$style_string = "height:35%";
 }
 ?>
 
@@ -104,6 +104,11 @@ else{
                     <div class="form-group" style="{{$style_string}}">
                         <a href={{ route('pages.timesheet') }} class="btn login_btn">Timesheet</a>
 					</div>
+					<!--Corey adding link for timesheet sent status page-->
+					<div class="form-group" style="{{$style_string}}">
+                        <a href={{ route('pages.timesheetsentstatus') }} class="btn login_btn">Timesheet Sent Status</a>
+                    </div>
+					<!--End Corey new code-->
 					<?php if(auth()->user()->role == "sudo") {?>
 					<div class="form-group" style="{{$style_string}}">
                         <a href={{ route('pages.roles') }} class="btn login_btn">Roles</a>
