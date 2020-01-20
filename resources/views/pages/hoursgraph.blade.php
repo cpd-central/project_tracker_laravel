@@ -13,9 +13,9 @@
         <form method="get" id="projectcode-form">	
           <!--<label for="project-content">Select Project</label>!-->
           <select name="project_id" class="form-control" onchange="document.getElementById('projectcode-form').submit()">
-          <option value="0">-----------Select Project Code-----------</option>
+          <option value="0">--------------------Select Project Code--------------------</option>
           @foreach($projects as $project)	
-            <option value="{{ $project['_id'] }}">{{ $project['projectname'] }}</option>
+            <option value="{{ $project['_id'] }}">{{$project['projectcode'] }} | {{ $project['projectname'] }}</option>
           @endforeach	
           </select>
         </form>	

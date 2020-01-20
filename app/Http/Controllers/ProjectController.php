@@ -113,9 +113,17 @@ class ProjectController extends Controller
   {
     if (isset($date_string))
     {
-      $php_date = new \DateTime($date_string, new \DateTimeZone('America/Chicago'));
-      //note this is a mongodb UTCDateTime 
-      $date = new UTCDateTime($php_date->getTimestamp() * 1000);
+      #this is just in case a "none" or "unknown" energization slips in as a won project 
+      if ($date_string == "None" or $date_string == "Unknown")
+      {
+        return $date_string;
+      } 
+      else 
+      {
+        $php_date = new \DateTime($date_string, new \DateTimeZone('America/Chicago'));
+        //note this is a mongodb UTCDateTime 
+        $date = new UTCDateTime($php_date->getTimestamp() * 1000);
+      } 
     }
     else {
       if(isset($unknown)){
@@ -396,7 +404,6 @@ class ProjectController extends Controller
 
     if (count($projects) > 0)
     {
-      //dd($request); 
       if (!isset($request['switch_chart_button'])) 
       {
         $chart_type = 'won_prob';
@@ -410,7 +417,11 @@ class ProjectController extends Controller
       $start_dates = array();
       $end_dates = array();
       foreach($projects as $key => $project)
-      {
+      { 
+        if (isset($project['per_month_dollars']))
+        {
+          $old_per_month_dollars = $project['per_month_dollars'];
+        } 
         if($project['dateenergization'] == "Unknown"){
           unset($projects[$key]);
           continue;
@@ -534,6 +545,7 @@ class ProjectController extends Controller
         }
         //now re-write the project data with the new array 
         $project['per_month_dollars'] = $new_project_per_month_dollars;
+
         if ($project['projectstatus'] == 'Won')
         {
           $total_dollars_won = $this->add_dollars($project, $total_dollars_won, $months);
@@ -542,8 +554,6 @@ class ProjectController extends Controller
         {
           $total_dollars_probable = $this->add_dollars($project, $total_dollars_probable, $months);
         }
-        //formats the project data in order to display properly
-        $project = $this->displayFormat($project);
 
         if ($chart_type == 'projects')
         {
@@ -556,6 +566,21 @@ class ProjectController extends Controller
             $color_counter = 0;
           }
         }
+        //formats the project data in order to display properly
+        $project = $this->displayFormat($project);
+        
+        //need to clone the project to update the database without affecting the project to be displayed
+        $project_to_save = clone $project;
+        //Need the dates to be converted back to mongo dates
+        #check if we have an old per_month_dollars.  if we do, we want to combine the new one with the old one before saving, in order to not override old months
+        if (isset($old_per_month_dollars))
+        {
+          $project_to_save['per_month_dollars'] = array_merge($old_per_month_dollars, $project['per_month_dollars']);
+        }
+        $project_to_save->dateproposed = $this->strToDate($project['dateproposed'], null);
+        $project_to_save->datentp = $this->strToDate($project['datentp'], null);
+        $project_to_save->dateenergization = $this->strToDate($project['dateenergization'], null);
+        $project_to_save->save();
       }
       
       $total_dollars = $total_dollars_won + $total_dollars_probable; 
