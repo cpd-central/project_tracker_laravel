@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Timesheet;
+use App\User;
 use Illuminate\Http\Request;
 use UTCDateTime\DateTime;
 use UTCDateTime\DateTime\DateTimeZone;
@@ -80,6 +81,17 @@ class TimesheetController extends Controller
         }
         return $array;
     }
+	
+	//Corey adding protection function for get user timesheet status
+	protected function get_user_timesheet_status(){
+		$timesheets = Timesheet::all();
+		$users = User::all();
+		//dd($timesheets);
+		//dd($users);
+		return view('pages.timesheetsentstatus', compact('timesheets','users'));
+	}
+	
+	//End Corey additions
 
     /**
      * Returns the timesheet view with the data compacted so
