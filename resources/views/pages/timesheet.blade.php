@@ -197,7 +197,7 @@ table.center {
                 <button type="button" id="add" class="btn btn-primary float-right">Add Row</button>
               </div>
               <div class="form-group col-md-4">
-                  <button type="submit" name="action" class="btn btn-success float-right" onclick="return confirm('Make sure your descriptions and code is correct. Are you sure you want to submit?')" value="submit">Submit</button>
+                  <button type="submit" name="action" class="btn btn-success float-right" onclick="return confirm('Make sure your descriptions and code is correct. Are you sure you want to submit?'); deRequire();" value="submit">Submit</button>
                 </div>
             </div>
           </form>
@@ -254,14 +254,28 @@ table.center {
 
     });
 
-    for (i = 7; i <= row; i++) {
-      var time_group = $("input[name='row"+i+"[]']");
-       
-      time_group.prop('required', true);
-      if(time_group.is(':not(empty)')) { 
-        console.log(time_group);
-        time_group.prop('required', false);
-      }
+    function deRequire() {
+      for (i = 7; i <= row; i++) {
+        var row_group = document.getElementsByName('row'+row+'[]');
+        var at_least_one_checked = false;
+
+        for (j=0; j < row_group.length; j++) {
+          if (row_group[j] && row_group[j].value) {
+            at_least_one_checked = true;
+          }
+        } 
+        
+        if (at_least_one_checked === true) {
+          for (k=0; k < row_group.length; k++) {
+            row_group[k].required = false;
+          } else {
+            for (k=0; k < row_group.length; k++) {
+              row_group[k].required = true;
+            }
+          }
+        }
+      } 
+      console.log('hi');
     }
 
     //automatically get a 14 day range if the date range is set
