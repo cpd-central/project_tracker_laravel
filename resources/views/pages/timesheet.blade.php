@@ -255,8 +255,13 @@ table.center {
     });
 
     for (i = 7; i <= row; i++) {
-      var time_group = $("input:number[name='row"+row+"[]']");
-      console.log(time_group);
+      var time_group = $("input[name='row"+i+"[]']");
+       
+      time_group.prop('required', true);
+      if(time_group.is(':not(empty)')) { 
+        console.log(time_group);
+        time_group.prop('required', false);
+      }
     }
 
     //automatically get a 14 day range if the date range is set
