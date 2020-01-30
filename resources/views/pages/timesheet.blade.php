@@ -254,6 +254,11 @@ table.center {
 
     });
 
+    for (i = 7; i <= row; i++) {
+      var time_group = $("input:number[name='row"+row+"[]']");
+      console.log(time_group);
+    }
+
     //automatically get a 14 day range if the date range is set
     function create_new_date(old_date, out_or_back) {
       new_date = new Date();
@@ -375,7 +380,7 @@ table.center {
                      '</td>';
                      for(var i = 1; i <= num_columns; i++){
             var tr = tr + '<td>' +
-                     '<input type="number"  step="0.25" min="0"  class="form-control" id="row'+row+'Day'+i+'" name="row'+row+'[]" value=""/>' +
+                     '<input type="number"  step="0.25" min="0"  class="form-control" id="row'+row+'Day'+i+'" name="row'+row+'[]" value=""/ required>' +
                             '</td>';
                     }
            var tr = tr + '<td>' +
