@@ -98,9 +98,9 @@ class TimesheetController extends Controller
      * the date range can be created.
      * @return view pages.timesheet
      */
-    public function index($date, $reference_list, $arr, $header_arr)
+     public function index($date, $reference_list, $arr, $header_arr, $start, $end)
     {
-        return view('pages.timesheet', compact('date', 'reference_list', 'arr', 'header_arr'));
+        return view('pages.timesheet', compact('date', 'reference_list', 'arr', 'header_arr', 'start', 'end'));
     }
 
     protected function get_dates($start, $end)
@@ -136,6 +136,7 @@ class TimesheetController extends Controller
             return False;
         } 
     }
+    
     /**
      * Determines if there's a timesheet saved or not. Stores the timesheet or creates a new one to be stored
      * with a message to notify the user it was successfully saved to the database.
