@@ -38,6 +38,7 @@
   </form> 
   @stop
 
+  <?php echo 'hello, this is a test!' ?>
 
   @section('table-title', 'Project Index')
   @section('table-header')
