@@ -24,9 +24,9 @@ class ProjectController extends Controller
    */
   public function __construct()
   {
-      $this->middleware('auth');
+    $this->middleware('auth');
   }
-  
+
   /**
    * Stores attributes from the $req to $project and is saved to the database.
    * @param $project - variable type Project to be saved to the database.
@@ -55,7 +55,7 @@ class ProjectController extends Controller
     $project->projectnotes = $req->get('projectnotes');
 
     $project->testbill = array(array("jan"=>10000),array("feb"=>213234));
-    
+
     $project->save();
   }
 
@@ -161,9 +161,9 @@ class ProjectController extends Controller
   protected function intCheck($integer)
   {
     if($integer == null || $integer == ""){
-        $integer = -1;
+      $integer = -1;
     }
-      return ((int)$integer);
+    return ((int)$integer);
   }
 
   /**
@@ -175,9 +175,9 @@ class ProjectController extends Controller
   protected function floatCheck($float)
   {
     if($float == null || $float == ""){
-        $float = -1;
+      $float = -1;
     }
-      return ((float)$float);
+    return ((float)$float);
   }
 
   /**
@@ -199,11 +199,11 @@ class ProjectController extends Controller
   }
 
   /**
-  * If the number from the database was -1, it was originally null. Changes the value to null
-  * and return its.
-  * @param $integer - integer received from mongoDB. 
-  * @return $integer
-  */
+   * If the number from the database was -1, it was originally null. Changes the value to null
+   * and return its.
+   * @param $integer - integer received from mongoDB. 
+   * @return $integer
+   */
   protected function numDisplay($num)
   {
     if($num == -1)
@@ -226,7 +226,7 @@ class ProjectController extends Controller
           $percent = 0;
         }
       } 
-    array_walk($percents, function(&$x){$x = (float)($x);});
+      array_walk($percents, function(&$x){$x = (float)($x);});
     }
     return $percents;
   }
@@ -270,56 +270,72 @@ class ProjectController extends Controller
     return redirect('/projectindex')->with('Success!', 'Project has been successfully updated');
   }
 
-
-  public function update2(Request $request, $id)
-  {
-    echo "HEY!";
-
+  public function monthendfunction() {
+    //do nother right now
+    echo "STEVE";
   }
 
 
-
-  public function blah($id)
+  public function blah(Request $request)
   {
-    dd($id); 
+    //if (isset($id)) {
+      //dd($request); 
+      //$this->validate_request($request);  //I had to comment this out because it broke my function
+      //$project = Project::find($id);  
 
 
-    echo "HEY!";
-    echo "HEY!";
-    echo "HEY!";
-    //$this->validate_request($request);  //I had to comment this out because it broke my function
-    //$project = Project::find($id);  
-    dd($request);
-    echo "HEY!";
-    echo "HEY!";
-    echo "HEY!";
+      //name = 1_id,  value:asdjfjaewiru3243488
+
+      //echo "request graph_count: " . $request['graph_count']; //count($groupLIST)
 
 
+      $id_billing_array=array();
+      $x=0;
+      for ($x=0; $x <= $request['graph_count']; $x++) //
+      {
+        if ($request['text_'.$x] != Null) {
+          $id = $request['id_'.$x];
+          $id_billing_array[$id] = $request['text_'.$x];
+        } else {
+          //do nothing
+        } 
 
-  
+      }  
+      //echo "<br>";
+      echo "<br>" . "id_billing_array: " . var_dump($id_billing_array) . "<br>"; 
+      //still need a global bill array
+      $project = Project::find($id); 
+      $previous_month = date('F', strtotime('-1 month'));
+      $year_of_previous_month = date('Y', strtotime('-1 month')); 
 
- 
-    //name = 1_id,  value:asdjfjaewiru3243488
-    echo "request:" . $request;
+      foreach ($id_billing_array as $id_billing => $value) {
+        echo "id_billing: " . $id_billing . "<br>";
+        echo "value: " . $value . "<br>";
+        $project = Project::find($id_billing); 
+        echo "bill_array before addition: " . print_r($project->bill_amount) . "<br>";
+        //$bill_array[$year_of_previous_month][$previous_month] = $value;
 
+        $bill_amount=$project->bill_amount;
+        $bill_amount[$year_of_previous_month][$previous_month] = $value;
+        //$project->bill_amount = $bill_array;
+        $project->bill_amount = $bill_amount;
+        $project->save();
+    }
 
-
-
-
-
-    //if ($project['bill_amount'] exists) {
-      //$bill_array = $project['bill_amount'];
-    //} 
-    //else {
-     // $bill_array = array();
-    //} 
-    //$bill_array['2019']['November'] = $amount;
     //$project->bill_amount = $bill_array;
     //$project->save();**/
-    return view('pages.hoursgraph');
- //   return redirect('/hoursgraph')->with('Success!', 'Project has been successfully updated');
+    //dd($project);
+    //return view('pages.monthendbilling');
+    //$projects = Project::all(); 
+    //$projects = Project::whereRaw('bill_amount',1)->exists(); 
+    $projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy('projectname');
+    return view('pages.monthendbilling',compact('previous_month', 'projects'));
+    //return null;
+    //} else {
+      //echo "steve";
+      //self::monthendfunction(); 
+      //return redirect('/hoursgraph');
   }
-
 
 
 
@@ -404,7 +420,6 @@ class ProjectController extends Controller
   //           ->orWhere('created_by', auth()->user()->email);
   //   });
   // }    Keep incase we re-implement role
-
   /**
    * Queries for project status type 'Won' & 'Probable', just 'Won', or only 'Probable'. If user role is type 
    * user, then only projects they are associated with will show. Creates Bar graph at top and
@@ -414,18 +429,18 @@ class ProjectController extends Controller
    */
   public function indexwon(Request $request)
   {
-      if($request['projectstatus'] == 'Won'){
-        $projects=Project::all()->where('projectstatus','Won');
-        $projectStatus = "Won";
-      }
-      else if($request['projectstatus'] == 'Probable'){
-        $projects=Project::all()->where('projectstatus','Probable');
-        $projectStatus = "Probable";
-      }
-      else{
-        $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
-        $projectStatus = "All";
-      }
+    if($request['projectstatus'] == 'Won'){
+      $projects=Project::all()->where('projectstatus','Won');
+      $projectStatus = "Won";
+    }
+    else if($request['projectstatus'] == 'Probable'){
+      $projects=Project::all()->where('projectstatus','Probable');
+      $projectStatus = "Probable";
+    }
+    else{
+      $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
+      $projectStatus = "All";
+    }
     // else{
     //   if($request['projectstatus'] == 'Won'){
     //     $projects=($this->longQueriesIndexWon('Won'))->get();
@@ -446,7 +461,7 @@ class ProjectController extends Controller
     //     })->get();
     //     $projectStatus = "All";
     //   }                              Keep incase we re-implement user role
-
+    //   }
     if (count($projects) > 0)
     {
       //dd($request); 
@@ -522,11 +537,11 @@ class ProjectController extends Controller
           else
           {
             $per_month_dollars = $project_dollars / $num_months;
-              $project_per_month_dollars = array();
-              foreach($project_months as $month)
-              {
-                $project_per_month_dollars[$month] = $per_month_dollars;
-              }
+            $project_per_month_dollars = array();
+            foreach($project_months as $month)
+            {
+              $project_per_month_dollars[$month] = $per_month_dollars;
+            }
           }
           $project['per_month_dollars'] = $project_per_month_dollars;
         }
@@ -610,7 +625,7 @@ class ProjectController extends Controller
           }
         }
       }
-      
+
       $total_dollars = $total_dollars_won + $total_dollars_probable; 
       if ($chart_type == 'won_prob')
       {
@@ -645,12 +660,12 @@ class ProjectController extends Controller
   }
 
 
-/**
- * Queries database by text field search. For users, it will only show the results on the projects
- * the user is associated with. For other roles, shows all project results.
- * @param $request - Request variable with attributes to be assigned to $project.
- * @return view projectindex
- */
+  /**
+   * Queries database by text field search. For users, it will only show the results on the projects
+   * the user is associated with. For other roles, shows all project results.
+   * @param $request - Request variable with attributes to be assigned to $project.
+   * @return view projectindex
+   */
   public function search(Request $request)
   {
     $term = $request['search'];
@@ -658,9 +673,9 @@ class ProjectController extends Controller
       //$projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
       $projects = Project::whereRaw(['$text' => ['$search' => "{$term}"]])->get();
       //if(auth()->user()->role != 'user'){ 
-        foreach ($projects as $project) {
-          $project = $this->displayFormat($project);
-        }
+      foreach ($projects as $project) {
+        $project = $this->displayFormat($project);
+      }
       //}
       // else{
       //   $user_email = auth()->user()->email;
@@ -683,7 +698,7 @@ class ProjectController extends Controller
       //   }
       // }
       return view('pages.projectindex', compact('projects')); 
-      }
+    }
     else {
       return redirect('/projectindex')->with('Please enter a search term to search.');
     }
@@ -704,40 +719,69 @@ class ProjectController extends Controller
   }
 
   /**
-  * Queries the database by project code and returns an hours graph for the project.
-  * @param $request - Request variable with attributes to be assigned to $project.
-  * @return array contains labels and dateset
-  */
-  public function hours_graph(Request $request)
+   * Makes hours graph for all employees and employment grouping.
+   * @param $request - Request variable with attributes to be assigned to $project.
+   * @return array contains labels and dateset
+   */
+  public function hours_graph(Request $request) 
   {
-    
-    if (!isset($request['switch_chart_button'])) 
-    {
-      $chart_units = 'hours';
-    }
-    else
-    { 
+    if (!isset($request['switch_chart_button'])) {//This is a button to toggle whether hours or dollars is displayed in the graph.  
+      $chart_units = 'dollars';
+    } else { 
       $chart_units = $request['switch_chart_button'];
     }
 
 
-    if (!isset($request['switch_chart_button_2'])) 
-    {
+    if (!isset($request['switch_chart_button_2'])) {
       $chart_ind_vs_group = 'individuals';
-    }
-    else
-    { 
+    } else { 
       $chart_ind_vs_grou = $request['switch_chart_button_2'];
     }
 
-
-    #get project list
-    #global $project_grand_total;
-    #$project_grand_total_count = 0;
     $project_grand_total = 0;
-    #need to get the "current project list" from hours that have been billed
-    $projectsBILLED = array("15TH AVE SUB","23 MN Interconnections","Akuo Sterling NM","Big Blue Support");
-    $employeeLIST = array(array("Vince","senior project manager",170,"senior"),array("Max","senior engineer",160,"senior"),array("Pete","senior project manager",160,"senior"),array("Darko","project engineer - a", 120,"senior"),array("Rob","senior project engineer",130,"senior"), array("","senior project engineer",130,"senior"), array("Shafqat","project engineer b",110,"project"), array("Nick","SCADA Engineer",125,"SCADA"),array("Erin","project engineer - a",120,"project"),array("Yang","project engineer - a",120,"project"), array("Stephen K.","project engineer - b",110,"project"),array("Naga","project engineer - c", 95,"project"),array("Corey","project engineer - c",95,"SCADA"),array("Abdi","project engineer - b",110,"project"),array("Jacob R.","project engineer - c",95,"project"),array("Brian","SCADA Engineers",125,"SCADA"),array("Tom U.","Project Managers",125,"project"),array("Jake M.","project engineer - c",125,"SCADA"),array("Donna","admin",85,"interns-admin"),array("Kathy","electrical designer",105,"drafting"),array("Julie","cad technician drafter",85,"drafting"),array("Marilee","cad technician drafter",85,"drafting"),array("Joe M.","cad technician drafter",85,"drafting"),array("Bob B.","cad technician drafter",85,"drafting"),array("Sumitra","intern",60,"interns-admin"),array("Randy","intern",60,"interns-admin"),array("Josh","intern",60,"interns-admin"),array("Tim","intern",60,"interns-admin"));
+    //This array is for CEG personnel, the second field has no role in the code currently 
+    $employeeLIST = array( array("Vince"       ,"senior project manager"  ,170,"senior"         ),
+                           array("Max"         ,"senior engineer"         ,160,"senior"         ),
+                           array("Pete"        ,"senior project manager"  ,160,"senior"         ),
+                           array("Jim"         ,"senior project manager"  ,160,"senior"         ),
+                           array("Darko"       ,"project engineer - a"    ,120,"senior"         ),
+                           array("Rob"         ,"senior project engineer" ,130,"senior"         ),
+                           array("Steve P."    ,"senior project engineer" ,130,"senior"         ),
+                           array("Shafqat"     ,"project engineer b"      ,110,"project"        ),
+                           array("Nick"        ,"SCADA Engineer"          ,125,"SCADA"          ),
+                           array("Erin"        ,"project engineer - a"    ,120,"project"        ),
+                           array("Yang"        ,"project engineer - a"    ,120,"project"        ),
+                           array("Stephen K."  ,"project engineer - b"    ,110,"project"        ),
+                           array("Naga"        ,"project engineer - c"    ,95 ,"project"        ),
+                           array("Corey"       ,"project engineer - c"    ,95 ,"SCADA"          ),
+                           array("Abdi"        ,"project engineer - b"    ,110,"project"        ),
+                           array("Sumitra"     ,"intern"                  ,60 ,"interns-admin"  ),
+                           array("Jacob R."    ,"project engineer - c"    ,95 ,"project"        ),
+                           array("Brian"       ,"SCADA Engineers"         ,125,"SCADA"          ),
+                           array("Tom U."      ,"Project Managers"        ,125,"project"        ),
+                           array("Jake C."     ,"Project Managers"        ,95 ,"project"        ),
+                           array("Jake M."     ,"project engineer - c"    ,95 ,"SCADA"          ),
+                           array("Donna"       ,"admin"                   ,85 ,"interns-admin"  ),
+                           array("Letysha"     ,"cad technician drafter"  ,85 ,"drafting"       ),
+                           array("Kathy"       ,"electrical designer"     ,105,"drafting"       ),
+                           array("Tom M."      ,"cad technician drafter"  ,85 ,"drafting"       ),
+                           array("Julie"       ,"cad technician drafter"  ,85 ,"drafting"       ),
+                           array("Marilee"     ,"cad technician drafter"  ,85 ,"drafting"       ),
+                           array("Joe M."      ,"cad technician drafter"  ,85 ,"drafting"       ),
+                           array("Bob B."      ,"cad technician drafter"  ,85 ,"drafting"       ),
+                           array("Mike"        ,"cad technician drafter"  ,85 ,"drafting"       ),
+                           array("Bob S."      ,"cad technician drafter"  ,85 ,"drafting"       ),
+                           array("Karen"       ,"cad technician drafter"  ,85 ,"drafting"       ),
+                           array("Randy"       ,"intern"                  ,60 ,"interns-admin"  ),
+                           array("Josh"        ,"intern"                  ,60 ,"interns-admin"  ),
+                           array("Sam"         ,"intern"                  ,60 ,"interns-admin"  ),
+                           array("Nolan"       ,"intern"                  ,60 ,"interns-admin"  ),
+                           array("Graham"      ,"intern"                  ,60 ,"interns-admin"  ),
+                           array("Trevor"      ,"intern"                  ,60 ,"interns-admin"  ),
+                           array("Bjorn"       ,"intern"                  ,60 ,"interns-admin"  ),
+                           array("Keerti"      ,"intern"                  ,60 ,"interns-admin"  ),
+                           array("Tim"         ,"intern"                  ,60 ,"interns-admin"  ),
+                           array("noname"      ,""                        ,60 ,"interns-admin"  ));
     $groupLIST = array("senior","project","SCADA","drafter","interns-admin","blank");
 
     $choosen_line_colors = array('#396AB1','#DA7C30','#3E9651','#CC2529','#535154','#6B4C9A','#922428','#948B3D','#488f31','#58508d','#bc5090','ff6361','#ffa600','#7BEEA5','#127135','#008080','#1AE6E6');
@@ -745,62 +789,41 @@ class ProjectController extends Controller
 
     $group_colors = array('#4d2f14','#8D5524','#C68642','#F1C27D','#ffe9cc');
     $c_group_colors = 0;
-
-    #location dictates the group:  senior (group 0), project (group 1), drafting (group 2), interns-admin (group 3), SCADA (group 4)
-
-    #$employeeGROUP = array("Vince","Max","Pete","Darko","Rob","Steve P.","Shafqat","Nick","Erin","Yang","Stephen K.","Naga","Corey","Abdi","Jacob R.","Brian","Tom U.","Jake M.","Donna","Kathy","Julie","Marilee","Joe M.","Bob B.","Sumitra","Randy","Josh","Tim");
-
-    #echo "Array Test: " . $employeeLIST[0][0] . "<br>";
-
-    #$a=array("red","green","blue");
-    #echo "<br>";
-    #echo "Search red/green/blue: " . array_search("blue",$a) . "<br>";
-    #echo "Search employeeLIST: " . array_search("Vince",$employeeLIST) . "<br>";
-    #echo "Search employeeLIST: " . $employeeLIST[array_search("Tim", array_column($employeeLIST, 0))][0] . "<br>";
-    #echo "Search employeeLIST: " . $employeeLIST[array_search("Tim", array_column($employeeLIST, 0))][1] . "<br>";
-    #echo "Search employeeLIST: " . $employeeLIST[array_search("Tim", array_column($employeeLIST, 0))][2] . "<br>";
-    #echo "Search employeeLIST: " . $employeeLIST[array_search("Tim", array_column($employeeLIST, 0))][3] . "<br>";
-    #echo "Search employeeLIST: " . array_search("60", array_column($employeeLIST, 2)) . "<br>";
-    #echo "<br>";
     $projects = Project::whereRaw(['$and' => array(['projectcode' => ['$ne' => null]], ['hours_data' => ['$exists' => 'true']])])->get()->sortBy('projectname');
 
-    #$projects = Project::whereRaw(['$and' => array(['projectcode' => ['$ne' => null]], ['hours_data' => ['$exists' => 'true']],   [    ['var' => lessthan]  ]    )])->get()->sortBy('projectname');
-     function prepare_array($senior_arr, $group_count)
-    {
-
+    //prepare_array function gets array ready for the graph.  
+    //array_filter => finds TRUE values and passes them to array.  
+    //end => advances pointer to last element.  
+    //key => returns the index element of the current array position
+    //
+    //We only want the data from the first non zero entry to the lst non zero entry in the set 
+    //array_filter will remove all zero entries
+    //we take the start key and end key of the zeros removed array
+    //we use these keys to get the slice of the original array between those keys 
+    function prepare_array($senior_arr, $group_count) { 
       $senior_array_filtered[$group_count] = array_filter($senior_arr[$group_count]);
       $senior_start_key[$group_count] = key($senior_array_filtered[$group_count]);
       //moves pointer to end
       end($senior_array_filtered[$group_count]);
       $senior_end_key[$group_count] = key($senior_array_filtered[$group_count]);
-      
-      $senior_arr_start_end[$group_count] = array_slice($varpassed, $senior_start_key[$group_count], $senior_end_key[$group_count] - $senior_start_key[$group_count] + 1);
-      //echo "<br>senior_arr_start_end: " . print_r($senior_arr_start_end[$group_count]) . "<br>";
-      return $senior_arr_start_end[$group_count];
 
+      $senior_arr_start_end[$group_count] = array_slice($varpassed, $senior_start_key[$group_count], $senior_end_key[$group_count] - $senior_start_key[$group_count] + 1);
+      return $senior_arr_start_end[$group_count];
     } 
 
-
-    function get_chart_info($projectnamevar)
-    {
-      $employeeLIST = array(array("Vince","senior project manager",170,"senior"),array("Max","senior engineer",160,"senior"),array("Pete","senior project manager",160,"senior"),array("Darko","project engineer - a", 120,"senior"),array("Rob","senior project engineer",130,"senior"), array("Steve P.","senior project engineer",130,"senior"), array("Shafqat","project engineer b",110,"project"), array("Nick","SCADA Engineer",125,"SCADA"),array("Erin","project engineer - a",120,"project"),array("Yang","project engineer - a",120,"project"), array("Stephen K.","project engineer - b",110,"project"),array("Naga","project engineer - c", 95,"project"),array("Corey","project engineer - c",95,"SCADA"),array("Abdi","project engineer - b",110,"project"),array("Jacob R.","project engineer - c",95,"project"),array("Brian","SCADA Engineers",125,"SCADA"),array("Tom U.","Project Managers",125,"project"),array("Jake M.","project engineer - c",95,"SCADA"),array("Donna","admin",85,"interns-admin"),array("Kathy","electrical designer",105,"drafting"),array("Julie","cad technician drafter",85,"drafting"),array("Marilee","cad technician drafter",85,"drafting"),array("Joe M.","cad technician drafter",85,"drafting"),array("Bob B.","cad technician drafter",85,"drafting"),array("Sumitra","intern",60,"interns-admin"),array("Randy","intern",60,"interns-admin"),array("Josh","intern",60,"interns-admin"),array("Tim","intern",60,"interns-admin"));
-      $groupLIST = array("senior","project","SCADA","drafter","interns-admin");
-      #$id = "ObjectId('5cf6a2fbb047910e4cf196c9')";
-      #$id = '5cf6a310b047910e4cf19b4f';
-      #select project  
+    //All the data for the graph is computed from this seciton, 
+    //$labels, $dataset, $individual_dataset, $individual_dataset_monies, $project_grand_total, $dollarvalueinhouse, $dateenergization, $group_dataset, $group_dataset_monies,$previous_month_project_hours, $total_project_dollars, $previous_month_project_monies, $total_project_monies_per_month_dataset, $total_project_hours_per_month_dataset, $last_bill_amount, $last_bill_month
+    function get_chart_info($projectnamevar, $employeeLIST, $groupLIST) {
       $selected_project = Project::where('projectname', $projectnamevar)->first();
-      //echo "selected_project: " . "<pre>" . print_r($selected_project) . "<pre>" . "endselectedproject<br>";
+      //echo "selected_project: " . $selected_project['projectname'] . "<br>";
       $selected_project_name = $selected_project['projectname'];
-      #echo "projectname: " . $selected_project_name . "<br>";
       $selected_project_id = $selected_project['_id'];
-      if ($selected_project)
-      {
-        #get all hours data for project
 
-
-        
+      if ($selected_project) { #get all hours data for project
         $hours_data = $selected_project['hours_data'];
+        $hours_data;
         $years = array_keys($hours_data);
+        asort($years);
         $hours_arr = array();
         $labels_arr = array();
         $group_project_hours_arr[0]=array();
@@ -819,44 +842,31 @@ class ProjectController extends Controller
         $group_project_monies_arr[5]=array(0); //PLEASE NOTE, A ZERO IS NEEDED AT THE END OF ARRAY THAT IS UNUSED, OTHERWISE A GET AN OFFSET ERROR, NOT SURE WHY
         $total_project_monies_per_month_arr=array();
 
-
         $previous_month_project_hours=0;
         $previous_month_project_monies=0;
 
-
-
         $previous_month = date('F', strtotime('-1 month'));
         $current_year = date('Y');
-        for ($emp_count=0; $emp_count<count($employeeLIST); $emp_count++)
-        {
+        for ($emp_count=0; $emp_count<count($employeeLIST); $emp_count++) {
           $individual_project_hours_arr[$emp_count] = array();
           $individual_project_monies_arr[$emp_count] = array();
         }
-        foreach($years as $year)
-        {
+
+        //echo "<br>";
+        foreach($years as $year) {
           $year_hours_data = $hours_data[$year];
           $months = array_keys($year_hours_data);
-          foreach($months as $month)
-          {
+          //dd($months); 
+          foreach($months as $month) {
             array_push($labels_arr, $month . '-' . $year);
-
             $people_hours = $year_hours_data[$month];
-            /*foreach($people_hours as $person)
-            {
-              $person - this is the hours for each person
-              looping through all people in the month
-            }*/
-
-            //echo "month: " . $month . "<br>";
-            //echo "month2: " . $previous_month . "<br>";
-
-
+            
+            //echo "peoeple hours for " . $month . ": ";
+            //echo print_r($people_hours) . "<br>";
+            //rry {
             $total_project_hours = $people_hours['Total'];
+            //}
             array_push($hours_arr, $total_project_hours);
-
-            #echo print_r($employeeLIST);
-            #echo "employeeLIST: " . $employeeLIST[0][0] . "<br>";
-            #echo "count employliest" . count($employeeLIST) . "<br>";
             $total_individual_hours[0]=0;
             $total_individual_hours[1]=0;
             $total_individual_hours[2]=0;
@@ -869,81 +879,90 @@ class ProjectController extends Controller
             $total_individual_monies[3]=0;
             $total_individual_monies[4]=0; 
 
-            for ($emp_count=0; $emp_count<count($employeeLIST); $emp_count++)
-            {
-              #echo "employeeLIST emp count 0: " . $employeeLIST[$emp_count][0] . "<br>"; 
-              #echo "people_hours: " . print_r($people_hours) . "<br>"; 
-              #,$people_hours))
-              #$test_array=array("Vince","Bob");
-              if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours)))
-                {
-                  #echo "I found: " . $employeeLIST[$emp_count][0] . "<br>";
-                  continue;
-                }
-              
-
-              $individual_project_hours[$emp_count] = $people_hours[$employeeLIST[$emp_count][0]];  //need to fix soon
-             #echo "ROW 726  individual_project_hours[emp_count]" . $emp_count . " : " . $individual_project_hours[$emp_count] . "<br>";
+            for ($emp_count=0; $emp_count<count($employeeLIST); $emp_count++) {
+              if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours))) {
+                $individual_project_hours[$emp_count] = 0;  //need to fix soon
+                $individual_project_monies[$emp_count] = 0;  //need to fix soon
+                //if ($emp_count==10){
+                  //echo $employeeLIST[10][0] . ":, individual_project_hours (not hired yet): " . $individual_project_hours[$emp_count] . "<br>";
+                //}
+              } else {
+                $individual_project_hours[$emp_count] = $people_hours[$employeeLIST[$emp_count][0]];  //need to fix soon
+                $individual_project_monies[$emp_count] = $people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];  //need to fix soon
+                //if ($emp_count==10){
+                  //echo $employeeLIST[10][0] . ", individual_project_hours: " . $individual_project_hours[$emp_count] . "<br>";
+                //}
+              }
               array_push($individual_project_hours_arr[$emp_count], $individual_project_hours[$emp_count]);  
-            
-              $individual_project_monies[$emp_count] = $people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];  //need to fix soon
-             #echo "ROW 726  individual_project_hours[emp_count]" . $emp_count . " : " . $individual_project_hours[$emp_count] . "<br>";
               array_push($individual_project_monies_arr[$emp_count], $individual_project_monies[$emp_count]);  
 
-              if ($month == $previous_month AND $current_year==$year)
-                {
+              if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours))) {
+                if ($month == $previous_month AND $current_year==$year) {
+                  $previous_month_project_hours = $previous_month_project_hours + 0;
+                }
+
+                if ($month == $previous_month AND $current_year==$year) {
+                  $previous_month_project_monies = $previous_month_project_monies + 0;
+                }
+              } else {
+                if ($month == $previous_month AND $current_year==$year) {
                   $previous_month_project_hours = $previous_month_project_hours + $people_hours[$employeeLIST[$emp_count][0]];
-                  //echo "previous_month_project_hours: " . $previous_month_project_hours . "<br>";
                 }
 
-              if ($month == $previous_month AND $current_year==$year)
-                {
+                if ($month == $previous_month AND $current_year==$year) {
                   $previous_month_project_monies = $previous_month_project_monies + $people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
-                  //echo "previous_month_project_hours: " . $previous_month_project_monies. "<br>";
                 }
-
-              //if ($people_hours[$employeeLIST[$emp_count][0]]>0)
-              //{
-                switch ($employeeLIST[$emp_count][3]) {
-                    case "senior":
-                        $total_individual_hours[0]=$total_individual_hours[0]+$people_hours[$employeeLIST[$emp_count][0]];
-                        $total_individual_monies[0]=$total_individual_monies[0]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
-                        #echo "<br>senior_total_individual " . $selected_project_name . $month ." :" . 
-                        #echo "<pre>" . print_r($senior_arr) . "<pre>";
-                        break;
-                    case "project":
-                        $total_individual_hours[1]=$total_individual_hours[1]+$people_hours[$employeeLIST[$emp_count][0]];
-                        $total_individual_monies[1]=$total_individual_monies[1]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
-                        break;
-                    case "SCADA":
-                        $total_individual_hours[2]=$total_individual_hours[2]+$people_hours[$employeeLIST[$emp_count][0]];
-                        $total_individual_monies[2]=$total_individual_monies[2]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
-                        break;
-                    case "drafting":
-                        $total_individual_hours[3]=$total_individual_hours[3]+$people_hours[$employeeLIST[$emp_count][0]];
-                        $total_individual_monies[3]=$total_individual_monies[3]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
-                        //echo "<br>group_arr: " . print_r($group_project_hours_arr[3]) . "<br>";
-                        //$group_project_hours_arr[3]=$total_individual_hours[3];
-                       #echo "<br>total_individual: " . $selected_project_name . " " . $month . ": " . print_r($total_individual_hours[3]) . "<br>";
-                        break;
-                    case "interns-admin":
-                        $total_individual_hours[4]=$total_individual_hours[4]+$people_hours[$employeeLIST[$emp_count][0]];
-                        $total_individual_monies[4]=$total_individual_monies[4]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
-                        break;
-                    default:
-                        break;
-
-
-
-                //};
-                    };
-              
-
-
-
-              #echo "individual emp_count: " . $emp_count . " <br>";
-              #echo print_r($individual_project_hours_arr[$emp_count]) . "<br><br><br><br>";
-            }
+              }
+              switch ($employeeLIST[$emp_count][3]) {
+                case "senior":
+                  if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours))) {
+                    $total_individual_hours[0]=$total_individual_hours[0]+0;
+                    $total_individual_monies[0]=$total_individual_monies[0]+0;
+                  } else {
+                    $total_individual_hours[0]=$total_individual_hours[0]+$people_hours[$employeeLIST[$emp_count][0]];
+                    $total_individual_monies[0]=$total_individual_monies[0]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
+                  }
+                  break;
+                case "project":
+                  if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours))) {
+                    $total_individual_hours[1]=$total_individual_hours[1]+0;
+                    $total_individual_monies[1]=$total_individual_monies[1]+0;
+                  } else {
+                    $total_individual_hours[1]=$total_individual_hours[1]+$people_hours[$employeeLIST[$emp_count][0]];
+                    $total_individual_monies[1]=$total_individual_monies[1]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
+                  }
+                  break;
+                case "SCADA":
+                  if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours))) {
+                    $total_individual_hours[2]=$total_individual_hours[2]+0;
+                    $total_individual_monies[2]=$total_individual_monies[2]+0;
+                  } else {
+                    $total_individual_hours[2]=$total_individual_hours[2]+$people_hours[$employeeLIST[$emp_count][0]];
+                    $total_individual_monies[2]=$total_individual_monies[2]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
+                  }
+                  break;
+                case "drafting":
+                  if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours))) {
+                    $total_individual_hours[3]=$total_individual_hours[3]+0;
+                    $total_individual_monies[3]=$total_individual_monies[3]+0;
+                  } else {
+                    $total_individual_hours[3]=$total_individual_hours[3]+$people_hours[$employeeLIST[$emp_count][0]];
+                    $total_individual_monies[3]=$total_individual_monies[3]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
+                  }
+                  break;
+                case "interns-admin":
+                  if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours))) {
+                    $total_individual_hours[4]=$total_individual_hours[4]+0;
+                    $total_individual_monies[4]=$total_individual_monies[4]+0;
+                  } else {
+                    $total_individual_hours[4]=$total_individual_hours[4]+$people_hours[$employeeLIST[$emp_count][0]];
+                    $total_individual_monies[4]=$total_individual_monies[4]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
+                  }
+                  break;
+                default:
+                  break;
+              } //end of the switch 
+            } //end of the for loop going through all employees
             array_push($group_project_hours_arr[0], $total_individual_hours[0]);
             array_push($group_project_hours_arr[1], $total_individual_hours[1]);
             array_push($group_project_hours_arr[2], $total_individual_hours[2]);
@@ -961,542 +980,225 @@ class ProjectController extends Controller
 
             $total_project_hours_per_month = $total_individual_hours[0] + $total_individual_hours[1] + $total_individual_hours[2] + $total_individual_hours[3] + $total_individual_hours[4];
             array_push($total_project_hours_per_month_arr, $total_project_hours_per_month);  
+            //$hours_arr=$total_project_monies_per_month_arr; //may want to delete later
+          } //end of the forach loop for months
+        } //end of the foreach loop for years
 
-            #echo "<br>group_arr: " . print_r($group_project_hours_arr[3]) . "<br>";
-            #echo "Total Vince: " . $vince_arr . "<br>";
-            #array_push($vince_arr, $vince_project_hours);
+        //dd($individual_project_hours_arr[10]);
+
+
+        $total_project_dollars = array_sum($group_project_monies_arr[0]) + array_sum($group_project_monies_arr[1]) + array_sum($group_project_monies_arr[2]) + array_sum($group_project_monies_arr[3]) + array_sum($group_project_monies_arr[4]);
+
+        $project_grand_total  =  (array_sum($hours_arr));
+        $dollarvalueinhouse = $selected_project['dollarvalueinhouse'];
+        $dateenergization = $selected_project['dateenergization'];
+        $last_bill_month="";
+        $last_bill_amount="";
+        $year_billing_data=array(); 
+        $billing_months_arr=array(); 
+        $billing_data = $selected_project['bill_amount'];
+
+        //This 
+        if (!empty($billing_data)) {
+          $years = array_keys($billing_data);
+          
+          foreach($years as $year) {
+            $years_billing_data = $billing_data[$year];
+            $months = array_keys($years_billing_data);
+            //dd($months);
+            foreach($months as $month) {
+              $last_bill_amount=$years_billing_data[$month];
+              //$last_bill_month=$month;
+              //$billing_months_arr=array_push($billing_months_arr,$last_bill_month);
+            }
           }
         }
-        $total_project_dollars = array_sum($group_project_monies_arr[0]) + array_sum($group_project_monies_arr[1]) + array_sum($group_project_monies_arr[2]) + array_sum($group_project_monies_arr[3]) + array_sum($group_project_monies_arr[4]);
-      //echo "total_project_dollars" . $total_project_dollars . "<br>";
-
-      #echo "ROW 738  this spot individual_dataset: <br>";
-      #echo print_r($individual_project_hours_arr) . "<br><br><br><br>";
-     
 
 
-
-      //We only want the data from the first non zero entry to the lst non zero entry in the set 
-      //array_filter will remove all zero entries
-      //we take the start key and end key of the zeros removed array
-      //we use these keys to get the slice of the original array between those keys 
-      $project_grand_total  =  (array_sum($hours_arr));
-      $dollarvalueinhouse = $selected_project['dollarvalueinhouse'];
-      $dateenergization = $selected_project['dateenergization'];
-      #echo "dollarvalueinhouse: " . $dollarvalueinhouse . "<br>";
-
-      //MIGHT WANT TO ADD IN FUTURE
-      //for ($group_count=0; $group_count<count($groupLIST); $group_count++)
-      //{
-      //$tempvar[$group_count] = prepare_array($senior_arr[$group_count], $group_count);
-      //$finaldataset[$group_count]  = array('Senior Hours', 'line', $tempvar[$group_count]); 
-      //}
-
-
-
-
-      //$senior_array_filtered = array_filter($senior_arr);
-      //$senior_start_key = key($senior_array_filtered);
-      //moves pointer to end
-      //end($senior_array_filtered);
-      //$senior_end_key = key($senior_array_filtered);
-      
-      //$senior_arr_start_end = array_slice($senior_arr, $senior_start_key, $senior_end_key - $senior_start_key + 1);
-      #echo "<br>senior_arr_start_end: " . print_r($senior_arr_start_end) . "<br>";
-      //$senior_dataset = array('Senior Hours', 'line', $senior_arr_start_end); 
-
-      #echo "<br>senior_dataset: " . print_r($senior_dataset) . "<br>";
-
-
-
-      $hours_array_filtered = array_filter($hours_arr);
-      $start_key = key($hours_array_filtered);
-      //moves pointer to end
-      end($hours_array_filtered);
-      $end_key = key($hours_array_filtered);
-
-      $hours_arr_start_end = array_slice($hours_arr, $start_key, $end_key - $start_key + 1);
-      $labels_arr_start_end = array_slice($labels_arr, $start_key, $end_key - $start_key + 1);
-
-
-      $labels = $labels_arr_start_end;
-      $dataset = array(' Total Hours', 'line', $hours_arr_start_end);      
-      //echo "<br>Project: " . $selected_project_name . "";
-      #echo "<br>1a hour_arr: <br>";
-      #echo print_r($hours_arr) . "<br>";
-      //echo "<br>1a dataset: <br>";
-      //echo print_r($dataset) . "<br>";
-      //echo "<br>1a labels: <br>";
-      //echo print_r($labels) . "<br>";
-
-      //doin gthis for each individual employee's hours
-      for ($emp_count=0; $emp_count<count($employeeLIST); $emp_count++)
-      {
-        #$individual_array_filtered[$emp_count] = array_filter($individual_project_hours_arr[$emp_count]);
-        #$individual_start_key[$emp_count] = key($individual_array_filtered[$emp_count]);
-        //moves pointer to end
-        #end($individual_array_filtered[$emp_count]);
-        #$individual_end_key[$emp_count] = key($individual_array_filtered[$emp_count]);
+        //see notes around line 794, doing same thing here with hours_arr
+        //echo "<br> hours_array: <br>";
+        //echo "hours_arr: " . print_r($hours_arr) . "<br>";
+         
+        $hours_array_filtered_reversed = array_reverse($hours_arr);
+        //echo "<br> hours_array_filtered: <br>";
+        //echo print_r($hours_array_filtered_reversed);
+          
+        $hours_array_filtered = array_filter($hours_arr);
+        //echo "<br>";
+        //echo "hours_array_filtered: " . print_r($hours_array_filtered) . "<br>";
         
-        #$individual_project_hours_arr_start_end[$emp_count] = array_slice($individual_project_hours_arr[$emp_count], $individual_start_key[$emp_count], $individual_end_key[$emp_count] - $individual_start_key[$emp_count] + 1);
-        $individual_project_hours_arr_start_end[$emp_count] = array_slice($individual_project_hours_arr[$emp_count], -count($labels),count($labels));
-        $individual_dataset[$emp_count] = array($employeeLIST[$emp_count][0] . ' Hours', 'line', $individual_project_hours_arr_start_end[$emp_count]); 
-
-        $individual_project_monies_arr_start_end[$emp_count] = array_slice($individual_project_monies_arr[$emp_count], -count($labels),count($labels));
-        $individual_dataset_monies[$emp_count] = array($employeeLIST[$emp_count][0] . ' Dollars', 'line', $individual_project_monies_arr_start_end[$emp_count]);
-
-      }
-
-      //echo "<br>1b individual_arr[0]: <br>";
-      //echo print_r($individual_project_hours_arr[0]) . "<br>";
-      //echo "<br>1b individual_dataset[0]: <br>";
-      //echo print_r($individual_dataset[0]) . "<br>";
+        $countzeros=0;
+        $numdetectflag=0;
+        foreach ($hours_array_filtered_reversed as $var) {
+          //echo "var: " . $var . "<br>";
+          if ($var == 0 && $numdetectflag == 0) {
+            $countzeros=$countzeros+1;
+          } else {
+            $numdetectflag=1;
+            continue;
+          }
+        }
 
 
-      for ($group_count=0; $group_count<count($groupLIST); $group_count++)
-      {
-        #$group_array_filtered[$group_count] = array_filter($group_project_hours_arr[$group_count]);
-        #$group_start_key[$group_count] = key($group_array_filtered[$group_count]);
-        //moves pointer to end
-        #end($group_array_filtered[$group_count]);
-        #$group_end_key[$group_count] = key($group_array_filtered[$group_count]);
+        $start_key = key($hours_array_filtered);
+        //echo "start_key: " . $start_key . "<br>";
+        end($hours_array_filtered);
+        $end_key = key($hours_array_filtered)+$countzeros; //countzeros makes sure to count the ending zeros and add those back in, or the data will be off by how many months end with zero time
+        //echo "end_key: " . $end_key . "<br>";
         
-        #$group_project_hours_arr_start_end[$group_count] = array_slice($group_project_hours_arr[$group_count], $group_start_key[$group_count], $group_end_key[$group_count] - $group_start_key[$group_count] + 1);
-        $group_project_hours_arr_start_end[$group_count] = array_slice($group_project_hours_arr[$group_count], -count($labels),count($labels));
-        $group_dataset[$group_count] = array($groupLIST[$group_count] . ' Hours', 'line', $group_project_hours_arr_start_end[$group_count]); 
 
-        $group_project_monies_arr_start_end[$group_count] = array_slice($group_project_monies_arr[$group_count], -count($labels),count($labels));
-        $group_dataset_monies[$group_count] = array($groupLIST[$group_count] . ' Dollars', 'line', $group_project_monies_arr_start_end[$group_count]); 
+        //array_slice returns the sequence  of elements from the array array as specified by the offset and length parameters, basically trying to skip all the zeros
+        $hours_arr_start_end = array_slice($hours_arr, $start_key, $end_key - $start_key + 1);
+        $labels_arr_start_end = array_slice($labels_arr, $start_key, $end_key - $start_key + 1);
+        
+        $labels = $labels_arr_start_end;
+        //echo "<br>";
+        //echo "labels: " . print_r($labels) . "<br>";
+        //dd($labels);
+        $dataset = array(' Total Hours', 'line', $hours_arr_start_end);
+
+        //doing this for each individual employee's hours
+        for ($emp_count=0; $emp_count<count($employeeLIST); $emp_count++) {
+          $individual_project_hours_arr_start_end[$emp_count] = array_slice($individual_project_hours_arr[$emp_count], -count($labels),count($labels)); $individual_dataset[$emp_count] = array($employeeLIST[$emp_count][0] . ' Hours', 'line', $individual_project_hours_arr_start_end[$emp_count]); 
+
+          $individual_project_monies_arr_start_end[$emp_count] = array_slice($individual_project_monies_arr[$emp_count], -count($labels),count($labels));
+          $individual_dataset_monies[$emp_count] = array($employeeLIST[$emp_count][0] . ' Dollars', 'line', $individual_project_monies_arr_start_end[$emp_count]);
+        } 
+
+        //doing this for group employee's hours, same as previous
+        for ($group_count=0; $group_count<count($groupLIST); $group_count++) {
+          $group_project_hours_arr_start_end[$group_count] = array_slice($group_project_hours_arr[$group_count], -count($labels),count($labels));
+          $group_dataset[$group_count] = array($groupLIST[$group_count] . ' Hours', 'line', $group_project_hours_arr_start_end[$group_count]); 
+
+          $group_project_monies_arr_start_end[$group_count] = array_slice($group_project_monies_arr[$group_count], -count($labels),count($labels));
+          $group_dataset_monies[$group_count] = array($groupLIST[$group_count] . ' Dollars', 'line', $group_project_monies_arr_start_end[$group_count]); 
+        }
 
 
+        $total_project_hours_per_month_arr_start_end = array_slice($total_project_hours_per_month_arr, -count($labels),count($labels));
+        //dd($total_project_hours_per_month_arr_start_end);
+        $total_project_hours_per_month_dataset = array('Total Hours', 'line', $total_project_hours_per_month_arr_start_end);
 
+        $total_project_monies_per_month_arr_start_end = array_slice($total_project_monies_per_month_arr, -count($labels),count($labels));
+        $total_project_monies_per_month_dataset = array('Total Dollars', 'line', $total_project_monies_per_month_arr_start_end);
+        
+       // dd($labels);
+        //dd($individual_dataset);
+        return (array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}, {$selected_project['projectcode']}, PM is {$selected_project['projectmanager'][0]}", 'individual_dataset' => $individual_dataset, 'individual_dataset_monies' => $individual_dataset_monies, 'project_grand_total' => $project_grand_total, 'dollarvalueinhouse' => $dollarvalueinhouse, 'dateenergization' => $dateenergization, 'group_dataset' => $group_dataset, 'group_dataset_monies' => $group_dataset_monies,'previous_month_project_hours' => $previous_month_project_hours, 'total_project_dollars' => $total_project_dollars,'previous_month_project_monies' => $previous_month_project_monies, 'total_project_monies_per_month_dataset' => $total_project_monies_per_month_dataset, 'total_project_hours_per_month_dataset' => $total_project_hours_per_month_dataset, 'id' => "{$selected_project['id']}", 'last_bill_amount' => $last_bill_amount, 'last_bill_month' => $last_bill_month));
+      } else {
+        return Null;
       }
-      
-
-
-
-      $total_project_monies_per_month_arr_start_end = array_slice($total_project_monies_per_month_arr, -count($labels),count($labels));
-      $total_project_monies_per_month_dataset = array('Total Dollars', 'line', $total_project_monies_per_month_arr_start_end);
-  
-      $total_project_hours_per_month_arr_start_end = array_slice($total_project_hours_per_month_arr, -count($labels),count($labels));
-      $total_project_hours_per_month_dataset = array('Total Hours', 'line', $total_project_hours_per_month_arr_start_end);
-
-
-      #echo "<br>1c group_arr: <br>";
-      #echo print_r($group_project_hours_arr[1]) . "<br><br><br>";
-      #echo "<br>1c group_dataset[0]: <br>";
-      #echo print_r($group_dataset[0]) . "<br><br><br>";
-        //echo "<br>group_array_filtered: " . print_r($group_array_filtered[3]) . "<br>";
-       // echo "<br>group_start_key: " . ($group_start_key[3]) . "<br>";
-        //echo "<br>end group array filtered: " . print_r(end($group_array_filtered[3])) . "<br>";
-
-        #echo "<br>group_dataset: " . print_r($group_dataset[3]) . "<br>";
-
-
-
-
-      #echo "<br>individual_dataset: " . print_r($individual_dataset[0]) . "<br>";
-      #echo "<br>finaldataset: " . print_r($finaldataset) . "<br><br><br>";
-
-
-      #echo "senior_dataset: " . print_r($senior_dataset) . "<br><br>";
-      #echo "ROW 776  individual_dataset: " . print_r($individual_dataset) . "<br><br><br><br>";
-
-      return (array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}  - Past Hours", 'individual_dataset' => $individual_dataset, 'individual_dataset_monies' => $individual_dataset_monies, 'project_grand_total' => $project_grand_total, 'dollarvalueinhouse' => $dollarvalueinhouse, 'dateenergization' => $dateenergization, 'group_dataset' => $group_dataset, 'group_dataset_monies' => $group_dataset_monies,'previous_month_project_hours' => $previous_month_project_hours, 'total_project_dollars' => $total_project_dollars,'previous_month_project_monies' => $previous_month_project_monies, 'total_project_monies_per_month_dataset' => $total_project_monies_per_month_dataset, 'total_project_hours_per_month_dataset' => $total_project_hours_per_month_dataset, 'id' => "{$selected_project['id']}")); 
-      }
-      else
-      {
-      return Null;
-      }
-    }
-
+    } //get_chart_info
     $current_month = date('F');
     $previous_month = date('F', strtotime('-1 month'));
     $current_year = date('Y');
-    $previous_year = date('Y', strtotime('-1 year'));
+    $previous_year = date('Y', strtotime('-2 month'));
+    //echo $previous_month . $previous_year;
     $year_of_previous_month = date('Y', strtotime('-1 month')); 
-
-    #echo "current_year: " . $current_year . "<br>" . "previous_month: " . $previous_month . "<br>";
-
+ 
+    //this filters out the projects we are going to actually make charts out of
+    //$non_zero_projects= Project::all()->where('projectname','Jasper Solar');
     $non_zero_projects = Project::whereRaw([
       '$and' => array([
         'hours_data' => ['$exists' => 'true'],
         '$and' => array([
-          "hours_data.{$current_year}.{$previous_month}.Total"=> ['$exists' => 'true'],
-          "hours_data.{$current_year}.{$previous_month}.Total" =>['$ne'=>0]
+          "hours_data.{$year_of_previous_month}.{$previous_month}.Total"=> ['$exists' => true],  
+          "hours_data.{$year_of_previous_month}.{$previous_month}.Total" =>['$ne'=>0]
         ])
       ])
-      ]
-    )->get()->sortByDesc("hours_data.{$current_year}.{$previous_month}.Total");
-
-    #echo "projectname: ";
-    #echo "<pre>";
-    #print_r($non_zero_projects);
-    #echo "<pre>" . "exit" . "<br>";
-
-
-    #echo print_r($non_zero_projects);
- 
-    #$array_for_finding_most_time_spent = array();
-
-    #echo "Here's the count: " . count($non_zero_projects) . "<br>";
+    ])->get()->sortByDesc("hours_data.{$year_of_previous_month}.{$previous_month}.Total");
+    //dd($non_zero_projects);
     $i=0;
     $i_max = count($non_zero_projects) . "<br>";
-    foreach($non_zero_projects as $non_zero_project)
-    {
-      #$chart_info = get_chart_info($non_zero_project['_id']);     
-      #echo "chart_info: " . print_r($chart_info) . "<br>";
-      /*$hours_data = $non_zero_project['hours_data'];
-      $years = array_keys($hours_data);
-      $hours_arr = array();
-      $labels_arr = array();
-      $year_hours_data = $hours_data[$year_of_previous_month];
-      $months = array_keys($year_hours_data);
-      array_push($labels_arr, $previous_month . '-' . $year_of_previous_month);
-      $people_hours = $year_hours_data[$previous_month];
-      */
-      /*foreach($people_hours as $person)
-      {
-        $person - this is the hours for each person
-        looping through all people in the month
-      }*/
+
+    //go through each project resulting from the filter directly above
+    foreach($non_zero_projects as $non_zero_project) {
       $a = $non_zero_project['projectname'];
-      if ($a =="CEG - General" or $a =="CEG Research and Training" or $a =="Education & Training" or $a =="CEG - Marketing" or $a == "NEEDS NAME")
-      {
-        #echo "projectname: " . $non_zero_project['projectname'] . "<br>";
+      if ($a =="CEG - General" or $a =="CEG Research and Training" or $a =="Education & Training" or $a =="CEG - Marketing" or $a == "NEEDS NAME") {
         continue;
-
       }
-      #echo "people hours: " . $people_hours['Total'] . "<br>";
-      /*$total_project_hours = $people_hours['Total'];
-      array_push($hours_arr, $total_project_hours);
-
-      $vince_project_hours[1] = $people_hours['Vince'];
-      array_push($vince_arr[1], $vince_project_hours[1]);
-      */
-      #echo "<br>" . "non_zero_projectspecial: " . $non_zero_project['projectname'] . "<br>";
-      $chart_info = get_chart_info($non_zero_project['projectname']);
-
+      $chart_info = get_chart_info($non_zero_project['projectname'],$employeeLIST,$groupLIST);
+      //dd($chart_info);
       $chart_variable[$i]= $chart_info['project_grand_total'];
       $dollarvalueinhousearray[$i]= $chart_info['dollarvalueinhouse'];
-            #echo "chart_variable: ";
-      #print_r($chart_variable[$i]);
-      #echo "<br>";
-      
 
-      #$varnum->project_grand_total($chart_info['project_grand_total']);
-      #$varnum= $chart_info->get($chart_info['project_grand_total']);
-
-
-
-
-      #$varnum = ;
-      #$varnum->project_grand_total($chart_info['project_grand_total']);
-      #$project->cegproposalauthor= $req->get('cegproposalauthor');
-       #$project->varnum=$chart_info->get('project_grand_total');
-       #$varnum = $this->chart_info($non_zero_project['project_grand_total']);
-       #echo "varnum: " . print_r($varnum) . "<br>";
-
-      if (isset($chart_info))
-      {
+      //This section creates chart_hours from chart_info
+      if (isset($chart_info)) {
         $c_color_loop=0;
         $chart_hours[$i] = new HoursChart;
         $chart_hours[$i]->title($chart_info['title']);
         $chart_hours[$i]->labels($chart_info['labels']);
-        #$chart[$i]->type($chart_info['scatter']);
-        #$chart[$i]->setScriptAttribute($chart_info['project_grand_total']); 
         $chart_hours[$i]->dataset($chart_info['total_project_hours_per_month_dataset'][0], $chart_info['total_project_hours_per_month_dataset'][1], $chart_info['total_project_hours_per_month_dataset'][2])->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'fill' => False, 'hidden' => false])->dashed([3]);
 
-        for ($emp_count=0; $emp_count<count($employeeLIST); $emp_count++)
-          {
-          if ($c_color_loop==count($choosen_line_colors))
-            { $c_color_loop=0;}
-
-            #echo "chart_info: " . $chart_info['individual_dataset'][$emp_count][2][0] . "<br>";
-
-              #echo "individual_project_hours: " . $individual_project_hours[$emp_count] . "<br>";
-              #echo "chart_info[individual_dataset]: " . $chart_info['individual_dataset'][$emp_count][2][0] . "<br>"; 
-              if ( array_sum($chart_info['individual_dataset'][$emp_count][2]) <> 0)
-                {
-                  $chart_hours[$i]->dataset($chart_info['individual_dataset'][$emp_count][0], $chart_info['individual_dataset'][$emp_count][1], $chart_info['individual_dataset'][$emp_count][2])->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'fill' => False, 'hidden' => false]);
-                }
-            
-            $c_color_loop=$c_color_loop+1;  
-          }  
-
-
+        for ($emp_count=0; $emp_count<count($employeeLIST); $emp_count++) {
+          if ($c_color_loop==count($choosen_line_colors)) { 
+            $c_color_loop=0;
+          }
+          if ( array_sum($chart_info['individual_dataset'][$emp_count][2]) <> 0) {
+            $chart_hours[$i]->dataset($chart_info['individual_dataset'][$emp_count][0], $chart_info['individual_dataset'][$emp_count][1], $chart_info['individual_dataset'][$emp_count][2])->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'fill' => False, 'hidden' => false]);
+          }
+          $c_color_loop=$c_color_loop+1;
+        }
         $c_color_loop=0;
 
-
-        //echo "<br><pre>" . $chart_info['title'] . print_r($chart_info['senior_arr']) . "<pre><br>";
-        //echo "<br><br>";
-        //echo "<br><pre>" . print_r($chart_info['finaldataset']) . "<pre><br>";
-        //for ($group_count=0; $group_count<count($groupLIST); $group_count++) //count($groupLIST)
-          //echo "<br>groupLIST" . count($groupLIST) . "<br>";
-        #$chart_info['group_dataset'][4][2][4]=0; 
-
-        //echo "<br><pre>" . print_r($chart_info['group_dataset'][4][2][4]) . "<pre><br>";
-
-        for ($group_count=0; $group_count<(count($groupLIST)-1); $group_count++) //count($groupLIST)
-          {
-            //echo "<br>group count" . $group_count  . "<br>";
-            if ( array_sum($chart_info['group_dataset'][$group_count][2]) <> 0)
-                {
-
+        for ($group_count=0; $group_count<(count($groupLIST)-1); $group_count++) {//count($groupLIST)
+          if ( array_sum($chart_info['group_dataset'][$group_count][2]) <> 0) {
             $chart_hours[$i]->dataset($chart_info['group_dataset'][$group_count][0], $chart_info['group_dataset'][$group_count][1], $chart_info['group_dataset'][$group_count][2])->options(['borderColor'=>$group_colors[$group_count], 'fill' => False, 'hidden' => true]);
-                }
-          } 
+          }
+        }
 
+        $chart_hours[$i]->options([ 'dateenergization'              => $this->dateToStr($chart_info['dateenergization']) ]);
+        $chart_hours[$i]->options([ 'dollarvalueinhouse'            => $chart_info['dollarvalueinhouse'] ]);
+        $chart_hours[$i]->options([ 'CEGtimespenttodate'            => $chart_info['project_grand_total'] ]);
+        $chart_hours[$i]->options([ 'total_project_dollars'         => $chart_info['total_project_dollars'] ]);
+        $chart_hours[$i]->options([ 'previous_month_project_monies' => $chart_info['previous_month_project_monies'] ]);
+        $chart_hours[$i]->options([ 'previous_month_project_hours'  => $chart_info['previous_month_project_hours'] ]);
+        $chart_hours[$i]->options([ 'id'                            => $chart_info['id'] ]); 
+        $chart_hours[$i]->options([ 'last_bill_month'               => $chart_info['last_bill_month'] ]);
+        $chart_hours[$i]->options([ 'last_bill_amount'              => $chart_info['last_bill_amount'] ]);
+        $chart_hours[$i]->options([ 'tooltip'                       => [ 'visible' => true ] ]);
 
-
-        $chart_hours[$i]->options([
-            'dateenergization' => 
-               $this->dateToStr($chart_info['dateenergization'])
-        ]);
-
-        $chart_hours[$i]->options([
-            'dollarvalueinhouse' => 
-               $chart_info['dollarvalueinhouse'] 
-        ]);
-        $chart_hours[$i]->options([
-            'CEGtimespenttodate' => 
-               $chart_info['project_grand_total']
-        ]);
-        $chart_hours[$i]->options([
-            'total_project_dollars' => 
-               $chart_info['total_project_dollars']
-        ]);
-
-        $chart_hours[$i]->options([
-            'previous_month_project_monies' => 
-               $chart_info['previous_month_project_monies']
-        ]);
-
-
-        $chart_hours[$i]->options([
-            'previous_month_project_hours' => 
-               $chart_info['previous_month_project_hours']
-        ]);
-
-        $chart_hours[$i]->options([
-            'id' => 
-               $chart_info['id']
-        ]);
-
-        $chart_hours[$i]->options([
-            'tooltip' => [ 
-               'visible' => true 
-             ]
-        ]);
- 
-
-
-
-
-
+        //This section creates chart_dollars from chart_info
         $c_color_loop=0;
         $chart_dollars[$i] = new HoursChart;
         $chart_dollars[$i]->title($chart_info['title']);
         $chart_dollars[$i]->labels($chart_info['labels']);
-        #$chart[$i]->type($chart_info['scatter']);
-        #$chart[$i]->setScriptAttribute($chart_info['project_grand_total']); 
         $chart_dollars[$i]->dataset($chart_info['total_project_monies_per_month_dataset'][0], $chart_info['total_project_monies_per_month_dataset'][1], $chart_info['total_project_monies_per_month_dataset'][2])->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'fill' => False, 'hidden' => false])->dashed([3]);
 
         $c_color_loop=0;
-        //this is the graph for monies
-        for ($emp_count=0; $emp_count<count($employeeLIST); $emp_count++)
-          {
-          if ($c_color_loop==count($choosen_line_colors))
-            { $c_color_loop=0;}
-
-            #echo "chart_info: " . $chart_info['individual_dataset'][$emp_count][2][0] . "<br>";
-
-              #echo "individual_project_hours: " . $individual_project_hours[$emp_count] . "<br>";
-              #echo "chart_info[individual_dataset]: " . $chart_info['individual_dataset'][$emp_count][2][0] . "<br>"; 
-              if ( array_sum($chart_info['individual_dataset_monies'][$emp_count][2]) <> 0)
-                {
-                  $chart_dollars[$i]->dataset($chart_info['individual_dataset_monies'][$emp_count][0], $chart_info['individual_dataset_monies'][$emp_count][1], $chart_info['individual_dataset_monies'][$emp_count][2])->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'fill' => False, 'hidden' => false]);
-                }
-            
-            $c_color_loop=$c_color_loop+1;  
+        for ($emp_count=0; $emp_count<count($employeeLIST); $emp_count++) {
+          if ($c_color_loop==count($choosen_line_colors)) {
+            $c_color_loop=0; 
+          }
+          if ( array_sum($chart_info['individual_dataset_monies'][$emp_count][2]) <> 0) {
+            $chart_dollars[$i]->dataset($chart_info['individual_dataset_monies'][$emp_count][0], $chart_info['individual_dataset_monies'][$emp_count][1], $chart_info['individual_dataset_monies'][$emp_count][2])->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'fill' => False, 'hidden' => false]);
           }
 
-        //echo "<br><pre>" . $chart_info['title'] . print_r($chart_info['senior_arr']) . "<pre><br>";
-        //echo "<br><br>";
-        //echo "<br><pre>" . print_r($chart_info['finaldataset']) . "<pre><br>";
-        //for ($group_count=0; $group_count<count($groupLIST); $group_count++) //count($groupLIST)
-          //echo "<br>groupLIST" . count($groupLIST) . "<br>";
-        #$chart_info['group_dataset'][4][2][4]=0; 
+          $c_color_loop=$c_color_loop+1;
+        }
 
-        //echo "<br><pre>" . print_r($chart_info['group_dataset'][4][2][4]) . "<pre><br>";
-
-
-
-
-
-        for ($group_count=0; $group_count<(count($groupLIST)-1); $group_count++) //count($groupLIST)
-          {
-            //echo "<br>group count" . $group_count  . "<br>";
-            if ( array_sum($chart_info['group_dataset'][$group_count][2]) <> 0)
-                {
-
+        for ($group_count=0; $group_count<(count($groupLIST)-1); $group_count++) {
+          if ( array_sum($chart_info['group_dataset'][$group_count][2]) <> 0) {
             $chart_dollars[$i]->dataset($chart_info['group_dataset_monies'][$group_count][0], $chart_info['group_dataset_monies'][$group_count][1], $chart_info['group_dataset_monies'][$group_count][2])->options(['borderColor'=>$group_colors[$group_count], 'fill' => False, 'hidden' => true]);
-              }
-          }  
+          }
+        }
 
-
-
-        $chart_dollars[$i]->options([
-            'dateenergization' => 
-               $this->dateToStr($chart_info['dateenergization'])
-        ]);
-
-        $chart_dollars[$i]->options([
-            'dollarvalueinhouse' => 
-               $chart_info['dollarvalueinhouse'] 
-        ]);
-        $chart_dollars[$i]->options([
-            'CEGtimespenttodate' => 
-               $chart_info['project_grand_total']
-        ]);
-        $chart_dollars[$i]->options([
-            'total_project_dollars' => 
-               $chart_info['total_project_dollars']
-        ]);
-
-        $chart_dollars[$i]->options([
-            'previous_month_project_monies' => 
-               $chart_info['previous_month_project_monies']
-        ]);
-
-
-        $chart_dollars[$i]->options([
-            'previous_month_project_hours' => 
-               $chart_info['previous_month_project_hours']
-        ]);
-
-        $chart_dollars[$i]->options([
-            'id' => 
-               $chart_info['id']
-        ]);
-
-        $chart_dollars[$i]->options([
-            'tooltip' => [ 
-               'visible' => true 
-             ]
-        ]);
-
+        $chart_dollars[$i]->options([ 'dateenergization'              => $this->dateToStr($chart_info['dateenergization']) ]);
+        $chart_dollars[$i]->options([ 'dollarvalueinhouse'            => $chart_info['dollarvalueinhouse'] ]);
+        $chart_dollars[$i]->options([ 'CEGtimespenttodate'            => $chart_info['project_grand_total'] ]);
+        $chart_dollars[$i]->options([ 'total_project_dollars'         => $chart_info['total_project_dollars'] ]);
+        $chart_dollars[$i]->options([ 'previous_month_project_monies' => $chart_info['previous_month_project_monies'] ]);
+        $chart_dollars[$i]->options([ 'previous_month_project_hours'  => $chart_info['previous_month_project_hours'] ]);
+        $chart_dollars[$i]->options([ 'id'                            => $chart_info['id'] ]); 
+        $chart_dollars[$i]->options([ 'last_bill_month'               => $chart_info['last_bill_month'] ]);
+        $chart_dollars[$i]->options([ 'last_bill_amount'              => $chart_info['last_bill_amount'] ]); 
+        $chart_dollars[$i]->options([ 'tooltip'                       => [ 'visible' => true ] ]);
+      } else {//end the chart_info section 
       }
-
-
-
-
-      else
-      {}
-      #echo "<br><pre>" . dd($chart_info) . "<pre><br>";
-      #echo "<br><pre>" . print_r($chart_dollars) . "<pre><br>";
-      #echo "<br>sum array: " . array_sum($chart_info['individual_dataset'][0][2]) . "";
       $i++;
-      }
-      #echo "<pre>";
-      #print_r($chart);
-      #echo "<pre>";
-      #print_r($chart_variable);
+    } //end of non_zero_projects loops
 
-      #echo "<br>";
-      #echo "<br>";
-
-
-
-
-
-
-
-
-
- 
-
-      #if (isset($chart_info))
-      #{
-      #  $chart = new HoursChart;
-      #  $chart->title($chart_info['title']);
-      #  $chart->labels($chart_info['labels']);
-      #  $chart->dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2])->options([
-      #    'borderColor'=>'#3cba9f', 'fill' => False]);
-      #  return view('pages.hoursgraph', compact('projects', 'chart'));
-      #}
-      #else
-      #{
-      #  return view('pages.hoursgraph', compact('projects'));
-      #}
-
-
-
-
-      #echo "non_zero_projects: " . $non_zero_project['projectname'] . "<br>";
-      #echo "total_project_hours: " . array_sum($hours_arr) . "<br>";
-
-      #$loopsarray = array($non_zero_project['projectname']=>array_sum($hours_arr));
-      #echo "TesT:" . print_r($loopsarray);
-
-
-      #$array_for_finding_most_time_spent[$non_zero_project['projectname']] = array_sum($hours_arr);
-
-
-      #$array_for_finding_most_time_spent[non_zero_project['projectname']] = array_sum($hours_arr);
-      #rsort($array_for_finding_most_time_spent);
-      #echo "array for finding most time spent: " . print_r($array_for_finding_most_time_spent) . "<br>";
-      #echo "start: ";
-     # $arrlength = count($array_for_finding_most_time_spent);
-      #for($x = 0; $x < $arrlength; $x++) {
-      #      echo $array_for_finding_most_time_spent[$x];
-       #     echo ",";
-        #}
-         #   echo "<br>";
-
-
-
-    #arsort($array_for_finding_most_time_spent);
-    #echo "array for finding most time spent: " . print_r($array_for_finding_most_time_spent) . "<br>"; 
-
-    #$chart_info = get_chart_info($request['project_id']);
-
-    #foreach($array_for_finding_most_time_spent as $var => $value)
-    #{
-        #echo 'key: ' . key($var) . '<br>';
-        #echo '<br>';
-        #echo 'Project: ' . $var . '<br>';
-        #echo 'Hours: ' . $value . '<br>';
-    #}
-    #$chart_info = get_chart_info(array_for_finding_most_time_spent['projectname']);
-    
-
-
-
-
-
-    #$chart_info = get_chart_info($request['project_id']);
-
-
-
-
-
-
-
-    #foreach($chart_info as $var)
-    #{
-    #echo $chart_info['dataset'][$var] . "<br>"; #dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2]) . "<br>";
-    #echo "echoing the dataset:" . print_r($chart_info['dataset'][2]) . "<br>"; #dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2]) . "<br>";
-    #};
-
-  #$cars=array($chart,$chart2);
-  #echo print_r($cars);
-
-  #echo "chart[$var]: " . $chart[$var] . "<br>"; 
-  #echo "chart[$var]: " . $var . "<br>"; 
-
-
-  return view('pages.hoursgraph', compact('projects', 'chart_hours', 'chart_dollars', 'chart_variable','dollarvalueinhousearray','chart_units','id'));
+    return view('pages.hoursgraph', compact('projects', 'chart_hours', 'chart_dollars', 'chart_variable','dollarvalueinhousearray','chart_units','id'));
   }
 
   /**
@@ -1504,8 +1206,7 @@ class ProjectController extends Controller
    * @param $id
    * @return redirect /projectindex
    */
-  public function destroy($id)
-  {
+  public function destroy($id) {
     $project = Project::find($id);
     $project->delete();
     return redirect('/projectindex')->with('success','Project has been deleted');

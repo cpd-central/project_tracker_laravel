@@ -33,7 +33,7 @@ Route::post('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.won
 
 
 Route::get('/hoursgraph/', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified');
-Route::post('/hoursgraph/','ProjectController@blah')->middleware('verified');
+Route::post('/hoursgraph/','ProjectController@blah')->name('pages.monthendbilling')->middleware('verified');
 //Route::get('/hoursgraph', 'ProjectController@appending')->middleware('verified');
 //Select Menu Route
 //Route::post('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph');
@@ -46,6 +46,8 @@ Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.e
 Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verified');
 //Route::post('/editproject/{id}', 'ProjectController@update2')->middleware('verified');
 
+Route::get('/monthendbilling', 'ProjectController@monthendfunction')->name('pages.monthendbilling')->middleware('verified');
+Route::post('/monthendbilling', 'ProjectController@monthendfunction');
 
 //Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified');
 
