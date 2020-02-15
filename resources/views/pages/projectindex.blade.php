@@ -12,7 +12,7 @@
         </form> 
   </div>
   @stop
-
+  <?php echo 'hello world!'; ?>
   @section('sort')
   <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.projectindex') }}"> 
     @csrf  
