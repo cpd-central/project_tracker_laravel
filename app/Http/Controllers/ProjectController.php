@@ -1145,7 +1145,7 @@ class ProjectController extends Controller
         ])
       ])
     ])->get()->sortByDesc("hours_data.{$year_of_previous_month}.{$previous_month}.Total");
-    dd($non_zero_projects);
+    //dd($non_zero_projects);
     $i=0;
     $i_max = count($non_zero_projects) . "<br>";
 
@@ -1155,6 +1155,7 @@ class ProjectController extends Controller
       if ($a =="CEG - General" or $a =="CEG Research and Training" or $a =="Education & Training" or $a =="CEG - Marketing" or $a == "NEEDS NAME") {
         continue;
       }
+      dd($non_zero_project);
       $chart_info = get_chart_info($non_zero_project['projectname'],$employeeLIST,$groupLIST);
       //dd($chart_info);
       $chart_variable[$i]= $chart_info['project_grand_total'];
