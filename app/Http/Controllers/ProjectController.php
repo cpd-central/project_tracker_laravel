@@ -1135,17 +1135,17 @@ class ProjectController extends Controller
     $year_of_previous_month = date('Y', strtotime('-1 month')); 
  
     //this filters out the projects we are going to actually make charts out of
-    $non_zero_projects= Project::all()->where('projectname','Jasper Solar');
-    //$non_zero_projects = Project::whereRaw([
-      //'$and' => array([
-        //'hours_data' => ['$exists' => 'true'],
-        //'$and' => array([
-          //"hours_data.{$year_of_previous_month}.{$previous_month}.Total"=> ['$exists' => true],  
-          //"hours_data.{$year_of_previous_month}.{$previous_month}.Total" =>['$ne'=>0]
-        //])
-      //])
-    //])->get()->sortByDesc("hours_data.{$year_of_previous_month}.{$previous_month}.Total");
-    //dd($non_zero_projects);
+    //$non_zero_projects= Project::all()->where('projectname','Jasper Solar');
+    $non_zero_projects = Project::whereRaw([
+      '$and' => array([
+        'hours_data' => ['$exists' => 'true'],
+        '$and' => array([
+          "hours_data.{$year_of_previous_month}.{$previous_month}.Total"=> ['$exists' => true],  
+          "hours_data.{$year_of_previous_month}.{$previous_month}.Total" =>['$ne'=>0]
+        ])
+      ])
+    ])->get()->sortByDesc("hours_data.{$year_of_previous_month}.{$previous_month}.Total");
+    dd($non_zero_projects);
     $i=0;
     $i_max = count($non_zero_projects) . "<br>";
 
