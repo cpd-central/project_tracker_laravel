@@ -738,6 +738,14 @@ class ProjectController extends Controller
                     ->get();
       }
     }
+    else {
+      $projects = $not_expired_projects->orderBy($sort_term, $asc_desc)->get();
+    }
+
+    foreach ($projects as $project) {
+      $project = $this->displayFormat($project);
+    }
+    return $projects;
   }
  
   /**
