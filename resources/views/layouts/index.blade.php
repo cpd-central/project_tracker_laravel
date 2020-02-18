@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+  <title id="page-title">@yield('page-title')</title>
   <head>
     @include('includes.navbar')
   </head>
@@ -8,6 +9,8 @@
       <div id="main">
       </br>
       </br>
+      
+      @yield('sort') 
       <div class="container">
       @yield('toptool')
         @if (\Session::has('success'))

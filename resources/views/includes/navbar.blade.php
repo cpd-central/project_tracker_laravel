@@ -16,6 +16,21 @@
 <!-- Styles -->
 <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
+<style>
+  .box { 
+    position: relative; 
+    top: 10px; 
+    width: 25px;
+    height: 20px;
+  }
+  .red {
+    background: #f00;
+  } 
+  .green {
+    background: #0f0;
+  }
+</style>
+
 <div id="app">
   <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
     <div class="container">
@@ -32,7 +47,7 @@
 
         </ul>
 
-        <!-- Right Side of Navbar -->
+        <!-- Right Side of Navbar -->        
         <ul class="navbar-nav ml-auto">
           <!-- Authentication Links -->
           @guest
@@ -45,6 +60,8 @@
           </li>
           @endif
           @else
+          
+          <?php if(auth()->user()->role != "user"){?>
           <li class="nav-item">
             <a class="nav-link" href="{{ route('pages.newproject') }}">New Project</a>
           </li>
@@ -56,13 +73,50 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ route('pages.hoursgraph') }}">Hours By Project Graph</a>
-          </li>          
+          </li>
+           <?php } ?>         
+          
+          <?php 
+            $date = new \DateTime(date("Y-m-d H:i:s"), new \DateTimeZone('America/Chicago'));
+            $today = new \DateTime(date("Y-m-d H:i:s"), new \DateTimeZone('America/Chicago')); 
+            $billing_start_date = $date->modify('last day of this month');
+            $time_until_billing = date_diff($billing_start_date, $today)->days;
+          ?>
+          <li class="nav-item">
+            @if ($time_until_billing < 7) 
+              <a class="nav-link"><font color="red">Days Until Billing: {{ $time_until_billing }}</font></a>
+            @else
+              <a class="nav-link">Days Until Billing: {{ $time_until_billing }}</font></a>
+            @endif 
+          </li>
+          <?php $user_timesheet = \App\Timesheet::where('user', auth()->user()->email)->get();
+                if (count($user_timesheet) > 0)
+                {
+                  $pay_period_sent = $user_timesheet[0]->pay_period_sent;
+                } 
+                else{
+                  $pay_period_sent = False;
+                }
+                ?>      
+          <li class="nav-item">
+            <a class="nav-link">Timesheet Sent Status: </a>
+          </li>
+          <li class="nav-item">
+            @if ($pay_period_sent)
+              <div class="nav-link box green"></div>
+            @else
+              <div class="nav-link box red"></div>
+            @endif
+          </li>
+
           <li class="nav-item dropdown">
             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
               {{ Auth::user()->name }} <span class="caret"></span>
             </a>
 
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{{ route('home') }}"> Dashboard
+              </a>
               <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                        document.getElementById('logout-form').submit();">

@@ -4,14 +4,45 @@
 @section('page-title', 'Hours By Project Graph')
 @section('content')
 {{ old('project_id') }}
+<<<<<<< HEAD
+<div class="container">
+  </br>
+  </br> 
+  <div class="row justify-content-center">
+    <div class="card">
+      <div class="card-body">
+        <form method="get" id="projectcode-form">	
+          <!--<label for="project-content">Select Project</label>!-->
+          <select name="project_id" class="form-control" onchange="document.getElementById('projectcode-form').submit()">
+          <option value="0">--------------------Select Project Code--------------------</option>
+          @foreach($projects as $project)	
+            <option value="{{ $project['_id'] }}">{{$project['projectcode'] }} | {{ $project['projectname'] }}</option>
+          @endforeach	
+          </select>
+        </form>	
+      </div>
+    </div> 
+  </div>
+</div>
+<div>	
+  @isset($chart)	
+  {!! $chart->container() !!}	
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
+  {!! $chart->script() !!}
+  @endisset	
+</div>
+@endsection
+=======
 <?php $x=0; $id=0; ?>
 
 @foreach($chart_variable as $var2)
   <?php $chart_variable[$x]=$var2; $x++; ?>
 @endforeach
+>>>>>>> individualhourschart
 
 <form action="{{ route('pages.hoursgraph') }}" method="POST">
   @csrf
+  @isset($chart_units)
     @if ($chart_units == 'dollars') <!-- the page defaults to dollars, but then can be toggeled to hours with this button-->
       <!-- <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="dollars"><button class="btn btn-primary" name="button" type="submit" value="dollars">Toggle Hours/Dollars</button> -->
 
@@ -101,6 +132,7 @@
         <?php $x++; ?>
       @endforeach
     @endif
+  @endisset
 
   <input type="hidden" value="{{$x}}" name="graph_count"> <!-- master button for submitting billing number to database -->
   <div class="mastersubmitbuttton">

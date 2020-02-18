@@ -13,6 +13,7 @@
   </div>
   @stop
 
+<<<<<<< HEAD
   @section('sort')
   <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.projectindex') }}"> 
     @csrf  
@@ -38,6 +39,9 @@
   </form> 
   @stop
 
+=======
+  @section('page-title', 'Project Index')
+>>>>>>> timesheetView
   @section('table-title', 'Project Index')
   @section('table-header')
   <table class="table table-striped">
