@@ -165,6 +165,10 @@
 @stop
 @section('projectnotes', $project['projectnotes'])
 
-
+@section('billingcontact', $project['billingcontact'])
+@section('billingcontactemail', $project['billingcontactemail'])
+@section('billingnotes', $project['billingnotes'])
+@section('filelocationofproposal', $project['filelocationofproposal'])
+@section('filelocationofproject', $project['filelocationofproject'])
 
 

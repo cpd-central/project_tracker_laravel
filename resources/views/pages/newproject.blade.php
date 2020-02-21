@@ -31,7 +31,11 @@
 @section('projectmanager', '')
 @section('projectnotes', '')
 
-
+@section('billingcontact', '')
+@section('billingcontactemail', '')
+@section('billingnotes', '')
+@section('filelocationofproposal', '')
+@section('filelocationofproject', '')
 
 
 

@@ -53,6 +53,11 @@ class ProjectController extends Controller
     $project->projectcode = $req->get('projectcode');
     $project->projectmanager = $this->managerCheck($req->get('projectmanager'));
     $project->projectnotes = $req->get('projectnotes');
+    $project->billingcontact = $req->get('billingcontact');
+    $project->billingcontactemail = $req->get('billingcontactemail');
+    $project->billingnotes = $req->get('billingnotes');
+    $project->filelocationofproposal = $req->get('filelocationofproposal');
+    $project->filelocationofproject = $req->get('filelocationofproject');
     $project->save();
   }
 
@@ -1121,30 +1126,30 @@ class ProjectController extends Controller
         $total_project_monies_per_month_dataset = array('Total Dollars', 'line', $total_project_monies_per_month_arr_start_end);
         
        // dd($labels);
-        dd($selected_project);
+        //dd($selected_project);
         return (array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}, {$selected_project['projectcode']}, PM is {$selected_project['projectmanager'][0]}", 'individual_dataset' => $individual_dataset, 'individual_dataset_monies' => $individual_dataset_monies, 'project_grand_total' => $project_grand_total, 'dollarvalueinhouse' => $dollarvalueinhouse, 'dateenergization' => $dateenergization, 'group_dataset' => $group_dataset, 'group_dataset_monies' => $group_dataset_monies,'previous_month_project_hours' => $previous_month_project_hours, 'total_project_dollars' => $total_project_dollars,'previous_month_project_monies' => $previous_month_project_monies, 'total_project_monies_per_month_dataset' => $total_project_monies_per_month_dataset, 'total_project_hours_per_month_dataset' => $total_project_hours_per_month_dataset, 'id' => "{$selected_project['id']}", 'last_bill_amount' => $last_bill_amount, 'last_bill_month' => $last_bill_month));
       } else {
         return Null;
       }
     } //get_chart_info
     $current_month = date('F');
-    $previous_month = date('F', strtotime('-1 month'));
+    $previous_month = date('F', strtotime('-27 days'));
     $current_year = date('Y');
-    $previous_year = date('Y', strtotime('-2 month'));
-    //echo $previous_month . $previous_year;
-    $year_of_previous_month = date('Y', strtotime('-1 month')); 
+    $previous_year = date('Y', strtotime('-27 days'));
+    echo $previous_month . $previous_year;
  
     //this filters out the projects we are going to actually make charts out of
+    //$non_zero_projects= Project::all()->where('projectname','nothing');
     //$non_zero_projects= Project::all()->where('projectname','Jasper Solar');
     $non_zero_projects = Project::whereRaw([
       '$and' => array([
         'hours_data' => ['$exists' => 'true'],
         '$and' => array([
-          "hours_data.{$year_of_previous_month}.{$previous_month}.Total"=> ['$exists' => true],  
-          "hours_data.{$year_of_previous_month}.{$previous_month}.Total" =>['$ne'=>0]
+          "hours_data.{$previous_year}.{$previous_month}.Total"=> ['$exists' => true],  
+          "hours_data.{$previous_year}.{$previous_month}.Total" =>['$ne'=>0]
         ])
       ])
-    ])->get()->sortByDesc("hours_data.{$year_of_previous_month}.{$previous_month}.Total");
+    ])->get()->sortByDesc("hours_data.{$previous_year}.{$previous_month}.Total");
     //dd($non_zero_projects);
     $i=0;
     $i_max = count($non_zero_projects) . "<br>";
@@ -1232,7 +1237,7 @@ class ProjectController extends Controller
         $chart_dollars[$i]->options([ 'tooltip'                       => [ 'visible' => true ] ]);
       $i++;
     }      
-    return view('pages.hoursgraph', compact('projects', 'chart_hours', 'chart_dollars', 'chart_variable','dollarvalueinhousearray','chart_units','id'));
+    return view('pages.hoursgraph', compact('projects', 'chart_hours', 'chart_dollars', 'chart_variable','dollarvalueinhousearray','chart_units'));
   }
 
   /**
