@@ -315,8 +315,8 @@ class ProjectController extends Controller
       echo "<br>" . "id_billing_array: " . var_dump($id_billing_array) . "<br>"; 
       //still need a global bill array
       $project = Project::find($id); 
-      $previous_month = date('F', strtotime('-1 month'));
-      $year_of_previous_month = date('Y', strtotime('-1 month')); 
+      $previous_month = date('F', strtotime('-21 day'));
+      $year_of_previous_month = date('Y', strtotime('-21 day')); 
 
       foreach ($id_billing_array as $id_billing => $value) {
         echo "id_billing: " . $id_billing . "<br>";
@@ -1133,9 +1133,9 @@ class ProjectController extends Controller
       }
     } //get_chart_info
     $current_month = date('F');
-    $previous_month = date('F', strtotime('-27 days'));
+    $previous_month = date('F', strtotime('-21 days'));
     $current_year = date('Y');
-    $previous_year = date('Y', strtotime('-27 days'));
+    $previous_year = date('Y', strtotime('-21 days'));
     echo $previous_month . $previous_year;
  
     //this filters out the projects we are going to actually make charts out of
