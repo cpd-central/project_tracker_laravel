@@ -751,7 +751,6 @@ class ProjectController extends Controller
       //echo '<br>';
     }
 
-    echo print_r(count($projects));
     foreach ($projects as $project) {
       $project = $this->displayFormat($project);
     }
