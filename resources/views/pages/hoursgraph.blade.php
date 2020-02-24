@@ -27,13 +27,12 @@
           <table class="table table-striped">
             <thead>
               <tr>
-                <td colspan="1"><a href="{{action('ProjectController@edit_project', $var->options['id'])}}" class="btn btn-warning">Edit</a></td>
-                <td colspan="1">Total Spent (per billing code):                                                                             </td>
-                <td colspan="1"><?php echo $var->options["CEGtimespenttodate"] . "-hr";  ?>                                                 </td>
-                <td colspan="1"><?php echo "$" . $var->options["total_project_dollars"];  ?>                                                </td>
-                <td colspan="2">In House Budget:                                                                                            </td>
-                <td colspan="3"><?php echo "$" . $var->options["dollarvalueinhouse"];  ?>                                                   </td>
-                <td colspan="2">Bill This Amount:                                                                                           </td>
+                <td colspan="1">Total Spent (per billing code):                                               </td>
+                <td colspan="1"><?php echo $var->options["CEGtimespenttodate"] . "-hr";  ?>                  </td>
+                <td colspan="1"><?php echo "$" . $var->options["total_project_dollars"];  ?>                 </td>
+                <td colspan="2">In House Budget:                                                             </td>
+                <td colspan="3"><?php echo "$" . $var->options["dollarvalueinhouse"];  ?>                    </td>
+                <td colspan="2">Bill This Amount:                                                            </td>
                 <td colspan="4">
                   <?php $id = $var->options['id']; ?> 
                   <input type="hidden" value="{{$var->options['id']}}" name="id_{{$x}}">
@@ -41,13 +40,12 @@
                 </td>
               </tr>
               <tr>
-                <td colspan="1">                                                                                                            </td>
-                <td colspan="1">Previous Month:                                                                                             </td>
-                <td colspan="1"><?php echo $var->options["previous_month_project_hours"] . "-hr";  ?>                                       </td>
-                <td colspan="1"><?php echo "$" . $var->options["previous_month_project_monies"];  ?>                                        </td>
-                <td colspan="2">Energization Date:                                                                                          </td>
-                <td colspan="3"><?php echo $var->options["dateenergization"];  ?>                                                           </td>
-                <td colspan="2">Last Record Bill:                                                                                           </td>
+                <td colspan="1">Previous Month:                                                              </td>
+                <td colspan="1"><?php echo $var->options["previous_month_project_hours"] . "-hr";  ?>        </td>
+                <td colspan="1"><?php echo "$" . $var->options["previous_month_project_monies"];  ?>         </td>
+                <td colspan="2">Energization Date:                                                           </td>
+                <td colspan="3"><?php echo $var->options["dateenergization"];  ?>                            </td>
+                <td colspan="2">Last Record Bill:                                                            </td>
                 <td colspan="4">
                   <input type="text" value="<?php echo "    $" . $var->options["last_bill_amount"] . " in " . substr($var->options["last_bill_month"], 0, 3);  ?>">
                 </td>
@@ -78,23 +76,21 @@
           <table class="table table-striped">
             <thead>
               <tr>
-                <td colspan="1"><a href="{{action('ProjectController@edit_project', $var->options['id'])}}" class="btn btn-warning">Edit</a></td>
-                <td colspan="1">Total Spent (per billing code):                                                                             </td>
-                <td colspan="1"><?php echo $var->options["CEGtimespenttodate"] . "-hr";  ?>                                                 </td>
-                <td colspan="1"><?php echo "$" . $var->options["total_project_dollars"];  ?>                                                </td>
-                <td colspan="2">In House Budget:                                                                                            </td>
-                <td colspan="3"><?php echo "$" . $var->options["dollarvalueinhouse"];  ?>                                                   </td>
-                <td colspan="4">                                                                                                            </td>
-                <td colspan="3"><div class="form-group col-md-4"> <input type="text" value="1000000"> </div>                                </td>
+                <td colspan="1">Total Spent (per billing code):                                               </td>
+                <td colspan="1"><?php echo $var->options["CEGtimespenttodate"] . "-hr";  ?>                  </td>
+                <td colspan="1"><?php echo "$" . $var->options["total_project_dollars"];  ?>                 </td>
+                <td colspan="2">In House Budget:                                                             </td>
+                <td colspan="3"><?php echo "$" . $var->options["dollarvalueinhouse"];  ?>                    </td>
+                <td colspan="4">                                                                             </td>
+                <td colspan="3"><div class="form-group col-md-4"> <input type="text" value="1000000"> </div> </td>
               </tr>
               <tr>
-                <td colspan="1">                                                                                                            </td>
-                <td colspan="1">Previous Month:                                                                                             </td>
-                <td colspan="1"><?php echo $var->options["previous_month_project_hours"] . "-hr";  ?>                                       </td>
-                <td colspan="1"><?php echo "$" . $var->options["previous_month_project_monies"];  ?>                                        </td>
-                <td colspan="2">Energization Date:                                                                                          </td>
-                <td colspan="3"><?php echo $var->options["dateenergization"];  ?>                                                           </td>
-                <td colspan="2">Last Record Bill:                                                                                           </td>
+                <td colspan="1">Previous Month:                                                              </td>
+                <td colspan="1"><?php echo $var->options["previous_month_project_hours"] . "-hr";  ?>        </td>
+                <td colspan="1"><?php echo "$" . $var->options["previous_month_project_monies"];  ?>         </td>
+                <td colspan="2">Energization Date:                                                           </td>
+                <td colspan="3"><?php echo $var->options["dateenergization"];  ?>                            </td>
+                <td colspan="2">Last Record Bill:                                                            </td>
                 <td colspan="4">
                   <input type="text" value="<?php echo "    $" . $var->options["last_bill_amount"] . " in " . substr($var->options["last_bill_month"], 0, 3);  ?>">
                 </td>
