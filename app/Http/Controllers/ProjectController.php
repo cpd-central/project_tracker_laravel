@@ -1148,7 +1148,7 @@ class ProjectController extends Controller
     $previous_month = date('F', strtotime('-21 days'));
     $current_year = date('Y');
     $previous_year = date('Y', strtotime('-21 days'));
-    echo $previous_month . $previous_year;
+    //echo $previous_month . $previous_year;
  
     //this filters out the projects we are going to actually make charts out of
     //$non_zero_projects= Project::all()->where('projectname','nothing');
