@@ -703,7 +703,7 @@ class ProjectController extends Controller
  */
   public function search($search_term, $sort_term, $invert)
   {
-    $not_expired_projects = Project::where(array(['projectstatus', '<>', 'Expired'])); 
+    #$not_expired_projects = Project::where(array(['projectstatus', '<>', 'Expired'])); 
     
     if(isset($invert))
     {
@@ -715,7 +715,7 @@ class ProjectController extends Controller
     }
     if (isset($search_term)) {
       if (isset($sort_term) && $sort_term != "-----Select-----"){
-        $projects = $not_expired_projects->where('cegproposalauthor', 'regexp', "/$search_term/i")
+        $projects = Project::where('cegproposalauthor', 'regexp', "/$search_term/i")
                     ->orWhere('projectname', 'regexp', "/$search_term/i")
                     ->orWhere('clientcontactname', 'regexp', "/$search_term/i")
                     ->orWhere('clientcompany', 'regexp', "/$search_term/i")
@@ -727,7 +727,7 @@ class ProjectController extends Controller
                     ->orWhere('projecttype', 'regexp', "/$search_term/i")
                     ->orWhere('epctype', 'regexp', "/$search_term/i")
                     ->orderBy($sort_term, $asc_desc)
-                    ->get();
+                    ->get();             
       }
       else {
         $projects = Project::where('cegproposalauthor', 'regexp', "/$search_term/i")
@@ -742,8 +742,21 @@ class ProjectController extends Controller
                     ->orWhere('projecttype', 'regexp', "/$search_term/i")
                     ->orWhere('epctype', 'regexp', "/$search_term/i")
                     ->get();
-      }
     }
+    }
+
+    else {
+      $projects = $not_expired_projects->orderBy($sort_term, $asc_desc)->get();
+      //echo print_r(count($projects));
+      //echo '<br>';
+    }
+
+    echo print_r(count($projects));
+    foreach ($projects as $project) {
+      $project = $this->displayFormat($project);
+    }
+    return $projects;
+
   }
  
   /**
