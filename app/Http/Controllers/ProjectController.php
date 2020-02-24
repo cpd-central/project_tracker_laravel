@@ -768,7 +768,7 @@ class ProjectController extends Controller
   public function hours_graph(Request $request) 
   {
     if (!isset($request['switch_chart_button'])) {//This is a button to toggle whether hours or dollars is displayed in the graph.  
-      $chart_units = 'dollars';
+      $chart_units = 'hours';
     } else { 
       $chart_units = $request['switch_chart_button'];
     }
