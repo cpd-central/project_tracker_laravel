@@ -254,30 +254,30 @@ table.center {
 
     });
 
-    function deRequire() {
-      for (i = 7; i <= row; i++) {
-        var row_group = document.getElementsByName('row'+row+'[]');
-        console.log(row_group); 
-        var at_least_one_checked = false;
+    //function deRequire() {
+    //  for (i = 7; i <= row; i++) {
+    //    var row_group = document.getElementsByName('row'+row+'[]');
+    //    console.log(row_group); 
+    //    var at_least_one_checked = false;
 
-        for (j=0; j < row_group.length; j++) {
-          if (row_group[j] && row_group[j].value) {
-            at_least_one_checked = true;
-          }
-        } 
-        
-        if (at_least_one_checked === true) {
-          for (k=0; k < row_group.length; k++) {
-            row_group[k].required = false;
-          } 
-          }else {
-            for (k=0; k < row_group.length; k++) {
-              row_group[k].required = true;
-            }
-          }
-        }
-      console.log('hi');
-      } 
+    //    for (j=0; j < row_group.length; j++) {
+    //      if (row_group[j] && row_group[j].value) {
+    //        at_least_one_checked = true;
+    //      }
+    //    } 
+    //    
+    //    if (at_least_one_checked === true) {
+    //      for (k=0; k < row_group.length; k++) {
+    //        row_group[k].required = false;
+    //      } 
+    //      }else {
+    //        for (k=0; k < row_group.length; k++) {
+    //          row_group[k].required = true;
+    //        }
+    //      }
+    //    }
+    //  console.log('hi');
+    //  } 
       
     
 
@@ -402,7 +402,7 @@ table.center {
                      '</td>';
                      for(var i = 1; i <= num_columns; i++){
             var tr = tr + '<td>' +
-                     '<input type="number"  step="0.25" min="0"  class="form-control" id="row'+row+'Day'+i+'" name="row'+row+'[]" value=""/ required>' +
+                     '<input type="number"  step="0.25" min="0"  class="form-control" id="row'+row+'Day'+i+'" name="row'+row+'[]" value=""/>' +
                             '</td>';
                     }
            var tr = tr + '<td>' +
