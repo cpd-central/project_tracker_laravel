@@ -153,16 +153,18 @@ table.center {
                           </td>
                       </tr>   
                       @endfor 
-                      @if(isset($timesheet['Codes']['Additional_Codes']))
-                        @if(count($timesheet['Codes']['Additional_Codes']) > 0)
+                      @if(isset($timesheet['Codes']))
+                        @if(count($timesheet['Codes']) > 0)
                         <!-- Number of default non-billables + 1 -->
                         <?php $row = 7 ?>
-                          @for($i = 0; $i < count(array_keys($timesheet['Codes']['Additional_Codes'])); $i++)
-                            <?php $codeKeyArray = array_keys($timesheet['Codes']['Additional_Codes']);
+                          @foreach($timesheet['Codes'] as $desc)
+                            <?php dd($desc); ?> 
+                            <?php $codeKeyArray = array_keys($timesheet['Codes']);
                             $code = $codeKeyArray[$i] ?>
-                            @if(count($timesheet['Codes']['Additional_Codes']) > 0)
-                              @for($index = 0; $index < count(array_keys($timesheet['Codes']['Additional_Codes'][$code])); $index++)
-                                <?php $desc = $timesheet['Codes']['Additional_Codes'][$code][$index]?> 
+                            @if(count($timesheet['Codes']) > 0)
+                              @for($index = 0; $index < count(array_keys($timesheet['Codes'][$code])); $index++)
+                                <?php $desc = $timesheet['Codes'][$code]?> 
+                                <?php dd($desc); ?> 
                                 <tr id="row{{$row}}">
                                     <td style="width: 8%">
                                         <input type="text" class="form-control" id="row{{$row}}Day0" name="Product Description row {{$row}}" value="<?=$desc?>">
@@ -183,7 +185,7 @@ table.center {
                                 <?php $row++; ?>
                               @endfor
                             @endif
-                          @endfor
+                          @endforeach
                         @endif
                       @endif
                       <?php
