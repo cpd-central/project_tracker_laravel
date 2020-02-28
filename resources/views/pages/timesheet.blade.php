@@ -128,17 +128,17 @@ table.center {
                           <th>Total</th>
                         </tr>
                       </thead>
-                      <?php $array = array('Holiday', 'PTO', 'General and Admin', 'Staff Meetings and HR', 'Research and Training', 'Formal EDU', 'General Marketing') ?>
-                      <?php $code = array('CEG', 'CEG', 'CEG', 'CEG', 'CEGTRNG', 'CEGEDU', 'CEGMKTG') ?>
-                      @for($row = 0; $row < count($array); $row++)  
+                      <?php $nonbillable_descs = array('Holiday', 'PTO', 'General and Admin', 'Staff Meetings and HR', 'Research and Training', 'Formal EDU', 'General Marketing') ?>
+                      <?php $nonbillable_codes = array('CEG', 'CEG', 'CEG', 'CEG', 'CEGTRNG', 'CEGEDU', 'CEGMKTG') ?>
+                      @for($row = 0; $row < count($nonbillable_descs); $row++)  
                       @if(isset($timesheet))
-                      <?php $codeOffset = $code[$row];         
-                            $descOffset = $array[$row]; 
+                      <?php $codeOffset = $nonbillable_codes[$row];         
+                            $descOffset = $nonbillable_descs[$row]; 
                             $dayarray = $timesheet['Codes'][$codeOffset][$descOffset]?>
                       @endif
                     <tr id="row{{$row}}">
                           <td style="width: 8%; min-width: 125px;">
-                              <input type="text" class="form-control" name="{{$array[$row]}}" value="{{$array[$row]}}" readonly>
+                              <input type="text" class="form-control" name="{{$nonbillable_descs[$row]}}" value="{{$nonbillable_descs[$row]}}" readonly>
                           </td>
                           @for($i = 1; $i <= count($header_arr); $i++)
                           <td style="width: 3%; min-width: 60px;">
@@ -146,46 +146,49 @@ table.center {
                           </td>
                           @endfor
                           <td style="width: 8%; min-width: 125px;">
-                          <input type="text" class="form-control" name="{{$array[$row]}} code" value="{{$code[$row]}}" readonly>
+                          <input type="text" class="form-control" name="{{$nonbillable_descs[$row]}} code" value="{{$nonbillable_codes[$row]}}" readonly>
                           </td>
                           <td>
                           <button type="button" class="btn btn-warning text-warning">_</button>
                           </td>
                       </tr>   
                       @endfor 
-                      @if(isset($timesheet['Codes']['Additional_Codes']))
-                        @if(count($timesheet['Codes']['Additional_Codes']) > 0)
-                        <!-- Number of default non-billables + 1 -->
-                        <?php $row = 7 ?>
-                          @for($i = 0; $i < count(array_keys($timesheet['Codes']['Additional_Codes'])); $i++)
-                            <?php $codeKeyArray = array_keys($timesheet['Codes']['Additional_Codes']);
-                            $code = $codeKeyArray[$i] ?>
-                            @if(count($timesheet['Codes']['Additional_Codes']) > 0)
-                              @for($index = 0; $index < count(array_keys($timesheet['Codes']['Additional_Codes'][$code])); $index++)
-                                <?php $desc = $timesheet['Codes']['Additional_Codes'][$code][$index]?> 
-                                <tr id="row{{$row}}">
-                                    <td style="width: 8%">
-                                        <input type="text" class="form-control" id="row{{$row}}Day0" name="Product Description row {{$row}}" value="<?=$desc?>">
-                                    </td>
-                                    @for($day = 1; $day <= count($arr); $day++)
-                                    <td style="width: 3%">
-                                    <input type="number"  step="0.25" min="0"  class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="@if(isset($timesheet['Codes'][$codeKeyArray[$i]][$desc][$arr[$day - 1]])){{$timesheet['Codes'][$codeKeyArray[$i]][$desc][$arr[$day - 1]]}}@endif"/>
-                                    </td>   
-                                    <?php $string = 'Codes' ?>  
-                                    @endfor
-                                    <td style="width: 8%">
-                                      <input type="text" class="form-control" id="row{{$row}}Day15" name="codeadd{{$row}}" value="<?=$codeKeyArray[$i]?>">
-                                    </td>
-                                    <td> 
-                                        <button type="button" id="row{{$row}}" class="btn btn-danger btn_remove">-</button>
-                                    </td>
-                                </tr>   
-                                <?php $row++; ?>
-                              @endfor
+                          
+                      @foreach(array_keys($timesheet['Codes']) as $code)
+                        <?php $descs = $timesheet['Codes'][$code]; ?>
+                          @foreach(array_keys($descs) as $desc)
+                            @if(in_array($code, $nonbillable_codes) && in_array($desc, $nonbillable_descs))
+                              @continue
                             @endif
-                          @endfor
-                        @endif
-                      @endif
+                            <?php $dates = array_keys($timesheet['Codes'][$code][$desc]); ?> 
+                            <?php $time = $timesheet['Codes'][$code][$desc]; ?> 
+                            <!-- check if we have any values in our dates for this code/description that exist in the $arr variable -->
+                            <?php $shared_values = array_intersect($dates, $arr); ?> 
+                            @if (!empty($shared_values))
+                                <tr id="row{{$row}}">
+                                  <td style="width: 8%">
+                                    <input type="text" class="form-control" id="row{{$row}}Day0" name = "Product Description row {{$row}}" value="<?=$desc?>">
+                                  </td>
+                                  @for($day = 1; $day <= count($arr); $day++)
+                                    <td style="width: 3%">
+                                      <input type="number" step="0.25" min="0" class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="@if(isset($timesheet['Codes'][$code][$desc][$arr[$day - 1]])){{$timesheet['Codes'][$code][$desc][$arr[$day - 1]]}}@endif">
+                                    </td> 
+                                  @endfor
+                                  <td style="width: 8%">
+                                    <input type="text" class="form-control" id="row{{$row}}Day15" name="codeadd{{$row}}" value="<?=$code?>">
+                                  </td>
+                                  <td>
+                                    <button type="button" id="row{{$row}}" class="btn btn-danger btn_remove">-</button>
+                                  </td>
+                                </tr>
+                                <?php $row++; ?>
+                            @else
+                              @continue
+                            @endif
+                          @endforeach
+
+                      @endforeach
+                      
                       <?php
                       foreach($arr as $date) { ?>
                         <input type="hidden" name="daterange[]" value="<?=$date?>"/>
@@ -254,30 +257,30 @@ table.center {
 
     });
 
-    function deRequire() {
-      for (i = 7; i <= row; i++) {
-        var row_group = document.getElementsByName('row'+row+'[]');
-        console.log(row_group); 
-        var at_least_one_checked = false;
+    //function deRequire() {
+    //  for (i = 7; i <= row; i++) {
+    //    var row_group = document.getElementsByName('row'+row+'[]');
+    //    console.log(row_group); 
+    //    var at_least_one_checked = false;
 
-        for (j=0; j < row_group.length; j++) {
-          if (row_group[j] && row_group[j].value) {
-            at_least_one_checked = true;
-          }
-        } 
-        
-        if (at_least_one_checked === true) {
-          for (k=0; k < row_group.length; k++) {
-            row_group[k].required = false;
-          } 
-          }else {
-            for (k=0; k < row_group.length; k++) {
-              row_group[k].required = true;
-            }
-          }
-        }
-      console.log('hi');
-      } 
+    //    for (j=0; j < row_group.length; j++) {
+    //      if (row_group[j] && row_group[j].value) {
+    //        at_least_one_checked = true;
+    //      }
+    //    } 
+    //    
+    //    if (at_least_one_checked === true) {
+    //      for (k=0; k < row_group.length; k++) {
+    //        row_group[k].required = false;
+    //      } 
+    //      }else {
+    //        for (k=0; k < row_group.length; k++) {
+    //          row_group[k].required = true;
+    //        }
+    //      }
+    //    }
+    //  console.log('hi');
+    //  } 
       
     
 
@@ -402,7 +405,7 @@ table.center {
                      '</td>';
                      for(var i = 1; i <= num_columns; i++){
             var tr = tr + '<td>' +
-                     '<input type="number"  step="0.25" min="0"  class="form-control" id="row'+row+'Day'+i+'" name="row'+row+'[]" value=""/ required>' +
+                     '<input type="number"  step="0.25" min="0"  class="form-control" id="row'+row+'Day'+i+'" name="row'+row+'[]" value=""/>' +
                             '</td>';
                     }
            var tr = tr + '<td>' +

@@ -476,6 +476,7 @@ class TimesheetController extends Controller
      */
     public function edit($timesheet, $date, $message = null, $reference_list, $arr, $header_arr, $start, $end)
     {
+        #dd($arr); 
         return view('pages.timesheet', compact('timesheet', 'date', 'message', 'reference_list', 'arr', 'header_arr', 'start', 'end'));
     }
 }
