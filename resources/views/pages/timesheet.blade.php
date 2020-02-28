@@ -128,17 +128,17 @@ table.center {
                           <th>Total</th>
                         </tr>
                       </thead>
-                      <?php $array = array('Holiday', 'PTO', 'General and Admin', 'Staff Meetings and HR', 'Research and Training', 'Formal EDU', 'General Marketing') ?>
-                      <?php $code = array('CEG', 'CEG', 'CEG', 'CEG', 'CEGTRNG', 'CEGEDU', 'CEGMKTG') ?>
-                      @for($row = 0; $row < count($array); $row++)  
+                      <?php $nonbillable_descs = array('Holiday', 'PTO', 'General and Admin', 'Staff Meetings and HR', 'Research and Training', 'Formal EDU', 'General Marketing') ?>
+                      <?php $nonbillable_codes = array('CEG', 'CEG', 'CEG', 'CEG', 'CEGTRNG', 'CEGEDU', 'CEGMKTG') ?>
+                      @for($row = 0; $row < count($nonbillable_descs); $row++)  
                       @if(isset($timesheet))
-                      <?php $codeOffset = $code[$row];         
-                            $descOffset = $array[$row]; 
+                      <?php $codeOffset = $nonbillable_codes[$row];         
+                            $descOffset = $nonbillable_descs[$row]; 
                             $dayarray = $timesheet['Codes'][$codeOffset][$descOffset]?>
                       @endif
                     <tr id="row{{$row}}">
                           <td style="width: 8%; min-width: 125px;">
-                              <input type="text" class="form-control" name="{{$array[$row]}}" value="{{$array[$row]}}" readonly>
+                              <input type="text" class="form-control" name="{{$nonbillable_descs[$row]}}" value="{{$nonbillable_descs[$row]}}" readonly>
                           </td>
                           @for($i = 1; $i <= count($header_arr); $i++)
                           <td style="width: 3%; min-width: 60px;">
@@ -146,7 +146,7 @@ table.center {
                           </td>
                           @endfor
                           <td style="width: 8%; min-width: 125px;">
-                          <input type="text" class="form-control" name="{{$array[$row]}} code" value="{{$code[$row]}}" readonly>
+                          <input type="text" class="form-control" name="{{$nonbillable_descs[$row]}} code" value="{{$nonbillable_codes[$row]}}" readonly>
                           </td>
                           <td>
                           <button type="button" class="btn btn-warning text-warning">_</button>
@@ -155,8 +155,11 @@ table.center {
                       @endfor 
                           
                       @foreach(array_keys($timesheet['Codes']) as $code)
-                          <?php $descs = $timesheet['Codes'][$code]; ?>
+                        <?php $descs = $timesheet['Codes'][$code]; ?>
                           @foreach(array_keys($descs) as $desc)
+                            @if(in_array($code, $nonbillable_codes) && in_array($desc, $nonbillable_descs))
+                              @continue
+                            @endif
                             <?php $dates = array_keys($timesheet['Codes'][$code][$desc]); ?> 
                             <?php $time = $timesheet['Codes'][$code][$desc]; ?> 
                             <!-- check if we have any values in our dates for this code/description that exist in the $arr variable -->
