@@ -35,6 +35,7 @@ Route::post('/hoursgraph/','ProjectController@blah')->name('pages.monthendbillin
 //Select Menu Route
 //Route::post('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph');
 
+Route::get('/drafterhours/', 'ProjectController@drafter_hours')->name('pages.drafterhours')->middleware('verified');
 
 
 
