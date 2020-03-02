@@ -316,11 +316,44 @@
           <label for="projectnotes">Project Notes:</label>
           <textarea class="form-control" name="projectnotes" id="projectnotes" rows="3">@if(old('projectnotes'))<?= old('projectnotes') ?>@else<?= $__env->yieldContent('projectnotes')?>@endif</textarea>
         </div>
+
         <div class="row">
           <div class="form-group col-md-4">
             <button type="submit" class="btn btn-success">Submit</button>
           </div>
         </div>
+
+        <div class="row">
+          <!--<div class="col-md-4"></div>-->
+          <div class="form-group col-md-4">
+            <label for="billingcontact">Billing Contact</label>
+          <input type="text" class="form-control" name="billingcontact" value="@if(old('billingcontact')){{ old('billingcontact') }} @else<?= $__env->yieldContent('billingcontact')?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="billingcontactemail">Billing Contact Email:</label>
+            <input type="text" class="form-control" name="billingcontactemail" value="@if(old('billingcontactemail')){{ old('billingcontactemail') }} @else<?= $__env->yieldContent('billingcontactemail')?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="billingnotes">Billing Notes:</label>
+            <input type="text" class="form-control" name="billingnotes" value="@if(old('billingnotes')){{ old('billingnotes') }} @else<?= $__env->yieldContent('billingnotes')?>@endif">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group col-md-12">
+            <label for="filelocationofproposal">Location of Proposal:</label>
+            <input type="text" class="form-control" name="filelocationofproposal" value="@if(old('filelocationofproposal')){{ old('filelocationofproposal') }} @else<?= $__env->yieldContent('filelocationofproposal')?>@endif">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group col-md-12">
+            <label for="filelocationofproject">Location of Project:</label>
+            <input type="text" class="form-control" name="filelocationofproject" value="@if(old('filelocationofproject')){{ old('filelocationofproject') }} @else<?= $__env->yieldContent('filelocationofproject')?>@endif">
+          </div>
+        </div>
+
+
       </form>
     </div>
     <script type="text/javascript" src="{{ URL::asset('js/monthlypercent.js')}}"></script>

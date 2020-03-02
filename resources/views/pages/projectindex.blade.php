@@ -1,5 +1,6 @@
 @extends('layouts.index')
 @section('toptool')
+
 <div class="container">
   <h2><b>Project Search</b></h2> 
   <br />
@@ -12,7 +13,7 @@
         </form> 
   </div>
   @stop
-
+  
   @section('sort')
   <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.projectindex') }}"> 
     @csrf  
@@ -37,7 +38,6 @@
     <option @if(isset($term) && $term == "projectmanager")selected @endif value="projectmanager">Project Manager(s)</option>
   </form> 
   @stop
-
 
   @section('table-title', 'Project Index')
   @section('table-header')

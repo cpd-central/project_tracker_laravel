@@ -53,11 +53,9 @@ class ProjectController extends Controller
     $project->projectcode = $req->get('projectcode');
     $project->projectmanager = $this->managerCheck($req->get('projectmanager'));
     $project->projectnotes = $req->get('projectnotes');
-    $project->billingcontact = $req->get('billingcontact');
-    $project->billingcontactemail = $req->get('billingcontactemail');
-    $project->billingnotes = $req->get('billingnotes');
-    $project->filelocationofproposal = $req->get('filelocationofproposal');
-    $project->filelocationofproject = $req->get('filelocationofproject');
+
+    $project->testbill = array(array("jan"=>10000),array("feb"=>213234));
+
     $project->save();
   }
 
@@ -315,8 +313,8 @@ class ProjectController extends Controller
       echo "<br>" . "id_billing_array: " . var_dump($id_billing_array) . "<br>"; 
       //still need a global bill array
       $project = Project::find($id); 
-      $previous_month = date('F', strtotime('-21 day'));
-      $year_of_previous_month = date('Y', strtotime('-21 day')); 
+      $previous_month = date('F', strtotime('-1 month'));
+      $year_of_previous_month = date('Y', strtotime('-1 month')); 
 
       foreach ($id_billing_array as $id_billing => $value) {
         echo "id_billing: " . $id_billing . "<br>";
@@ -345,7 +343,6 @@ class ProjectController extends Controller
       //echo "steve";
       //self::monthendfunction(); 
       //return redirect('/hoursgraph');
-      //};
   }
 
 
@@ -633,6 +630,7 @@ class ProjectController extends Controller
         {
           $total_dollars_probable = $this->add_dollars($project, $total_dollars_probable, $months);
         }
+
         if ($chart_type == 'projects')
         {
           //add the project hours to the chart as a dataset 
@@ -695,6 +693,7 @@ class ProjectController extends Controller
   }
 
 
+<<<<<<< HEAD
 /**
  * Queries database by text field search. For users, it will only show the results on the projects
  * the user is associated with. For other roles, shows all project results.
@@ -703,7 +702,7 @@ class ProjectController extends Controller
  */
   public function search($search_term, $sort_term, $invert)
   {
-    #$not_expired_projects = Project::where(array(['projectstatus', '<>', 'Expired'])); 
+    $not_expired_projects = Project::where(array(['projectstatus', '<>', 'Expired'])); 
     
     if(isset($invert))
     {
@@ -715,7 +714,7 @@ class ProjectController extends Controller
     }
     if (isset($search_term)) {
       if (isset($sort_term) && $sort_term != "-----Select-----"){
-        $projects = Project::where('cegproposalauthor', 'regexp', "/$search_term/i")
+        $projects = $not_expired_projects->where('cegproposalauthor', 'regexp', "/$search_term/i")
                     ->orWhere('projectname', 'regexp', "/$search_term/i")
                     ->orWhere('clientcontactname', 'regexp', "/$search_term/i")
                     ->orWhere('clientcompany', 'regexp', "/$search_term/i")
@@ -727,7 +726,7 @@ class ProjectController extends Controller
                     ->orWhere('projecttype', 'regexp', "/$search_term/i")
                     ->orWhere('epctype', 'regexp', "/$search_term/i")
                     ->orderBy($sort_term, $asc_desc)
-                    ->get();             
+                    ->get();
       }
       else {
         $projects = Project::where('cegproposalauthor', 'regexp', "/$search_term/i")
@@ -742,22 +741,58 @@ class ProjectController extends Controller
                     ->orWhere('projecttype', 'regexp', "/$search_term/i")
                     ->orWhere('epctype', 'regexp', "/$search_term/i")
                     ->get();
+      }
+=======
+  /**
+   * Queries database by text field search. For users, it will only show the results on the projects
+   * the user is associated with. For other roles, shows all project results.
+   * @param $request - Request variable with attributes to be assigned to $project.
+   * @return view projectindex
+   */
+  public function search(Request $request)
+  {
+    $term = $request['search'];
+    if (isset($term)) {
+      //$projects = Project::whereRaw(['$text' => ['$search' => $term]])->get();
+      $projects = Project::whereRaw(['$text' => ['$search' => "{$term}"]])->get();
+      //if(auth()->user()->role != 'user'){ 
+      foreach ($projects as $project) {
+        $project = $this->displayFormat($project);
+      }
+      //}
+      // else{
+      //   $user_email = auth()->user()->email;
+      //   $user_name = auth()->user()->name;
+      //   foreach ($projects as $key => $project) {
+      //     if($project['created_by'] == $user_email || $project['cegproposalauthor'] == $user_name) {
+      //       $project = $this->displayFormat($project);
+      //     }
+      //     elseif(isset($project['projectmanager'])){
+      //       if(is_array($project['projectmanager']) && in_array($user_name, $project['projectmanager'])){
+      //         $project = $this->displayFormat($project);
+      //       }
+      //       elseif($project['projectmanager'] == $user_name){
+      //         $project = $this->displayFormat($project);
+      //       }
+      //     }
+      //     else{
+      //       unset($projects[$key]);
+      //     }
+      //   }
+      // }
+      return view('pages.projectindex', compact('projects')); 
+>>>>>>> individualhourschart
     }
-    }
-
     else {
       $projects = $not_expired_projects->orderBy($sort_term, $asc_desc)->get();
-      //echo print_r(count($projects));
-      //echo '<br>';
     }
 
     foreach ($projects as $project) {
       $project = $this->displayFormat($project);
     }
     return $projects;
-
   }
- 
+
   /**
    * Queries the database with the passed parameter $id to find the project
    * with the same id and displays it so the information can be edited.
@@ -780,7 +815,7 @@ class ProjectController extends Controller
   public function hours_graph(Request $request) 
   {
     if (!isset($request['switch_chart_button'])) {//This is a button to toggle whether hours or dollars is displayed in the graph.  
-      $chart_units = 'hours';
+      $chart_units = 'dollars';
     } else { 
       $chart_units = $request['switch_chart_button'];
     }
@@ -1067,7 +1102,25 @@ class ProjectController extends Controller
             }
           }
         }
+<<<<<<< HEAD
+      //We only want the data from the first non zero entry to the lst non zero entry in the set 
+      //array_filter will remove all zero entries
+      //we take the start key and end key of the zeros removed array
+      //we use these keys to get the slice of the original array between those keys 
+      $hours_array_filtered = array_filter($hours_arr);
+      $start_key = key($hours_array_filtered);
+      //moves pointer to end
+      end($hours_array_filtered);
+      $end_key = key($hours_array_filtered);
 
+      $total_hours = array_sum($hours_arr);
+
+      $hours_arr_start_end = array_slice($hours_arr, $start_key, $end_key - $start_key + 1);
+      $labels_arr_start_end = array_slice($labels_arr, $start_key, $end_key - $start_key + 1);
+      $labels = $labels_arr_start_end;
+      $dataset = array($selected_project['code'] . " Total: {$total_hours}", 'line', $hours_arr_start_end);
+      return array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}  - Past Hours");
+=======
 
 
         //see notes around line 794, doing same thing here with hours_arr
@@ -1138,30 +1191,31 @@ class ProjectController extends Controller
         $total_project_monies_per_month_dataset = array('Total Dollars', 'line', $total_project_monies_per_month_arr_start_end);
         
        // dd($labels);
-        //dd($selected_project);
+        //dd($individual_dataset);
         return (array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}, {$selected_project['projectcode']}, PM is {$selected_project['projectmanager'][0]}", 'individual_dataset' => $individual_dataset, 'individual_dataset_monies' => $individual_dataset_monies, 'project_grand_total' => $project_grand_total, 'dollarvalueinhouse' => $dollarvalueinhouse, 'dateenergization' => $dateenergization, 'group_dataset' => $group_dataset, 'group_dataset_monies' => $group_dataset_monies,'previous_month_project_hours' => $previous_month_project_hours, 'total_project_dollars' => $total_project_dollars,'previous_month_project_monies' => $previous_month_project_monies, 'total_project_monies_per_month_dataset' => $total_project_monies_per_month_dataset, 'total_project_hours_per_month_dataset' => $total_project_hours_per_month_dataset, 'id' => "{$selected_project['id']}", 'last_bill_amount' => $last_bill_amount, 'last_bill_month' => $last_bill_month));
       } else {
         return Null;
+>>>>>>> individualhourschart
       }
     } //get_chart_info
     $current_month = date('F');
-    $previous_month = date('F', strtotime('-21 days'));
+    $previous_month = date('F', strtotime('-1 month'));
     $current_year = date('Y');
-    $previous_year = date('Y', strtotime('-21 days'));
+    $previous_year = date('Y', strtotime('-2 month'));
     //echo $previous_month . $previous_year;
+    $year_of_previous_month = date('Y', strtotime('-1 month')); 
  
     //this filters out the projects we are going to actually make charts out of
-    //$non_zero_projects= Project::all()->where('projectname','nothing');
     //$non_zero_projects= Project::all()->where('projectname','Jasper Solar');
     $non_zero_projects = Project::whereRaw([
       '$and' => array([
         'hours_data' => ['$exists' => 'true'],
         '$and' => array([
-          "hours_data.{$previous_year}.{$previous_month}.Total"=> ['$exists' => true],  
-          "hours_data.{$previous_year}.{$previous_month}.Total" =>['$ne'=>0]
+          "hours_data.{$year_of_previous_month}.{$previous_month}.Total"=> ['$exists' => true],  
+          "hours_data.{$year_of_previous_month}.{$previous_month}.Total" =>['$ne'=>0]
         ])
       ])
-    ])->get()->sortByDesc("hours_data.{$previous_year}.{$previous_month}.Total");
+    ])->get()->sortByDesc("hours_data.{$year_of_previous_month}.{$previous_month}.Total");
     //dd($non_zero_projects);
     $i=0;
     $i_max = count($non_zero_projects) . "<br>";
@@ -1172,12 +1226,36 @@ class ProjectController extends Controller
       if ($a =="CEG - General" or $a =="CEG Research and Training" or $a =="Education & Training" or $a =="CEG - Marketing" or $a == "NEEDS NAME") {
         continue;
       }
-      //dd($non_zero_project);
       $chart_info = get_chart_info($non_zero_project['projectname'],$employeeLIST,$groupLIST);
       //dd($chart_info);
       $chart_variable[$i]= $chart_info['project_grand_total'];
       $dollarvalueinhousearray[$i]= $chart_info['dollarvalueinhouse'];
 
+<<<<<<< HEAD
+    $chart_info = get_chart_info($request['project_id']);
+    if (isset($chart_info))
+    {
+      $chart = new HoursChart;
+      $chart->title($chart_info['title']);
+      $chart->labels($chart_info['labels']);
+      $chart->dataset($chart_info['dataset'][0], $chart_info['dataset'][1], $chart_info['dataset'][2]);
+      $options = [];
+      $options['elements']['line']['borderColor'] = '#3cba9f';
+      $options['elements']['point']['borderColor'] = '#3cba9f';
+      $options['elements']['line']['fill'] = false;
+      $options['legend']['position'] = 'right';
+      $options['legend']['labels']['boxWidth'] = 0;
+      $options['legend']['labels']['fontStyle'] = 'bold';
+      $chart->options($options);
+      return view('pages.hoursgraph', compact('projects', 'chart'));
+    }
+    else
+    {
+      return view('pages.hoursgraph', compact('projects'));
+    }
+=======
+      //This section creates chart_hours from chart_info
+      if (isset($chart_info)) {
         $c_color_loop=0;
         $chart_hours[$i] = new HoursChart;
         $chart_hours[$i]->title($chart_info['title']);
@@ -1247,9 +1325,13 @@ class ProjectController extends Controller
         $chart_dollars[$i]->options([ 'last_bill_month'               => $chart_info['last_bill_month'] ]);
         $chart_dollars[$i]->options([ 'last_bill_amount'              => $chart_info['last_bill_amount'] ]); 
         $chart_dollars[$i]->options([ 'tooltip'                       => [ 'visible' => true ] ]);
+      } else {//end the chart_info section 
+      }
       $i++;
-    }      
-    return view('pages.hoursgraph', compact('projects', 'chart_hours', 'chart_dollars', 'chart_variable','dollarvalueinhousearray','chart_units'));
+    } //end of non_zero_projects loops
+
+    return view('pages.hoursgraph', compact('projects', 'chart_hours', 'chart_dollars', 'chart_variable','dollarvalueinhousearray','chart_units','id'));
+>>>>>>> individualhourschart
   }
 
   /**
