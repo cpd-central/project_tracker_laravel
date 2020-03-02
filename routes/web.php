@@ -35,10 +35,6 @@ Route::post('/hoursgraph/','ProjectController@blah')->name('pages.monthendbillin
 //Select Menu Route
 //Route::post('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph');
 
-Route::get('/drafterhours/', 'ProjectController@drafter_hours')->name('pages.drafterhours')->middleware('verified');
-
-
-
 
 Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject')->middleware('verified');
 Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verified');
@@ -58,7 +54,7 @@ Route::get('/home', 'HomeController@index')->name('home')->middleware('verified'
 #save this for later, for now, home will redirect to project index
 #Route::get('/home', 'HomeController@index')->name('home');
 
-
+Route::get('/drafterhours/', 'TimesheetController@drafter_hours')->name('pages.drafterhours')->middleware('verified');
 
 Route::get('/timesheet', 'TimesheetController@check')->name('pages.timesheet')->middleware('verified');
 Route::post('/timesheet', 'TimesheetController@timesheetSave')->name('pages.timesheetSave')->middleware('verified');

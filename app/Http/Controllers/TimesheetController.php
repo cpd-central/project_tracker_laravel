@@ -479,4 +479,9 @@ class TimesheetController extends Controller
         #dd($arr); 
         return view('pages.timesheet', compact('timesheet', 'date', 'message', 'reference_list', 'arr', 'header_arr', 'start', 'end'));
     }
+
+    public function drafter_hours()
+    {
+        return view('pages.drafterhours');
+    }
 }

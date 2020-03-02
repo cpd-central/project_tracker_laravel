@@ -101,7 +101,12 @@ else{
                         <a href={{ route('pages.projectindex') }} class="btn login_btn">Project Index</a>
                     </div>
 					<?php } ?>
-                    <div class="form-group" style="{{$style_string}}">
+                <?php if (auth()->user()->role == "drafting_manager") {?>
+					<div class="form-group" style="{{$style_string}}">
+						<a href={{ route('pages.drafterhours') }} class="btn login_btn">Drafter Hours</a>
+					</div>	
+				<?php } ?>
+					<div class="form-group" style="{{$style_string}}">
                         <a href={{ route('pages.timesheet') }} class="btn login_btn">Timesheet</a>
 					</div>
 					<!--Corey adding link for timesheet sent status page-->
