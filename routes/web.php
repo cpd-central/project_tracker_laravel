@@ -44,6 +44,9 @@ Route::get('/monthendbilling', 'ProjectController@monthendfunction')->name('page
 Route::post('/monthendbilling', 'ProjectController@monthendfunction');
 
 Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified', 'role');
+#the drafter hours will use the same function, but pass in a variable indicating that this is the drafters' hours
+Route::get('/drafterhours/', 'ProjectController@hours_graph')->name('pages.drafterhours')->middleware('verified');
+
 
 Route::delete('{id}', 'ProjectController@destroy')->middleware('verified');
 
@@ -53,8 +56,6 @@ Route::get('/home', 'HomeController@index')->name('home')->middleware('verified'
 
 #save this for later, for now, home will redirect to project index
 #Route::get('/home', 'HomeController@index')->name('home');
-
-Route::get('/drafterhours/', 'TimesheetController@drafter_hours')->name('pages.drafterhours')->middleware('verified');
 
 Route::get('/timesheet', 'TimesheetController@check')->name('pages.timesheet')->middleware('verified');
 Route::post('/timesheet', 'TimesheetController@timesheetSave')->name('pages.timesheetSave')->middleware('verified');
