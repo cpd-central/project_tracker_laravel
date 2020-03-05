@@ -187,7 +187,6 @@ table.center {
                                 @continue
                               @endif
                             @endforeach
-
                         @endforeach
                       @endif
                       <?php

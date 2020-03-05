@@ -777,8 +777,13 @@ class ProjectController extends Controller
    * @param $request - Request variable with attributes to be assigned to $project.
    * @return array contains labels and dateset
    */
-  public function hours_graph(Request $request) 
+  public function hours_graph(Request $request, $drafter_page = false) 
   {
+    //variable to determine if this is the drafers' hours page or everyone's
+    //if this is false, then this means we're coming from the "hours by project" link, and want everyone's hours
+    //if tihs is true, then we are coming from the drafter hours page, and only want drafter hours for the past month (daily) 
+    #$drafter_page = true; 
+    
     if (!isset($request['switch_chart_button'])) {//This is a button to toggle whether hours or dollars is displayed in the graph.  
       $chart_units = 'hours';
     } else { 
@@ -836,6 +841,21 @@ class ProjectController extends Controller
                            array("Keerti"      ,"intern"                  ,60 ,"interns-admin"  ),
                            array("Tim"         ,"intern"                  ,60 ,"interns-admin"  ),
                            array("noname"      ,""                        ,60 ,"interns-admin"  ));
+   
+    //truncate the employee list if we're in the drafter hours page
+    if ($drafter_page) {
+      //just a counter
+      $z = 0; 
+      foreach ($employeeLIST as $emp) {
+        if ($emp[3] != 'drafting') {
+          unset($employeeLIST[$z]);
+        }
+        $z++;
+      }
+      //when we removed our employees from the list, the indeces did not change with them
+      //this array_values() function resets the index to start at 0 
+      $employeeLIST = array_values($employeeLIST);
+    }
     $groupLIST = array("senior","project","SCADA","drafter","interns-admin","blank");
 
     $choosen_line_colors = array('#396AB1','#DA7C30','#3E9651','#CC2529','#535154','#6B4C9A','#922428','#948B3D','#488f31','#58508d','#bc5090','ff6361','#ffa600','#7BEEA5','#127135','#008080','#1AE6E6');

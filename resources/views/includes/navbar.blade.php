@@ -75,7 +75,7 @@
             <a class="nav-link" href="{{ route('pages.hoursgraph') }}">Hours By Project Graph</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ route('pages.drafterhours') }}">Drafter Hours</a>
+            <a class="nav-link" href="{{ route('pages.drafterhours', ['drafter_page' => true]) }}">Drafter Hours</a>
           </li> 
            <?php } ?>         
           

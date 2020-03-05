@@ -45,7 +45,8 @@ Route::post('/monthendbilling', 'ProjectController@monthendfunction');
 
 Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified', 'role');
 #the drafter hours will use the same function, but pass in a variable indicating that this is the drafters' hours
-Route::get('/drafterhours/', 'ProjectController@hours_graph')->name('pages.drafterhours')->middleware('verified');
+#Route::get('/drafterhours', array('as' => 'drafter_page', 'uses' => 'ProjectController@hours_graph'))->name('pages.drafterhours')->middleware('verified')->where('drafter_page', 'true');
+Route::get('/drafterhours/{drafter_page}', 'ProjectController@hours_graph')->name('pages.drafterhours')->middleware('verified');
 
 
 Route::delete('{id}', 'ProjectController@destroy')->middleware('verified');
