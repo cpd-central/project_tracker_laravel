@@ -153,42 +153,43 @@ table.center {
                           </td>
                       </tr>   
                       @endfor 
-                          
-                      @foreach(array_keys($timesheet['Codes']) as $code)
-                        <?php $descs = $timesheet['Codes'][$code]; ?>
-                          @foreach(array_keys($descs) as $desc)
-                            @if(in_array($code, $nonbillable_codes) && in_array($desc, $nonbillable_descs))
-                              @continue
-                            @endif
-                            <?php $dates = array_keys($timesheet['Codes'][$code][$desc]); ?> 
-                            <?php $time = $timesheet['Codes'][$code][$desc]; ?> 
-                            <!-- check if we have any values in our dates for this code/description that exist in the $arr variable -->
-                            <?php $shared_values = array_intersect($dates, $arr); ?> 
-                            @if (!empty($shared_values))
-                                <tr id="row{{$row}}">
-                                  <td style="width: 8%">
-                                    <input type="text" class="form-control" id="row{{$row}}Day0" name = "Product Description row {{$row}}" value="<?=$desc?>">
-                                  </td>
-                                  @for($day = 1; $day <= count($arr); $day++)
-                                    <td style="width: 3%">
-                                      <input type="number" step="0.25" min="0" class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="@if(isset($timesheet['Codes'][$code][$desc][$arr[$day - 1]])){{$timesheet['Codes'][$code][$desc][$arr[$day - 1]]}}@endif">
-                                    </td> 
-                                  @endfor
-                                  <td style="width: 8%">
-                                    <input type="text" class="form-control" id="row{{$row}}Day15" name="codeadd{{$row}}" value="<?=$code?>">
-                                  </td>
-                                  <td>
-                                    <button type="button" id="row{{$row}}" class="btn btn-danger btn_remove">-</button>
-                                  </td>
-                                </tr>
-                                <?php $row++; ?>
-                            @else
-                              @continue
-                            @endif
-                          @endforeach
-
-                      @endforeach
                       
+                      @if(isset($timesheet))
+                        @foreach(array_keys($timesheet['Codes']) as $code)
+                          <?php $descs = $timesheet['Codes'][$code]; ?>
+                            @foreach(array_keys($descs) as $desc)
+                              @if(in_array($code, $nonbillable_codes) && in_array($desc, $nonbillable_descs))
+                                @continue
+                              @endif
+                              <?php $dates = array_keys($timesheet['Codes'][$code][$desc]); ?> 
+                              <?php $time = $timesheet['Codes'][$code][$desc]; ?> 
+                              <!-- check if we have any values in our dates for this code/description that exist in the $arr variable -->
+                              <?php $shared_values = array_intersect($dates, $arr); ?> 
+                              @if (!empty($shared_values))
+                                  <tr id="row{{$row}}">
+                                    <td style="width: 8%">
+                                      <input type="text" class="form-control" id="row{{$row}}Day0" name = "Product Description row {{$row}}" value="<?=$desc?>">
+                                    </td>
+                                    @for($day = 1; $day <= count($arr); $day++)
+                                      <td style="width: 3%">
+                                        <input type="number" step="0.25" min="0" class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="@if(isset($timesheet['Codes'][$code][$desc][$arr[$day - 1]])){{$timesheet['Codes'][$code][$desc][$arr[$day - 1]]}}@endif">
+                                      </td> 
+                                    @endfor
+                                    <td style="width: 8%">
+                                      <input type="text" class="form-control" id="row{{$row}}Day15" name="codeadd{{$row}}" value="<?=$code?>">
+                                    </td>
+                                    <td>
+                                      <button type="button" id="row{{$row}}" class="btn btn-danger btn_remove">-</button>
+                                    </td>
+                                  </tr>
+                                  <?php $row++; ?>
+                              @else
+                                @continue
+                              @endif
+                            @endforeach
+
+                        @endforeach
+                      @endif
                       <?php
                       foreach($arr as $date) { ?>
                         <input type="hidden" name="daterange[]" value="<?=$date?>"/>
