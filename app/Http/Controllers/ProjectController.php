@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Project;
+use App\Timesheet;
 use MongoDB\BSON\UTCDateTime; 
 use MongoDB\BSON\Decimal128; 
 use App\Charts\HoursChart;
@@ -844,18 +845,18 @@ class ProjectController extends Controller
    
     //truncate the employee list if we're in the drafter hours page
     if ($drafter_page) {
+      //store the emails for the drafters 
+      $employee_emails = array(); 
       //just a counter
       $z = 0; 
       foreach ($employeeLIST as $emp) {
-        if ($emp[3] != 'drafting') {
-          unset($employeeLIST[$z]);
+        if ($emp[3] == 'drafting') {
+          if ($emp[4]) 
+          $employee_emails[$emp[0]] = $emp[4];
         }
         $z++;
       }
-      //when we removed our employees from the list, the indeces did not change with them
-      //this array_values() function resets the index to start at 0 
-      $employeeLIST = array_values($employeeLIST);
-     
+      
       $today = app('App\Http\Controllers\TimesheetController')->getDate();
       $end_date = clone $today;
       //date range of 30 days 
@@ -883,7 +884,14 @@ class ProjectController extends Controller
       foreach($non_zero_projects as $project) {
         array_push($codes_arr, $project['projectcode']);
       }
-    
+      foreach($codes_arr as $code) {
+        foreach($employee_emails as $email) {
+          $timesheet = Timesheet::where('user', $email)->get();
+          dd($timesheet); 
+          $timesheet_codes = $timesheet['Codes'];
+          dd($timesheet_codes);
+        }
+      }
     }
    
     $groupLIST = array("senior","project","SCADA","drafter","interns-admin","blank");
