@@ -863,7 +863,27 @@ class ProjectController extends Controller
       //now, we want access to some of the functions in our Timesheetcontroller, since the collecting of the 
       //drafters' hours is very similar to what we do in the timesheet app
       $date_arr = app('App\Http\Controllers\TimesheetController')->get_dates($start_date, $end_date)[0];
-      dd($date_arr);
+      
+      $current_month = date('F');
+      $previous_month = date('F', strtotime('-21 days'));
+      $current_year = date('Y');
+      $previous_year = date('Y', strtotime('-21 days'));
+      
+      $non_zero_projects = Project::whereRaw([
+        '$and' => array([
+          'hours_data' => ['$exists' => 'true'],
+          '$and' => array([
+            "hours_data.{$previous_year}.{$previous_month}.Total"=> ['$exists' => true],  
+            "hours_data.{$previous_year}.{$previous_month}.Total" =>['$ne'=>0]
+          ])
+        ])
+      ])->get()->sortByDesc("hours_data.{$previous_year}.{$previous_month}.Total"); 
+      //we really just need the codes from this, since that's what we will use to look up the hours in the timesheet
+      $codes_arr = array();
+      foreach($non_zero_projects as $project) {
+        array_push($codes_arr, $project['projectcode']);
+      }
+      dd($codes_arr);
     }
    
     $groupLIST = array("senior","project","SCADA","drafter","interns-admin","blank");
