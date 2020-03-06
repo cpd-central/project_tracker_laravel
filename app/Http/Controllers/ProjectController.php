@@ -855,7 +855,17 @@ class ProjectController extends Controller
       //when we removed our employees from the list, the indeces did not change with them
       //this array_values() function resets the index to start at 0 
       $employeeLIST = array_values($employeeLIST);
+     
+      $today = app('App\Http\Controllers\TimesheetController')->getDate();
+      $end_date = clone $today;
+      //date range of 30 days 
+      $start_date = $today->sub(new DateInterval('P31D'));
+      //now, we want access to some of the functions in our Timesheetcontroller, since the collecting of the 
+      //drafters' hours is very similar to what we do in the timesheet app
+      $date_arr = app('App\Http\Controllers\TimesheetController')->get_dates($start_date, $end_date)[0];
+      dd($date_arr);
     }
+   
     $groupLIST = array("senior","project","SCADA","drafter","interns-admin","blank");
 
     $choosen_line_colors = array('#396AB1','#DA7C30','#3E9651','#CC2529','#535154','#6B4C9A','#922428','#948B3D','#488f31','#58508d','#bc5090','ff6361','#ffa600','#7BEEA5','#127135','#008080','#1AE6E6');
