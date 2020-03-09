@@ -885,36 +885,54 @@ class ProjectController extends Controller
         array_push($codes_arr, $project['projectcode']);
       }
 
+      //holds the data for all charts 
+      $charts = array(); 
+      $all_data_arr = array();
       foreach($codes_arr as $code) {
-        #echo $code; 
         if ($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU") {
           continue;
         }
-        foreach($employee_emails as $email) {
-          echo $email; 
+        //this array will be for storing the hours that this employee has for this project within the time window (31 days) 
+        $employee_arr = array(); 
+        foreach(array_keys($employee_emails) as $name) {
+          //we only need the name for the charting, but we need email to access the timesheet 
+          $email = $employee_emails[$name]; 
           //this is technically a "collection" of timesheets, but there's only 1. 
           //we want the 0th element of the collection 
           $timesheet = Timesheet::where('user', $email)->get()[0];
-          #dd($timesheet); 
-          #break; 
           $timesheet_codes = $timesheet['Codes'];
-          #dd($timesheet_codes);
+
           if (in_array($code, array_keys($timesheet_codes))) {
             //note, we're just getting the first description.  for most drafters, I'm assuming this will be fine,
             //but note that this is a limitation at the moment. 
             $project_hours = array_values($timesheet_codes[$code])[0]; 
-            #dd($date_arr);
+
+            //this will store the time from this date range as a kvp ('date' => 'hours') 
+            $project_hours_in_date_range = array();
             foreach($date_arr as $day) {
               if (in_array($day, array_keys($project_hours))) {
-                dd($project_hours[$day]);
+                $hours = $project_hours[$day];
               }
+              else {
+                $hours = 0;
+              }
+              $project_hours_in_date_range[$day] = $hours;
             }
           }
           else {
             continue;
           }
+          //now, set the project hours in the date range as the value for this employee's name
+          $employee_arr[$name] = $project_hours_in_date_range;
         }
+        //now, set the employee array for the code
+        $all_data_arr[$code] = $employee_arr;
       }
+      dd($all_data_arr);
+      $chart = new HoursChart;
+      $chart->title($code);
+      $chart->labels($date_arr);
+
     }
    
     $groupLIST = array("senior","project","SCADA","drafter","interns-admin","blank");
