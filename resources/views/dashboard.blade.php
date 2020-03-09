@@ -111,7 +111,7 @@ else{
 					<!--End Corey new code-->
 					<?php if(auth()->user()->role == "drafting_manager") {?>
 					<div class="form-group" style="{{$style_string}}">
-                        <a href={{ route('pages.drafterhours') }} class="btn login_btn">Drafting Hours</a>
+						<a class="nav-link" href="{{ route('pages.drafterhours', ['drafter_page' => true]) }}">Drafter Hours</a>
 					</div>
 					<?php } elseif (auth()->user()->role == "sudo") { ?>
 					<div class="form-group" style="{{$style_string}}">

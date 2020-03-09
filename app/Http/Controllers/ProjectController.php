@@ -885,9 +885,13 @@ class ProjectController extends Controller
         array_push($codes_arr, $project['projectcode']);
       }
       foreach($codes_arr as $code) {
+        dd($codes_arr); 
         foreach($employee_emails as $email) {
-          $timesheet = Timesheet::where('user', $email)->get();
-          dd($timesheet); 
+          //this is technically a "collection" of timesheets, but there's only 1. 
+          //we want the 0th element of the collection 
+          $timesheet = Timesheet::where('user', $email)->get()[0];
+          #dd($timesheet); 
+          #break; 
           $timesheet_codes = $timesheet['Codes'];
           dd($timesheet_codes);
         }
