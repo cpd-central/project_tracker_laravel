@@ -884,16 +884,35 @@ class ProjectController extends Controller
       foreach($non_zero_projects as $project) {
         array_push($codes_arr, $project['projectcode']);
       }
+
       foreach($codes_arr as $code) {
-        dd($codes_arr); 
+        #echo $code; 
+        if ($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU") {
+          continue;
+        }
         foreach($employee_emails as $email) {
+          echo $email; 
           //this is technically a "collection" of timesheets, but there's only 1. 
           //we want the 0th element of the collection 
           $timesheet = Timesheet::where('user', $email)->get()[0];
           #dd($timesheet); 
           #break; 
           $timesheet_codes = $timesheet['Codes'];
-          dd($timesheet_codes);
+          #dd($timesheet_codes);
+          if (in_array($code, array_keys($timesheet_codes))) {
+            //note, we're just getting the first description.  for most drafters, I'm assuming this will be fine,
+            //but note that this is a limitation at the moment. 
+            $project_hours = array_values($timesheet_codes[$code])[0]; 
+            #dd($date_arr);
+            foreach($date_arr as $day) {
+              if (in_array($day, array_keys($project_hours))) {
+                dd($project_hours[$day]);
+              }
+            }
+          }
+          else {
+            continue;
+          }
         }
       }
     }
