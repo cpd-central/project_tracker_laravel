@@ -3,7 +3,19 @@
 
 @section('page-title', 'Hours By Project Graph')
 @section('content')
+
 {{ old('project_id') }}
+@if(isset($drafter_page))
+    @isset($charts)
+      @foreach($charts as $chart) 
+        <div class="htmlgraphhours">
+          {!! $chart->container() !!} 
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" chartset="utf-8"></script>
+          {!! $chart->script() !!}
+        </div> 
+      @endforeach
+    @endisset
+@else
 <?php $x=0; $id=0; ?>
 
 @foreach($chart_variable as $var2)
@@ -115,4 +127,5 @@
     <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="hours"><button href="{{action('ProjectController@blah', $var->options['id'])}}" class="btn btn-primary" method="POST" type="submit">Master Submit Buttton</button> 
   </div>
 </form>
+@endif
 @endsection

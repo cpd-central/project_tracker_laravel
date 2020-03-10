@@ -892,6 +892,10 @@ class ProjectController extends Controller
         if ($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU") {
           continue;
         }
+        //make the chart and add the labels
+        $chart = new HoursChart;
+        $chart->title($code);
+        $chart->labels($date_arr);
         //this array will be for storing the hours that this employee has for this project within the time window (31 days) 
         $employee_arr = array(); 
         foreach(array_keys($employee_emails) as $name) {
@@ -922,17 +926,20 @@ class ProjectController extends Controller
           else {
             continue;
           }
+          //put the hours in as the dataset
+          $chart->dataset($name, 'line', array_values($project_hours_in_date_range)); 
           //now, set the project hours in the date range as the value for this employee's name
           $employee_arr[$name] = $project_hours_in_date_range;
         }
         //now, set the employee array for the code
         $all_data_arr[$code] = $employee_arr;
-      }
-      dd($all_data_arr);
-      $chart = new HoursChart;
-      $chart->title($code);
-      $chart->labels($date_arr);
-
+        //put the chart in the charts array
+        //note, we don't push if the chart has no dataset,  e.g. if no employees had hours for this period
+        if(!empty($chart->datasets)) {
+          array_push($charts, $chart);
+        } 
+      }      
+      return view('pages.hoursgraph', compact('charts', 'drafter_page'));     
     }
    
     $groupLIST = array("senior","project","SCADA","drafter","interns-admin","blank");
