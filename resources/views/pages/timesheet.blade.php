@@ -153,7 +153,7 @@ table.center {
                           </td>
                       </tr>   
                       @endfor 
-                      <?php echo "this page is no longer working!" ?>
+                      
                       @if(isset($timesheet))
                         @foreach(array_keys($timesheet['Codes']) as $code)
                           <?php $descs = $timesheet['Codes'][$code]; ?>
