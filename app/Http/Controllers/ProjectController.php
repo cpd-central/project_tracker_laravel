@@ -703,8 +703,7 @@ class ProjectController extends Controller
  */
   public function search($search_term, $sort_term, $invert)
   {
-    #$not_expired_projects = Project::where(array(['projectstatus', '<>', 'Expired'])); 
-    
+    $not_expired_projects = Project::where(array(['projectstatus', '<>', 'Expired']));
     if(isset($invert))
     {
       $asc_desc = 'desc';
@@ -845,25 +844,25 @@ class ProjectController extends Controller
     $c_group_colors = 0;
     $projects = Project::whereRaw(['$and' => array(['projectcode' => ['$ne' => null]], ['hours_data' => ['$exists' => 'true']])])->get()->sortBy('projectname');
 
-    //prepare_array function gets array ready for the graph.  
-    //array_filter => finds TRUE values and passes them to array.  
-    //end => advances pointer to last element.  
-    //key => returns the index element of the current array position
-    //
-    //We only want the data from the first non zero entry to the lst non zero entry in the set 
-    //array_filter will remove all zero entries
-    //we take the start key and end key of the zeros removed array
-    //we use these keys to get the slice of the original array between those keys 
-    function prepare_array($senior_arr, $group_count) { 
-      $senior_array_filtered[$group_count] = array_filter($senior_arr[$group_count]);
-      $senior_start_key[$group_count] = key($senior_array_filtered[$group_count]);
-      //moves pointer to end
-      end($senior_array_filtered[$group_count]);
-      $senior_end_key[$group_count] = key($senior_array_filtered[$group_count]);
+    // //prepare_array function gets array ready for the graph.  
+    // //array_filter => finds TRUE values and passes them to array.  
+    // //end => advances pointer to last element.  
+    // //key => returns the index element of the current array position
+    // //
+    // //We only want the data from the first non zero entry to the last non zero entry in the set 
+    // //array_filter will remove all zero entries
+    // //we take the start key and end key of the zeros removed array
+    // //we use these keys to get the slice of the original array between those keys 
+    // function prepare_array($senior_arr, $group_count) { 
+    //   $senior_array_filtered[$group_count] = array_filter($senior_arr[$group_count]);
+    //   $senior_start_key[$group_count] = key($senior_array_filtered[$group_count]);
+    //   //moves pointer to end
+    //   end($senior_array_filtered[$group_count]);
+    //   $senior_end_key[$group_count] = key($senior_array_filtered[$group_count]);
 
-      $senior_arr_start_end[$group_count] = array_slice($varpassed, $senior_start_key[$group_count], $senior_end_key[$group_count] - $senior_start_key[$group_count] + 1);
-      return $senior_arr_start_end[$group_count];
-    } 
+    //   $senior_arr_start_end[$group_count] = array_slice($varpassed, $senior_start_key[$group_count], $senior_end_key[$group_count] - $senior_start_key[$group_count] + 1);
+    //   return $senior_arr_start_end[$group_count];
+    // } 
 
     //All the data for the graph is computed from this seciton, 
     //$labels, $dataset, $individual_dataset, $individual_dataset_monies, $project_grand_total, $dollarvalueinhouse, $dateenergization, $group_dataset, $group_dataset_monies,$previous_month_project_hours, $total_project_dollars, $previous_month_project_monies, $total_project_monies_per_month_dataset, $total_project_hours_per_month_dataset, $last_bill_amount, $last_bill_month
@@ -875,8 +874,8 @@ class ProjectController extends Controller
 
       if ($selected_project) { #get all hours data for project
         $hours_data = $selected_project['hours_data'];
-        $hours_data;
-        $years = array_keys($hours_data);
+        //$years = array_keys($hours_data);
+        $years = ! empty($hours_data) ? array_keys($hours_data) : [];
         asort($years);
         $hours_arr = array();
         $labels_arr = array();
@@ -1172,7 +1171,10 @@ class ProjectController extends Controller
       if ($a =="CEG - General" or $a =="CEG Research and Training" or $a =="Education & Training" or $a =="CEG - Marketing" or $a == "NEEDS NAME") {
         continue;
       }
-      //dd($non_zero_project);
+      //dd($non_zero_projects);
+      if ($a == "Chisholm Storage"){
+        continue;
+      }
       $chart_info = get_chart_info($non_zero_project['projectname'],$employeeLIST,$groupLIST);
       //dd($chart_info);
       $chart_variable[$i]= $chart_info['project_grand_total'];
