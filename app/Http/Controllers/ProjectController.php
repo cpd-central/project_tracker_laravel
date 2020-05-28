@@ -1250,6 +1250,16 @@ class ProjectController extends Controller
     return view('pages.hoursgraph', compact('projects', 'chart_hours', 'chart_dollars', 'chart_variable','dollarvalueinhousearray','chart_units'));
   }
 
+  public function planner(){
+    $projects = Project::all()->where('projectstatus', 'Won');
+    return view('pages.planner', compact('projects'));
+  }
+
+  public function manage_project($id){
+    $project = Project::find($id);
+    return view('pages.manage_project', compact('project'));
+  }
+
   /**
    * Finds a project in the database by $id and deletes it from the database.
    * @param $id
