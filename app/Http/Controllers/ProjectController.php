@@ -1250,11 +1250,68 @@ class ProjectController extends Controller
     return view('pages.hoursgraph', compact('projects', 'chart_hours', 'chart_dollars', 'chart_variable','dollarvalueinhousearray','chart_units'));
   }
 
-  public function planner(){
+   /**
+   * Opens a page displaying all projects that are Won.
+   * @return view 'pages.planner'
+   */ 
+  public function planner(Request $request){
     $projects = Project::all()->where('projectstatus', 'Won');
-    return view('pages.planner', compact('projects'));
+    $search = $request['search'];
+    $term = $request['sort'];
+    $invert = $request['invert']; 
+    if(isset($search) || (isset($term) && $term != "-----Select-----")){
+      $projects = $this->planner_search($search, $term, $invert);
+    }
+    foreach($projects as $project){
+      $this->displayFormat($project);
+    }
+    return view('pages.planner', compact('projects','term', 'search', 'invert'));
   }
 
+    /**
+   * Search method for the planner page that searches and sorts through only won projects.
+   * @return $projects
+   */ 
+  public function planner_search($search_term, $sort_term, $invert)
+  {
+    $won_projects = Project::where(array(['projectstatus', 'Won']));
+    if(isset($invert))
+    {
+      $asc_desc = 'desc';
+    }
+    else
+    {
+      $asc_desc = 'asc';
+    }
+    if (isset($search_term)) {
+      if (isset($sort_term) && $sort_term != "-----Select-----"){
+        $projects = $won_projects->where('projectname', 'regexp', "/$search_term/i")
+                    ->orderBy($sort_term, $asc_desc)
+                    ->get();             
+      }
+      else {
+        $projects = $won_projects->where('projectname', 'regexp', "/$search_term/i")
+                    ->get();
+    }
+    }
+
+    else {
+      $projects = $won_projects->orderBy($sort_term, $asc_desc)->get();
+      //echo print_r(count($projects));
+      //echo '<br>';
+    }
+
+    foreach ($projects as $project) {
+      $project = $this->displayFormat($project);
+    }
+    return $projects;
+
+  }
+
+   /**
+   * Finds the specific project that you want to manage due dates.
+   * @return view 'pages.manage_project'
+   */ 
   public function manage_project($id){
     $project = Project::find($id);
     return view('pages.manage_project', compact('project'));
