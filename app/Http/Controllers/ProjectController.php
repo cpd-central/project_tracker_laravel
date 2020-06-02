@@ -311,18 +311,13 @@ class ProjectController extends Controller
         } 
 
       }  
-      //echo "<br>";
-      echo "<br>" . "id_billing_array: " . var_dump($id_billing_array) . "<br>"; 
       //still need a global bill array
       $project = Project::find($id); 
       $previous_month = date('F', strtotime('-21 day'));
       $year_of_previous_month = date('Y', strtotime('-21 day')); 
 
       foreach ($id_billing_array as $id_billing => $value) {
-        echo "id_billing: " . $id_billing . "<br>";
-        echo "value: " . $value . "<br>";
-        $project = Project::find($id_billing); 
-        echo "bill_array before addition: " . print_r($project->bill_amount) . "<br>";
+        $project = Project::find($id_billing);
         //$bill_array[$year_of_previous_month][$previous_month] = $value;
 
         $bill_amount=$project->bill_amount;
