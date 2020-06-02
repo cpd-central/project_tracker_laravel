@@ -1314,7 +1314,215 @@ class ProjectController extends Controller
    */ 
   public function manage_project($id){
     $project = Project::find($id);
+    $project = $this->format_due_dates($project);
     return view('pages.manage_project', compact('project'));
+  }
+
+  /**
+   * Changes or adds specific due dates from the manage project form
+   * @param $request - Request variable with attributes to be assigned to $project.
+   * @param $id - the unique id of the project to be updated.
+   * @return redirect /planner
+   */ 
+  public function edit_due_dates(Request $request, $id)
+  {
+    //$this->validate_request($request); 
+    $project = Project::find($id);
+    $this->store_dates($project, $request);
+    return redirect('/planner')->with('Success!', 'Project has been successfully updated');
+  }
+
+    /**
+   * Stores the given manage project data into the database
+   * @param $project - variable type Project to be saved to the database.
+   * @param $req - Request variable with attributes to be assigned to $project.
+   */
+  protected function store_dates($project, $req)
+  {
+    if (! $project['duedates']){
+      $duedates = array();
+
+      $physical = array();
+      $physical['ninety'] = array();
+      $physical['ninety']['drafter'] = null;
+      $physical['ninety']['engineer'] = null;
+      $physical['ninety']['due'] = null;
+      $physical['ifc'] = array();
+      $physical['ifc']['drafter'] = null;
+      $physical['ifc']['engineer'] = null;
+      $physical['ifc']['due'] = null;
+      $duedates['physical'] = $physical;
+
+      $wiring = array();
+      $wiring['ninety'] = array();
+      $wiring['ninety']['drafter'] = null;
+      $wiring['ninety']['engineer'] = null;
+      $wiring['ninety']['due'] = null;
+      $wiring['ifc'] = array();
+      $wiring['ifc']['drafter'] = null;
+      $wiring['ifc']['engineer'] = null;
+      $wiring['ifc']['due'] = null;
+      $duedates['wiring'] = $wiring;
+
+      $collection = array();
+      $collection['ninety'] = array();
+      $collection['ninety']['drafter'] = null;
+      $collection['ninety']['engineer'] = null;
+      $collection['ninety']['due'] = null;
+      $collection['ifc'] = array();
+      $collection['ifc']['drafter'] = null;
+      $collection['ifc']['engineer'] = null;
+      $collection['ifc']['due'] = null;
+      $duedates['collection'] = $collection;
+
+      $transmission = array();
+      $transmission['ninety'] = array();
+      $transmission['ninety']['drafter'] = null;
+      $transmission['ninety']['engineer'] = null;
+      $transmission['ninety']['due'] = null;
+      $transmission['ifc'] = array();
+      $transmission['ifc']['drafter'] = null;
+      $transmission['ifc']['engineer'] = null;
+      $transmission['ifc']['due'] = null;
+      $duedates['transmission'] = $transmission;
+
+      $scada = array();
+      $scada['drafter'] = null;
+      $scada['engineer'] = null;
+      $scada['due'] = null;
+      $duedates['scada'] = $scada;
+
+      $reactive = array();
+      $reactive['engineer'] = null;
+      $reactive['due'] = null;
+      $duedates['reactive'] = $reactive;
+
+      $ampacity = array();
+      $ampacity['engineer'] = null;
+      $ampacity['due'] = null;
+      $duedates['ampacity'] = $ampacity;
+
+      $arcflash = array();
+      $arcflash['engineer'] = null;
+      $arcflash['due'] = null;
+      $duedates['arcflash'] = $arcflash;
+
+      $relay = array();
+      $relay['engineer'] = null;
+      $relay['due'] = null;
+      $duedates['relay'] = $relay;
+
+      $allothers = array();
+      $allothers['engineer'] = null;
+      $allothers['due'] = null;
+      $duedates['allothers'] = $allothers;
+
+      $project->duedates = $duedates;
+      /*
+      $codes = array();
+      //Store code CEG
+      $daterangeArray = $request->get('daterange');
+      $CEG = array();
+      $CEG['Holiday'] = $this->databasePrep($this->formatArray($request->get('row0'), $daterangeArray)); 
+      $CEG['PTO'] = $this->databasePrep($this->formatArray($request->get('row1'), $daterangeArray));
+      $CEG['General and Admin'] = $this->databasePrep($this->formatArray($request->get('row2'), $daterangeArray));
+      $CEG['Staff Meetings and HR'] = $this->databasePrep($this->formatArray($request->get('row3'), $daterangeArray));
+      $codes['CEG'] = $CEG;
+      */
+    }
+      $duedates= $project['duedates'];
+
+      $duedates['physical']['ninety']['drafter'] = $this->store_dates_helper($duedates['physical']['ninety']['drafter'], $req->get('physicaldrafter90'));
+      $duedates['physical']['ninety']['engineer'] = $this->store_dates_helper($duedates['physical']['ninety']['engineer'], $req->get('physicaleng90'));
+      $duedates['physical']['ninety']['due'] = $this->strToDate($this->store_dates_helper($duedates['physical']['ninety']['due'], $req->get('physicaldate90')), null);
+      $duedates['physical']['ifc']['drafter'] = $this->store_dates_helper($duedates['physical']['ifc']['drafter'], $req->get('physicaldrafterifc'));
+      $duedates['physical']['ifc']['engineer'] = $this->store_dates_helper($duedates['physical']['ifc']['engineer'], $req->get('physicalengifc'));
+      $duedates['physical']['ifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['physical']['ifc']['due'], $req->get('physicaldateifc')), null);
+
+      $duedates['wiring']['ninety']['drafter'] = $this->store_dates_helper($duedates['wiring']['ninety']['drafter'], $req->get('wiredrafter90'));
+      $duedates['wiring']['ninety']['engineer'] = $this->store_dates_helper($duedates['wiring']['ninety']['engineer'], $req->get('wireeng90'));
+      $duedates['wiring']['ninety']['due'] = $this->strToDate($this->store_dates_helper($duedates['wiring']['ninety']['due'], $req->get('wiredate90')), null);
+      $duedates['wiring']['ifc']['drafter'] = $this->store_dates_helper($duedates['wiring']['ifc']['drafter'], $req->get('wiredrafterifc'));
+      $duedates['wiring']['ifc']['engineer'] = $this->store_dates_helper($duedates['wiring']['ifc']['engineer'], $req->get('wireengifc'));
+      $duedates['wiring']['ifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['wiring']['ifc']['due'], $req->get('wiredateifc')), null);
+
+      $duedates['collection']['ninety']['drafter'] = $this->store_dates_helper($duedates['collection']['ninety']['drafter'], $req->get('collectiondrafter90'));
+      $duedates['collection']['ninety']['engineer'] = $this->store_dates_helper($duedates['collection']['ninety']['engineer'], $req->get('collectioneng90'));
+      $duedates['collection']['ninety']['due'] = $this->strToDate($this->store_dates_helper($duedates['collection']['ninety']['due'], $req->get('collectiondate90')), null);
+      $duedates['collection']['ifc']['drafter'] = $this->store_dates_helper($duedates['collection']['ifc']['drafter'], $req->get('collectiondrafterifc'));
+      $duedates['collection']['ifc']['engineer'] = $this->store_dates_helper($duedates['collection']['ifc']['engineer'], $req->get('collectionengifc'));
+      $duedates['collection']['ifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['collection']['ifc']['due'], $req->get('collectiondateifc')), null);
+
+      $duedates['transmission']['ninety']['drafter'] = $this->store_dates_helper($duedates['transmission']['ninety']['drafter'], $req->get('transmissiondrafter90'));
+      $duedates['transmission']['ninety']['engineer'] = $this->store_dates_helper($duedates['transmission']['ninety']['engineer'], $req->get('transmissioneng90'));
+      $duedates['transmission']['ninety']['due'] = $this->strToDate($this->store_dates_helper($duedates['transmission']['ninety']['due'], $req->get('transmissiondate90')), null);
+      $duedates['transmission']['ifc']['drafter'] = $this->store_dates_helper($duedates['transmission']['ifc']['drafter'], $req->get('transmissiondrafterifc'));
+      $duedates['transmission']['ifc']['engineer'] = $this->store_dates_helper($duedates['transmission']['ifc']['engineer'], $req->get('transmissionengifc'));
+      $duedates['transmission']['ifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['transmission']['ifc']['due'], $req->get('transmissiondateifc')), null);
+
+      $duedates['scada']['drafter'] = $this->store_dates_helper($duedates['scada']['drafter'], $req->get('scadadrafter'));
+      $duedates['scada']['engineer'] = $this->store_dates_helper($duedates['scada']['engineer'], $req->get('scadaeng'));
+      $duedates['scada']['due'] = $this->strToDate($this->store_dates_helper($duedates['scada']['due'], $req->get('scadadate')), null);
+
+      $duedates['reactive']['engineer'] = $this->store_dates_helper($duedates['reactive']['engineer'], $req->get('reactiveeng'));
+      $duedates['reactive']['due'] = $this->strToDate($this->store_dates_helper($duedates['reactive']['due'], $req->get('reactivedate')), null);
+
+      $duedates['ampacity']['engineer'] = $this->store_dates_helper($duedates['ampacity']['engineer'], $req->get('ampacityeng'));
+      $duedates['ampacity']['due'] = $this->strToDate($this->store_dates_helper($duedates['ampacity']['due'], $req->get('ampacitydate')), null);
+
+      $duedates['arcflash']['engineer'] = $this->store_dates_helper($duedates['arcflash']['engineer'], $req->get('arcflasheng'));
+      $duedates['arcflash']['due'] = $this->strToDate($this->store_dates_helper($duedates['arcflash']['due'], $req->get('arcflashdate')), null);
+
+      $duedates['relay']['engineer'] = $this->store_dates_helper($duedates['relay']['engineer'], $req->get('relayeng'));
+      $duedates['relay']['due'] = $this->strToDate($this->store_dates_helper($duedates['relay']['due'], $req->get('relaydate')), null);
+
+      $duedates['allothers']['engineer'] = $this->store_dates_helper($duedates['allothers']['engineer'], $req->get('alleng'));
+      $duedates['allothers']['due'] = $this->strToDate($this->store_dates_helper($duedates['allothers']['due'], $req->get('alldate')), null);
+
+      $project->duedates = $duedates;
+      $project->save();
+  }
+    /**
+   * Helper method to store individual fields if they are not empty
+   * @param $duedats - variable containing the specific due date to be changed.
+   * @param $data - Request variable with attributes to be assigned to $duedates.
+   * @return $duedates - an updated version of $duedates with the specific field changed
+   */
+  protected function store_dates_helper($duedate, $data){
+    if($data != null || $data != ""){
+      $duedate = $data;
+    }
+    return $duedate;
+  }
+  /**
+   * Method used to format the due dates so that they can be displayed to the user on the manage project page
+   * @param $project - the current project requesting to be managed.
+   * @return $project - a modified version of projects so the dates can be displayed properly
+   */
+  protected function format_due_dates($project){
+
+    // Will format specific due dates if the project has been assigned them.
+    $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+    if ($project['duedates']){
+      $duedates = $project['duedates'];
+      $duedates['physical']['ninety']['due'] = $this->dateToStr($project['duedates']['physical']['ninety']['due']);
+      $duedates['physical']['ifc']['due'] = $this->dateToStr($project['duedates']['physical']['ifc']['due']);
+      $duedates['wiring']['ninety']['due'] = $this->dateToStr($project['duedates']['wiring']['ninety']['due']);
+      $duedates['wiring']['ifc']['due'] = $this->dateToStr($project['duedates']['wiring']['ifc']['due']);
+      $duedates['collection']['ninety']['due'] = $this->dateToStr($project['duedates']['collection']['ninety']['due']);
+      $duedates['collection']['ifc']['due'] = $this->dateToStr($project['duedates']['collection']['ifc']['due']);
+      $duedates['transmission']['ninety']['due'] = $this->dateToStr($project['duedates']['transmission']['ninety']['due']);
+      $duedates['transmission']['ifc']['due'] = $this->dateToStr($project['duedates']['transmission']['ifc']['due']);
+      $duedates['scada']['due'] = $this->dateToStr($project['duedates']['scada']['due']);
+      $duedates['reactive']['due'] = $this->dateToStr($project['duedates']['reactive']['due']);
+      $duedates['ampacity']['due'] = $this->dateToStr($project['duedates']['ampacity']['due']);
+      $duedates['arcflash']['due'] = $this->dateToStr($project['duedates']['arcflash']['due']);
+      $duedates['relay']['due'] = $this->dateToStr($project['duedates']['relay']['due']);
+      $duedates['allothers']['due'] = $this->dateToStr($project['duedates']['allothers']['due']);
+
+      $project->duedates = $duedates;
+    }
+    return $project;
   }
 
   /**
