@@ -1,30 +1,33 @@
 <!DOCTYPE html>
 @extends('layouts.default')
 <style>
-  #mastersubmitbuttton {
+  .mastersubmitbuttton {
   position: sticky;
   bottom: 0;
   }
 </style>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
 @section('page-title', 'Hours By Project Graph')
 @section('content')
 {{ old('project_id') }}
 <?php $x=0; $id=0; ?>
+@if ($chart_units == 'dollars')
+  <?php $toggle_type = 'hours' ?>
+@else
+  <?php $toggle_type = 'dollars'?>
+@endif
 
 @foreach($chart_variable as $var2)
   <?php $chart_variable[$x]=$var2; $x++; ?>
 @endforeach
-
-<button class="btn btn-primary" id="switch_chart_button" name="switch_chart_button" type="submit" value="dollars">Toggle Hours/Dollars</button>
-
+<form action="{{ route('pages.hoursgraph') }}" method="GET">
+  @csrf
+  <button class="btn btn-dark" id="switch_chart_button" name="switch_chart_button" type="submit" value="{{$toggle_type}}">Toggle Hours/Dollars</button>
+</form>
 <form action="{{ route('pages.hoursgraph') }}" method="POST">
   @csrf
     @if ($chart_units == 'dollars') <!-- the page defaults to dollars, but then can be toggeled to hours with this button-->
        <!--<input class="btn btn-primary" name="switch_chart_button" type="hidden" value="dollars"><button class="btn btn-primary" name="button" type="submit" value="dollars">Toggle Hours/Dollars</button> -->
-
       @foreach($chart_hours as $var) <!-- loops through graphs with hour data -->
         <div id="chart" class="htmlgraphhours">
           @isset($var)
@@ -127,41 +130,4 @@
     <input class="btn btn-primary" name="mastersubmitbuttton" type="hidden" value="hours"><button href="{{action('ProjectController@blah', $var->options['id'])}}" class="btn btn-primary" method="POST" type="submit">Master Submit Buttton</button> 
   </div>
 </form>
-<script type="text/javascript">
-  var graph_count = 1; //Keeps track on the toggle between Hours and Dollars
-  $(document).ready(function() {
-      $("#switch_chart_button").on('click', function() {
-        destroy();
-        create(graph_count);
-      }); 
-
-      $(window).keydown(function(event){
-        if(event.keyCode == 13) {
-          event.preventDefault();
-          return false;
-        }
-      });
-
-  });
-    
-  function destroy() {
-      $('.htmlgraphdollars').remove();    
-      $('.htmlgraphhours').remove();
-    }
-
-  function create(graph_count){
-    //Create Hours Chart
-    if(graph_count % 2 == 1){
-      <?php
-      $js_array = json_encode($chart_hours);
-      echo "var javascript_array = ". $js_array . ";\n";
-      ?>
-      javascript_array.forEach(function(item) {
-        console.log(item);
-      });
-        $('#dynamic_field').append(div);
-    }
-  }
-
-  </script>
 @endsection

@@ -1,6 +1,6 @@
 <?php
 $year = date("Y");
-$month = date("F");
+$month = date('F', strtotime('-21 day'));
 ?>
 <style>
   #header {
@@ -34,7 +34,14 @@ $month = date("F");
           <tr>
             <td>{{$project['projectname']}}</td>
             <td>{{$project['projectcode']}}</td>
-            <td>I need to figure out what's the best way to find the last month billed stored, then check to see if it is the current month.</td>  
+            <td><?php if(isset($project['bill_amount'][$year])){
+              $month_keys = array_keys($project['bill_amount'][$year]);
+              foreach($month_keys as $m){
+                if($m == $month){
+                  echo $project['bill_amount'][$year][$month];
+                }
+              }
+            } ?></td>  
             <td>@if(!empty($project['projectmanager']))
                   <?php $i = 1?>
                   @foreach ($project['projectmanager'] as $manager)

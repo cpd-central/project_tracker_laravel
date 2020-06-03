@@ -29,35 +29,20 @@ Route::post('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.won
 
 
 
-Route::get('/hoursgraph/', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified');
-Route::post('/hoursgraph/','ProjectController@blah')->name('pages.monthendbilling')->middleware('verified');
-//Route::get('/hoursgraph', 'ProjectController@appending')->middleware('verified');
-//Select Menu Route
-//Route::post('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph');
+Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified');
+Route::post('/hoursgraph','ProjectController@blah')->middleware('verified');
 
-
-
+Route::get('/monthendbilling', 'ProjectController@billing')->name('pages.monthendbilling')->middleware('verified', 'role');
 
 
 Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject')->middleware('verified');
 Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verified');
-//Route::post('/editproject/{id}', 'ProjectController@update2')->middleware('verified');
-
-Route::get('/monthendbilling', 'ProjectController@monthendfunction')->name('pages.monthendbilling')->middleware('verified');
-Route::post('/monthendbilling', 'ProjectController@monthendfunction');
-
-Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified', 'role');
 
 Route::delete('{id}', 'ProjectController@destroy')->middleware('verified');
 
 Auth::routes(['verify' => true]);
 
 Route::get('/home', 'HomeController@index')->name('home')->middleware('verified');
-
-#save this for later, for now, home will redirect to project index
-#Route::get('/home', 'HomeController@index')->name('home');
-
-
 
 Route::get('/timesheet', 'TimesheetController@check')->name('pages.timesheet')->middleware('verified');
 Route::post('/timesheet', 'TimesheetController@timesheetSave')->name('pages.timesheetSave')->middleware('verified');
@@ -67,7 +52,7 @@ Route::get('/roles/{id}', 'HomeController@destroy')->name('pages.rolesDelete')->
 Route::post('/roles', 'HomeController@update')->name('pages.rolesUpdate')->middleware('verified');
 
 #Corey adding route for new timesheet status page
-Route::get('/timesheetsentstatus/', 'TimesheetController@get_user_timesheet_status')->name('pages.timesheetsentstatus')->middleware('verified');
+Route::get('/timesheetsentstatus', 'TimesheetController@get_user_timesheet_status')->name('pages.timesheetsentstatus')->middleware('verified');
 
 
 

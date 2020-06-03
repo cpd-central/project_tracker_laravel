@@ -280,12 +280,6 @@ class ProjectController extends Controller
     return redirect('/projectindex')->with('Success!', 'Project has been successfully updated');
   }
 
-  public function monthendfunction() {
-    //do nother right now
-    echo "STEVE";
-  }
-
-
   public function blah(Request $request)
   {
     //if (isset($id)) {
@@ -301,16 +295,15 @@ class ProjectController extends Controller
 
       $id_billing_array=array();
       $x=0;
-      for ($x=0; $x <= $request['graph_count']; $x++) //
+      for ($x=0; $x <= $request['graph_count']; $x++) 
       {
-        if ($request['text_'.$x] != Null) {
+        if ($request['text_'.$x] != Null) { //If there's a billing field that has data, add it to the id array
           $id = $request['id_'.$x];
           $id_billing_array[$id] = $request['text_'.$x];
-        } else {
-          //do nothing
         } 
-
       }  
+
+      if(!empty($id_billing_array)){  //If the id array is empty, then nothing needs to be saved.
       //still need a global bill array
       $project = Project::find($id); 
       $previous_month = date('F', strtotime('-21 day'));
@@ -325,6 +318,7 @@ class ProjectController extends Controller
         //$project->bill_amount = $bill_array;
         $project->bill_amount = $bill_amount;
         $project->save();
+      }
     }
 
     //$project->bill_amount = $bill_array;
@@ -334,13 +328,19 @@ class ProjectController extends Controller
     //$projects = Project::all(); 
     //$projects = Project::whereRaw('bill_amount',1)->exists(); 
     $projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy('projectname');
-    return view('pages.monthendbilling',compact('previous_month', 'projects'));
+    //return view('pages.monthendbilling',compact('previous_month', 'projects'));
+    return redirect('/monthendbilling')->with('Success!', 'Billing has been successfully updated');;
     //return null;
     //} else {
       //echo "steve";
       //self::monthendfunction(); 
       //return redirect('/hoursgraph');
       //};
+  }
+
+  public function billing(){
+    $projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy('projectname');
+    return view('pages.monthendbilling', compact('projects'));
   }
 
 
@@ -775,10 +775,10 @@ class ProjectController extends Controller
   {
     if (!isset($request['switch_chart_button'])) {//This is a button to toggle whether hours or dollars is displayed in the graph.  
       $chart_units = 'hours';
-    } else { 
+    } 
+    else { 
       $chart_units = $request['switch_chart_button'];
     }
-
 
     if (!isset($request['switch_chart_button_2'])) {
       $chart_ind_vs_group = 'individuals';
