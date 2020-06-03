@@ -1263,7 +1263,7 @@ class ProjectController extends Controller
       $projects = $this->planner_search($search, $term, $invert);
     }
     foreach($projects as $project){
-      $this->displayFormat($project);
+      $this->format_due_dates($project);
     }
     return view('pages.planner', compact('projects','term', 'search', 'invert'));
   }
@@ -1339,145 +1339,172 @@ class ProjectController extends Controller
    */
   protected function store_dates($project, $req)
   {
-    if (! $project['duedates']){
+    if (!isset($project['duedates'])){
       $duedates = array();
 
-      $physical = array();
-      $physical['ninety'] = array();
-      $physical['ninety']['drafter'] = null;
-      $physical['ninety']['engineer'] = null;
-      $physical['ninety']['due'] = null;
-      $physical['ifc'] = array();
-      $physical['ifc']['drafter'] = null;
-      $physical['ifc']['engineer'] = null;
-      $physical['ifc']['due'] = null;
-      $duedates['physical'] = $physical;
+      $physical90 = array();
+      $physical90['person1'] = null;
+      $physical90['person2'] = null;
+      $physical90['due'] = null;
+      $duedates['physical90'] = $physical90;
 
-      $wiring = array();
-      $wiring['ninety'] = array();
-      $wiring['ninety']['drafter'] = null;
-      $wiring['ninety']['engineer'] = null;
-      $wiring['ninety']['due'] = null;
-      $wiring['ifc'] = array();
-      $wiring['ifc']['drafter'] = null;
-      $wiring['ifc']['engineer'] = null;
-      $wiring['ifc']['due'] = null;
-      $duedates['wiring'] = $wiring;
+      $physicalifc = array();
+      $physicalifc['person1'] = null;
+      $physicalifc['person2'] = null;
+      $physicalifc['due'] = null;
+      $duedates['physicalifc'] = $physicalifc;
 
-      $collection = array();
-      $collection['ninety'] = array();
-      $collection['ninety']['drafter'] = null;
-      $collection['ninety']['engineer'] = null;
-      $collection['ninety']['due'] = null;
-      $collection['ifc'] = array();
-      $collection['ifc']['drafter'] = null;
-      $collection['ifc']['engineer'] = null;
-      $collection['ifc']['due'] = null;
-      $duedates['collection'] = $collection;
+      $wiring90 = array();
+      $wiring90['person1'] = null;
+      $wiring90['person2'] = null;
+      $wiring90['due'] = null;
+      $duedates['wiring90'] = $wiring90;
 
-      $transmission = array();
-      $transmission['ninety'] = array();
-      $transmission['ninety']['drafter'] = null;
-      $transmission['ninety']['engineer'] = null;
-      $transmission['ninety']['due'] = null;
-      $transmission['ifc'] = array();
-      $transmission['ifc']['drafter'] = null;
-      $transmission['ifc']['engineer'] = null;
-      $transmission['ifc']['due'] = null;
-      $duedates['transmission'] = $transmission;
+      $wiringifc = array();
+      $wiringifc['person1'] = null;
+      $wiringifc['person2'] = null;
+      $wiringifc['due'] = null;
+      $duedates['wiringifc'] = $wiringifc;
+      
+      $collection90 = array();
+      $collection90['person1'] = null;
+      $collection90['person2'] = null;
+      $collection90['due'] = null;
+      $duedates['collection90'] = $collection90;
+
+      $collectionifc = array();
+      $collectionifc['person1'] = null;
+      $collectionifc['person2'] = null;
+      $collectionifc['due'] = null;
+      $duedates['collectionifc'] = $collectionifc;
+
+      $transmission90 = array();
+      $transmission90['person1'] = null;
+      $transmission90['person2'] = null;
+      $transmission90['due'] = null;
+      $duedates['transmission90'] = $transmission90;
+
+      $transmissionifc = array();
+      $transmissionifc['person1'] = null;
+      $transmissionifc['person2'] = null;
+      $transmissionifc['due'] = null;
+      $duedates['transmissionifc'] = $transmissionifc;
 
       $scada = array();
-      $scada['drafter'] = null;
-      $scada['engineer'] = null;
+      $scada['person1'] = null;
+      $scada['person2'] = null;
       $scada['due'] = null;
       $duedates['scada'] = $scada;
 
       $reactive = array();
-      $reactive['engineer'] = null;
+      $reactive['person1'] = null;
       $reactive['due'] = null;
       $duedates['reactive'] = $reactive;
 
       $ampacity = array();
-      $ampacity['engineer'] = null;
+      $ampacity['person1'] = null;
       $ampacity['due'] = null;
       $duedates['ampacity'] = $ampacity;
 
       $arcflash = array();
-      $arcflash['engineer'] = null;
+      $arcflash['person1'] = null;
       $arcflash['due'] = null;
       $duedates['arcflash'] = $arcflash;
 
       $relay = array();
-      $relay['engineer'] = null;
+      $relay['person1'] = null;
       $relay['due'] = null;
       $duedates['relay'] = $relay;
 
       $allothers = array();
-      $allothers['engineer'] = null;
+      $allothers['person1'] = null;
       $allothers['due'] = null;
       $duedates['allothers'] = $allothers;
 
       $project->duedates = $duedates;
-      /*
-      $codes = array();
-      //Store code CEG
-      $daterangeArray = $request->get('daterange');
-      $CEG = array();
-      $CEG['Holiday'] = $this->databasePrep($this->formatArray($request->get('row0'), $daterangeArray)); 
-      $CEG['PTO'] = $this->databasePrep($this->formatArray($request->get('row1'), $daterangeArray));
-      $CEG['General and Admin'] = $this->databasePrep($this->formatArray($request->get('row2'), $daterangeArray));
-      $CEG['Staff Meetings and HR'] = $this->databasePrep($this->formatArray($request->get('row3'), $daterangeArray));
-      $codes['CEG'] = $CEG;
-      */
     }
       $duedates= $project['duedates'];
 
-      $duedates['physical']['ninety']['drafter'] = $this->store_dates_helper($duedates['physical']['ninety']['drafter'], $req->get('physicaldrafter90'));
-      $duedates['physical']['ninety']['engineer'] = $this->store_dates_helper($duedates['physical']['ninety']['engineer'], $req->get('physicaleng90'));
-      $duedates['physical']['ninety']['due'] = $this->strToDate($this->store_dates_helper($duedates['physical']['ninety']['due'], $req->get('physicaldate90')), null);
-      $duedates['physical']['ifc']['drafter'] = $this->store_dates_helper($duedates['physical']['ifc']['drafter'], $req->get('physicaldrafterifc'));
-      $duedates['physical']['ifc']['engineer'] = $this->store_dates_helper($duedates['physical']['ifc']['engineer'], $req->get('physicalengifc'));
-      $duedates['physical']['ifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['physical']['ifc']['due'], $req->get('physicaldateifc')), null);
+      $duedates['physical90']['person1'] = $this->store_dates_helper($duedates['physical90']['person1'], $req->get('physical90person1'));
+      $duedates['physical90']['person2'] = $this->store_dates_helper($duedates['physical90']['person2'], $req->get('physical90person2'));
+      $duedates['physical90']['due'] = $this->strToDate($this->store_dates_helper($duedates['physical90']['due'], $req->get('physical90due')), null);
 
-      $duedates['wiring']['ninety']['drafter'] = $this->store_dates_helper($duedates['wiring']['ninety']['drafter'], $req->get('wiredrafter90'));
-      $duedates['wiring']['ninety']['engineer'] = $this->store_dates_helper($duedates['wiring']['ninety']['engineer'], $req->get('wireeng90'));
-      $duedates['wiring']['ninety']['due'] = $this->strToDate($this->store_dates_helper($duedates['wiring']['ninety']['due'], $req->get('wiredate90')), null);
-      $duedates['wiring']['ifc']['drafter'] = $this->store_dates_helper($duedates['wiring']['ifc']['drafter'], $req->get('wiredrafterifc'));
-      $duedates['wiring']['ifc']['engineer'] = $this->store_dates_helper($duedates['wiring']['ifc']['engineer'], $req->get('wireengifc'));
-      $duedates['wiring']['ifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['wiring']['ifc']['due'], $req->get('wiredateifc')), null);
+      $duedates['physicalifc']['person1'] = $this->store_dates_helper($duedates['physicalifc']['person1'], $req->get('physicalifcperson1'));
+      $duedates['physicalifc']['person2'] = $this->store_dates_helper($duedates['physicalifc']['person2'], $req->get('physicalifcperson2'));
+      $duedates['physicalifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['physicalifc']['due'], $req->get('physicalifcdue')), null);
 
-      $duedates['collection']['ninety']['drafter'] = $this->store_dates_helper($duedates['collection']['ninety']['drafter'], $req->get('collectiondrafter90'));
-      $duedates['collection']['ninety']['engineer'] = $this->store_dates_helper($duedates['collection']['ninety']['engineer'], $req->get('collectioneng90'));
-      $duedates['collection']['ninety']['due'] = $this->strToDate($this->store_dates_helper($duedates['collection']['ninety']['due'], $req->get('collectiondate90')), null);
-      $duedates['collection']['ifc']['drafter'] = $this->store_dates_helper($duedates['collection']['ifc']['drafter'], $req->get('collectiondrafterifc'));
-      $duedates['collection']['ifc']['engineer'] = $this->store_dates_helper($duedates['collection']['ifc']['engineer'], $req->get('collectionengifc'));
-      $duedates['collection']['ifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['collection']['ifc']['due'], $req->get('collectiondateifc')), null);
+      $duedates['wiring90']['person1'] = $this->store_dates_helper($duedates['wiring90']['person1'], $req->get('wire90person1'));
+      $duedates['wiring90']['person2'] = $this->store_dates_helper($duedates['wiring90']['person2'], $req->get('wire90person2'));
+      $duedates['wiring90']['due'] = $this->strToDate($this->store_dates_helper($duedates['wiring90']['due'], $req->get('wire90due')), null);
 
-      $duedates['transmission']['ninety']['drafter'] = $this->store_dates_helper($duedates['transmission']['ninety']['drafter'], $req->get('transmissiondrafter90'));
-      $duedates['transmission']['ninety']['engineer'] = $this->store_dates_helper($duedates['transmission']['ninety']['engineer'], $req->get('transmissioneng90'));
-      $duedates['transmission']['ninety']['due'] = $this->strToDate($this->store_dates_helper($duedates['transmission']['ninety']['due'], $req->get('transmissiondate90')), null);
-      $duedates['transmission']['ifc']['drafter'] = $this->store_dates_helper($duedates['transmission']['ifc']['drafter'], $req->get('transmissiondrafterifc'));
-      $duedates['transmission']['ifc']['engineer'] = $this->store_dates_helper($duedates['transmission']['ifc']['engineer'], $req->get('transmissionengifc'));
-      $duedates['transmission']['ifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['transmission']['ifc']['due'], $req->get('transmissiondateifc')), null);
+      $duedates['wiringifc']['person1'] = $this->store_dates_helper($duedates['wiringifc']['person1'], $req->get('wireifcperson1'));
+      $duedates['wiringifc']['person2'] = $this->store_dates_helper($duedates['wiringifc']['person2'], $req->get('wireifcperson2'));
+      $duedates['wiringifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['wiringifc']['due'], $req->get('wireifcdue')), null);
 
-      $duedates['scada']['drafter'] = $this->store_dates_helper($duedates['scada']['drafter'], $req->get('scadadrafter'));
-      $duedates['scada']['engineer'] = $this->store_dates_helper($duedates['scada']['engineer'], $req->get('scadaeng'));
-      $duedates['scada']['due'] = $this->strToDate($this->store_dates_helper($duedates['scada']['due'], $req->get('scadadate')), null);
+      $duedates['collection90']['person1'] = $this->store_dates_helper($duedates['collection90']['person1'], $req->get('collection90person1'));
+      $duedates['collection90']['person2'] = $this->store_dates_helper($duedates['collection90']['person2'], $req->get('collection90person2'));
+      $duedates['collection90']['due'] = $this->strToDate($this->store_dates_helper($duedates['collection90']['due'], $req->get('collection90due')), null);
 
-      $duedates['reactive']['engineer'] = $this->store_dates_helper($duedates['reactive']['engineer'], $req->get('reactiveeng'));
-      $duedates['reactive']['due'] = $this->strToDate($this->store_dates_helper($duedates['reactive']['due'], $req->get('reactivedate')), null);
+      $duedates['collectionifc']['person1'] = $this->store_dates_helper($duedates['collectionifc']['person1'], $req->get('collectionifcperson1'));
+      $duedates['collectionifc']['person2'] = $this->store_dates_helper($duedates['collectionifc']['person2'], $req->get('collectionifcperson2'));
+      $duedates['collectionifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['collectionifc']['due'], $req->get('collectionifcdue')), null);
 
-      $duedates['ampacity']['engineer'] = $this->store_dates_helper($duedates['ampacity']['engineer'], $req->get('ampacityeng'));
-      $duedates['ampacity']['due'] = $this->strToDate($this->store_dates_helper($duedates['ampacity']['due'], $req->get('ampacitydate')), null);
+      $duedates['transmission90']['person1'] = $this->store_dates_helper($duedates['transmission90']['person1'], $req->get('transmission90person1'));
+      $duedates['transmission90']['person2'] = $this->store_dates_helper($duedates['transmission90']['person2'], $req->get('transmission90person2'));
+      $duedates['transmission90']['due'] = $this->strToDate($this->store_dates_helper($duedates['transmission90']['due'], $req->get('transmission90due')), null);
 
-      $duedates['arcflash']['engineer'] = $this->store_dates_helper($duedates['arcflash']['engineer'], $req->get('arcflasheng'));
-      $duedates['arcflash']['due'] = $this->strToDate($this->store_dates_helper($duedates['arcflash']['due'], $req->get('arcflashdate')), null);
+      $duedates['transmissionifc']['person1'] = $this->store_dates_helper($duedates['transmissionifc']['person1'], $req->get('transmissionifcperson1'));
+      $duedates['transmissionifc']['person2'] = $this->store_dates_helper($duedates['transmissionifc']['person2'], $req->get('transmissionifcperson2'));
+      $duedates['transmissionifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['transmissionifc']['due'], $req->get('transmissionifcdue')), null);
 
-      $duedates['relay']['engineer'] = $this->store_dates_helper($duedates['relay']['engineer'], $req->get('relayeng'));
-      $duedates['relay']['due'] = $this->strToDate($this->store_dates_helper($duedates['relay']['due'], $req->get('relaydate')), null);
+      $duedates['scada']['person1'] = $this->store_dates_helper($duedates['scada']['person1'], $req->get('scadaperson1'));
+      $duedates['scada']['person2'] = $this->store_dates_helper($duedates['scada']['person2'], $req->get('scadaperson2'));
+      $duedates['scada']['due'] = $this->strToDate($this->store_dates_helper($duedates['scada']['due'], $req->get('scadadue')), null);
 
-      $duedates['allothers']['engineer'] = $this->store_dates_helper($duedates['allothers']['engineer'], $req->get('alleng'));
-      $duedates['allothers']['due'] = $this->strToDate($this->store_dates_helper($duedates['allothers']['due'], $req->get('alldate')), null);
+      $duedates['reactive']['person1'] = $this->store_dates_helper($duedates['reactive']['person1'], $req->get('reactiveperson1'));
+      $duedates['reactive']['due'] = $this->strToDate($this->store_dates_helper($duedates['reactive']['due'], $req->get('reactivedue')), null);
+
+      $duedates['ampacity']['person1'] = $this->store_dates_helper($duedates['ampacity']['person1'], $req->get('ampacityperson1'));
+      $duedates['ampacity']['due'] = $this->strToDate($this->store_dates_helper($duedates['ampacity']['due'], $req->get('ampacitydue')), null);
+
+      $duedates['arcflash']['person1'] = $this->store_dates_helper($duedates['arcflash']['person1'], $req->get('arcflashperson1'));
+      $duedates['arcflash']['due'] = $this->strToDate($this->store_dates_helper($duedates['arcflash']['due'], $req->get('arcflashdue')), null);
+
+      $duedates['relay']['person1'] = $this->store_dates_helper($duedates['relay']['person1'], $req->get('relayperson1'));
+      $duedates['relay']['due'] = $this->strToDate($this->store_dates_helper($duedates['relay']['due'], $req->get('relaydue')), null);
+
+      $duedates['allothers']['person1'] = $this->store_dates_helper($duedates['allothers']['person1'], $req->get('allperson1'));
+      $duedates['allothers']['due'] = $this->strToDate($this->store_dates_helper($duedates['allothers']['due'], $req->get('alldue')), null);
+      
+      if ($req->get('namefield1') != null){
+        if (!isset($duedates['additionalfields'])){
+
+          $additionalfields = array();
+          $additionalfields[$req->get('namefield1')] = array();
+          $additionalfields[$req->get('namefield1')]['person1field1'] = $req->get('person1field1');
+          $additionalfields[$req->get('namefield1')]['person2field1'] = $req->get('person2field1');
+          $additionalfields[$req->get('namefield1')]['duefield1'] = $this->strToDate($req->get('duefield1'), null);
+          $duedates['additionalfields'] = $additionalfields;
+        }
+        else{
+          $duedates['additionalfields'][$req->get('namefield1')] = array();
+          $duedates['additionalfields'][$req->get('namefield1')]['person1field1'] = $req->get('person1field1');
+          $duedates['additionalfields'][$req->get('namefield1')]['person2field1'] = $req->get('person2field1');
+          $duedates['additionalfields'][$req->get('namefield1')]['duefield1'] = $this->strToDate($req->get('duefield1'), null);
+        }
+      }
+        /*
+        echo $req->get('namefield1');
+        echo $req->get('person1field1');
+        echo $req->get('person2field1');
+        echo $req->get('duefield1');
+        echo $req->get('clicks');
+        $namefield1 = array();
+        $namefield1['person1field1'] = $req->get('person1field1');
+        $namefield1['person2field1'] = $req->get('person2field1');
+        $namefield1['duefield1'] = $this->strToDate($req->get('duefield1'), null);
+        $duedates[$req->get('namefield1')] = $namefield1;
+        */
 
       $project->duedates = $duedates;
       $project->save();
@@ -1505,14 +1532,14 @@ class ProjectController extends Controller
     $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
     if ($project['duedates']){
       $duedates = $project['duedates'];
-      $duedates['physical']['ninety']['due'] = $this->dateToStr($project['duedates']['physical']['ninety']['due']);
-      $duedates['physical']['ifc']['due'] = $this->dateToStr($project['duedates']['physical']['ifc']['due']);
-      $duedates['wiring']['ninety']['due'] = $this->dateToStr($project['duedates']['wiring']['ninety']['due']);
-      $duedates['wiring']['ifc']['due'] = $this->dateToStr($project['duedates']['wiring']['ifc']['due']);
-      $duedates['collection']['ninety']['due'] = $this->dateToStr($project['duedates']['collection']['ninety']['due']);
-      $duedates['collection']['ifc']['due'] = $this->dateToStr($project['duedates']['collection']['ifc']['due']);
-      $duedates['transmission']['ninety']['due'] = $this->dateToStr($project['duedates']['transmission']['ninety']['due']);
-      $duedates['transmission']['ifc']['due'] = $this->dateToStr($project['duedates']['transmission']['ifc']['due']);
+      $duedates['physical90']['due'] = $this->dateToStr($project['duedates']['physical90']['due']);
+      $duedates['physicalifc']['due'] = $this->dateToStr($project['duedates']['physicalifc']['due']);
+      $duedates['wiring90']['due'] = $this->dateToStr($project['duedates']['wiring90']['due']);
+      $duedates['wiringifc']['due'] = $this->dateToStr($project['duedates']['wiringifc']['due']);
+      $duedates['collection90']['due'] = $this->dateToStr($project['duedates']['collection90']['due']);
+      $duedates['collectionifc']['due'] = $this->dateToStr($project['duedates']['collectionifc']['due']);
+      $duedates['transmission90']['due'] = $this->dateToStr($project['duedates']['transmission90']['due']);
+      $duedates['transmissionifc']['due'] = $this->dateToStr($project['duedates']['transmissionifc']['due']);
       $duedates['scada']['due'] = $this->dateToStr($project['duedates']['scada']['due']);
       $duedates['reactive']['due'] = $this->dateToStr($project['duedates']['reactive']['due']);
       $duedates['ampacity']['due'] = $this->dateToStr($project['duedates']['ampacity']['due']);

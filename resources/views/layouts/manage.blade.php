@@ -1,4 +1,6 @@
 <!doctype html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <html>
     <title id="page-title">@yield('page-title')</title>
     <head>
@@ -21,6 +23,7 @@
           </div>
         </div>
         @endif
+        <td><a href="{{action('ProjectController@planner')}}" class="btn btn-warning">Back to Project Planner</a></td>
         <h2><b>@yield('title')</b></h2>    
         <h4>@yield('h4proposal')</h4>
         <div class="container">
@@ -40,137 +43,142 @@
                 <label for="dateenergization">Date of Energization:</label>
                 <input type="date" class="form-control" id="dateenergization" name="dateenergization" readonly value="@if(old('dateenergization'))<?= old('dateenergization') ?>@else<?= $__env->yieldContent('dateenergization')?>@endif">
               </div>
-              <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit Details</a></td>
          </div>
+        <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit Details</a></td>
         </br>
-        <h5><b>Physical Drawing Package</b></h5>
-        <h6><b>90%</b></h6>
+        </br>
+        <h5><b>Physical Drawing Package 90%</b></h5>
           <div class="row">
             <div class="form-group col-md-4">
-                <label for="physicaldrafter90">Drafter</label>
-              <input type="text" class="form-control" name="physicaldrafter90" value="@if(old('physicaldrafter90')){{ old('physicaldrafter90') }} @else<?= $__env->yieldContent('physicaldrafter90')?>@endif">
+                <label for="physical90person1">Engineer/Person 1</label>
+              <input type="text" class="form-control" name="physical90person1" value="@if(old('physical90person1')){{ old('physical90person1') }} @else<?= $__env->yieldContent('physical90person1')?>@endif">
             </div>
             <div class="form-group col-md-4">
-                <label for="physicaleng90">Engineer</label>
-                <input type="text" class="form-control" id="physicaleng90" name="physicaleng90" value="@if(old('physicaleng90'))<?= old('physicaleng90') ?>@else<?= $__env->yieldContent('physicaleng90')?>@endif">
+                <label for="physical90person2">Drafter/Person 2</label>
+                <input type="text" class="form-control" id="physical90person2" name="physical90person2" value="@if(old('physical90person2'))<?= old('physical90person2') ?>@else<?= $__env->yieldContent('physical90person2')?>@endif">
             </div>
             <div class="form-group col-md-4">
-                <label for="physicaldate90">Due Date</label>
-                <input type="date" class="form-control" id="physicaldate90" name="physicaldate90" value="@if(old('physicaldate90'))<?= old('physicaldate90') ?>@else<?= $__env->yieldContent('physicaldate90')?>@endif">
+                <label for="physical90due">Due Date</label>
+                <input type="date" class="form-control" id="physical90due" name="physical90due" value="@if(old('physical90due'))<?= old('physical90due') ?>@else<?= $__env->yieldContent('physical90due')?>@endif">
             </div>
-        </div>         
-        <h6><b>IFC</b></h6>
+        </div> 
+      </br>
+    </br>        
+        <h5><b>Physical Drawing Package IFC</b></h5>
          <div class="row">
             <div class="form-group col-md-4">
-                <label for="physicaldrafterifc">Drafter</label>
-              <input type="text" class="form-control" name="physicaldrafterifc" value="@if(old('physicaldrafterifc')){{ old('physicaldrafterifc') }} @else<?= $__env->yieldContent('physicaldrafterifc')?>@endif">
+                <label for="physicalifcperson1">Engineer/Person 1</label>
+              <input type="text" class="form-control" name="physicalifcperson1" value="@if(old('physicalifcperson1')){{ old('physicalifcperson1') }} @else<?= $__env->yieldContent('physicalifcperson1')?>@endif">
             </div>
             <div class="form-group col-md-4">
-                <label for="physicalengifc">Engineer</label>
-                <input type="text" class="form-control" id="physicalengifc" name="physicalengifc" value="@if(old('physicalengifc'))<?= old('physicalengifc') ?>@else<?= $__env->yieldContent('physicalengifc')?>@endif">
+                <label for="physicalifcperson2">Drafter/Person 2</label>
+                <input type="text" class="form-control" id="physicalifcperson2" name="physicalifcperson2" value="@if(old('physicalifcperson2'))<?= old('physicalifcperson2') ?>@else<?= $__env->yieldContent('physicalifcperson2')?>@endif">
             </div>
             <div class="form-group col-md-4">
-                <label for="physicaldateifc">Due Date</label>
-                <input type="date" class="form-control" id="physicaldateifc" name="physicaldateifc" value="@if(old('physicaldateifc'))<?= old('physicaldateifc') ?>@else<?= $__env->yieldContent('physicaldateifc')?>@endif">
+                <label for="physicalifcdue">Due Date</label>
+                <input type="date" class="form-control" id="physicalifcdue" name="physicalifcdue" value="@if(old('physicalifcdue'))<?= old('physicalifcdue') ?>@else<?= $__env->yieldContent('physicalifcdue')?>@endif">
             </div>
          </div>
         </br>
     </br>
-    <h5><b>Wiring and Controls Drawing Package</b></h5>
-    <h6><b>90%</b></h6>
+    <h5><b>Wiring and Controls Drawing Package 90%</b></h5>
          <div class="row">
             <div class="form-group col-md-4">
-                <label for="wiredrafter90">Drafter</label>
-              <input type="text" class="form-control" name="wiredrafter90" value="@if(old('wiredrafter90')){{ old('wiredrafter90') }} @else<?= $__env->yieldContent('wiredrafter90')?>@endif">
+                <label for="wire90person1">Engineer/Person 1</label>
+              <input type="text" class="form-control" name="wire90person1" value="@if(old('wire90person1')){{ old('wire90person1') }} @else<?= $__env->yieldContent('wire90person1')?>@endif">
             </div>
             <div class="form-group col-md-4">
-                <label for="wireeng90">Engineer</label>
-                <input type="text" class="form-control" id="wireeng90" name="wireeng90" value="@if(old('wireeng90'))<?= old('wireeng90') ?>@else<?= $__env->yieldContent('wireeng90')?>@endif">
+                <label for="wire90person2">Drafter/Person 2</label>
+                <input type="text" class="form-control" id="wire90person2" name="wire90person2" value="@if(old('wire90person2'))<?= old('wire90person2') ?>@else<?= $__env->yieldContent('wire90person2')?>@endif">
             </div>
             <div class="form-group col-md-4">
-                <label for="wiredate90">Due Date</label>
-                <input type="date" class="form-control" id="wiredate90" name="wiredate90" value="@if(old('wiredate90'))<?= old('wiredate90') ?>@else<?= $__env->yieldContent('wiredate90')?>@endif">
-            </div>
-         </div>
-    <h6><b>IFC</b></h6>
-         <div class="row">
-            <div class="form-group col-md-4">
-                <label for="wiredrafterifc">Drafter</label>
-              <input type="text" class="form-control" name="wiredrafterifc" value="@if(old('wiredrafterifc')){{ old('wiredrafterifc') }} @else<?= $__env->yieldContent('wiredrafterifc')?>@endif">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="wireengifc">Engineer</label>
-                <input type="text" class="form-control" id="wireengifc" name="wireengifc" value="@if(old('wireengifc'))<?= old('wireengifc') ?>@else<?= $__env->yieldContent('wireengifc')?>@endif">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="wiredateifc">Due Date</label>
-                <input type="date" class="form-control" id="wiredateifc" name="wiredateifc" value="@if(old('wiredateifc'))<?= old('wiredateifc') ?>@else<?= $__env->yieldContent('wiredateifc')?>@endif">
+                <label for="wire90due">Due Date</label>
+                <input type="date" class="form-control" id="wire90due" name="wire90due" value="@if(old('wire90due'))<?= old('wire90due') ?>@else<?= $__env->yieldContent('wire90due')?>@endif">
             </div>
          </div>
         </br>
       </br>
-    <h5><b> Collection System Drawing Package</b></h5>
-    <h6><b>90%</b></h6>
+    <h5><b>Wiring and Controls Drawing Package IFC</b></h5>
+         <div class="row">
+            <div class="form-group col-md-4">
+                <label for="wireifcperson1">Engineer/Person 1</label>
+              <input type="text" class="form-control" name="wireifcperson1" value="@if(old('wireifcperson1')){{ old('wireifcperson1') }} @else<?= $__env->yieldContent('wireifcperson1')?>@endif">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="wireifcperson2">Drafter/Person 2</label>
+                <input type="text" class="form-control" id="wireifcperson2" name="wireifcperson2" value="@if(old('wireifcperson2'))<?= old('wireifcperson2') ?>@else<?= $__env->yieldContent('wireifcperson2')?>@endif">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="wireifcdue">Due Date</label>
+                <input type="date" class="form-control" id="wireifcdue" name="wireifcdue" value="@if(old('wireifcdue'))<?= old('wireifcdue') ?>@else<?= $__env->yieldContent('wireifcdue')?>@endif">
+            </div>
+         </div>
+        </br>
+      </br>
+    <h5><b> Collection System Drawing Package 90%</b></h5>
         <div class="row">
             <div class="form-group col-md-4">
-                <label for="collectiondrafter90">Drafter</label>
-                <input type="text" class="form-control" name="collectiondrafter90" value="@if(old('collectiondrafter90')){{ old('collectiondrafter90') }} @else<?= $__env->yieldContent('collectiondrafter90')?>@endif">
+                <label for="collection90person1">Engineer/Person 1</label>
+                <input type="text" class="form-control" name="collection90person1" value="@if(old('collection90person1')){{ old('collection90person1') }} @else<?= $__env->yieldContent('collection90person1')?>@endif">
             </div>
             <div class="form-group col-md-4">
-                <label for="collectioneng90">Engineer</label>
-                <input type="text" class="form-control" id="collectioneng90" name="collectioneng90" value="@if(old('collectioneng90'))<?= old('collectioneng90') ?>@else<?= $__env->yieldContent('collectioneng90')?>@endif">
+                <label for="collection90person2">Drafter/Person 2</label>
+                <input type="text" class="form-control" id="collection90person2" name="collection90person2" value="@if(old('collection90person2'))<?= old('collection90person2') ?>@else<?= $__env->yieldContent('collection90person2')?>@endif">
             </div>
             <div class="form-group col-md-4">
-                <label for="collectiondate90">Due Date</label>
-                <input type="date" class="form-control" id="collectiondate90" name="collectiondate90" value="@if(old('collectiondate90'))<?= old('collectiondate90') ?>@else<?= $__env->yieldContent('collectiondate90')?>@endif">
+                <label for="collection90due">Due Date</label>
+                <input type="date" class="form-control" id="collection90due" name="collection90due" value="@if(old('collection90due'))<?= old('collection90due') ?>@else<?= $__env->yieldContent('collection90due')?>@endif">
             </div>
         </div>
-      <h6><b>IFC</b></h6>
+      </br>
+    </br>
+    <h5><b> Collection System Drawing Package IFC</b></h5>
       <div class="row">
           <div class="form-group col-md-4">
-              <label for="collectiondrafterifc">Drafter</label>
-            <input type="text" class="form-control" name="collectiondrafterifc" value="@if(old('collectiondrafterifc')){{ old('collectiondrafterifc') }} @else<?= $__env->yieldContent('collectiondrafterifc')?>@endif">
+              <label for="collectionifcperson1">Engineer/Person 1</label>
+            <input type="text" class="form-control" name="collectionifcperson1" value="@if(old('collectionifcperson1')){{ old('collectionifcperson1') }} @else<?= $__env->yieldContent('collectionifcperson1')?>@endif">
           </div>
           <div class="form-group col-md-4">
-              <label for="collectionengifc">Engineer</label>
-              <input type="text" class="form-control" id="collectionengifc" name="collectionengifc" value="@if(old('collectionengifc'))<?= old('collectionengifc') ?>@else<?= $__env->yieldContent('collectionengifc')?>@endif">
+              <label for="collectionifcperson2">Drafter/Person 2</label>
+              <input type="text" class="form-control" id="collectionifcperson2" name="collectionifcperson2" value="@if(old('collectionifcperson2'))<?= old('collectionifcperson2') ?>@else<?= $__env->yieldContent('collectionifcperson2')?>@endif">
           </div>
           <div class="form-group col-md-4">
-              <label for="collectiondateifc">Due Date</label>
-              <input type="date" class="form-control" id="collectiondateifc" name="collectiondateifc" value="@if(old('collectiondateifc'))<?= old('collectiondateifc') ?>@else<?= $__env->yieldContent('collectiondateifc')?>@endif">
+              <label for="collectionifcdue">Due Date</label>
+              <input type="date" class="form-control" id="collectionifcdue" name="collectionifcdue" value="@if(old('collectionifcdue'))<?= old('collectionifcdue') ?>@else<?= $__env->yieldContent('collectionifcdue')?>@endif">
           </div>
       </div>
       </br>
     </br>
-    <h5><b> Transmission Line Drawing Package</b></h5>
-    <h6><b>90%</b></h6>
+    <h5><b> Transmission Line Drawing Package 90%</b></h5>
         <div class="row">
             <div class="form-group col-md-4">
-                <label for="transmissiondrafter90">Drafter</label>
-                <input type="text" class="form-control" name="transmissiondrafter90" value="@if(old('transmissiondrafter90')){{ old('transmissiondrafter90') }} @else<?= $__env->yieldContent('transmissiondrafter90')?>@endif">
+                <label for="transmission90person1">Engineer/Person 1</label>
+                <input type="text" class="form-control" name="transmission90person1" value="@if(old('transmission90person1')){{ old('transmission90person1') }} @else<?= $__env->yieldContent('transmission90person1')?>@endif">
             </div>
             <div class="form-group col-md-4">
-                <label for="transmissioneng90">Engineer</label>
-                <input type="text" class="form-control" id="transmissioneng90" name="transmissioneng90" value="@if(old('transmissioneng90'))<?= old('transmissioneng90') ?>@else<?= $__env->yieldContent('transmissioneng90')?>@endif">
+                <label for="transmission90person2">Drafter/Person 2</label>
+                <input type="text" class="form-control" id="transmission90person2" name="transmission90person2" value="@if(old('transmission90person2'))<?= old('transmission90person2') ?>@else<?= $__env->yieldContent('transmission90person2')?>@endif">
             </div>
             <div class="form-group col-md-4">
-                <label for="transmissiondate90">Due Date</label>
-                <input type="date" class="form-control" id="transmissiondate90" name="transmissiondate90" value="@if(old('transmissiondate90'))<?= old('transmissiondate90') ?>@else<?= $__env->yieldContent('transmissiondate90')?>@endif">
+                <label for="transmission90due">Due Date</label>
+                <input type="date" class="form-control" id="transmission90due" name="transmission90due" value="@if(old('transmission90due'))<?= old('transmission90due') ?>@else<?= $__env->yieldContent('transmission90due')?>@endif">
             </div>
         </div>
-      <h6><b>IFC</b></h6>
+      </br>
+    </br>
+    <h5><b> Transmission Line Drawing Package IFC</b></h5>
       <div class="row">
           <div class="form-group col-md-4">
-              <label for="transmissiondrafterifc">Drafter</label>
-            <input type="text" class="form-control" name="transmissiondrafterifc" value="@if(old('transmissiondrafterifc')){{ old('transmissiondrafterifc') }} @else<?= $__env->yieldContent('transmissiondrafterifc')?>@endif">
+              <label for="transmissionifcperson1">Engineer/Person 1</label>
+            <input type="text" class="form-control" name="transmissionifcperson1" value="@if(old('transmissionifcperson1')){{ old('transmissionifcperson1') }} @else<?= $__env->yieldContent('transmissionifcperson1')?>@endif">
           </div>
           <div class="form-group col-md-4">
-              <label for="transmissionengifc">Engineer</label>
-              <input type="text" class="form-control" id="transmissionengifc" name="transmissionengifc" value="@if(old('transmissionengifc'))<?= old('transmissionengifc') ?>@else<?= $__env->yieldContent('transmissionengifc')?>@endif">
+              <label for="transmissionifcperson2">Drafter/Person 2</label>
+              <input type="text" class="form-control" id="transmissionifcperson2" name="transmissionifcperson2" value="@if(old('transmissionifcperson2'))<?= old('transmissionifcperson2') ?>@else<?= $__env->yieldContent('transmissionifcperson2')?>@endif">
           </div>
           <div class="form-group col-md-4">
-              <label for="transmissiondateifc">Due Date</label>
-              <input type="date" class="form-control" id="transmissiondateifc" name="transmissiondateifc" value="@if(old('transmissiondateifc'))<?= old('transmissiondateifc') ?>@else<?= $__env->yieldContent('transmissiondateifc')?>@endif">
+              <label for="transmissionifcdue">Due Date</label>
+              <input type="date" class="form-control" id="transmissionifcdue" name="transmissionifcdue" value="@if(old('transmissionifcdue'))<?= old('transmissionifcdue') ?>@else<?= $__env->yieldContent('transmissionifcdue')?>@endif">
           </div>
       </div>
       </br>
@@ -178,16 +186,16 @@
     <h5><b>SCADA</b></h5>
     <div class="row">
         <div class="form-group col-md-4">
-            <label for="scadadrafter">Drafter</label>
-          <input type="text" class="form-control" name="scadadrafter" value="@if(old('scadadrafter')){{ old('scadadrafter') }} @else<?= $__env->yieldContent('scadadrafter')?>@endif">
+            <label for="scadaperson1">Engineer/Person 1r</label>
+          <input type="text" class="form-control" name="scadaperson1" value="@if(old('scadaperson1')){{ old('scadaperson1') }} @else<?= $__env->yieldContent('scadaperson1')?>@endif">
         </div>
         <div class="form-group col-md-4">
-            <label for="scadaeng">Engineer</label>
-            <input type="text" class="form-control" id="scadaeng" name="scadaeng" value="@if(old('scadaeng'))<?= old('scadaeng') ?>@else<?= $__env->yieldContent('scadaeng')?>@endif">
+            <label for="scadaperson2">Drafter/Person 2</label>
+            <input type="text" class="form-control" id="scadaperson2" name="scadaperson2" value="@if(old('scadaperson2'))<?= old('scadaperson2') ?>@else<?= $__env->yieldContent('scadaperson2')?>@endif">
         </div>
         <div class="form-group col-md-4">
-            <label for="scadadate">Due Date</label>
-            <input type="date" class="form-control" id="scadadate" name="scadadate" value="@if(old('scadadate'))<?= old('scadadate') ?>@else<?= $__env->yieldContent('scadadate')?>@endif">
+            <label for="scadadue">Due Date</label>
+            <input type="date" class="form-control" id="scadadue" name="scadadue" value="@if(old('scadadue'))<?= old('scadadue') ?>@else<?= $__env->yieldContent('scadadue')?>@endif">
         </div>
      </div>
   </br>
@@ -195,12 +203,12 @@
     <h5><b>Reactive Study</b></h5>
     <div class="row">
         <div class="form-group col-md-4">
-            <label for="reactiveeng">Engineer</label>
-            <input type="text" class="form-control" id="reactiveeng" name="reactiveeng" value="@if(old('reactiveeng'))<?= old('reactiveeng') ?>@else<?= $__env->yieldContent('reactiveeng')?>@endif">
+            <label for="reactiveperson1">Engineer/Person 1</label>
+            <input type="text" class="form-control" id="reactiveperson1" name="reactiveperson1" value="@if(old('reactiveperson1'))<?= old('reactiveperson1') ?>@else<?= $__env->yieldContent('reactiveperson1')?>@endif">
         </div>
         <div class="form-group col-md-4">
-            <label for="reactivedate">Due Date</label>
-            <input type="date" class="form-control" id="reactivedate" name="reactivedate" value="@if(old('reactivedate'))<?= old('reactivedate') ?>@else<?= $__env->yieldContent('reactivedate')?>@endif">
+            <label for="reactivedue">Due Date</label>
+            <input type="date" class="form-control" id="reactivedue" name="reactivedue" value="@if(old('reactivedue'))<?= old('reactivedue') ?>@else<?= $__env->yieldContent('reactivedue')?>@endif">
         </div>
      </div>
     </br>
@@ -208,12 +216,12 @@
     <h5><b>Ampacity Study</b></h5>
     <div class="row">
         <div class="form-group col-md-4">
-            <label for="ampacityeng">Engineer</label>
-            <input type="text" class="form-control" id="ampacityeng" name="ampacityeng" value="@if(old('ampacityeng'))<?= old('ampacityeng') ?>@else<?= $__env->yieldContent('ampacityeng')?>@endif">
+            <label for="ampacityperson1">Engineer/Person 1</label>
+            <input type="text" class="form-control" id="ampacityperson1" name="ampacityperson1" value="@if(old('ampacityperson1'))<?= old('ampacityperson1') ?>@else<?= $__env->yieldContent('ampacityperson1')?>@endif">
         </div>
         <div class="form-group col-md-4">
-            <label for="ampacitydate">Due Date</label>
-            <input type="date" class="form-control" id="ampacitydate" name="ampacitydate" value="@if(old('ampacitydate'))<?= old('ampacitydate') ?>@else<?= $__env->yieldContent('ampacitydate')?>@endif">
+            <label for="ampacitydue">Due Date</label>
+            <input type="date" class="form-control" id="ampacitydue" name="ampacitydue" value="@if(old('ampacitydue'))<?= old('ampacitydue') ?>@else<?= $__env->yieldContent('ampacitydue')?>@endif">
         </div>
      </div>
     </br>
@@ -221,12 +229,12 @@
     <h5><b>Arc Flash Study</b></h5>
     <div class="row">
         <div class="form-group col-md-4">
-            <label for="arcflasheng">Engineer</label>
-            <input type="text" class="form-control" id="arcflasheng" name="arcflasheng" value="@if(old('arcflasheng'))<?= old('arcflasheng') ?>@else<?= $__env->yieldContent('arcflasheng')?>@endif">
+            <label for="arcflashperson1">Engineer/Person 1</label>
+            <input type="text" class="form-control" id="arcflashperson1" name="arcflashperson1" value="@if(old('arcflashperson1'))<?= old('arcflashperson1') ?>@else<?= $__env->yieldContent('arcflashperson1')?>@endif">
         </div>
         <div class="form-group col-md-4">
-            <label for="arcflashdate">Due Date</label>
-            <input type="date" class="form-control" id="arcflashdate" name="arcflashdate" value="@if(old('arcflashdate'))<?= old('arcflashdate') ?>@else<?= $__env->yieldContent('arcflashdate')?>@endif">
+            <label for="arcflashdue">Due Date</label>
+            <input type="date" class="form-control" id="arcflashdue" name="arcflashdue" value="@if(old('arcflashdue'))<?= old('arcflashdue') ?>@else<?= $__env->yieldContent('arcflashdue')?>@endif">
         </div>
      </div>
     </br>
@@ -234,12 +242,12 @@
     <h5><b>Relay and Coordination Study</b></h5>
     <div class="row">
         <div class="form-group col-md-4">
-            <label for="relayeng">Engineer</label>
-            <input type="text" class="form-control" id="relayeng" name="relayeng" value="@if(old('relayeng'))<?= old('relayeng') ?>@else<?= $__env->yieldContent('relayeng')?>@endif">
+            <label for="relayperson1">Engineer/Person 1</label>
+            <input type="text" class="form-control" id="relayperson1" name="relayperson1" value="@if(old('relayperson1'))<?= old('relayperson1') ?>@else<?= $__env->yieldContent('relayperson1')?>@endif">
         </div>
         <div class="form-group col-md-4">
-            <label for="relaydate">Due Date</label>
-            <input type="date" class="form-control" id="relaydate" name="relaydate" value="@if(old('relaydate'))<?= old('relaydate') ?>@else<?= $__env->yieldContent('relaydate')?>@endif">
+            <label for="relaydue">Due Date</label>
+            <input type="date" class="form-control" id="relaydue" name="relaydue" value="@if(old('relaydue'))<?= old('relaydue') ?>@else<?= $__env->yieldContent('relaydue')?>@endif">
         </div>
      </div>
     </br>
@@ -247,14 +255,23 @@
     <h5><b>All Others Study</b></h5>
     <div class="row">
         <div class="form-group col-md-4">
-            <label for="alleng">Engineer</label>
-            <input type="text" class="form-control" id="alleng" name="alleng" value="@if(old('alleng'))<?= old('alleng') ?>@else<?= $__env->yieldContent('alleng')?>@endif">
+            <label for="allperson1">Engineer/Person 1</label>
+            <input type="text" class="form-control" id="allperson1" name="allperson1" value="@if(old('allperson1'))<?= old('allperson1') ?>@else<?= $__env->yieldContent('allperson1')?>@endif">
         </div>
         <div class="form-group col-md-4">
-            <label for="alldate">Due Date</label>
-            <input type="date" class="form-control" id="alldate" name="alldate" value="@if(old('alldate'))<?= old('alldate') ?>@else<?= $__env->yieldContent('alldate')?>@endif">
+            <label for="alldue">Due Date</label>
+            <input type="date" class="form-control" id="alldue" name="alldue" value="@if(old('alldue'))<?= old('alldue') ?>@else<?= $__env->yieldContent('alldue')?>@endif">
         </div>
      </div>
+    </br>
+    <div id="dynamic_field">
+    </div>
+    </br>
+    <div class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-warning" id="addform">Add Form</button>
+      </div>
+    </div>
     </br>
     <div class="row">
       <div class="form-group col-md-4">
@@ -263,5 +280,6 @@
     </div>
     </div>
   </form>
+  <script type="text/javascript" src="{{ URL::asset('js/addfields.js')}}"></script>
   </body>
 </html> 

@@ -36,6 +36,20 @@
       <th>Action</th>
       <th>Project Name</th>
       <th>Date of Energization</th>
+      <th>Physical Drawing Package 90%</th>
+      <th>Physical Drawing Package IFC</th>
+      <th>Wiring Drawing Package 90%</th>
+      <th>Wiring Drawing Package IFC</th>
+      <th>Collection Drawing Package 90%</th>
+      <th>Collection Drawing Package IFC</th>
+      <th>Transmission Drawing Package 90%</th>
+      <th>Transmission Drawing Package IFC</th>
+      <th>Scada</th>
+      <th>Reactive Study</th>
+      <th>Ampacity Study</th>
+      <th>Arc Flash Study</th>
+      <th>Relay and Coordination Study</th>
+      <th>All Others Study</th>
     </tr>
   </thead>
 @stop
@@ -46,6 +60,20 @@
         <td><a href="{{action('ProjectController@manage_project', $project['_id'])}}" class="btn btn-warning">Manage Project</a></td>
         <td>{{$project['projectname']}}</td>
         <td>{{$project['dateenergization']}}</td>
+        <td>{{$project['duedates']['physical90']['due']}}</td>
+        <td>{{$project['duedates']['physicalifc']['due']}}</td>
+        <td>{{$project['duedates']['wiring90']['due']}}</td>
+        <td>{{$project['duedates']['wiringifc']['due']}}</td>
+        <td>{{$project['duedates']['collection90']['due']}}</td>
+        <td>{{$project['duedates']['collectionifc']['due']}}</td>
+        <td>{{$project['duedates']['transmission90']['due']}}</td>
+        <td>{{$project['duedates']['transmissionifc']['due']}}</td>
+        <td>{{$project['duedates']['scada']['due']}}</td>
+        <td>{{$project['duedates']['reactive']['due']}}</td>
+        <td>{{$project['duedates']['ampacity']['due']}}</td>
+        <td>{{$project['duedates']['arcflash']['due']}}</td>
+        <td>{{$project['duedates']['relay']['due']}}</td>
+        <td>{{$project['duedates']['allothers']['due']}}</td>
     </tr>
 @endforeach
 @stop
