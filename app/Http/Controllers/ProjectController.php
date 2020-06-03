@@ -55,6 +55,7 @@ class ProjectController extends Controller
     $project->projectnotes = $req->get('projectnotes');
     $project->billingcontact = $req->get('billingcontact');
     $project->billingcontactemail = $req->get('billingcontactemail');
+    $project->billingmethod = $req->get('billingmethod');
     $project->billingnotes = $req->get('billingnotes');
     $project->filelocationofproposal = $req->get('filelocationofproposal');
     $project->filelocationofproject = $req->get('filelocationofproject');

@@ -24,9 +24,9 @@ $month = date('F', strtotime('-21 day'));
               <tr> 
                 <th>Project Name</th>
                 <th>Project Code</th>
-                <th>Bill Amount</th>
+                <th>HOLD or BILL this month?</th>
                 <th>Project Manager</th>
-                <th>T&M/Hold/Lump/SOV</th>
+                <th>T&M/Lump/SOV</th>
               </tr>
             </thead>
           </div>

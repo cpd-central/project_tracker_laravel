@@ -13,6 +13,15 @@
       }
     }
   }
+
+  function check_billing_method2($type, $saved_bill) {
+    if(isset($saved_bill)) {
+      if($type == $saved_bill) {
+        echo 'checked';
+      }
+    }
+  }
+
 ?>
 @extends('layouts.input')
 
@@ -168,6 +177,9 @@
 @section('billingcontact', $project['billingcontact'])
 @section('billingcontactemail', $project['billingcontactemail'])
 @section('billingnotes', $project['billingnotes'])
+@section('TandM', check_billing_method2('TandM',$project['billingmethod']))
+@section('Lump', check_billing_method2('Lump',$project['billingmethod']))
+@section('SOV', check_billing_method2('SOV',$project['billingmethod']))
 @section('filelocationofproposal', $project['filelocationofproposal'])
 @section('filelocationofproject', $project['filelocationofproject'])
 
