@@ -5,6 +5,63 @@
   position: sticky;
   bottom: 0;
   }
+    .switch {
+              position: relative;
+              display: inline-block;
+              width: 30px;
+              height: 17px;
+            }
+    .switch input { 
+                  opacity: 0;
+                  width: 0;
+                  height: 0;
+                }
+    .slider {
+                  position: absolute;
+                  cursor: pointer;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  background-color: #ccc;
+                  -webkit-transition: .2s;
+                  transition: .2;
+                }
+
+    .slider:before {
+                  position: absolute;
+                  content: "";
+                  height: 13px;
+                  width: 13px;
+                  left: 2px;
+                  bottom: 2px;
+                  background-color: white;
+                  -webkit-transition: .2s;
+                  transition: .2s;
+                }
+
+                input:checked + .slider {
+                  background-color: #2196F3;
+                }
+
+                input:focus + .slider {
+                  box-shadow: 0 0 1px #2196F3;
+                }
+
+                input:checked + .slider:before {
+                  -webkit-transform: translateX(13px);
+                  -ms-transform: translateX(13px);
+                  transform: translateX(13px);
+                }
+
+                /* Rounded sliders */
+        .slider.round {
+                  border-radius: 34px;
+                }
+
+        .slider.round:before {
+                  border-radius: 50%;
+                }
 </style>
 
 @section('page-title', 'Hours By Project Graph')
@@ -23,6 +80,16 @@
 <br>
 <form action="{{ route('pages.hoursgraph') }}" method="GET">
   @csrf
+  <label class="switch">
+    <input type="checkbox">
+    <span class="slider round"></span>
+  </label><label>Toggle ALL Projects</label>
+  <br>
+  <label class="switch">
+    <input type="checkbox">
+    <span class="slider round"></span>
+  </label><label>Toggle Dollars</label>
+  <br>
   <button class="btn btn-dark" id="switch_chart_button" name="switch_chart_button" type="submit" value="{{$toggle_type}}">Toggle Hours/Dollars</button>
 </form>
 <form action="{{ route('pages.hoursgraph') }}" method="POST">
@@ -30,6 +97,17 @@
     @if ($chart_units == 'dollars') <!-- the page defaults to dollars, but then can be toggeled to hours with this button-->
        <!--<input class="btn btn-primary" name="switch_chart_button" type="hidden" value="dollars"><button class="btn btn-primary" name="button" type="submit" value="dollars">Toggle Hours/Dollars</button> -->
       @foreach($chart as $var) <!-- loops through graphs with hour data -->
+      <?php $all = false;
+        if($all == false){
+        $fulltext = $var->options['title']['text'];
+        $splittextfull = explode(", ", $fulltext);
+        $split_pm = ltrim($splittextfull[2], 'PM is '); 
+        if($split_pm != "" || $split_pm == null){
+          if($all == false && auth()->user()->name != $split_pm) {
+            continue;
+          }
+        }
+      }?>
         <div id="chart" class="htmlgraphhours">
           @isset($var)
             {!! $var->container() !!}
@@ -73,13 +151,20 @@
       @endforeach
 
     @elseif ($chart_units == 'hours')
-      <tr>
-        <td>
-           <!-- <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="hours"><button class="btn btn-primary" name="button" type="submit" value="hours">Toggle Hours/Dollars</button> -->
-        </td>
-      </tr>
 
       @foreach($chart as $var) <!-- loops through graphs with dollar data --> 
+      
+      <?php $all = false;
+        if($all == false){
+        $fulltext = $var->options['title']['text'];
+        $splittextfull = explode(", ", $fulltext);
+        $split_pm = ltrim($splittextfull[2], 'PM is '); 
+        if($split_pm != "" || $split_pm == null){
+          if($all == false && auth()->user()->name != $split_pm) {
+            continue;
+          }
+        }
+      }?>
       <div id="dynamic_field">
         <div id="chart" class="htmlgraphdollars">
           @isset($var)
