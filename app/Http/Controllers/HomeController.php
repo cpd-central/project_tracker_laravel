@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\Project;
 
 class HomeController extends Controller
 {
@@ -24,7 +25,24 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('dashboard');
+        $billing = $this->billing_widget();
+        return view('dashboard', compact('billing'));
+    }
+
+    protected function billing_widget()
+    {
+        $need_billing = array();
+        $projects = Project::where('projectmanager', auth()->user()->name)->get();
+        $year = date('Y');
+        $month = date('F');
+        foreach($projects as $project){
+            if(isset($project['bill_amount'][$year])){
+                if(!in_array($month ,array_keys($project['bill_amount'][$year]))){
+                    array_push($need_billing, $project);
+                }
+            }
+        }
+        return $need_billing;
     }
 
     public function edit_roles()

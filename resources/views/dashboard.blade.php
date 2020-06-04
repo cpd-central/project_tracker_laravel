@@ -125,7 +125,28 @@ else{
 			<div class="card-footer">				
 			</div>
 		</div>
+		<?php if(auth()->user()->role != "user" && !empty($billing) && date('F', strtotime('+7 day')) != date('F')) {?>
+		<div class="card">
+			<div class="card-header">
+				<h3>Billing Widget</h3>
+			</div>
+			<div class="card-body">
+					<div class="form-group" style="{{$style_string}}">
+                        <table>
+							@foreach($billing as $bill)
+							<tr>
+								<td style="color:white;">
+									{{$bill['projectname']}} billing is due.
+								</td>
+							</tr>
+							@endforeach
+						</table>
+                    </div>
+			</div>
+		</div>
+	<?php } ?>
 	</div>
+
 </div>
 </body>
 </html>
