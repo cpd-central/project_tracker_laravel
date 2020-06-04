@@ -20,6 +20,7 @@
 @foreach($chart_variable as $var2)
   <?php $chart_variable[$x]=$var2; $x++; ?>
 @endforeach
+<br>
 <form action="{{ route('pages.hoursgraph') }}" method="GET">
   @csrf
   <button class="btn btn-dark" id="switch_chart_button" name="switch_chart_button" type="submit" value="{{$toggle_type}}">Toggle Hours/Dollars</button>
@@ -28,7 +29,7 @@
   @csrf
     @if ($chart_units == 'dollars') <!-- the page defaults to dollars, but then can be toggeled to hours with this button-->
        <!--<input class="btn btn-primary" name="switch_chart_button" type="hidden" value="dollars"><button class="btn btn-primary" name="button" type="submit" value="dollars">Toggle Hours/Dollars</button> -->
-      @foreach($chart_hours as $var) <!-- loops through graphs with hour data -->
+      @foreach($chart as $var) <!-- loops through graphs with hour data -->
         <div id="chart" class="htmlgraphhours">
           @isset($var)
             {!! $var->container() !!}
@@ -78,7 +79,7 @@
         </td>
       </tr>
 
-      @foreach($chart_dollars as $var) <!-- loops through graphs with dollar data --> 
+      @foreach($chart as $var) <!-- loops through graphs with dollar data --> 
       <div id="dynamic_field">
         <div id="chart" class="htmlgraphdollars">
           @isset($var)

@@ -53,7 +53,13 @@ $month = date('F', strtotime('-21 day'));
                   @endforeach
                 @endif
             </td>
-            <td>{{isset($project['bill_amount'])}}</td>
+            <td>@if(isset($project['billingmethod']))
+                  @if($project['billingmethod'] == 'TandM')
+                    <?php echo 'T&M' ?>
+                  @else
+                    <?php echo $project['billingmethod'] ?>
+                  @endif
+              @endif </td>
           </tr>
         @endforeach
       </div>

@@ -14,10 +14,16 @@
     }
   }
 
+  /**
+   * Checks if $saved_bill is not null and then checks to see if the $type keyword matches $saved_bill.
+   * @param $type - variable to be checked if it matches $saved_bill. 
+   * @param $saved_bill - Billing method keyword of radio button that is checked.
+   * @return "checked"
+   */
   function check_billing_method2($type, $saved_bill) {
     if(isset($saved_bill)) {
       if($type == $saved_bill) {
-        echo 'checked';
+        return 'checked';
       }
     }
   }
