@@ -116,29 +116,45 @@
             </thead>
               <tr>
                 <td colspan="1"><a href="{{action('ProjectController@edit_project', $var->options['id'])}}" class="btn btn-warning">Edit</a></td>
-                <td colspan="1">Total Spent (per billing code):                                                                             </td>
+                <td colspan="1"><b>Total Spent (per billing code):                                                                      </b></td>
                 <td colspan="1"><?php echo $var->options["CEGtimespenttodate"] . "-hr";  ?>                                                 </td>
                 <td colspan="1"><?php echo "$" . $var->options["total_project_dollars"];  ?>                                                </td>
-                <td colspan="2">In House Budget:                                                                                            </td>
-                <td colspan="3"><?php echo "$" . $var->options["dollarvalueinhouse"];  ?>                                                   </td>
-                <td colspan="2">Bill This Amount:                                                                                           </td>
+                <td colspan="2"><b>In House Budget:                                                                                      <b></td>
+                <td colspan="2"><?php echo "$" . $var->options["dollarvalueinhouse"];  ?>                                                   </td>
+                <td colspan="2"><b>Energization Date:                                                                                   </b></td>
                 <td colspan="4">
-                  <?php $id = $var->options['id']; ?> 
-                  <input type="hidden" value="{{$var->options['id']}}" name="id_{{$x}}">
-                  <input type="text" value="" name="text_{{$x}}">
+                  <?php echo $var->options["dateenergization"];  ?> 
                 </td>
+              </tr>
+              <tr>
+                <td colspan="1"></td>
+                <td colspan="1"><b>Billing History:</b></td>
+                <td colspam="1"><?php echo date("F Y",strtotime("-3 month"))?></td>
+              <td colspam="1"><?php if(isset($var->options["billing_data"])); //CODE FOR MONTHS HERE
+              foreach($keys as $key){
+                echo $key;
+              }
+              ?></td>
+                <td colspan="1"><?php echo date("F Y",strtotime("-2 month"))?></td>
+                <td colspam="1"></td>
+                <td colspan="1"><?php echo date("F Y",strtotime("-1 month"))?></td>
+                <td colspam="1"></td>
               </tr>
               <tr>
                 <td colspan="1">                                                                                                            </td>
                 <td colspan="1">Previous Month:                                                                                             </td>
                 <td colspan="1"><?php echo $var->options["previous_month_project_hours"] . "-hr";  ?>                                       </td>
                 <td colspan="1"><?php echo "$" . $var->options["previous_month_project_monies"];  ?>                                        </td>
-                <td colspan="2">Energization Date:                                                                                          </td>
-                <td colspan="3"><?php echo $var->options["dateenergization"];  ?>                                                           </td>
-                <td colspan="2">Last Record Bill:                                                                                           </td>
+                <td colspan="2">Bill this Amount:                                                                                          </td>
+                <td colspan="4">          
+                  <?php $id = $var->options['id']; ?> 
+                  <input type="hidden" value="{{$var->options['id']}}" name="id_{{$x}}">
+                  <input type="text" value="" name="text_{{$x}}"></td>
+            
+              <!--    <td colspan="2">Last Record Bill:                                                                                           </td>
                 <td colspan="4">
-                  <input type="text" value="<?php echo "    $" . $var->options["last_bill_amount"] . " in " . substr($var->options["last_bill_month"], 0, 3);  ?>">
-                </td>
+                  <input type="text" value="<//?php echo "    $" . $var->options["last_bill_amount"] . " in " . substr($var->options["last_bill_month"], 0, 3);  ?>">
+                </td> -->
               </tr>
           </table>
         </div>

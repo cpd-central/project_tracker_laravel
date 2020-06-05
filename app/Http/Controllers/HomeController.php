@@ -24,8 +24,10 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index()
-    {
-        $billing = $this->billing_widget();
+    {   //if the date 7 days from now isn't the same month as current, then billing is due in 7 days
+        if(date('F', strtotime('+7 day')) != date('F')){ //so, let's build the billing_widget data
+            $billing = $this->billing_widget();
+        }
         return view('dashboard', compact('billing'));
     }
 

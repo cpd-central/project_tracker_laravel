@@ -758,12 +758,6 @@ class ProjectController extends Controller
       $filter_all = true;
     }
 
-    if (!isset($request['switch_chart_button_2'])) {
-      $chart_ind_vs_group = 'individuals';
-    } else { 
-      $chart_ind_vs_grou = $request['switch_chart_button_2'];
-    }
-
     $project_grand_total = 0;
     //This array is for CEG personnel, the second field has no role in the code currently 
     $employeeLIST = array( array("Vince"       ,"senior project manager"  ,170,"senior"         ),
@@ -1046,7 +1040,7 @@ class ProjectController extends Controller
 
         $total_project_monies_per_month_arr_start_end = array_slice($total_project_monies_per_month_arr, -count($labels),count($labels));
         $total_project_monies_per_month_dataset = array('Total Dollars', 'line', $total_project_monies_per_month_arr_start_end);
-        return (array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}, {$selected_project['projectcode']}, PM is {$selected_project['projectmanager'][0]}", 'individual_dataset' => $individual_dataset, 'individual_dataset_monies' => $individual_dataset_monies, 'project_grand_total' => $project_grand_total, 'dollarvalueinhouse' => $dollarvalueinhouse, 'dateenergization' => $dateenergization, 'group_dataset' => $group_dataset, 'group_dataset_monies' => $group_dataset_monies,'previous_month_project_hours' => $previous_month_project_hours, 'total_project_dollars' => $total_project_dollars,'previous_month_project_monies' => $previous_month_project_monies, 'total_project_monies_per_month_dataset' => $total_project_monies_per_month_dataset, 'total_project_hours_per_month_dataset' => $total_project_hours_per_month_dataset, 'id' => "{$selected_project['id']}", 'last_bill_amount' => $last_bill_amount, 'last_bill_month' => $last_bill_month));
+        return (array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}, {$selected_project['projectcode']}, PM is {$selected_project['projectmanager'][0]}", 'individual_dataset' => $individual_dataset, 'individual_dataset_monies' => $individual_dataset_monies, 'project_grand_total' => $project_grand_total, 'dollarvalueinhouse' => $dollarvalueinhouse, 'dateenergization' => $dateenergization, 'group_dataset' => $group_dataset, 'group_dataset_monies' => $group_dataset_monies,'previous_month_project_hours' => $previous_month_project_hours, 'total_project_dollars' => $total_project_dollars,'previous_month_project_monies' => $previous_month_project_monies, 'total_project_monies_per_month_dataset' => $total_project_monies_per_month_dataset, 'total_project_hours_per_month_dataset' => $total_project_hours_per_month_dataset, 'id' => "{$selected_project['id']}", 'last_bill_amount' => $last_bill_amount, 'last_bill_month' => $last_bill_month, 'billing_data' => $billing_data));
       } else {
         return Null;
       }
@@ -1148,6 +1142,7 @@ class ProjectController extends Controller
         $chart[$i]->options([ 'id'                            => $chart_info['id'] ]); 
         $chart[$i]->options([ 'last_bill_month'               => $chart_info['last_bill_month'] ]);
         $chart[$i]->options([ 'last_bill_amount'              => $chart_info['last_bill_amount'] ]); 
+        $chart[$i]->options([ 'billing_data'                  => $chart_info['billing_data'] ]);
         $chart[$i]->options([ 'tooltip'                       => [ 'visible' => true ] ]);
         }
         $i++;

@@ -125,7 +125,7 @@ else{
 			<div class="card-footer">				
 			</div>
 		</div>
-		<?php if(auth()->user()->role != "user" && !empty($billing) && date('F', strtotime('+7 day')) != date('F')) {?>
+		<?php if(auth()->user()->role != "user" && !empty($billing)) {?>
 		<div class="card">
 			<div class="card-header">
 				<h3>Billing Widget</h3>
