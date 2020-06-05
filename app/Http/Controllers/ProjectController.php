@@ -744,11 +744,18 @@ class ProjectController extends Controller
    */
   public function hours_graph(Request $request) 
   {
-    if (!isset($request['switch_chart_button'])) {//This is a button to toggle whether hours or dollars is displayed in the graph.  
+    if (!isset($request['toggle_dollars'])) {//This is a button to toggle whether hours or dollars is displayed in the graph.  
       $chart_units = 'hours';
     } 
     else { 
-      $chart_units = $request['switch_chart_button'];
+      $chart_units = 'dollars';
+    }
+
+    if (!isset($request['toggle_all'])) {
+      $filter_all = false;
+    }
+    else{
+      $filter_all = true;
     }
 
     if (!isset($request['switch_chart_button_2'])) {
@@ -1145,7 +1152,7 @@ class ProjectController extends Controller
         }
         $i++;
     }      
-    return view('pages.hoursgraph', compact('projects', 'chart', 'chart_variable','dollarvalueinhousearray','chart_units'));
+    return view('pages.hoursgraph', compact('projects', 'chart', 'chart_variable','dollarvalueinhousearray','chart_units','filter_all'));
   }
 
   /**

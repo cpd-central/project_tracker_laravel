@@ -68,11 +68,6 @@
 @section('content')
 {{ old('project_id') }}
 <?php $x=0; $id=0; ?>
-@if ($chart_units == 'dollars')
-  <?php $toggle_type = 'hours' ?>
-@else
-  <?php $toggle_type = 'dollars'?>
-@endif
 
 @foreach($chart_variable as $var2)
   <?php $chart_variable[$x]=$var2; $x++; ?>
@@ -81,29 +76,29 @@
 <form action="{{ route('pages.hoursgraph') }}" method="GET">
   @csrf
   <label class="switch">
-    <input type="checkbox">
+    <input name="toggle_all" id="toggle_all" type="checkbox" value="all" @if($filter_all == true){{'checked'}}@endif>
     <span class="slider round"></span>
   </label><label>Toggle ALL Projects</label>
   <br>
   <label class="switch">
-    <input type="checkbox">
+    <input name ="toggle_dollars" id="toggle_dollars" type="checkbox" value="dollars" @if($chart_units == 'dollars'){{'checked'}}@endif>
     <span class="slider round"></span>
   </label><label>Toggle Dollars</label>
   <br>
-  <button class="btn btn-dark" id="switch_chart_button" name="switch_chart_button" type="submit" value="{{$toggle_type}}">Toggle Hours/Dollars</button>
+  <button class="btn btn-dark" id="switch_chart_button" name="switch_chart_button" type="submit">Toggle</button>
 </form>
 <form action="{{ route('pages.hoursgraph') }}" method="POST">
   @csrf
     @if ($chart_units == 'dollars') <!-- the page defaults to dollars, but then can be toggeled to hours with this button-->
        <!--<input class="btn btn-primary" name="switch_chart_button" type="hidden" value="dollars"><button class="btn btn-primary" name="button" type="submit" value="dollars">Toggle Hours/Dollars</button> -->
       @foreach($chart as $var) <!-- loops through graphs with hour data -->
-      <?php $all = false;
-        if($all == false){
+      <?php
+        if($filter_all == false){
         $fulltext = $var->options['title']['text'];
         $splittextfull = explode(", ", $fulltext);
         $split_pm = ltrim($splittextfull[2], 'PM is '); 
         if($split_pm != "" || $split_pm == null){
-          if($all == false && auth()->user()->name != $split_pm) {
+          if(auth()->user()->name != $split_pm) {
             continue;
           }
         }
@@ -154,13 +149,13 @@
 
       @foreach($chart as $var) <!-- loops through graphs with dollar data --> 
       
-      <?php $all = false;
-        if($all == false){
+      <?php
+        if($filter_all == false){
         $fulltext = $var->options['title']['text'];
         $splittextfull = explode(", ", $fulltext);
         $split_pm = ltrim($splittextfull[2], 'PM is '); 
         if($split_pm != "" || $split_pm == null){
-          if($all == false && auth()->user()->name != $split_pm) {
+          if(auth()->user()->name != $split_pm) {
             continue;
           }
         }
