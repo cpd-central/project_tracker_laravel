@@ -265,6 +265,40 @@
      </div>
     </br>
     <div id="dynamic_field">
+    <?php
+    $c = 1;
+    if(isset($project['duedates']['additionalfields'])) {
+      $additionalfields = $project['duedates']['additionalfields'];
+      $keys = array_keys($additionalfields);
+      foreach($keys as $key){
+        ?>
+        <h5 id="name{{$c}}"><b> {{$key}} </b></h5> 
+                <div class="row" id= "row{{$c}}">
+                    <div class="form-group col-md-4"> 
+                        <label for="row{{$c}}person1">Engineer/Person 1</label> 
+                        <input type="text" class="form-control" id="row{{$c}}person1" name= "row{{$c}}person1" value= {{$additionalfields[$key]['person1']}}>
+                    </div>
+                    <div class="form-group col-md-4"> 
+                        <label for="row{{$c}}person2">Drafter/Person 2</label> 
+                        <input type="text" class="form-control" id="row{{$c}}person2" name="row{{$c}}person2" value= {{$additionalfields[$key]['person2']}}> 
+                    </div> 
+                    <div class="form-group col-md-4"> 
+                        <label for="row{{$c}}due">Due Date</label> 
+                        <input type="date" class="form-control" id="row{{$c}}due" name="row{{$c}}due" value= {{$additionalfields[$key]['due']}}>
+                    </div>
+                      <input type="hidden" id="row{{$c}}name" name="row{{$c}}name" value= "{{$key}}" readonly /> 
+                    </div>
+                    <div class="row">
+                      <div class="form-group col-md-4">
+                        <button type="button" class="btn btn-danger btn_remove" id="{{$c}}">Remove Form</button>
+                      </div>
+                      </div>
+  <?php 
+    $c = $c + 1;
+     }
+    } 
+    ?> 
+
     </div>
     </br>
     <div class="row">
@@ -278,8 +312,67 @@
         <button type="submit" class="btn btn-success">Submit</button>
       </div>
     </div>
-    </div>
+  </div>
   </form>
-  <script type="text/javascript" src="{{ URL::asset('js/addfields.js')}}"></script>
+<script type="text/javascript">
+var clicks = 0;
+var row = "<?php echo $c ?>" -1;
+var total = clicks + parseInt(row);
+$(document).ready(function() {
+
+$("#addform").on('click', function() {
+  addnewfield();    
+});
+$("#dynamic_field").on('click', '.btn_remove', function() {
+  window.alert("remove");
+  var button_id = $(this).attr("id");
+  $('#row'+button_id+'').remove();
+  $('#name'+button_id+'').remove();
+  $('#'+button_id+'').remove();
+  //changefieldvalues(button_id);
+  total--;
+  var field = '<input type="hidden" id="total" name="total" value="'+total+'" readonly />'
+  $('#dynamic_field').append(field);
+}); 
+}); 
+
+    function addnewfield(){
+            var name = window.prompt('Enter the name of the new Field: ');
+            if (name != null && name != ""){
+                clicks++;
+                total = clicks + parseInt(row);
+                var field = '<h5 id= name' + total+ '><b>' + name + '</b></h5>' + 
+                    '<div class="row" id = row' + total + '>' + 
+                        '<div class="form-group col-md-4">' + 
+                            '<label for="row'+total+'person1">Engineer/Person 1</label>' + 
+                            '<input type="text" class="form-control" id="row'+ total+'person1" name="row'+ total+'person1">' +
+                        '</div>' +
+                        '<div class="form-group col-md-4">' + 
+                            '<label for="row'+ total+'person2">Drafter/Person 2</label>' + 
+                            '<input type="text" class="form-control" id="row'+ total+'person2" name="row'+ total+'person2">' + 
+                        '</div>' + 
+                        '<div class="form-group col-md-4">' + 
+                            '<label for="row'+ total+'due">Due Date</label>' + 
+                            '<input type="date" class="form-control" id="row'+ total+'due" name="row'+ total+'due">' + 
+                        '</div>' + 
+                        '</div>' +
+                        '<input type="hidden" id="row'+ total+'name" name="row'+ total+'name" value="'+ name + '" readonly />' +
+                        '<input type="hidden" id="total" name="total" value="'+total+'" readonly />' +
+                        '<div class="row">' +
+                        '<div class="form-group col-md-4">' +
+                          '<button type="button" class="btn btn-danger btn_remove" id="'+total+'">Remove Form</button>'+
+                        '</div>' +
+                        '</div>';
+                $('#dynamic_field').append(field);
+            }
+    }
+
+    function changefieldvalues(id){
+      //for(var i = 1; i <= total; i++){
+       // if ()
+
+     // }
+    }
+</script>
   </body>
 </html> 

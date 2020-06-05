@@ -1475,37 +1475,36 @@ class ProjectController extends Controller
 
       $duedates['allothers']['person1'] = $this->store_dates_helper($duedates['allothers']['person1'], $req->get('allperson1'));
       $duedates['allothers']['due'] = $this->strToDate($this->store_dates_helper($duedates['allothers']['due'], $req->get('alldue')), null);
-      
-      if ($req->get('namefield1') != null){
-        if (!isset($duedates['additionalfields'])){
 
-          $additionalfields = array();
-          $additionalfields[$req->get('namefield1')] = array();
-          $additionalfields[$req->get('namefield1')]['person1field1'] = $req->get('person1field1');
-          $additionalfields[$req->get('namefield1')]['person2field1'] = $req->get('person2field1');
-          $additionalfields[$req->get('namefield1')]['duefield1'] = $this->strToDate($req->get('duefield1'), null);
-          $duedates['additionalfields'] = $additionalfields;
-        }
-        else{
-          $duedates['additionalfields'][$req->get('namefield1')] = array();
-          $duedates['additionalfields'][$req->get('namefield1')]['person1field1'] = $req->get('person1field1');
-          $duedates['additionalfields'][$req->get('namefield1')]['person2field1'] = $req->get('person2field1');
-          $duedates['additionalfields'][$req->get('namefield1')]['duefield1'] = $this->strToDate($req->get('duefield1'), null);
-        }
-      }
-        /*
-        echo $req->get('namefield1');
-        echo $req->get('person1field1');
-        echo $req->get('person2field1');
-        echo $req->get('duefield1');
-        echo $req->get('clicks');
-        $namefield1 = array();
-        $namefield1['person1field1'] = $req->get('person1field1');
-        $namefield1['person2field1'] = $req->get('person2field1');
-        $namefield1['duefield1'] = $this->strToDate($req->get('duefield1'), null);
-        $duedates[$req->get('namefield1')] = $namefield1;
-        */
+      if (!isset($duedates['additionalfields'])){
 
+        $additionalfields = array();
+        $duedates['additionalfields'] = $additionalfields;
+    } 
+    $additionalfields = $duedates['additionalfields'];
+    
+    $keys = array_keys($additionalfields);
+    /*
+    $clicks = $req->get('clicks');
+    if ($clicks == null || $clicks == ''){
+      $clicks = 0;
+    }
+    $keylength = sizeof($keys);
+    $numfields = $keylength + $clicks;
+    */
+    $numfields = $req->get('total');
+    if ($numfields == null || $numfields == ''){
+      $numfields = sizeof($keys);
+    }
+    //dd($numfields);
+    $duedates['additionalfields'] = array();
+    for($i = 1; $i <= $numfields; $i++){
+      $namefield = $req->get('row'.$i.'name');
+      $duedates['additionalfields'][$namefield] = array();
+      $duedates['additionalfields'][$namefield]['person1'] = $req->get('row'.$i.'person1');
+      $duedates['additionalfields'][$namefield]['person2'] = $req->get('row'.$i.'person2');
+      $duedates['additionalfields'][$namefield]['due'] = $this->strToDate($req->get('row'.$i.'due'), null);
+    }
       $project->duedates = $duedates;
       $project->save();
   }
@@ -1546,6 +1545,16 @@ class ProjectController extends Controller
       $duedates['arcflash']['due'] = $this->dateToStr($project['duedates']['arcflash']['due']);
       $duedates['relay']['due'] = $this->dateToStr($project['duedates']['relay']['due']);
       $duedates['allothers']['due'] = $this->dateToStr($project['duedates']['allothers']['due']);
+
+      if (isset($duedates['additionalfields'])){
+      $additionalfields = $project['duedates']['additionalfields'];
+      $keys = array_keys($additionalfields);
+        foreach ($keys as $key){
+          $additionalfields[$key]['due'] = $this->dateToStr($additionalfields[$key]['due']);
+          
+        }
+        $duedates['additionalfields'] = $additionalfields;
+      }
 
       $project->duedates = $duedates;
     }

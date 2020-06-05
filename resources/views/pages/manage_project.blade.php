@@ -74,3 +74,6 @@
 
 @section('allperson1', $project['duedates']['allothers']['person1'])
 @section('alldue', $project['duedates']['allothers']['due'])
+
+@section('dynamic_field')
+
