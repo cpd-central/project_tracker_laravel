@@ -314,33 +314,16 @@
     </div>
   </div>
   </form>
+
 <script type="text/javascript">
-var clicks = 0;
 var row = "<?php echo $c ?>" -1;
-var total = clicks + parseInt(row);
+var total = parseInt(row);
 $(document).ready(function() {
 
 $("#addform").on('click', function() {
-  addnewfield();    
-});
-$("#dynamic_field").on('click', '.btn_remove', function() {
-  window.alert("remove");
-  var button_id = $(this).attr("id");
-  $('#row'+button_id+'').remove();
-  $('#name'+button_id+'').remove();
-  $('#'+button_id+'').remove();
-  //changefieldvalues(button_id);
-  total--;
-  var field = '<input type="hidden" id="total" name="total" value="'+total+'" readonly />'
-  $('#dynamic_field').append(field);
-}); 
-}); 
-
-    function addnewfield(){
-            var name = window.prompt('Enter the name of the new Field: ');
+  var name = window.prompt('Enter the name of the new Field: ');
             if (name != null && name != ""){
-                clicks++;
-                total = clicks + parseInt(row);
+                total ++;
                 var field = '<h5 id= name' + total+ '><b>' + name + '</b></h5>' + 
                     '<div class="row" id = row' + total + '>' + 
                         '<div class="form-group col-md-4">' + 
@@ -363,16 +346,19 @@ $("#dynamic_field").on('click', '.btn_remove', function() {
                           '<button type="button" class="btn btn-danger btn_remove" id="'+total+'">Remove Form</button>'+
                         '</div>' +
                         '</div>';
-                $('#dynamic_field').append(field);
-            }
-    }
+                $('#dynamic_field').append(field);  
+                        } 
+});
+$("#dynamic_field").on('click', '.btn_remove', function() {
+  window.alert("remove");
+  var button_id = $(this).attr("id");
+  $('#row'+button_id+'').remove();
+  $('#name'+button_id+'').remove();
+  $('#'+button_id+'').remove();
+  $('#dynamic_field').append(field);
+}); 
+}); 
 
-    function changefieldvalues(id){
-      //for(var i = 1; i <= total; i++){
-       // if ()
-
-     // }
-    }
 </script>
   </body>
 </html> 

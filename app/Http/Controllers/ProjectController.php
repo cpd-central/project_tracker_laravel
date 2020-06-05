@@ -1482,16 +1482,7 @@ class ProjectController extends Controller
         $duedates['additionalfields'] = $additionalfields;
     } 
     $additionalfields = $duedates['additionalfields'];
-    
     $keys = array_keys($additionalfields);
-    /*
-    $clicks = $req->get('clicks');
-    if ($clicks == null || $clicks == ''){
-      $clicks = 0;
-    }
-    $keylength = sizeof($keys);
-    $numfields = $keylength + $clicks;
-    */
     $numfields = $req->get('total');
     if ($numfields == null || $numfields == ''){
       $numfields = sizeof($keys);
@@ -1500,6 +1491,9 @@ class ProjectController extends Controller
     $duedates['additionalfields'] = array();
     for($i = 1; $i <= $numfields; $i++){
       $namefield = $req->get('row'.$i.'name');
+      if (!isset($namefield)){
+        continue;
+      }
       $duedates['additionalfields'][$namefield] = array();
       $duedates['additionalfields'][$namefield]['person1'] = $req->get('row'.$i.'person1');
       $duedates['additionalfields'][$namefield]['person2'] = $req->get('row'.$i.'person2');
