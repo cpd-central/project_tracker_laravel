@@ -22,7 +22,7 @@
       <input id="invert" name="invert" class="form-control" type="checkbox" @if(isset($invert))checked @endif value="flip"/>Flip Sort Order 
     </div> 
     <select id="sort" name='sort' class="form-control">
-    <option @if(!isset($term))selected @endif>-----Select-----</option>
+    <option @if(!isset($term))selected @endif>Closest Due Date</option>
     <option @if(isset($term) && $term == "projectname")selected @endif value="projectname">Project Name</option>
     <option @if(isset($term) && $term == "dateenergization")selected @endif value="dateenergization">Date Energize</option>
     <option @if(isset($term) && $term == "duedates")selected @endif value= "duedates">Due Dates</option>

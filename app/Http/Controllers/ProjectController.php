@@ -1261,7 +1261,7 @@ class ProjectController extends Controller
     $search = $request['search'];
     $term = $request['sort'];
     $invert = $request['invert']; 
-    if(isset($search) || (isset($term) && $term != "-----Select-----")){
+    if(isset($search) || (isset($term) && $term != "Closest Due Date")){
       $projects = $this->planner_search($search, $term, $invert);
     }
     foreach($projects as $project){
@@ -1271,7 +1271,7 @@ class ProjectController extends Controller
   }
 
   public function sort_by_closest_date($projects){
-    $today = $this->strToDate(date("Y-m-d H:i:s"), null);
+    $today = date("Y-m-d");
     $alldates = array();
     $sortedprojects = array();
       foreach($projects as $project){
@@ -1288,21 +1288,24 @@ class ProjectController extends Controller
           }
           */
           sort($dates);
-          $earliestdate = $dates[0];
+          foreach($dates as $date){
+            if($this->dateToStr($date, null) > $today){
+              $earliestdate = $date;
+              break;
+            }
+          }
         }
         else{
-          $earliestdate = $project['dateenergization'];
-          /*
-          if ($project['dateenergization'] > $today){
-          $earliestdate = $project['dateenergization'];
+          if($this->dateToStr($project['dateenergization'], null) > $today){
+            $earliestdate = $project['dateenergization'];
           }
           else{
             $earliestdate = "None";
           }
-          */
         }
         $alldates[$name] = $earliestdate;
       }
+      //dd($alldates);
       asort($alldates);
       foreach($alldates as $key => $value){
         foreach ($projects as $project){
@@ -1331,7 +1334,7 @@ class ProjectController extends Controller
       $asc_desc = 'asc';
     }
     if (isset($search_term)) {
-      if (isset($sort_term) && $sort_term != "-----Select-----"){
+      if (isset($sort_term) && $sort_term != "Closest Due Date"){
         $projects = $won_projects->where('projectname', 'regexp', "/$search_term/i")
                     ->orderBy($sort_term, $asc_desc)
                     ->get();             
