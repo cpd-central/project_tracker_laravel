@@ -18,6 +18,13 @@ $month = date('F', strtotime('-21 day'));
       </br>
       </br>
       <div class="container">
+        <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.monthendbilling') }}"> 
+          @csrf  
+          <select id="sort" name='sort' class="form-control" onchange="this.form.submit()">
+            <option @if(isset($term) && $term == "projectname") selected @endif value="projectname">A-Z Project Name</option>
+            <option @if(isset($term) && $term == "projectmanager") selected @endif value="projectmanager">A-Z Project Manager</option>
+          </select>
+          </form>
         <table class="table table-striped">
           <div id='divhead'>
             <thead id='header'>

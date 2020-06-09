@@ -339,9 +339,13 @@ class ProjectController extends Controller
       //};
   }
 
-  public function billing(){
-    $projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy('projectname');
-    return view('pages.monthendbilling', compact('projects'));
+  public function billing(Request $request){
+    $term = $request['sort'];
+    if(!isset($term)){
+      $term = "projectname";
+    }
+    $projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy($term);
+    return view('pages.monthendbilling', compact('projects', 'term'));
   }
 
 
