@@ -2,6 +2,10 @@
 
 @section('toptool')
 
+<div class="row"> 
+  <td><a href="{{action('ProjectController@sticky_note')}}" class="btn btn-success">Sticky Note Gantt Chart</a></td>
+</div>
+
 <div class="container">
   <h2><b>Project Search</b></h2> 
   <br />

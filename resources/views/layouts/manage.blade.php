@@ -23,7 +23,6 @@
           </div>
         </div>
         @endif
-        <td><a href="{{action('ProjectController@planner')}}" class="btn btn-warning">Back to Project Planner</a></td>
         <h2><b>@yield('title')</b></h2>    
         <h4>@yield('h4proposal')</h4>
         <div class="container">
@@ -350,7 +349,6 @@ $("#addform").on('click', function() {
                         } 
 });
 $("#dynamic_field").on('click', '.btn_remove', function() {
-  window.alert("remove");
   var button_id = $(this).attr("id");
   $('#row'+button_id+'').remove();
   $('#name'+button_id+'').remove();

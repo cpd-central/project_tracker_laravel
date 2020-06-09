@@ -1251,6 +1251,8 @@ class ProjectController extends Controller
     return view('pages.hoursgraph', compact('projects', 'chart_hours', 'chart_dollars', 'chart_variable','dollarvalueinhousearray','chart_units'));
   }
 
+/**************** Start of the Project Planner or Sticky Note Application *********************/
+
    /**
    * Opens a page displaying all projects that are Won.
    * @return view 'pages.planner'
@@ -1604,6 +1606,12 @@ class ProjectController extends Controller
     }
     return $project;
   }
+
+  public function sticky_note(){
+    return view('pages.sticky_note');
+  }
+
+/**************** End of the Project Planner or Sticky Note Application *********************/
 
   /**
    * Finds a project in the database by $id and deletes it from the database.
