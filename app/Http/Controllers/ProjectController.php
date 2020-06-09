@@ -1105,7 +1105,8 @@ class ProjectController extends Controller
         $chart[$i]->options([ 'previous_month_project_hours'  => $chart_info['previous_month_project_hours'] ]);
         $chart[$i]->options([ 'id'                            => $chart_info['id'] ]); 
         $chart[$i]->options([ 'last_bill_month'               => $chart_info['last_bill_month'] ]);
-        $chart[$i]->options([ 'last_bill_amount'              => $chart_info['last_bill_amount'] ]);
+        $chart[$i]->options([ 'last_bill_amount'              => $chart_info['last_bill_amount'] ]);    
+        $chart[$i]->options([ 'billing_data'                  => $chart_info['billing_data'] ]);
         $chart[$i]->options([ 'tooltip'                       => [ 'visible' => true ] ]);
       }else{
         //This section creates chart_dollars from chart_info

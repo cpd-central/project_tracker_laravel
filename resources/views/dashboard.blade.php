@@ -60,6 +60,17 @@ background-color: #FFC312;
 width: 200px;
 }
 
+.bill_btn{
+color: black;
+background-color: rgb(230, 187, 255);
+width: 200px;
+}
+
+.bill_btn:hover{
+color: black;
+background-color: rgb(245, 228, 255);
+}
+
 .login_btn:hover{
 color: black;
 background-color: white;
@@ -133,6 +144,9 @@ else{
 			<div class="card-body">
 					<div class="form-group" style="{{$style_string}}">
                         <table>
+							<tr>
+								<a href={{ route('pages.hoursgraph') }} class="btn bill_btn">Edit Billing for Projects</a>
+							</tr>
 							@foreach($billing as $bill)
 							<tr>
 								<td style="color:white;">
