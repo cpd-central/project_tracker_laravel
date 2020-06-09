@@ -11,6 +11,7 @@
     <table class="table table-striped">
     <thead style="text-align:center">
       <tr>
+          <th>Edit</th>
           <th>User</th>
           <th>Name</th>
           <th colspan="3">Role</th>
@@ -27,6 +28,7 @@
         continue;
     } ?>
     <tr id="{{$user['email']}}">
+    <td><a href='{{ route('pages.editaccount', $user['_id']) }}' role="button" class="btn btn-warning">Edit</a></td>
     <td>{{ $user['email'] }}</td>
     <td align="center">{{ $user['name'] }}</td>
     <td align="center">User <input type="radio" name="{{$user['email']}}" value="user" @if(isset($user['role']) && $user['role'] == 'user'){{'checked=checked'}}@endif/>

@@ -56,4 +56,10 @@ class HomeController extends Controller
         }
         return redirect('/home');
     }
+
+    public function edit_account($id)
+    {
+        $user = User::find($id);
+        return view('pages.editaccount', compact('user'));
+    }
 }

@@ -66,6 +66,8 @@ Route::get('/roles', 'HomeController@edit_roles')->name('pages.roles')->middlewa
 Route::get('/roles/{id}', 'HomeController@destroy')->name('pages.rolesDelete')->middleware('verified');
 Route::post('/roles', 'HomeController@update')->name('pages.rolesUpdate')->middleware('verified');
 
+Route::get('/editaccount/{id}', 'HomeController@edit_account')->name('pages.editaccount')->middleware('verified', 'role');
+
 #Corey adding route for new timesheet status page
 Route::get('/timesheetsentstatus/', 'TimesheetController@get_user_timesheet_status')->name('pages.timesheetsentstatus')->middleware('verified');
 
