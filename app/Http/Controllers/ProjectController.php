@@ -14,6 +14,7 @@ use UTCDateTime\DateTime\DateTimeZone;
 
 use DateInterval;
 use DatePeriod;
+use Illuminate\Support\Facades\Date;
 
 class ProjectController extends Controller
 {
@@ -1256,6 +1257,7 @@ class ProjectController extends Controller
    */ 
   public function planner(Request $request){
     $projects = Project::all()->where('projectstatus', 'Won');
+    $projects = $this->sort_by_closest_date($projects);
     $search = $request['search'];
     $term = $request['sort'];
     $invert = $request['invert']; 
@@ -1266,6 +1268,51 @@ class ProjectController extends Controller
       $this->format_due_dates($project);
     }
     return view('pages.planner', compact('projects','term', 'search', 'invert'));
+  }
+
+  public function sort_by_closest_date($projects){
+    $today = $this->strToDate(date("Y-m-d H:i:s"), null);
+    $alldates = array();
+    $sortedprojects = array();
+      foreach($projects as $project){
+        $name = $project['projectname'];
+        $duedates = $project['duedates'];
+        if(isset($duedates)){
+          $dates = [$project['dateenergization'], $duedates['physical90']['due'], $duedates['physicalifc']['due'], $duedates['wiring90']['due'], $duedates['wiringifc']['due'], $duedates['collection90']['due'], $duedates['collectionifc']['due'], $duedates['transmission90']['due'], $duedates['transmissionifc']['due'], $duedates['scada']['due'], $duedates['reactive']['due'], $duedates['ampacity']['due'], $duedates['arcflash']['due'], $duedates['relay']['due'], $duedates['allothers']['due']];
+          /*$count = 0;
+          foreach($dates as $date){
+            if ($date < $today){
+              array_splice($dates, $count, 1); 
+            }
+            $count++;
+          }
+          */
+          sort($dates);
+          $earliestdate = $dates[0];
+        }
+        else{
+          $earliestdate = $project['dateenergization'];
+          /*
+          if ($project['dateenergization'] > $today){
+          $earliestdate = $project['dateenergization'];
+          }
+          else{
+            $earliestdate = "None";
+          }
+          */
+        }
+        $alldates[$name] = $earliestdate;
+      }
+      asort($alldates);
+      foreach($alldates as $key => $value){
+        foreach ($projects as $project){
+          if ($project['projectname'] == $key){
+            array_push($sortedprojects, $project);
+            break;
+          }
+        }
+      }
+    return $sortedprojects;
   }
 
     /**
@@ -1427,54 +1474,54 @@ class ProjectController extends Controller
 
       $duedates['physical90']['person1'] = $this->store_dates_helper($duedates['physical90']['person1'], $req->get('physical90person1'));
       $duedates['physical90']['person2'] = $this->store_dates_helper($duedates['physical90']['person2'], $req->get('physical90person2'));
-      $duedates['physical90']['due'] = $this->strToDate($this->store_dates_helper($duedates['physical90']['due'], $req->get('physical90due')), null);
+      $duedates['physical90']['due'] = $this->strToDate($req->get('physical90due'), null);
 
       $duedates['physicalifc']['person1'] = $this->store_dates_helper($duedates['physicalifc']['person1'], $req->get('physicalifcperson1'));
       $duedates['physicalifc']['person2'] = $this->store_dates_helper($duedates['physicalifc']['person2'], $req->get('physicalifcperson2'));
-      $duedates['physicalifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['physicalifc']['due'], $req->get('physicalifcdue')), null);
+      $duedates['physicalifc']['due'] = $this->strToDate($req->get('physicalifcdue'), null);
 
       $duedates['wiring90']['person1'] = $this->store_dates_helper($duedates['wiring90']['person1'], $req->get('wire90person1'));
       $duedates['wiring90']['person2'] = $this->store_dates_helper($duedates['wiring90']['person2'], $req->get('wire90person2'));
-      $duedates['wiring90']['due'] = $this->strToDate($this->store_dates_helper($duedates['wiring90']['due'], $req->get('wire90due')), null);
+      $duedates['wiring90']['due'] = $this->strToDate($req->get('wire90due'), null);
 
       $duedates['wiringifc']['person1'] = $this->store_dates_helper($duedates['wiringifc']['person1'], $req->get('wireifcperson1'));
       $duedates['wiringifc']['person2'] = $this->store_dates_helper($duedates['wiringifc']['person2'], $req->get('wireifcperson2'));
-      $duedates['wiringifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['wiringifc']['due'], $req->get('wireifcdue')), null);
+      $duedates['wiringifc']['due'] = $this->strToDate($req->get('wireifcdue'), null);
 
       $duedates['collection90']['person1'] = $this->store_dates_helper($duedates['collection90']['person1'], $req->get('collection90person1'));
       $duedates['collection90']['person2'] = $this->store_dates_helper($duedates['collection90']['person2'], $req->get('collection90person2'));
-      $duedates['collection90']['due'] = $this->strToDate($this->store_dates_helper($duedates['collection90']['due'], $req->get('collection90due')), null);
+      $duedates['collection90']['due'] = $this->strToDate($req->get('collection90due'), null);
 
       $duedates['collectionifc']['person1'] = $this->store_dates_helper($duedates['collectionifc']['person1'], $req->get('collectionifcperson1'));
       $duedates['collectionifc']['person2'] = $this->store_dates_helper($duedates['collectionifc']['person2'], $req->get('collectionifcperson2'));
-      $duedates['collectionifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['collectionifc']['due'], $req->get('collectionifcdue')), null);
+      $duedates['collectionifc']['due'] = $this->strToDate($req->get('collectionifcdue'), null);
 
       $duedates['transmission90']['person1'] = $this->store_dates_helper($duedates['transmission90']['person1'], $req->get('transmission90person1'));
       $duedates['transmission90']['person2'] = $this->store_dates_helper($duedates['transmission90']['person2'], $req->get('transmission90person2'));
-      $duedates['transmission90']['due'] = $this->strToDate($this->store_dates_helper($duedates['transmission90']['due'], $req->get('transmission90due')), null);
+      $duedates['transmission90']['due'] = $this->strToDate($req->get('transmission90due'), null);
 
       $duedates['transmissionifc']['person1'] = $this->store_dates_helper($duedates['transmissionifc']['person1'], $req->get('transmissionifcperson1'));
       $duedates['transmissionifc']['person2'] = $this->store_dates_helper($duedates['transmissionifc']['person2'], $req->get('transmissionifcperson2'));
-      $duedates['transmissionifc']['due'] = $this->strToDate($this->store_dates_helper($duedates['transmissionifc']['due'], $req->get('transmissionifcdue')), null);
+      $duedates['transmissionifc']['due'] = $this->strToDate($req->get('transmissionifcdue'), null);
 
       $duedates['scada']['person1'] = $this->store_dates_helper($duedates['scada']['person1'], $req->get('scadaperson1'));
       $duedates['scada']['person2'] = $this->store_dates_helper($duedates['scada']['person2'], $req->get('scadaperson2'));
-      $duedates['scada']['due'] = $this->strToDate($this->store_dates_helper($duedates['scada']['due'], $req->get('scadadue')), null);
+      $duedates['scada']['due'] = $this->strToDate($req->get('scadadue'), null);
 
       $duedates['reactive']['person1'] = $this->store_dates_helper($duedates['reactive']['person1'], $req->get('reactiveperson1'));
-      $duedates['reactive']['due'] = $this->strToDate($this->store_dates_helper($duedates['reactive']['due'], $req->get('reactivedue')), null);
+      $duedates['reactive']['due'] = $this->strToDate($req->get('reactivedue'), null);
 
       $duedates['ampacity']['person1'] = $this->store_dates_helper($duedates['ampacity']['person1'], $req->get('ampacityperson1'));
-      $duedates['ampacity']['due'] = $this->strToDate($this->store_dates_helper($duedates['ampacity']['due'], $req->get('ampacitydue')), null);
+      $duedates['ampacity']['due'] = $this->strToDate($req->get('ampacitydue'), null);
 
       $duedates['arcflash']['person1'] = $this->store_dates_helper($duedates['arcflash']['person1'], $req->get('arcflashperson1'));
-      $duedates['arcflash']['due'] = $this->strToDate($this->store_dates_helper($duedates['arcflash']['due'], $req->get('arcflashdue')), null);
+      $duedates['arcflash']['due'] = $this->strToDate($req->get('arcflashdue'), null);
 
       $duedates['relay']['person1'] = $this->store_dates_helper($duedates['relay']['person1'], $req->get('relayperson1'));
-      $duedates['relay']['due'] = $this->strToDate($this->store_dates_helper($duedates['relay']['due'], $req->get('relaydue')), null);
+      $duedates['relay']['due'] = $this->strToDate($req->get('relaydue'), null);
 
       $duedates['allothers']['person1'] = $this->store_dates_helper($duedates['allothers']['person1'], $req->get('allperson1'));
-      $duedates['allothers']['due'] = $this->strToDate($this->store_dates_helper($duedates['allothers']['due'], $req->get('alldue')), null);
+      $duedates['allothers']['due'] = $this->strToDate($req->get('alldue'), null);
 
       if (!isset($duedates['additionalfields'])){
 
@@ -1509,7 +1556,7 @@ class ProjectController extends Controller
    * @return $duedates - an updated version of $duedates with the specific field changed
    */
   protected function store_dates_helper($duedate, $data){
-    if($data != null || $data != ""){
+    if($data != ""){
       $duedate = $data;
     }
     return $duedate;

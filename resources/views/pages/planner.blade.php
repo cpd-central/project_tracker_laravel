@@ -25,6 +25,7 @@
     <option @if(!isset($term))selected @endif>-----Select-----</option>
     <option @if(isset($term) && $term == "projectname")selected @endif value="projectname">Project Name</option>
     <option @if(isset($term) && $term == "dateenergization")selected @endif value="dateenergization">Date Energize</option>
+    <option @if(isset($term) && $term == "duedates")selected @endif value= "duedates">Due Dates</option>
   </form> 
   @stop
 
