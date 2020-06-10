@@ -263,7 +263,7 @@ class ProjectController extends Controller
     $project = new Project();
     $project->created_by = auth()->user()->email;
     $this->store($project, $request);
-    return redirect('/projectindex')->with('Success!', 'Project has been successfully added.');
+    return redirect('/projectindex')->with('success', 'Success! Project has been successfully added.');
   }
 
   /**
@@ -277,7 +277,7 @@ class ProjectController extends Controller
     $this->validate_request($request);   
     $project = Project::find($id);  
     $this->store($project, $request);
-    return redirect('/projectindex')->with('Success!', 'Project has been successfully updated');
+    return redirect('/projectindex')->with('success', 'Success! Project has been successfully updated.');
   }
 
   public function monthendfunction() {
