@@ -1,6 +1,5 @@
 <?php
-
-    /**
+  /**
    * Checks if array $typeArray is not null and then checks to see if $type is in $typeArray.
    * @param $type - variable to be checked if its in $typeArray. 
    * @param $typeArray - array that contains keywords of boxes that are checked.
@@ -19,6 +18,12 @@
     }
   }
 
+  /**
+   * Checks if $saved_bill is not null and then checks to see if $type is equal to $saved_bill.
+   * @param $type - billing type string to be checked if its equal to $saved_bill 
+   * @param $saved_bill - string that contains keyword of radio button to be checked.
+   * @return boolean
+   */
   function check_billing_method($type, $saved_bill) {
     if($saved_bill == null || $saved_bill == "") {
       return false;
@@ -86,7 +91,6 @@
       <form method="post">
         @csrf
         <div class="row">
-          <!--<div class="col-md-4"></div>-->
           <div class="form-group col-md-4">
             <label for="cegproposalauther">CEG Proposal Author</label>
           <input type="text" class="form-control" name="cegproposalauthor" value="@if(old('cegproposalauthor')){{ old('cegproposalauthor') }} @else<?= $__env->yieldContent('cegproposalauthor')?>@endif">
@@ -159,7 +163,7 @@
                       $mm = ((int) date('n', strtotime($project['datentp'])) - 1);
                       $year = (int) date('Y', strtotime($project['datentp']));
 
-                      $row = (int) (count($project['monthlypercent']) / 4);             //4 text boxes per row
+                      $row = (int) (count($project['monthlypercent']) / 4);   //4 text boxes per row
                       $mod = count($project['monthlypercent']) % 4;
                       $i = 0;
 
@@ -342,7 +346,6 @@
         </div>
 
         <div class="row">
-          <!--<div class="col-md-4"></div>-->
           <div class="form-group col-md-4">
             <label for="billingcontact">Billing Contact</label>
           <input type="text" class="form-control" name="billingcontact" value="@if(old('billingcontact')){{ old('billingcontact') }} @else<?= $__env->yieldContent('billingcontact')?>@endif">
@@ -396,8 +399,6 @@
             <input type="text" class="form-control" name="filelocationofproject" value="@if(old('filelocationofproject')){{ old('filelocationofproject') }} @else<?= $__env->yieldContent('filelocationofproject')?>@endif">
           </div>
         </div>
-
-
       </form>
     </div>
     <script type="text/javascript" src="{{ URL::asset('js/monthlypercent.js')}}"></script>
