@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 @extends('layouts.index')
 
-@section('page-title', 'Edit Roles')
-@section('table-title', 'Edit Roles')
-@section('page-title', 'Edit Roles')
+@section('page-title', 'Account Directory')
+@section('table-title', 'Account Directory')
 
 
 @section('table-header')
@@ -28,7 +27,7 @@
         continue;
     } ?>
     <tr id="{{$user['email']}}">
-    <td><a href='{{ route('pages.editaccount', $user['_id']) }}' role="button" class="btn btn-warning">Edit</a></td>
+    <td><a href='{{ route('pages.editaccount', $user['_id']) }}' role="button" class="btn btn-warning">Edit Account</a></td>
     <td>{{ $user['email'] }}</td>
     <td align="center">{{ $user['name'] }}</td>
     <td align="center">User <input type="radio" name="{{$user['email']}}" value="user" @if(isset($user['role']) && $user['role'] == 'user'){{'checked=checked'}}@endif/>
@@ -37,6 +36,6 @@
     <td align="center"><a href='{{ route('pages.rolesDelete', $user['_id']) }}' role="button" class="btn btn-danger" onclick="return confirm('This will delete the user from the database.  Are you sure you want to do this?')">Delete</a></td>
         </tr>
 @endforeach 
-            <button class="btn btn-success" type="submit">Update</button>
+            <button class="btn btn-success" type="submit">Update Roles</button>
         </form>
 @stop

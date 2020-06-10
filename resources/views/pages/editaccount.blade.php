@@ -8,7 +8,7 @@
   <body>
     <div class="container">
         <form method="post">
-        @csrf
+          @csrf
         <div id="main">
             <h2><b>Edit Account</b></h2>
             <div class="row">

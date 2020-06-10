@@ -42,7 +42,7 @@ class HomeController extends Controller
         return redirect('/home');
     }
 
-    public function update(Request $request)
+    public function update_role(Request $request)
     {
         $users = User::all();
         foreach($users as $user){
@@ -61,5 +61,13 @@ class HomeController extends Controller
     {
         $user = User::find($id);
         return view('pages.editaccount', compact('user'));
+    }
+
+    public function update_account(Request $request, $id){
+        $user = User::find($id);
+        $user->name = $request->get('name');
+        $user->email = $request->get('email');
+        $user->save();
+        return redirect()->route('pages.roles')->with('success', 'Success! User has been successfully updated.');
     }
 }
