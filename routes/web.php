@@ -30,7 +30,7 @@ Route::post('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.won
 
 
 Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified');
-Route::post('/hoursgraph','ProjectController@blah')->middleware('verified');
+Route::post('/hoursgraph','ProjectController@submit_billing')->middleware('verified');
 
 Route::get('/monthendbilling', 'ProjectController@billing')->name('pages.monthendbilling')->middleware('verified', 'role');
 

@@ -89,8 +89,7 @@
 </form>
 <form action="{{ route('pages.hoursgraph') }}" method="POST">
   @csrf
-    @if ($chart_units == 'dollars') <!-- the page defaults to dollars, but then can be toggeled to hours with this button-->
-       <!--<input class="btn btn-primary" name="switch_chart_button" type="hidden" value="dollars"><button class="btn btn-primary" name="button" type="submit" value="dollars">Toggle Hours/Dollars</button> -->
+    @if ($chart_units == 'dollars')
       @foreach($chart as $var) <!-- loops through graphs with hour data -->
       <?php
         if($filter_all == false){
@@ -143,7 +142,7 @@
                 <td colspam="3"><?php if(isset($var->options["billing_data"][date("Y")])){ //CODE FOR MONTHS HERE
                   $keys = array_keys($var->options["billing_data"][date("Y")]);
                   foreach($keys as $key){
-                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("-2 month"))){ //If The month index exists and equals the month 3 months prior, display the value.
+                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("-2 month"))){ //If The month index exists and equals the month 2 months prior, display the value.
                       echo "$".ltrim($var->options["billing_data"][date("Y")][$key], "$");
                     }
                   }
@@ -153,7 +152,7 @@
                 <td colspam="3"><?php if(isset($var->options["billing_data"][date("Y")])){ //CODE FOR MONTHS HERE
                   $keys = array_keys($var->options["billing_data"][date("Y")]);
                   foreach($keys as $key){
-                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("-1 month"))){ //If The month index exists and equals the month 3 months prior, display the value.
+                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("-1 month"))){ //If The month index exists and equals the month 1 months prior, display the value.
                       echo "$".ltrim($var->options["billing_data"][date("Y")][$key], "$");
                     }
                   }
@@ -161,11 +160,11 @@
                 ?></td>
               </tr>
               <tr>
-                <td colspan="1">                                                                                                            </td>
-                <td colspan="1"><b>Previous Month:</b>                                                                                           </td>
-                <td colspan="1"><?php echo $var->options["previous_month_project_hours"] . "-hr";  ?>                                       </td>
-                <td colspan="4"><?php echo "$" . $var->options["previous_month_project_monies"];  ?>                                        </td>
-                <td colspan="2"><b>Bill this Amount:</b>                                                                                        </td>
+                <td colspan="1"></td>
+                <td colspan="1"><b>Previous Month:                                                 </b></td>
+                <td colspan="1"><?php echo $var->options["previous_month_project_hours"] . "-hr";  ?>  </td>
+                <td colspan="4"><?php echo "$" . $var->options["previous_month_project_monies"];  ?>   </td>
+                <td colspan="2"><b>Bill this Amount:                                               </b></td>
                 <td colspan="4">          
                   <?php $id = $var->options['id']; ?> 
                   <input type="hidden" value="{{$var->options['id']}}" name="id_{{$x}}">
@@ -178,21 +177,15 @@
                     }
                   }
                   ?>" name="text_{{$x}}"></td>
-            
-              <!--    <td colspan="2">Last Record Bill:                                                                                           </td>
-                <td colspan="4">
-                  <input type="text" value="<//?php echo "    $" . $var->options["last_bill_amount"] . " in " . substr($var->options["last_bill_month"], 0, 3);  ?>">
-                </td> -->
               </tr>
           </table>
         </div>
         <?php $x++; ?>
       @endforeach
 
-    @elseif ($chart_units == 'hours')
 
+    @elseif ($chart_units == 'hours')
       @foreach($chart as $var) <!-- loops through graphs with dollar data --> 
-      
       <?php
         if($filter_all == false){
         $fulltext = $var->options['title']['text'];
@@ -244,7 +237,7 @@
                 <td colspam="3"><?php if(isset($var->options["billing_data"][date("Y")])){ //CODE FOR MONTHS HERE
                   $keys = array_keys($var->options["billing_data"][date("Y")]);
                   foreach($keys as $key){
-                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("-2 month"))){ //If The month index exists and equals the month 3 months prior, display the value.
+                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("-2 month"))){ //If The month index exists and equals the month 2 months prior, display the value.
                       echo "$".ltrim($var->options["billing_data"][date("Y")][$key], "$");
                     }
                   }
@@ -254,7 +247,7 @@
                 <td colspam="3"><?php if(isset($var->options["billing_data"][date("Y")])){ //CODE FOR MONTHS HERE
                   $keys = array_keys($var->options["billing_data"][date("Y")]);
                   foreach($keys as $key){
-                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("-1 month"))){ //If The month index exists and equals the month 3 months prior, display the value.
+                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("-1 month"))){ //If The month index exists and equals the month 1 months prior, display the value.
                       echo "$".ltrim($var->options["billing_data"][date("Y")][$key], "$");
                     }
                   }
@@ -279,11 +272,6 @@
                   }
                 }
                 ?>" name="text_{{$x}}"></td>
-            
-              <!--    <td colspan="2">Last Record Bill:                                                                                           </td>
-                <td colspan="4">
-                  <input type="text" value="<//?php echo "    $" . $var->options["last_bill_amount"] . " in " . substr($var->options["last_bill_month"], 0, 3);  ?>">
-                </td> -->
               </tr>
           </table>
         </div>
@@ -292,7 +280,7 @@
     @endif
   <input type="hidden" value="{{$x}}" name="graph_count"> <!-- master button for submitting billing number to database -->
   <div class="mastersubmitbuttton">
-    <input class="btn btn-primary" name="mastersubmitbuttton" type="hidden"><button href="{{action('ProjectController@blah')}}" class="btn btn-primary" method="POST" type="submit">Master Submit Buttton</button> 
+    <input class="btn btn-primary" name="mastersubmitbuttton" type="hidden"><button href="{{action('ProjectController@submit_billing')}}" class="btn btn-primary" method="POST" type="submit">Master Submit Buttton</button> 
   </div>
 </form>
 @endsection
