@@ -255,14 +255,22 @@
               </tr>
               <tr>
                 <td colspan="1">                                                                                                            </td>
-                <td colspan="1"><b>Previous Month:</b>                                                                                           </td>
+                <td colspan="1"><b>Previous Month:</b>                                                                                      </td>
                 <td colspan="1"><?php echo $var->options["previous_month_project_hours"] . "-hr";  ?>                                       </td>
                 <td colspan="4"><?php echo "$" . $var->options["previous_month_project_monies"];  ?>                                        </td>
-                <td colspan="2"><b>Bill this Amount:</b>                                                                                        </td>
+                <td colspan="2"><b>BILL/HOLD? (Bill Amount if known):</b>                                                                   </td>
                 <td colspan="4">          
                   <?php $id = $var->options['id']; ?> 
-                  <input type="hidden" value="{{$var->options['id']}}" name="id_{{$x}}">
-                  <input type="text" value="" name="text_{{$x}}"></td>
+                <input type="hidden" value="{{$var->options['id']}}" name="id_{{$x}}">
+                <input type="text" value="<?php if(isset($var->options["billing_data"][date("Y")])){ //CODE FOR MONTHS HERE
+                  $keys = array_keys($var->options["billing_data"][date("Y")]);
+                  foreach($keys as $key){
+                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("-1 month"))){ //If The month index exists and equals the month 3 months prior, display the value.
+                      echo ltrim($var->options["billing_data"][date("Y")][$key], "$");
+                    }
+                  }
+                }
+                ?>" name="text_{{$x}}"></td>
             
               <!--    <td colspan="2">Last Record Bill:                                                                                           </td>
                 <td colspan="4">
