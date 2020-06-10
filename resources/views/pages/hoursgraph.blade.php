@@ -196,7 +196,6 @@
           }
         }
       }?>
-      <div id="dynamic_field">
         <div id="chart" class="htmlgraphhours">
           @isset($var)
             {!! $var->container() !!}
@@ -275,10 +274,9 @@
         <?php $x++; ?>
       @endforeach
     @endif
-
   <input type="hidden" value="{{$x}}" name="graph_count"> <!-- master button for submitting billing number to database -->
   <div class="mastersubmitbuttton">
-    <input class="btn btn-primary" name="mastersubmitbuttton" type="hidden" value="hours"><button href="{{action('ProjectController@blah', $var->options['id'])}}" class="btn btn-primary" method="POST" type="submit">Master Submit Buttton</button> 
+    <input class="btn btn-primary" name="mastersubmitbuttton" type="hidden"><button href="{{action('ProjectController@blah')}}" class="btn btn-primary" method="POST" type="submit">Master Submit Buttton</button> 
   </div>
 </form>
 @endsection
