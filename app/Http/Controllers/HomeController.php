@@ -21,17 +21,24 @@ class HomeController extends Controller
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return view - returns the dashboard page.
      */
     public function index()
     {   //if the date 7 days from now isn't the same month as current, then billing is due in 7 days
-        $billing = null;
+        $billing = null; //Made null so it doesn't throw error.
         if(date('F', strtotime('+7 day')) != date('F')){ //so, let's build the billing_widget data
             $billing = $this->billing_widget();
         }
         return view('dashboard', compact('billing'));
     }
 
+    /**
+     * Builds the billing widget by checking if the user's name occurs in any project's project
+     * manager section. If so, checks to see if the last month had billing information. If it's
+     * not filled out, it pushes it to an array to be displayed on the dashboard.
+     *
+     * @return Array - array of projects that need billing for the last month.
+     */
     protected function billing_widget()
     {
         $need_billing = array();
@@ -48,12 +55,22 @@ class HomeController extends Controller
         return $need_billing;
     }
 
+    /**
+     * Pulls all users for the roles/'Account Directory' page.
+     *
+     * @return view - returns the roles/'Account Directory' page.
+     */
     public function edit_roles()
     {
         $users = User::all();
         return view('pages.roles', compact('users'));
     }
 
+    /**
+     * Takes the $id of the user to be terminated.
+     * @param $id - the id of the user to be terminated.
+     * @return redirect - redirects the admin to the dashboard.
+     */
     public function destroy($id)
     {
         if(isset($id)){
@@ -63,6 +80,11 @@ class HomeController extends Controller
         return redirect('/home');
     }
 
+    /**
+     * Updates all user roles based on the radio button fields on the page.
+     * @param Request $request
+     * @return redirect - redirects the admin to the dashboard.
+     */
     public function update_role(Request $request)
     {
         $users = User::all();
@@ -78,12 +100,23 @@ class HomeController extends Controller
         return redirect('/home');
     }
 
+    /**
+     * Finds and compacts the user to be edited.
+     * @param $id - the id of the user to be edited.
+     * @return view - view of the edit account page for the selected user.
+     */
     public function edit_account($id)
     {
         $user = User::find($id);
         return view('pages.editaccount', compact('user'));
     }
 
+    /**
+     * Updates the user's name and email based on $id.
+     * @param $id - the id of the user to be updated.
+     * @param Request $request
+     * @return redirect - redirects the admin to the roles/'Account Directory' page with a success message.
+     */
     public function update_account(Request $request, $id){
         $user = User::find($id);
         $user->name = $request->get('name');

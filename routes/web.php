@@ -28,9 +28,8 @@ Route::post('/wonprojectsummary', 'ProjectController@search')->middleware('verif
 Route::post('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummarySearch');
 
 
-
 Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified');
-Route::post('/hoursgraph','ProjectController@blah')->middleware('verified');
+Route::post('/hoursgraph','ProjectController@submit_billing')->middleware('verified');
 
 Route::get('/monthendbilling', 'ProjectController@billing')->name('pages.monthendbilling')->middleware('verified', 'role');
 
@@ -54,7 +53,6 @@ Route::post('/roles', 'HomeController@update_role')->name('pages.rolesUpdate')->
 Route::get('/editaccount/{id}', 'HomeController@edit_account')->name('pages.editaccount')->middleware('verified', 'role');
 Route::post('/editaccount/{id}', 'HomeController@update_account')->middleware('verified');
 
-#Corey adding route for new timesheet status page
 Route::get('/timesheetsentstatus', 'TimesheetController@get_user_timesheet_status')->name('pages.timesheetsentstatus')->middleware('verified');
 
 

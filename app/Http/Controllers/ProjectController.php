@@ -2,15 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Project;
 use MongoDB\BSON\UTCDateTime; 
-use MongoDB\BSON\Decimal128; 
 use App\Charts\HoursChart;
-use UTCDateTime\DateTime;
-use UTCDateTime\DateTime\DateTimeZone;
 
 use DateInterval;
 use DatePeriod;
@@ -281,19 +276,13 @@ class ProjectController extends Controller
     return redirect('/projectindex')->with('success', 'Success! Project has been successfully updated.');
   }
 
-  public function blah(Request $request)
+  /**
+   * Billing app method
+   * Finds all projects who had the bill/hold text field filled and saves them to the datebase.
+   * @param Request $request
+   */
+  public function submit_billing(Request $request)
   {
-    //if (isset($id)) {
-      //dd($request); 
-      //$this->validate_request($request);  //I had to comment this out because it broke my function
-      //$project = Project::find($id);  
-
-
-      //name = 1_id,  value:asdjfjaewiru3243488
-
-      //echo "request graph_count: " . $request['graph_count']; //count($groupLIST)
-
-
       $id_billing_array=array();
       $x=0;
       for ($x=0; $x <= $request['graph_count']; $x++) 
@@ -305,40 +294,27 @@ class ProjectController extends Controller
       }  
 
       if(!empty($id_billing_array)){  //If the id array is empty, then nothing needs to be saved.
-      //still need a global bill array
       $project = Project::find($id); 
       $previous_month = date('F', strtotime('-21 day'));
       $year_of_previous_month = date('Y', strtotime('-21 day')); 
 
       foreach ($id_billing_array as $id_billing => $value) {
         $project = Project::find($id_billing);
-        //$bill_array[$year_of_previous_month][$previous_month] = $value;
-
         $bill_amount=$project->bill_amount;
         $bill_amount[$year_of_previous_month][$previous_month] = $value;
-        //$project->bill_amount = $bill_array;
         $project->bill_amount = $bill_amount;
         $project->save();
       }
     }
-
-    //$project->bill_amount = $bill_array;
-    //$project->save();**/
-    //dd($project);
-    //return view('pages.monthendbilling');
-    //$projects = Project::all(); 
-    //$projects = Project::whereRaw('bill_amount',1)->exists(); 
-    $projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy('projectname');
-    //return view('pages.monthendbilling',compact('previous_month', 'projects'));
+    //$projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy('projectname');
     return redirect('/monthendbilling')->with('Success!', 'Billing has been successfully updated');;
-    //return null;
-    //} else {
-      //echo "steve";
-      //self::monthendfunction(); 
-      //return redirect('/hoursgraph');
-      //};
   }
 
+  /**
+   * Method sets sort term and finds projects that have a bill_amount array.
+   * @param Request $request
+   * @return view 'monthendbilling' with 'projects' and 'term'
+   */
   public function billing(Request $request){
     $term = $request['sort'];
     if(!isset($term)){
@@ -347,13 +323,6 @@ class ProjectController extends Controller
     $projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy($term);
     return view('pages.monthendbilling', compact('projects', 'term'));
   }
-
-
-
-
-
-
-
 
   /**
    * If the current user has a role that is not a user, all projects are retrieved to be viewed. 
@@ -421,6 +390,7 @@ class ProjectController extends Controller
    * @param $project
    * @param $dollars_arr
    * @param $months
+   * @return $dollars_arr
    */
   protected function add_dollars($project, $dollars_arr, $months)
   {
@@ -432,13 +402,6 @@ class ProjectController extends Controller
     return $dollars_arr; 
   }
 
-  // protected function longQueriesIndexWon($status){
-  //   return Project::where('projectstatus',$status)->where(function($query){
-  //     $query->where('cegproposalauthor', auth()->user()->name)
-  //           ->orWhere('projectmanager', auth()->user()->name)
-  //           ->orWhere('created_by', auth()->user()->email);
-  //   });
-  // }    Keep incase we re-implement role
   /**
    * Queries for project status type 'Won' & 'Probable', just 'Won', or only 'Probable'. If user role is type 
    * user, then only projects they are associated with will show. Creates Bar graph at top and
