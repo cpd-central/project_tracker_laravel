@@ -255,34 +255,7 @@ table.center {
           }
         });
 
-    });
-
-    //function deRequire() {
-    //  for (i = 7; i <= row; i++) {
-    //    var row_group = document.getElementsByName('row'+row+'[]');
-    //    console.log(row_group); 
-    //    var at_least_one_checked = false;
-
-    //    for (j=0; j < row_group.length; j++) {
-    //      if (row_group[j] && row_group[j].value) {
-    //        at_least_one_checked = true;
-    //      }
-    //    } 
-    //    
-    //    if (at_least_one_checked === true) {
-    //      for (k=0; k < row_group.length; k++) {
-    //        row_group[k].required = false;
-    //      } 
-    //      }else {
-    //        for (k=0; k < row_group.length; k++) {
-    //          row_group[k].required = true;
-    //        }
-    //      }
-    //    }
-    //  console.log('hi');
-    //  } 
-      
-    
+    });   
 
     //automatically get a 14 day range if the date range is set
     function create_new_date(old_date, out_or_back) {
@@ -337,6 +310,9 @@ table.center {
 
     }
 
+    /**
+     * Generates Reference_List and sorts it
+     */
     function referenceTable(sort_term){
         var table = document.getElementById('reference_list');
         var button = document.getElementById('button_div'); 
@@ -398,6 +374,9 @@ table.center {
 
     var num_columns = "<?php echo count($arr) ?>";
 
+    /**
+     * Method which adds a row and appends it when Add Row button is clicked.
+     */
     function addRow(){
         var tr = '<tr id="row'+row+'">' +
                     '<td>' +
@@ -416,7 +395,9 @@ table.center {
                      '</td>';
                      $('#dynamic_field').append(tr);
     }
-
+    /**
+     * Keeps track of how many rows and added/removed on the page.
+     */
     function addRowTotal(){
       for(var w = 0; w <= row; w++){
         $('#total'+w+'').remove();
@@ -438,6 +419,9 @@ table.center {
       }
     }     
 
+    /**
+     * Adds up all to hours in the column and displays it.
+     */
     function columnTotal(){  
       var grand_total = 0;
       for(var x = 0; x <= num_columns + 3; x++){
