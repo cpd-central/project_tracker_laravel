@@ -353,15 +353,27 @@
           </div>
           <div class="form-group col-md-4">
             <label for="billingmethod">Billing Method:</label><br>
-            <label class="billingmethod" for="TandM">
-              <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="TandM" @if(check_billing_method('TandM', $project['billing_method'])){{"checked"}}@else<?= $__env->yieldContent('TandM')?>@endif/>T&M
-            </label>
-            <label class="billingmethod" for="Lump">
-            <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="Lump" @if(check_billing_method('Lump', $project['billing_method'])){{"checked"}}@else<?= $__env->yieldContent('Lump')?>@endif/>Lump
-            </label>
-            <label class="billingmethod" for="SOV">
-              <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="SOV" @if(check_billing_method('SOV', $project['billing_method'])){{"checked"}}@else<?= $__env->yieldContent('SOV')?>@endif/>SOV
-            </label>
+            @if(isset($project))
+              <label class="billingmethod" for="TandM">
+                <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="TandM" @if(check_billing_method('TandM', $project['billing_method'])){{"checked"}}@else<?= $__env->yieldContent('TandM')?>@endif/>T&M
+              </label>
+              <label class="billingmethod" for="Lump">
+              <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="Lump" @if(check_billing_method('Lump', $project['billing_method'])){{"checked"}}@else<?= $__env->yieldContent('Lump')?>@endif/>Lump
+              </label>
+              <label class="billingmethod" for="SOV">
+                <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="SOV" @if(check_billing_method('SOV', $project['billing_method'])){{"checked"}}@else<?= $__env->yieldContent('SOV')?>@endif/>SOV
+              </label>
+            @else
+              <label class="billingmethod" for="TandM">
+                <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="TandM" <?= $__env->yieldContent('TandM')?>/>T&M
+              </label>
+              <label class="billingmethod" for="Lump">
+              <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="Lump" <?= $__env->yieldContent('Lump')?>/>Lump
+              </label>
+              <label class="billingmethod" for="SOV">
+                <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="SOV" <?= $__env->yieldContent('SOV')?>/>SOV
+              </label>
+            @endif
           </div>
         </div>
         <div class="row">
