@@ -825,6 +825,18 @@ class ProjectController extends Controller
         array_push($codes_arr, $project['projectcode']);
       }
 
+      $choosen_line_colors = array('#396AB1','#DA7C30','#3E9651','#CC2529','#6B4C9A','#BFBF1E', '#00CCCC');
+      $fill_colors = [
+        'rgb(97, 136, 193, 0.2)',
+        'rgb(255, 150, 89, 0.2)',
+        'rgb(101, 171, 116, 0.2)',
+        'rgb(214, 81, 84, 0.2)',
+        'rgb(137, 112, 174, 0.2)',
+        'rgb(245, 245, 116, 0.2)',
+        'rgb(51, 214, 214, 0.2)'];
+      $c_color_loop = 0;
+      $color_max = 6;
+
       //holds the data for all charts 
       $charts = array(); 
       $all_data_arr = array();
@@ -870,9 +882,13 @@ class ProjectController extends Controller
             continue;
           }
           //put the hours in as the dataset
-          $chart->dataset($code, 'line', array_values($project_hours_in_date_range)); 
+          $chart->dataset($code, 'line', array_values($project_hours_in_date_range))->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'backgroundColor'=>$fill_colors[$c_color_loop], 'fill' => true, 'hidden' => false]); 
           //now, set the project hours in the date range as the value for this employee's name
           $employee_arr[$name] = $project_hours_in_date_range;
+          $c_color_loop++;
+          if($c_color_loop > $color_max){
+            $c_color_loop = 0;
+          }
         }
         //now, set the employee array for the code
         $all_data_arr[$code] = $employee_arr;
@@ -881,6 +897,7 @@ class ProjectController extends Controller
         if(!empty($chart->datasets)) {
           array_push($charts, $chart);
         } 
+        $c_color_loop = 0;
       }      
       return view('pages.hoursgraph', compact('charts', 'drafter_page'));     
     }
