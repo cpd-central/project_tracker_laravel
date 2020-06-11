@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Timesheet;
 use App\User;
 use Illuminate\Http\Request;
-use UTCDateTime\DateTime;
-use UTCDateTime\DateTime\DateTimeZone;
 
 use DateInterval;
 use DatePeriod;
@@ -81,17 +79,16 @@ class TimesheetController extends Controller
         }
         return $array;
     }
-	
-	//Corey adding protection function for get user timesheet status
+    
+    /**
+     * Gets all users and timesheets for timesheet sent status page.
+     * @return view pages.timesheetsentstatus
+     */
 	protected function get_user_timesheet_status(){
 		$timesheets = Timesheet::all();
 		$users = User::all();
-		//dd($timesheets);
-		//dd($users);
 		return view('pages.timesheetsentstatus', compact('timesheets','users'));
 	}
-	
-	//End Corey additions
 
     /**
      * Returns the timesheet view with the data compacted so
@@ -103,6 +100,10 @@ class TimesheetController extends Controller
         return view('pages.timesheet', compact('date', 'reference_list', 'arr', 'header_arr', 'start', 'end'));
     }
 
+    /**
+     * gets dates for timesheetSave method.
+     * @return Array
+     */
     public function get_dates($start, $end)
     {
         $start->setTime(0,0,0);
@@ -119,6 +120,10 @@ class TimesheetController extends Controller
         return array($arr, $header_arr);
     }
 
+    /**
+     * Checks to see if there are code/description duplicates on the Timesheet.
+     * @return Boolean
+     */
     protected function duplicate_code_descriptions($req, $num_rows) {
         $codes_descriptions = array();
         for ($i=7; $i<=$num_rows; $i++) {
@@ -236,6 +241,9 @@ class TimesheetController extends Controller
 
     /**
      * Stores the Timesheet to the database.
+     * @param $timesheet - timesheet to be saved to database.
+     * @param Request $request
+     * @param $og_date_range - original date range.
      */
     public function store($timesheet, $request, $og_date_range)
     {   
@@ -372,7 +380,7 @@ class TimesheetController extends Controller
             $timesheet->Codes = $codes;
             $timesheet->save();
         }
-        else{                       //If there wasn't a previous timesheet, don't need to worry about overwriting.
+        else{    //If there wasn't a previous timesheet, don't need to worry about overwriting.
             $codes = array();
             //Store code CEG
             $daterangeArray = $request->get('daterange');
@@ -476,7 +484,6 @@ class TimesheetController extends Controller
      */
     public function edit($timesheet, $date, $message = null, $reference_list, $arr, $header_arr, $start, $end)
     {
-        #dd($arr); 
         return view('pages.timesheet', compact('timesheet', 'date', 'message', 'reference_list', 'arr', 'header_arr', 'start', 'end'));
     }
 
