@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c835f8034cf276f1efcafc2cf4b3dad9",
+    "content-hash": "09c959d49576daf68a5133437eebecad",
     "packages": [
         {
             "name": "balping/json-raw-encoder",
@@ -100,6 +100,47 @@
                 }
             ],
             "time": "2020-03-03T23:16:14+00:00"
+        },
+        {
+            "name": "dhtmlx/connector-php",
+            "version": "3.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DHTMLX/connector-php.git",
+                "reference": "918dcc77e75e44a42ed4570423c7813b264eb5d9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DHTMLX/connector-php/zipball/918dcc77e75e44a42ed4570423c7813b264eb5d9",
+                "reference": "918dcc77e75e44a42ed4570423c7813b264eb5d9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "yii2": "1.0.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Dhtmlx\\Connector\\": "codebase/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GNU"
+            ],
+            "description": "PHP extension for the DHTMLX library",
+            "homepage": "http://dhtmlx.com/docs/products/dhtmlxConnector/index.shtml",
+            "keywords": [
+                "connector",
+                "connector-php",
+                "dhtmlx"
+            ],
+            "time": "2016-06-10T13:39:04+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -861,6 +902,10 @@
                 "mongo",
                 "mongodb"
             ],
+            "support": {
+                "issues": "https://github.com/jenssegers/laravel-mongodb/issues",
+                "source": "https://github.com/jenssegers/laravel-mongodb/tree/master"
+            },
             "funding": [
                 {
                     "url": "https://github.com/jenssegers",
@@ -3889,9 +3934,9 @@
             "authors": [
                 {
                     "name": "Marcel Pociot",
+                    "role": "Developer",
                     "email": "marcel@beyondco.de",
-                    "homepage": "https://beyondco.de",
-                    "role": "Developer"
+                    "homepage": "https://beyondco.de"
                 }
             ],
             "description": "Symfony Var-Dump Server for Laravel",

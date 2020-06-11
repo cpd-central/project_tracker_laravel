@@ -1606,10 +1606,60 @@ class ProjectController extends Controller
     }
     return $project;
   }
-
+    /**
+   * Loads data for the Sticky Note Gantt chart.
+   * @return view 'pages.sticky_note'
+   */
   public function sticky_note(){
-    return view('pages.sticky_note');
+    $projects = Project::all()->where('projectstatus', 'Won');
+    $projects = $this->sort_by_closest_date($projects);
+    $project = $projects[0];
+    //$json = json_encode($projects);
+    //$projects = $projects[0];
+    //dd($json);
+    $json = $this->project_to_json($project);
+    return view('pages.sticky_note', compact('json'));
   }
+
+  public function project_to_json($project){
+    //$json = '{"id":1, "text":"Physical Drawing Package 90%", "start_date":"2020-06-10 00:00:00", "end_date":"2020-06-15 00:00:00"}';
+    $duedates = $project['duedates'];
+    $i = 0;
+    $json = array();
+    $keys = array_keys($duedates);
+    foreach($duedates as $duedate){
+      if($i == 14){
+        break;
+      }
+
+      //$php_date = new \DateTime($date_string, new \DateTimeZone('America/Chicago'));
+      //note this is a mongodb UTCDateTime 
+      //$date = new UTCDateTime($php_date->getTimestamp() * 1000);
+      $id = 'id_'.$i;
+      $pname = $project['projectname'].' '.$keys[$i];
+      $end = $duedate['due'];
+      $end = $this->dateToStr($end);
+      if($end == "None"){
+        $i++;
+        continue;
+      }
+      $start = new \DateTime($this->dateToStr($end));
+      $start = $start->sub(new DateInterval('P1D'));
+      $start = date_format($start, 'Y-m-d');
+      $start = $this->dateToStr($start);
+      $jstring = array(
+        "id" => $id,
+        "text" => $pname,
+        "start_date" => $start,
+        "end_date" => $end
+      );
+      $jstring = json_encode($jstring);
+      array_push($json, $jstring);
+      $i++;
+    }
+    return $json;
+  }
+  
 
 /**************** End of the Project Planner or Sticky Note Application *********************/
 

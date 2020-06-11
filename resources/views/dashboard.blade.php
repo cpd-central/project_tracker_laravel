@@ -78,7 +78,7 @@ background-color: white;
 
 <?php
 if(auth()->user()->role == "proposer" || auth()->user()->role == "admin"){
-	$style_string = "height:23%";
+	$style_string = "height:15%";
 }
 elseif(auth()->user()->role == "sudo"){
 	$style_string = "height:15%";
