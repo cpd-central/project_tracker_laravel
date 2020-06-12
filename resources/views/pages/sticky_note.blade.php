@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 
 
+<?php
+//dd($json);
+?>
+
 <head>
     @include('includes.navbar')
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
@@ -37,22 +41,7 @@
     <?php } ?>
     var project = {};
     project={"data": data};
-    /*
-    var tasks = {
-        "data":[
-            
-        
-        <?php echo $json[0]?>,
-        <?php echo $json[1]?>,
-        <?php echo $json[2]?>,
-        <?php echo $json[3]?>,
-        <?php echo $json[4]?>,
-        
-        
-        ]
-    };
-    console.log(tasks);
-    */
+
     console.log(project);
     
 

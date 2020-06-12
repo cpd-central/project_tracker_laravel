@@ -1614,50 +1614,69 @@ class ProjectController extends Controller
     $projects = Project::all()->where('projectstatus', 'Won');
     $projects = $this->sort_by_closest_date($projects);
     $project = $projects[0];
-    //$json = json_encode($projects);
-    //$projects = $projects[0];
-    //dd($json);
+    //$json = [];
+    //$counter = 0;
+    //foreach($projects as $project){
+      //if ($this->project_to_json($project) != null){
+        //$json[$counter] = $this->project_to_json($project);
+        //$counter++;
+      //}
     $json = $this->project_to_json($project);
+    //}
     return view('pages.sticky_note', compact('json'));
   }
-
+    /**
+   * Turns information on the project from the database into a JSON format so the Gantt chart can display the information.
+   * @param $project is the current project that's information is being converted to a JSON format.
+   * @return $json an array conatining elements of the project in a JSON format.
+   */
   public function project_to_json($project){
-    //$json = '{"id":1, "text":"Physical Drawing Package 90%", "start_date":"2020-06-10 00:00:00", "end_date":"2020-06-15 00:00:00"}';
-    $duedates = $project['duedates'];
-    $i = 0;
-    $json = array();
-    $keys = array_keys($duedates);
-    foreach($duedates as $duedate){
-      if($i == 14){
-        break;
-      }
-
-      //$php_date = new \DateTime($date_string, new \DateTimeZone('America/Chicago'));
-      //note this is a mongodb UTCDateTime 
-      //$date = new UTCDateTime($php_date->getTimestamp() * 1000);
-      $id = 'id_'.$i;
-      $pname = $project['projectname'].' '.$keys[$i];
-      $end = $duedate['due'];
-      $end = $this->dateToStr($end);
-      if($end == "None"){
-        $i++;
-        continue;
-      }
-      $start = new \DateTime($this->dateToStr($end));
-      $start = $start->sub(new DateInterval('P1D'));
-      $start = date_format($start, 'Y-m-d');
-      $start = $this->dateToStr($start);
-      $jstring = array(
-        "id" => $id,
-        "text" => $pname,
+    if (isset($project['duedates'])){
+      $duedates = $project['duedates'];
+      $i = 0;
+      $text = $project['projectname'];
+      $start = date("Y-m-d");
+      $end = $this->dateToStr($project['dateenergization']);
+      $parent = array(
+        "id" => "id_100", 
+        "text" => $text, 
         "start_date" => $start,
         "end_date" => $end
       );
-      $jstring = json_encode($jstring);
-      array_push($json, $jstring);
-      $i++;
-    }
-    return $json;
+      $parent = json_encode($parent);
+      $json = array();
+      array_push($json, $parent);
+      $keys = array_keys($duedates);
+      foreach($duedates as $duedate){
+        if($i == 14){
+          break;
+        }
+        $id = 'id_'.$i;
+        $pname = $project['projectname'].' '.$keys[$i];
+        $end = $duedate['due'];
+        $end = $this->dateToStr($end);
+        if($end == "None"){
+          $i++;
+          continue;
+        }
+        $start = new \DateTime($this->dateToStr($end));
+        $start = $start->sub(new DateInterval('P1D'));
+        $start = date_format($start, 'Y-m-d');
+        $start = $this->dateToStr($start);
+        $parent = 'id_100';
+        $jstring = array(
+          "id" => $id,
+          "text" => $pname,
+          "start_date" => $start,
+          "end_date" => $end,
+          "parent" => $parent
+        );
+        $jstring = json_encode($jstring);
+        array_push($json, $jstring);
+        $i++;
+      }
+      return $json;
+  }
   }
   
 
