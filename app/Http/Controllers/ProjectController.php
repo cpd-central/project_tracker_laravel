@@ -1632,8 +1632,8 @@ class ProjectController extends Controller
    */
   public function project_to_json($project){
     if (isset($project['duedates'])){
+      // Sets initial parent folder for the project
       $duedates = $project['duedates'];
-      $i = 0;
       $text = $project['projectname'];
       $start = date("Y-m-d");
       $end = $this->dateToStr($project['dateenergization']);
@@ -1647,14 +1647,47 @@ class ProjectController extends Controller
       $json = array();
       array_push($json, $parent);
       $keys = array_keys($duedates);
+      //loops through each duedate in the project and adds them in a JSON format to $json variable
+      $i = 0;
       foreach($duedates as $duedate){
         if($i == 14){
-          break;
+          $addeddates = $duedates['additionalfields'];
+          $addedcount = 14;
+          $addedkeys = array_keys($addeddates);
+          $j = 0;
+          foreach($addeddates as $addeddate){
+            $pname = $project['projectname'].' '.$addedkeys[$j];
+            $id = 'id_'.$addedcount.$project['projectname'];
+            $end = $addeddate['due'];
+            $end = $this->dateToStr($end);
+            if($end == "None"){
+              $addedcount++;
+              continue;
+            }
+            $start = new \DateTime($this->dateToStr($end));
+            $start = $start->sub(new DateInterval('P1D'));
+            $start = date_format($start, 'Y-m-d');
+            $start = $this->dateToStr($start);
+            $parent = 'id_'.$text;
+            $jstring = array(
+              "id" => $id,
+              "text" => $pname,
+              "start_date" => $start,
+              "end_date" => $end,
+              "parent" => $parent
+            );
+            $jstring = json_encode($jstring);
+            array_push($json, $jstring);
+            $addedcount++;  
+            $j++;      
+          }
+        break; 
         }
         $pname = $project['projectname'].' '.$keys[$i];
         $id = 'id_'.$i.$project['projectname'];
         $end = $duedate['due'];
         $end = $this->dateToStr($end);
+        //if the current due date isn't set, skip to the next date
         if($end == "None"){
           $i++;
           continue;
