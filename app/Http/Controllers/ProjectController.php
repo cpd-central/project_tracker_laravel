@@ -822,20 +822,23 @@ class ProjectController extends Controller
       //we really just need the codes from this, since that's what we will use to look up the hours in the timesheet
       $codes_arr = array();
       foreach($non_zero_projects as $project) {
-        array_push($codes_arr, $project['projectcode']);
+        if(!in_array($project['projectcode'], $codes_arr)){
+          array_push($codes_arr, $project['projectcode']);
+        }
       }
 
-      $choosen_line_colors = array('#396AB1','#DA7C30','#3E9651','#CC2529','#6B4C9A','#BFBF1E', '#00CCCC');
+      $choosen_line_colors = array('#396AB1','#DA7C30','#3E9651','#CC2529','#6B4C9A','#BFBF1E', '#00CCCC', '#6e4d00');
       $fill_colors = [
-        'rgb(97, 136, 193, 0.2)',
-        'rgb(255, 150, 89, 0.2)',
-        'rgb(101, 171, 116, 0.2)',
-        'rgb(214, 81, 84, 0.2)',
-        'rgb(137, 112, 174, 0.2)',
-        'rgb(245, 245, 116, 0.2)',
-        'rgb(51, 214, 214, 0.2)'];
+        'rgb(97, 136, 193, 0.4)',
+        'rgb(255, 150, 89, 0.4)',
+        'rgb(101, 171, 116, 0.4)',
+        'rgb(214, 81, 84, 0.4)',
+        'rgb(137, 112, 174, 0.4)',
+        'rgb(245, 245, 116, 0.4)',
+        'rgb(51, 214, 214, 0.4)',
+        'rgb(159, 109, 0, 0.4)'];
       $c_color_loop = 0;
-      $color_max = 6;
+      $color_max = 7;
 
       //holds the data for all charts 
       $charts = array(); 
@@ -860,35 +863,75 @@ class ProjectController extends Controller
               continue;
             }
 
-            //////////////////////////////////////////////////////////
           if (in_array($code, array_keys($timesheet_codes))) {
             //note, we're just getting the first description.  for most drafters, I'm assuming this will be fine,
             //but note that this is a limitation at the moment. 
-            $project_hours = array_values($timesheet_codes[$code])[0]; 
+            //$names = array_values($timesheet_codes);
+            $index = array_search($code,array_keys($timesheet_codes));
+            $projectNames = array_values($timesheet_codes)[$index];
+            //dd(array_values($timesheet_codes));
+            //dd($projectNames);
+            //$names = array_keys($projectNames);
+            //dd($names);
+            $i = 0;
+            foreach($projectNames as $project_hours){
+             //dd($project_hours);
+              $names = array_keys($projectNames);
+              $projectName = $names[$i];
+              //dd($projectName);
+              $i++;
+              //$project_hours = array_values($projectName); 
+              //dd($projectName);
 
-            //this will store the time from this date range as a kvp ('date' => 'hours') 
-            $project_hours_in_date_range = array();
-            foreach($date_arr as $day) {
-              if (in_array($day, array_keys($project_hours))) {
-                $hours = $project_hours[$day];
+              //this will store the time from this date range as a kvp ('date' => 'hours') 
+              $project_hours_in_date_range = array();
+              //dd($project_hours_in_date_range);
+              foreach($date_arr as $day) {
+                if (in_array($day, array_keys($project_hours))) {
+                  $hours = $project_hours[$day];
+                }
+                else {
+                  $hours = 0;
+                }
+                $project_hours_in_date_range[$day] = $hours;
               }
-              else {
-                $hours = 0;
+              $chart->dataset($projectName, 'bar', array_values($project_hours_in_date_range))->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'backgroundColor'=>$fill_colors[$c_color_loop], 'fill' => true, 'hidden' => false]); 
+              $options = [];
+              $options['scales']['xAxes'][]['stacked'] = true;
+              $options['scales']['yAxes'][]['stacked'] = true;
+              $options['legend']['labels']['boxWidth'] = 10;
+              $options['legend']['labels']['padding'] = 6;
+              $chart->options($options);
+              
+              //now, set the project hours in the date range as the value for this employee's name
+              $employee_arr[$name] = $project_hours_in_date_range;
+              $c_color_loop++;
+              if($c_color_loop > $color_max){
+                $c_color_loop = 0;
               }
-              $project_hours_in_date_range[$day] = $hours;
             }
           }
           else {
             continue;
           }
+         // if($code == "CEGMISC01"){
+           // $code = 
+         // }
           //put the hours in as the dataset
-          $chart->dataset($code, 'line', array_values($project_hours_in_date_range))->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'backgroundColor'=>$fill_colors[$c_color_loop], 'fill' => true, 'hidden' => false]); 
+          //$chart->dataset($code, 'bar', array_values($project_hours_in_date_range))->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'backgroundColor'=>$fill_colors[$c_color_loop], 'fill' => true, 'hidden' => false]); 
+//          $options = [];
+//          $options['scales']['xAxes'][]['stacked'] = true;
+  //        $options['scales']['yAxes'][]['stacked'] = true;
+    //      $options['legend']['labels']['boxWidth'] = 10;
+      //    $options['legend']['labels']['padding'] = 6;
+        //  $chart->options($options);
+          
           //now, set the project hours in the date range as the value for this employee's name
-          $employee_arr[$name] = $project_hours_in_date_range;
-          $c_color_loop++;
-          if($c_color_loop > $color_max){
-            $c_color_loop = 0;
-          }
+//          $employee_arr[$name] = $project_hours_in_date_range;
+  //        $c_color_loop++;
+    //      if($c_color_loop > $color_max){
+      //      $c_color_loop = 0;
+        //  }
         }
         //now, set the employee array for the code
         $all_data_arr[$code] = $employee_arr;
