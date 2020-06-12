@@ -37,8 +37,10 @@
     
     var data = [];
     <?php for ($i = 0; $i < count($json); $i++) {?>
-        data.push(<?php echo $json[$i]?>);
-    <?php } ?>
+        <?php for ($j = 0; $j < count($json[$i]); $j++) {?>
+            data.push(<?php echo $json[$i][$j]?>);
+        <?php } ?>
+     <?php } ?>
     var project = {};
     project={"data": data};
 

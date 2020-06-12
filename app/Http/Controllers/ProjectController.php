@@ -1614,15 +1614,15 @@ class ProjectController extends Controller
     $projects = Project::all()->where('projectstatus', 'Won');
     $projects = $this->sort_by_closest_date($projects);
     $project = $projects[0];
-    //$json = [];
-    //$counter = 0;
-    //foreach($projects as $project){
-      //if ($this->project_to_json($project) != null){
-        //$json[$counter] = $this->project_to_json($project);
-        //$counter++;
-      //}
-    $json = $this->project_to_json($project);
-    //}
+    $json = [];
+    $counter = 0;
+    foreach($projects as $project){
+      if ($this->project_to_json($project) != null){
+        $json[$counter] = $this->project_to_json($project);
+        $counter++;
+      }
+    //$json = $this->project_to_json($project);
+    }
     return view('pages.sticky_note', compact('json'));
   }
     /**
@@ -1638,7 +1638,7 @@ class ProjectController extends Controller
       $start = date("Y-m-d");
       $end = $this->dateToStr($project['dateenergization']);
       $parent = array(
-        "id" => "id_100", 
+        "id" => "id_".$text, 
         "text" => $text, 
         "start_date" => $start,
         "end_date" => $end
@@ -1651,8 +1651,8 @@ class ProjectController extends Controller
         if($i == 14){
           break;
         }
-        $id = 'id_'.$i;
         $pname = $project['projectname'].' '.$keys[$i];
+        $id = 'id_'.$i.$project['projectname'];
         $end = $duedate['due'];
         $end = $this->dateToStr($end);
         if($end == "None"){
@@ -1663,7 +1663,7 @@ class ProjectController extends Controller
         $start = $start->sub(new DateInterval('P1D'));
         $start = date_format($start, 'Y-m-d');
         $start = $this->dateToStr($start);
-        $parent = 'id_100';
+        $parent = 'id_'.$text;
         $jstring = array(
           "id" => $id,
           "text" => $pname,
