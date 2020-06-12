@@ -858,34 +858,34 @@ class ProjectController extends Controller
           //we want the 0th element of the collection 
           $timesheet = Timesheet::where('user', $email)->get()[0];
           $timesheet_codes = $timesheet['Codes'];
+          $total_hours_in_period = 0;
+          $non_billable_hours = 0;
+          $project_count = 0;
+          $options = [];
+          $options['scales']['xAxes'][]['stacked'] = true;
+          $options['scales']['yAxes'][]['stacked'] = true;
+          $options['legend']['labels']['boxWidth'] = 10;
+          $options['legend']['labels']['padding'] = 6;
           foreach($codes_arr as $code) {
-            if ($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU") {
-              continue;
-            }
-
+            //if ($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU") {
+              //continue;
+            //}
           if (in_array($code, array_keys($timesheet_codes))) {
             //note, we're just getting the first description.  for most drafters, I'm assuming this will be fine,
             //but note that this is a limitation at the moment. 
-            //$names = array_values($timesheet_codes);
             $index = array_search($code,array_keys($timesheet_codes));
             $projectNames = array_values($timesheet_codes)[$index];
-            //dd(array_values($timesheet_codes));
-            //dd($projectNames);
-            //$names = array_keys($projectNames);
-            //dd($names);
             $i = 0;
             foreach($projectNames as $project_hours){
-             //dd($project_hours);
               $names = array_keys($projectNames);
               $projectName = $names[$i];
-              //dd($projectName);
               $i++;
-              //$project_hours = array_values($projectName); 
-              //dd($projectName);
+              if($projectName == "Holiday" || $projectName == "PTO"){
+                continue;
+              }
 
               //this will store the time from this date range as a kvp ('date' => 'hours') 
               $project_hours_in_date_range = array();
-              //dd($project_hours_in_date_range);
               foreach($date_arr as $day) {
                 if (in_array($day, array_keys($project_hours))) {
                   $hours = $project_hours[$day];
@@ -896,20 +896,29 @@ class ProjectController extends Controller
                 $project_hours_in_date_range[$day] = $hours;
               }
               //If a project has no hours in the period, then don't add it to the chart.
-              $total = 0;
+              $code_total = 0;
               foreach($project_hours_in_date_range as $date){
-                $total = $total + $date;
+                $code_total = $code_total + $date;
               }
-              if($total <= 0){
+              $total_hours_in_period = $total_hours_in_period + $code_total;
+              if($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU"){
+                $non_billable_hours = $non_billable_hours + $code_total;
+                if(isset($options[$code])){
+                  $options[$code] = $options[$code] + $code_total;
+                }
+                else{
+                  $options[$code] = $code_total;
+                }
+                continue;
+              }
+              if($code_total <= 0){
                 continue;
               }
               //////
+              $project_count++;
               $chart->dataset($projectName, 'bar', array_values($project_hours_in_date_range))->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'backgroundColor'=>$fill_colors[$c_color_loop], 'fill' => true, 'hidden' => false]); 
-              $options = [];
-              $options['scales']['xAxes'][]['stacked'] = true;
-              $options['scales']['yAxes'][]['stacked'] = true;
-              $options['legend']['labels']['boxWidth'] = 10;
-              $options['legend']['labels']['padding'] = 6;
+              $options['percent_billable'] = round((($total_hours_in_period - $non_billable_hours) / $total_hours_in_period) * 100);
+              $options['projectcount'] = $project_count;
               $chart->options($options);
               
               //now, set the project hours in the date range as the value for this employee's name
