@@ -895,6 +895,15 @@ class ProjectController extends Controller
                 }
                 $project_hours_in_date_range[$day] = $hours;
               }
+              //If a project has no hours in the period, then don't add it to the chart.
+              $total = 0;
+              foreach($project_hours_in_date_range as $date){
+                $total = $total + $date;
+              }
+              if($total <= 0){
+                continue;
+              }
+              //////
               $chart->dataset($projectName, 'bar', array_values($project_hours_in_date_range))->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'backgroundColor'=>$fill_colors[$c_color_loop], 'fill' => true, 'hidden' => false]); 
               $options = [];
               $options['scales']['xAxes'][]['stacked'] = true;
