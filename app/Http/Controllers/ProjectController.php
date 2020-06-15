@@ -1281,14 +1281,6 @@ class ProjectController extends Controller
         $duedates = $project['duedates'];
         if(isset($duedates)){
           $dates = [$project['dateenergization'], $duedates['physical90']['due'], $duedates['physicalifc']['due'], $duedates['wiring90']['due'], $duedates['wiringifc']['due'], $duedates['collection90']['due'], $duedates['collectionifc']['due'], $duedates['transmission90']['due'], $duedates['transmissionifc']['due'], $duedates['scada']['due'], $duedates['reactive']['due'], $duedates['ampacity']['due'], $duedates['arcflash']['due'], $duedates['relay']['due'], $duedates['allothers']['due']];
-          /*$count = 0;
-          foreach($dates as $date){
-            if ($date < $today){
-              array_splice($dates, $count, 1); 
-            }
-            $count++;
-          }
-          */
           sort($dates);
           foreach($dates as $date){
             if($this->dateToStr($date, null) > $today){
@@ -1307,7 +1299,6 @@ class ProjectController extends Controller
         }
         $alldates[$name] = $earliestdate;
       }
-      //dd($alldates);
       asort($alldates);
       foreach($alldates as $key => $value){
         foreach ($projects as $project){
@@ -1378,11 +1369,62 @@ class ProjectController extends Controller
    */ 
   public function edit_due_dates(Request $request, $id)
   {
-    //$this->validate_request($request); 
+    $this->validate_dates($request);
     $project = Project::find($id);
     $this->store_dates($project, $request);
     return redirect('/planner')->with('Success!', 'Project has been successfully updated');
   }
+
+    /**
+   * 
+   * @param $req - Request variable with attributes to be assigned to $project.
+   */
+  protected function validate_dates($req)
+  {
+    $today = date("Y-m-d");
+      $this->validate($req, [
+        'physical90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'physicalifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'wire90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'wireifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'collection90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'collectionifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'transmission90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'transmissionifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'scadadue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'ampacitydue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'arcflashdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'relaydue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'alldue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+      ]);
+  }
+
+/*
+  protected function validate_request($req)
+  {
+    $messages = array(
+      'cegproposalauthor.required' => 'The CEG Proposal Author is required.',
+      'projectname.required' => 'The Project Name is required.',
+      'clientcontactname.required' => 'The Client Contact Name is required.',
+      'dollarvalueinhouse.required' => 'The Dollar Value in-house expense is required.',
+      'datentp.required' => 'The Date of Notice To Proceed is required',
+      'dateenergization.required_unless' => 'The Date of Energization is required unless Date of Energization Unknown is checked.'
+    );
+    $this->validate($req, [
+      'cegproposalauthor' => 'required',
+      'projectname' => 'required',
+      'clientcontactname' => 'required'
+    ], $messages);
+
+    if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable'){ 
+      $this->validate($req, [
+        'dollarvalueinhouse' => 'required',
+        'datentp' => 'required',
+        'dateenergization' => 'required_unless:dateenergizationunknown,on'
+      ], $messages);
+    }
+  }
+  */
 
     /**
    * Stores the given manage project data into the database
@@ -1635,13 +1677,14 @@ class ProjectController extends Controller
       // Sets initial parent folder for the project
       $duedates = $project['duedates'];
       $text = $project['projectname'];
-      $start = date("Y-m-d");
-      $end = $this->dateToStr($project['dateenergization']);
+      $today = date("Y-m-d");
+      $energize = $this->dateToStr($project['dateenergization']);
       $parent = array(
         "id" => "id_".$text, 
         "text" => $text, 
-        "start_date" => $start,
-        "end_date" => $end
+        "start_date" => $today,
+        "end_date" => $energize,
+        "color" => "green"
       );
       $parent = json_encode($parent);
       $json = array();
@@ -1660,7 +1703,7 @@ class ProjectController extends Controller
             $id = 'id_'.$addedcount.$project['projectname'];
             $end = $addeddate['due'];
             $end = $this->dateToStr($end);
-            if($end == "None"){
+            if($end == "None" || $end < $today){
               $addedcount++;
               continue;
             }
@@ -1669,12 +1712,16 @@ class ProjectController extends Controller
             $start = date_format($start, 'Y-m-d');
             $start = $this->dateToStr($start);
             $parent = 'id_'.$text;
+            $name1 = $addeddate['person1'];
+            $name2 = $addeddate['person2'];
             $jstring = array(
               "id" => $id,
               "text" => $pname,
               "start_date" => $start,
               "end_date" => $end,
-              "parent" => $parent
+              "parent" => $parent,
+              "name_1" => $name1,
+              "name_2" => $name2
             );
             $jstring = json_encode($jstring);
             array_push($json, $jstring);
@@ -1688,7 +1735,7 @@ class ProjectController extends Controller
         $end = $duedate['due'];
         $end = $this->dateToStr($end);
         //if the current due date isn't set, skip to the next date
-        if($end == "None"){
+        if($end == "None" || $end < $today){
           $i++;
           continue;
         }
@@ -1697,13 +1744,29 @@ class ProjectController extends Controller
         $start = date_format($start, 'Y-m-d');
         $start = $this->dateToStr($start);
         $parent = 'id_'.$text;
+        $name1 = $duedate['person1'];
+        if (isset($duedate['person2'])){
+          $name2 = $duedate['person2'];
+          $jstring = array(
+            "id" => $id,
+            "text" => $pname,
+            "start_date" => $start,
+            "end_date" => $end,
+            "parent" => $parent,
+            "name_1" => $name1,
+            "name_2" => $name2
+          );
+        }
+        else{
         $jstring = array(
           "id" => $id,
           "text" => $pname,
           "start_date" => $start,
           "end_date" => $end,
-          "parent" => $parent
+          "parent" => $parent,
+          "name_1" => $name1,
         );
+      }
         $jstring = json_encode($jstring);
         array_push($json, $jstring);
         $i++;

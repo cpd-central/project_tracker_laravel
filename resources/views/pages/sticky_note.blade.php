@@ -26,9 +26,18 @@
 <div id="gantt_here" style='width:100%; height:100%;'></div>
 
 <script type="text/javascript">
-    //gantt.config.readonly = true;
+    gantt.config.readonly = true;
     //gantt.config.start_date = new Date(2020, 05, 10);
     //gantt.config.end_date = new Date(2020, 11, 31);
+
+    gantt.config.columns =  [
+    {name:"text",       label:"Project name",  tree:true, width: 250 },
+    {name:"end_date",   label:"End date",   align:"center", width: 75 },
+    {name:"name_1",   label:"Employee 1",   align:"center", width: 100 },
+    {name:"name_2",   label:"Employee 2",   align:"center", width: 100 },
+    ];
+    //gantt.config.grid_resize = true;
+
     gantt.config.xml_date = "%Y-%m-%d";
     gantt.config.scales = [
     {unit: "month", step: 1, format: "%F, %Y"},
@@ -43,10 +52,7 @@
      <?php } ?>
     var project = {};
     project={"data": data};
-
-    console.log(project);
     
-
     gantt.init("gantt_here");
     gantt.parse(project);
 </script>
