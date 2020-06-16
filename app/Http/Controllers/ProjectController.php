@@ -1369,8 +1369,8 @@ class ProjectController extends Controller
    */ 
   public function edit_due_dates(Request $request, $id)
   {
-    $this->validate_dates($request);
     $project = Project::find($id);
+    $this->validate_dates($request, $project);
     $this->store_dates($project, $request);
     return redirect('/planner')->with('Success!', 'Project has been successfully updated');
   }
@@ -1379,7 +1379,7 @@ class ProjectController extends Controller
    * 
    * @param $req - Request variable with attributes to be assigned to $project.
    */
-  protected function validate_dates($req)
+  protected function validate_dates($req, $project)
   {
     $today = date("Y-m-d");
       $this->validate($req, [
@@ -1397,34 +1397,29 @@ class ProjectController extends Controller
         'relaydue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
         'alldue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
       ]);
-  }
+      if (isset($project['duedates']['additionalfields'])){
+        $additionalfields = $project['duedates']['additionalfields'];
+      }
+      else{
+        $additionalfields = array();
+      }
+      $keys = array_keys($additionalfields);
+      $numfields = $req->get('total');
+      if ($numfields == null || $numfields == ''){
+        $numfields = sizeof($keys);
+      }
+      //dd($numfields);
 
-/*
-  protected function validate_request($req)
-  {
-    $messages = array(
-      'cegproposalauthor.required' => 'The CEG Proposal Author is required.',
-      'projectname.required' => 'The Project Name is required.',
-      'clientcontactname.required' => 'The Client Contact Name is required.',
-      'dollarvalueinhouse.required' => 'The Dollar Value in-house expense is required.',
-      'datentp.required' => 'The Date of Notice To Proceed is required',
-      'dateenergization.required_unless' => 'The Date of Energization is required unless Date of Energization Unknown is checked.'
-    );
-    $this->validate($req, [
-      'cegproposalauthor' => 'required',
-      'projectname' => 'required',
-      'clientcontactname' => 'required'
-    ], $messages);
-
-    if($req['projectstatus'] == 'Won' || $req['projectstatus'] == 'Probable'){ 
-      $this->validate($req, [
-        'dollarvalueinhouse' => 'required',
-        'datentp' => 'required',
-        'dateenergization' => 'required_unless:dateenergizationunknown,on'
-      ], $messages);
+      for($i = 1; $i <= $numfields; $i++){
+        $namefield = $req->get('row'.$i.'name');
+        if (!isset($namefield)){
+          continue;
+        }
+        $this->validate($req, [
+          'row'.$i.'due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        ]);
     }
   }
-  */
 
     /**
    * Stores the given manage project data into the database
@@ -1569,11 +1564,9 @@ class ProjectController extends Controller
 
       $duedates['allothers']['person1'] = $this->store_dates_helper($duedates['allothers']['person1'], $req->get('allperson1'));
       $duedates['allothers']['due'] = $this->strToDate($req->get('alldue'), null);
-
-      if (!isset($duedates['additionalfields'])){
-
-        $additionalfields = array();
-        $duedates['additionalfields'] = $additionalfields;
+    if (!isset($duedates['additionalfields'])){
+      $additionalfields = array();
+      $duedates['additionalfields'] = $additionalfields;
     } 
     $additionalfields = $duedates['additionalfields'];
     $keys = array_keys($additionalfields);
@@ -1674,6 +1667,9 @@ class ProjectController extends Controller
    */
   public function project_to_json($project){
     if (isset($project['duedates'])){
+      //used for color coding tasks later on
+      $startweek = date("Y-m-d", strtotime('monday this week')); 
+      $endweek = date("Y-m-d", strtotime('sunday this week'));
       // Sets initial parent folder for the project
       $duedates = $project['duedates'];
       $text = $project['projectname'];
@@ -1684,7 +1680,7 @@ class ProjectController extends Controller
         "text" => $text, 
         "start_date" => $today,
         "end_date" => $energize,
-        "color" => "green"
+        "color" => "rgb(75, 220, 100, 0.4)"
       );
       $parent = json_encode($parent);
       $json = array();
@@ -1693,27 +1689,34 @@ class ProjectController extends Controller
       //loops through each duedate in the project and adds them in a JSON format to $json variable
       $i = 0;
       foreach($duedates as $duedate){
+        // Sets the additionalfields as a JSON format
         if($i == 14){
           $addeddates = $duedates['additionalfields'];
           $addedcount = 14;
           $addedkeys = array_keys($addeddates);
           $j = 0;
           foreach($addeddates as $addeddate){
-            $pname = $project['projectname'].' '.$addedkeys[$j];
+            $pname = $addedkeys[$j];
             $id = 'id_'.$addedcount.$project['projectname'];
-            $end = $addeddate['due'];
-            $end = $this->dateToStr($end);
-            if($end == "None" || $end < $today){
+            $start = $addeddate['due'];
+            $start = $this->dateToStr($start);
+            if($start == "None" || $start < $today){
               $addedcount++;
               continue;
             }
-            $start = new \DateTime($this->dateToStr($end));
-            $start = $start->sub(new DateInterval('P1D'));
-            $start = date_format($start, 'Y-m-d');
-            $start = $this->dateToStr($start);
+            $end = new \DateTime($this->dateToStr($start));
+            $end = $end->add(new DateInterval('P1D'));
+            $end = date_format($end, 'Y-m-d');
+            $end = $this->dateToStr($end);
             $parent = 'id_'.$text;
             $name1 = $addeddate['person1'];
             $name2 = $addeddate['person2'];
+            if($startweek <= $start && $start <= $endweek){
+              $color = "rgb(255, 99, 132, 0.4)";
+            } 
+            else{
+              $color = "rgb(54, 162, 235, 0.4)";
+            }
             $jstring = array(
               "id" => $id,
               "text" => $pname,
@@ -1721,7 +1724,8 @@ class ProjectController extends Controller
               "end_date" => $end,
               "parent" => $parent,
               "name_1" => $name1,
-              "name_2" => $name2
+              "name_2" => $name2,
+              "color" => $color
             );
             $jstring = json_encode($jstring);
             array_push($json, $jstring);
@@ -1730,21 +1734,27 @@ class ProjectController extends Controller
           }
         break; 
         }
-        $pname = $project['projectname'].' '.$keys[$i];
+        //Sets all other fields as a JSON format
+        $pname = $keys[$i];
         $id = 'id_'.$i.$project['projectname'];
-        $end = $duedate['due'];
-        $end = $this->dateToStr($end);
-        //if the current due date isn't set, skip to the next date
-        if($end == "None" || $end < $today){
+        $start = $duedate['due'];
+        $start = $this->dateToStr($start);
+        if($start == "None" || $start < $today){
           $i++;
           continue;
         }
-        $start = new \DateTime($this->dateToStr($end));
-        $start = $start->sub(new DateInterval('P1D'));
-        $start = date_format($start, 'Y-m-d');
-        $start = $this->dateToStr($start);
+        $end = new \DateTime($this->dateToStr($start));
+        $end = $end->add(new DateInterval('P1D'));
+        $end = date_format($end, 'Y-m-d');
+        $end = $this->dateToStr($end);
         $parent = 'id_'.$text;
         $name1 = $duedate['person1'];
+        if($startweek <= $start && $start <= $endweek){
+          $color = "rgb(255, 99, 132, 0.4)";
+        } 
+        else{
+          $color = "rgb(54, 162, 235, 0.4)";
+        }
         if (isset($duedate['person2'])){
           $name2 = $duedate['person2'];
           $jstring = array(
@@ -1754,7 +1764,8 @@ class ProjectController extends Controller
             "end_date" => $end,
             "parent" => $parent,
             "name_1" => $name1,
-            "name_2" => $name2
+            "name_2" => $name2,
+            "color" => $color
           );
         }
         else{
@@ -1765,6 +1776,7 @@ class ProjectController extends Controller
           "end_date" => $end,
           "parent" => $parent,
           "name_1" => $name1,
+          "color" => $color
         );
       }
         $jstring = json_encode($jstring);
@@ -1772,7 +1784,7 @@ class ProjectController extends Controller
         $i++;
       }
       return $json;
-  }
+    }
   }
   
 

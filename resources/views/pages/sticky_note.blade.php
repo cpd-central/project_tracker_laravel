@@ -36,7 +36,8 @@
     {name:"name_1",   label:"Employee 1",   align:"center", width: 100 },
     {name:"name_2",   label:"Employee 2",   align:"center", width: 100 },
     ];
-    //gantt.config.grid_resize = true;
+
+    
 
     gantt.config.xml_date = "%Y-%m-%d";
     gantt.config.scales = [
