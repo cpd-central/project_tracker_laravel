@@ -799,16 +799,16 @@ class ProjectController extends Controller
       
       $today = app('App\Http\Controllers\TimesheetController')->getDate();
       $end_date = clone $today;
-      //date range of 30 days 
-      $start_date = $today->sub(new DateInterval('P31D'));
+      //date range of 14 days 
+      $start_date = $today->sub(new DateInterval('P14D'));
       //now, we want access to some of the functions in our Timesheetcontroller, since the collecting of the 
       //drafters' hours is very similar to what we do in the timesheet app
       $date_arr = app('App\Http\Controllers\TimesheetController')->get_dates($start_date, $end_date)[0];
       
       $current_month = date('F');
-      $previous_month = date('F', strtotime('-21 days'));
+      $previous_month = date('F', strtotime('-14 days'));
       $current_year = date('Y');
-      $previous_year = date('Y', strtotime('-21 days'));
+      $previous_year = date('Y', strtotime('-14 days')); //Not meant to be previous year other than January
       
       $non_zero_projects = Project::whereRaw([
         '$and' => array([
