@@ -14,6 +14,7 @@ use UTCDateTime\DateTime\DateTimeZone;
 
 use DateInterval;
 use DatePeriod;
+use Illuminate\Support\Facades\Date;
 
 class ProjectController extends Controller
 {
@@ -1249,6 +1250,545 @@ class ProjectController extends Controller
     }      
     return view('pages.hoursgraph', compact('projects', 'chart_hours', 'chart_dollars', 'chart_variable','dollarvalueinhousearray','chart_units'));
   }
+
+/**************** Start of the Project Planner or Sticky Note Application *********************/
+
+   /**
+   * Opens a page displaying all projects that are Won.
+   * @return view 'pages.planner'
+   */ 
+  public function planner(Request $request){
+    $projects = Project::all()->where('projectstatus', 'Won');
+    $projects = $this->sort_by_closest_date($projects);
+    $search = $request['search'];
+    $term = $request['sort'];
+    $invert = $request['invert']; 
+    if(isset($search) || (isset($term) && $term != "Closest Due Date")){
+      $projects = $this->planner_search($search, $term, $invert);
+    }
+    foreach($projects as $project){
+      $this->format_due_dates($project);
+    }
+    return view('pages.planner', compact('projects','term', 'search', 'invert'));
+  }
+
+  public function sort_by_closest_date($projects){
+    $today = date("Y-m-d");
+    $alldates = array();
+    $sortedprojects = array();
+      foreach($projects as $project){
+        $name = $project['projectname'];
+        $duedates = $project['duedates'];
+        if(isset($duedates)){
+          $dates = [$project['dateenergization'], $duedates['physical90']['due'], $duedates['physicalifc']['due'], $duedates['wiring90']['due'], $duedates['wiringifc']['due'], $duedates['collection90']['due'], $duedates['collectionifc']['due'], $duedates['transmission90']['due'], $duedates['transmissionifc']['due'], $duedates['scada']['due'], $duedates['reactive']['due'], $duedates['ampacity']['due'], $duedates['arcflash']['due'], $duedates['relay']['due'], $duedates['allothers']['due']];
+          sort($dates);
+          foreach($dates as $date){
+            if($this->dateToStr($date, null) > $today){
+              $earliestdate = $date;
+              break;
+            }
+          }
+        }
+        else{
+          if($this->dateToStr($project['dateenergization'], null) > $today){
+            $earliestdate = $project['dateenergization'];
+          }
+          else{
+            $earliestdate = "None";
+          }
+        }
+        $alldates[$name] = $earliestdate;
+      }
+      asort($alldates);
+      foreach($alldates as $key => $value){
+        foreach ($projects as $project){
+          if ($project['projectname'] == $key){
+            array_push($sortedprojects, $project);
+            break;
+          }
+        }
+      }
+    return $sortedprojects;
+  }
+
+    /**
+   * Search method for the planner page that searches and sorts through only won projects.
+   * @return $projects
+   */ 
+  public function planner_search($search_term, $sort_term, $invert)
+  {
+    $won_projects = Project::where(array(['projectstatus', 'Won']));
+    if(isset($invert))
+    {
+      $asc_desc = 'desc';
+    }
+    else
+    {
+      $asc_desc = 'asc';
+    }
+    if (isset($search_term)) {
+      if (isset($sort_term) && $sort_term != "Closest Due Date"){
+        $projects = $won_projects->where('projectname', 'regexp', "/$search_term/i")
+                    ->orderBy($sort_term, $asc_desc)
+                    ->get();             
+      }
+      else {
+        $projects = $won_projects->where('projectname', 'regexp', "/$search_term/i")
+                    ->get();
+    }
+    }
+
+    else {
+      $projects = $won_projects->orderBy($sort_term, $asc_desc)->get();
+      //echo print_r(count($projects));
+      //echo '<br>';
+    }
+
+    foreach ($projects as $project) {
+      $project = $this->displayFormat($project);
+    }
+    return $projects;
+
+  }
+
+   /**
+   * Finds the specific project that you want to manage due dates.
+   * @return view 'pages.manage_project'
+   */ 
+  public function manage_project($id){
+    $project = Project::find($id);
+    $project = $this->format_due_dates($project);
+    return view('pages.manage_project', compact('project'));
+  }
+
+  /**
+   * Changes or adds specific due dates from the manage project form
+   * @param $request - Request variable with attributes to be assigned to $project.
+   * @param $id - the unique id of the project to be updated.
+   * @return redirect /planner
+   */ 
+  public function edit_due_dates(Request $request, $id)
+  {
+    $project = Project::find($id);
+    $this->validate_dates($request, $project);
+    $this->store_dates($project, $request);
+    return redirect('/planner')->with('Success!', 'Project has been successfully updated');
+  }
+
+    /**
+   * 
+   * @param $req - Request variable with attributes to be assigned to $project.
+   */
+  protected function validate_dates($req, $project)
+  {
+    $today = date("Y-m-d");
+      $this->validate($req, [
+        'physical90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'physicalifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'wire90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'wireifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'collection90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'collectionifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'transmission90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'transmissionifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'scadadue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'ampacitydue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'arcflashdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'relaydue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        'alldue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+      ]);
+      if (isset($project['duedates']['additionalfields'])){
+        $additionalfields = $project['duedates']['additionalfields'];
+      }
+      else{
+        $additionalfields = array();
+      }
+      $keys = array_keys($additionalfields);
+      $numfields = $req->get('total');
+      if ($numfields == null || $numfields == ''){
+        $numfields = sizeof($keys);
+      }
+      //dd($numfields);
+
+      for($i = 1; $i <= $numfields; $i++){
+        $namefield = $req->get('row'.$i.'name');
+        if (!isset($namefield)){
+          continue;
+        }
+        $this->validate($req, [
+          'row'.$i.'due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+        ]);
+    }
+  }
+
+    /**
+   * Stores the given manage project data into the database
+   * @param $project - variable type Project to be saved to the database.
+   * @param $req - Request variable with attributes to be assigned to $project.
+   */
+  protected function store_dates($project, $req)
+  {
+    if (!isset($project['duedates'])){
+      $duedates = array();
+
+      $physical90 = array();
+      $physical90['person1'] = null;
+      $physical90['person2'] = null;
+      $physical90['due'] = null;
+      $duedates['physical90'] = $physical90;
+
+      $physicalifc = array();
+      $physicalifc['person1'] = null;
+      $physicalifc['person2'] = null;
+      $physicalifc['due'] = null;
+      $duedates['physicalifc'] = $physicalifc;
+
+      $wiring90 = array();
+      $wiring90['person1'] = null;
+      $wiring90['person2'] = null;
+      $wiring90['due'] = null;
+      $duedates['wiring90'] = $wiring90;
+
+      $wiringifc = array();
+      $wiringifc['person1'] = null;
+      $wiringifc['person2'] = null;
+      $wiringifc['due'] = null;
+      $duedates['wiringifc'] = $wiringifc;
+      
+      $collection90 = array();
+      $collection90['person1'] = null;
+      $collection90['person2'] = null;
+      $collection90['due'] = null;
+      $duedates['collection90'] = $collection90;
+
+      $collectionifc = array();
+      $collectionifc['person1'] = null;
+      $collectionifc['person2'] = null;
+      $collectionifc['due'] = null;
+      $duedates['collectionifc'] = $collectionifc;
+
+      $transmission90 = array();
+      $transmission90['person1'] = null;
+      $transmission90['person2'] = null;
+      $transmission90['due'] = null;
+      $duedates['transmission90'] = $transmission90;
+
+      $transmissionifc = array();
+      $transmissionifc['person1'] = null;
+      $transmissionifc['person2'] = null;
+      $transmissionifc['due'] = null;
+      $duedates['transmissionifc'] = $transmissionifc;
+
+      $scada = array();
+      $scada['person1'] = null;
+      $scada['person2'] = null;
+      $scada['due'] = null;
+      $duedates['scada'] = $scada;
+
+      $reactive = array();
+      $reactive['person1'] = null;
+      $reactive['due'] = null;
+      $duedates['reactive'] = $reactive;
+
+      $ampacity = array();
+      $ampacity['person1'] = null;
+      $ampacity['due'] = null;
+      $duedates['ampacity'] = $ampacity;
+
+      $arcflash = array();
+      $arcflash['person1'] = null;
+      $arcflash['due'] = null;
+      $duedates['arcflash'] = $arcflash;
+
+      $relay = array();
+      $relay['person1'] = null;
+      $relay['due'] = null;
+      $duedates['relay'] = $relay;
+
+      $allothers = array();
+      $allothers['person1'] = null;
+      $allothers['due'] = null;
+      $duedates['allothers'] = $allothers;
+
+      $project->duedates = $duedates;
+    }
+      $duedates= $project['duedates'];
+
+      $duedates['physical90']['person1'] = $this->store_dates_helper($duedates['physical90']['person1'], $req->get('physical90person1'));
+      $duedates['physical90']['person2'] = $this->store_dates_helper($duedates['physical90']['person2'], $req->get('physical90person2'));
+      $duedates['physical90']['due'] = $this->strToDate($req->get('physical90due'), null);
+
+      $duedates['physicalifc']['person1'] = $this->store_dates_helper($duedates['physicalifc']['person1'], $req->get('physicalifcperson1'));
+      $duedates['physicalifc']['person2'] = $this->store_dates_helper($duedates['physicalifc']['person2'], $req->get('physicalifcperson2'));
+      $duedates['physicalifc']['due'] = $this->strToDate($req->get('physicalifcdue'), null);
+
+      $duedates['wiring90']['person1'] = $this->store_dates_helper($duedates['wiring90']['person1'], $req->get('wire90person1'));
+      $duedates['wiring90']['person2'] = $this->store_dates_helper($duedates['wiring90']['person2'], $req->get('wire90person2'));
+      $duedates['wiring90']['due'] = $this->strToDate($req->get('wire90due'), null);
+
+      $duedates['wiringifc']['person1'] = $this->store_dates_helper($duedates['wiringifc']['person1'], $req->get('wireifcperson1'));
+      $duedates['wiringifc']['person2'] = $this->store_dates_helper($duedates['wiringifc']['person2'], $req->get('wireifcperson2'));
+      $duedates['wiringifc']['due'] = $this->strToDate($req->get('wireifcdue'), null);
+
+      $duedates['collection90']['person1'] = $this->store_dates_helper($duedates['collection90']['person1'], $req->get('collection90person1'));
+      $duedates['collection90']['person2'] = $this->store_dates_helper($duedates['collection90']['person2'], $req->get('collection90person2'));
+      $duedates['collection90']['due'] = $this->strToDate($req->get('collection90due'), null);
+
+      $duedates['collectionifc']['person1'] = $this->store_dates_helper($duedates['collectionifc']['person1'], $req->get('collectionifcperson1'));
+      $duedates['collectionifc']['person2'] = $this->store_dates_helper($duedates['collectionifc']['person2'], $req->get('collectionifcperson2'));
+      $duedates['collectionifc']['due'] = $this->strToDate($req->get('collectionifcdue'), null);
+
+      $duedates['transmission90']['person1'] = $this->store_dates_helper($duedates['transmission90']['person1'], $req->get('transmission90person1'));
+      $duedates['transmission90']['person2'] = $this->store_dates_helper($duedates['transmission90']['person2'], $req->get('transmission90person2'));
+      $duedates['transmission90']['due'] = $this->strToDate($req->get('transmission90due'), null);
+
+      $duedates['transmissionifc']['person1'] = $this->store_dates_helper($duedates['transmissionifc']['person1'], $req->get('transmissionifcperson1'));
+      $duedates['transmissionifc']['person2'] = $this->store_dates_helper($duedates['transmissionifc']['person2'], $req->get('transmissionifcperson2'));
+      $duedates['transmissionifc']['due'] = $this->strToDate($req->get('transmissionifcdue'), null);
+
+      $duedates['scada']['person1'] = $this->store_dates_helper($duedates['scada']['person1'], $req->get('scadaperson1'));
+      $duedates['scada']['person2'] = $this->store_dates_helper($duedates['scada']['person2'], $req->get('scadaperson2'));
+      $duedates['scada']['due'] = $this->strToDate($req->get('scadadue'), null);
+
+      $duedates['reactive']['person1'] = $this->store_dates_helper($duedates['reactive']['person1'], $req->get('reactiveperson1'));
+      $duedates['reactive']['due'] = $this->strToDate($req->get('reactivedue'), null);
+
+      $duedates['ampacity']['person1'] = $this->store_dates_helper($duedates['ampacity']['person1'], $req->get('ampacityperson1'));
+      $duedates['ampacity']['due'] = $this->strToDate($req->get('ampacitydue'), null);
+
+      $duedates['arcflash']['person1'] = $this->store_dates_helper($duedates['arcflash']['person1'], $req->get('arcflashperson1'));
+      $duedates['arcflash']['due'] = $this->strToDate($req->get('arcflashdue'), null);
+
+      $duedates['relay']['person1'] = $this->store_dates_helper($duedates['relay']['person1'], $req->get('relayperson1'));
+      $duedates['relay']['due'] = $this->strToDate($req->get('relaydue'), null);
+
+      $duedates['allothers']['person1'] = $this->store_dates_helper($duedates['allothers']['person1'], $req->get('allperson1'));
+      $duedates['allothers']['due'] = $this->strToDate($req->get('alldue'), null);
+    if (!isset($duedates['additionalfields'])){
+      $additionalfields = array();
+      $duedates['additionalfields'] = $additionalfields;
+    } 
+    $additionalfields = $duedates['additionalfields'];
+    $keys = array_keys($additionalfields);
+    $numfields = $req->get('total');
+    if ($numfields == null || $numfields == ''){
+      $numfields = sizeof($keys);
+    }
+    //dd($numfields);
+    $duedates['additionalfields'] = array();
+    for($i = 1; $i <= $numfields; $i++){
+      $namefield = $req->get('row'.$i.'name');
+      if (!isset($namefield)){
+        continue;
+      }
+      $duedates['additionalfields'][$namefield] = array();
+      $duedates['additionalfields'][$namefield]['person1'] = $req->get('row'.$i.'person1');
+      $duedates['additionalfields'][$namefield]['person2'] = $req->get('row'.$i.'person2');
+      $duedates['additionalfields'][$namefield]['due'] = $this->strToDate($req->get('row'.$i.'due'), null);
+    }
+      $project->duedates = $duedates;
+      $project->save();
+  }
+    /**
+   * Helper method to store individual fields if they are not empty
+   * @param $duedats - variable containing the specific due date to be changed.
+   * @param $data - Request variable with attributes to be assigned to $duedates.
+   * @return $duedates - an updated version of $duedates with the specific field changed
+   */
+  protected function store_dates_helper($duedate, $data){
+    if($data != ""){
+      $duedate = $data;
+    }
+    return $duedate;
+  }
+  /**
+   * Method used to format the due dates so that they can be displayed to the user on the manage project page
+   * @param $project - the current project requesting to be managed.
+   * @return $project - a modified version of projects so the dates can be displayed properly
+   */
+  protected function format_due_dates($project){
+
+    // Will format specific due dates if the project has been assigned them.
+    $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
+    if ($project['duedates']){
+      $duedates = $project['duedates'];
+      $duedates['physical90']['due'] = $this->dateToStr($project['duedates']['physical90']['due']);
+      $duedates['physicalifc']['due'] = $this->dateToStr($project['duedates']['physicalifc']['due']);
+      $duedates['wiring90']['due'] = $this->dateToStr($project['duedates']['wiring90']['due']);
+      $duedates['wiringifc']['due'] = $this->dateToStr($project['duedates']['wiringifc']['due']);
+      $duedates['collection90']['due'] = $this->dateToStr($project['duedates']['collection90']['due']);
+      $duedates['collectionifc']['due'] = $this->dateToStr($project['duedates']['collectionifc']['due']);
+      $duedates['transmission90']['due'] = $this->dateToStr($project['duedates']['transmission90']['due']);
+      $duedates['transmissionifc']['due'] = $this->dateToStr($project['duedates']['transmissionifc']['due']);
+      $duedates['scada']['due'] = $this->dateToStr($project['duedates']['scada']['due']);
+      $duedates['reactive']['due'] = $this->dateToStr($project['duedates']['reactive']['due']);
+      $duedates['ampacity']['due'] = $this->dateToStr($project['duedates']['ampacity']['due']);
+      $duedates['arcflash']['due'] = $this->dateToStr($project['duedates']['arcflash']['due']);
+      $duedates['relay']['due'] = $this->dateToStr($project['duedates']['relay']['due']);
+      $duedates['allothers']['due'] = $this->dateToStr($project['duedates']['allothers']['due']);
+
+      if (isset($duedates['additionalfields'])){
+      $additionalfields = $project['duedates']['additionalfields'];
+      $keys = array_keys($additionalfields);
+        foreach ($keys as $key){
+          $additionalfields[$key]['due'] = $this->dateToStr($additionalfields[$key]['due']);
+          
+        }
+        $duedates['additionalfields'] = $additionalfields;
+      }
+
+      $project->duedates = $duedates;
+    }
+    return $project;
+  }
+    /**
+   * Loads data for the Sticky Note Gantt chart.
+   * @return view 'pages.sticky_note'
+   */
+  public function sticky_note(){
+    $projects = Project::all()->where('projectstatus', 'Won');
+    $projects = $this->sort_by_closest_date($projects);
+    $project = $projects[0];
+    $json = [];
+    $counter = 0;
+    foreach($projects as $project){
+      if ($this->project_to_json($project) != null){
+        $json[$counter] = $this->project_to_json($project);
+        $counter++;
+      }
+    //$json = $this->project_to_json($project);
+    }
+    return view('pages.sticky_note', compact('json'));
+  }
+    /**
+   * Turns information on the project from the database into a JSON format so the Gantt chart can display the information.
+   * @param $project is the current project that's information is being converted to a JSON format.
+   * @return $json an array conatining elements of the project in a JSON format.
+   */
+  public function project_to_json($project){
+    if (isset($project['duedates'])){
+      //used for color coding tasks later on
+      $startweek = date("Y-m-d", strtotime('monday this week')); 
+      $endweek = date("Y-m-d", strtotime('sunday this week'));
+      // Sets initial parent folder for the project
+      $duedates = $project['duedates'];
+      $text = $project['projectname'];
+      $today = date("Y-m-d");
+      $energize = $this->dateToStr($project['dateenergization']);
+      $parent = array(
+        "id" => "id_".$text, 
+        "text" => $text, 
+        "start_date" => $today,
+        "end_date" => $energize,
+        "color" => "rgb(75, 220, 100, 0.4)"
+      );
+      $parent = json_encode($parent);
+      $json = array();
+      array_push($json, $parent);
+      $keys = array_keys($duedates);
+      //loops through each duedate in the project and adds them in a JSON format to $json variable
+      $i = 0;
+      foreach($duedates as $duedate){
+        // Sets the additionalfields as a JSON format
+        if($i == 14){
+          $addeddates = $duedates['additionalfields'];
+          $addedcount = 14;
+          $addedkeys = array_keys($addeddates);
+          $j = 0;
+          foreach($addeddates as $addeddate){
+            $pname = $addedkeys[$j];
+            $id = 'id_'.$addedcount.$project['projectname'];
+            $start = $addeddate['due'];
+            $start = $this->dateToStr($start);
+            if($start == "None" || $start < $today){
+              $addedcount++;
+              continue;
+            }
+            $end = new \DateTime($this->dateToStr($start));
+            $end = $end->add(new DateInterval('P1D'));
+            $end = date_format($end, 'Y-m-d');
+            $end = $this->dateToStr($end);
+            $parent = 'id_'.$text;
+            $name1 = $addeddate['person1'];
+            $name2 = $addeddate['person2'];
+            if($startweek <= $start && $start <= $endweek){
+              $color = "rgb(255, 99, 132, 0.4)";
+            } 
+            else{
+              $color = "rgb(54, 162, 235, 0.4)";
+            }
+            $jstring = array(
+              "id" => $id,
+              "text" => $pname,
+              "start_date" => $start,
+              "end_date" => $end,
+              "parent" => $parent,
+              "name_1" => $name1,
+              "name_2" => $name2,
+              "color" => $color
+            );
+            $jstring = json_encode($jstring);
+            array_push($json, $jstring);
+            $addedcount++;  
+            $j++;      
+          }
+        break; 
+        }
+        //Sets all other fields as a JSON format
+        $pname = $keys[$i];
+        $id = 'id_'.$i.$project['projectname'];
+        $start = $duedate['due'];
+        $start = $this->dateToStr($start);
+        if($start == "None" || $start < $today){
+          $i++;
+          continue;
+        }
+        $end = new \DateTime($this->dateToStr($start));
+        $end = $end->add(new DateInterval('P1D'));
+        $end = date_format($end, 'Y-m-d');
+        $end = $this->dateToStr($end);
+        $parent = 'id_'.$text;
+        $name1 = $duedate['person1'];
+        if($startweek <= $start && $start <= $endweek){
+          $color = "rgb(255, 99, 132, 0.4)";
+        } 
+        else{
+          $color = "rgb(54, 162, 235, 0.4)";
+        }
+        if (isset($duedate['person2'])){
+          $name2 = $duedate['person2'];
+          $jstring = array(
+            "id" => $id,
+            "text" => $pname,
+            "start_date" => $start,
+            "end_date" => $end,
+            "parent" => $parent,
+            "name_1" => $name1,
+            "name_2" => $name2,
+            "color" => $color
+          );
+        }
+        else{
+        $jstring = array(
+          "id" => $id,
+          "text" => $pname,
+          "start_date" => $start,
+          "end_date" => $end,
+          "parent" => $parent,
+          "name_1" => $name1,
+          "color" => $color
+        );
+      }
+        $jstring = json_encode($jstring);
+        array_push($json, $jstring);
+        $i++;
+      }
+      return $json;
+    }
+  }
+  
+
+/**************** End of the Project Planner or Sticky Note Application *********************/
 
   /**
    * Finds a project in the database by $id and deletes it from the database.
