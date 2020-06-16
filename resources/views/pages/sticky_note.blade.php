@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 
 
-<?php
-//dd($json);
-?>
-
 <head>
     @include('includes.navbar')
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
@@ -27,8 +23,22 @@
 
 <script type="text/javascript">
     gantt.config.readonly = true;
-    //gantt.config.start_date = new Date(2020, 05, 10);
-    //gantt.config.end_date = new Date(2020, 11, 31);
+
+/*
+    gantt.config.layout = {
+    css: "gantt_container",
+    rows: [
+    {
+    cols: [
+        {view: "grid", id: "grid", scrollX: "scrollHor", scrollY: "scrollVer"},
+        {view: "timeline", id: "timeline", scrollX: "scrollHor", scrollY: "scrollVer"},
+        {view: "scrollbar", scroll: "y", id: "scrollVer"}
+    ]
+    },
+    {view: "scrollbar", id: "scrollHor"}
+    ]
+    };
+    */
 
     gantt.config.columns =  [
     {name:"text",       label:"Project name",  tree:true, width: 250 },
@@ -36,10 +46,10 @@
     {name:"name_1",   label:"Employee 1",   align:"center", width: 100 },
     {name:"name_2",   label:"Employee 2",   align:"center", width: 100 },
     ];
-
     
-
+    
     gantt.config.xml_date = "%Y-%m-%d";
+    
     gantt.config.scales = [
     {unit: "month", step: 1, format: "%F, %Y"},
     {unit: "day", step: 1, format: "%j, %D"}
@@ -55,6 +65,7 @@
     project={"data": data};
     
     gantt.init("gantt_here");
+    //gantt.config.placeholder_task = true;
     gantt.parse(project);
 </script>
 </body>
