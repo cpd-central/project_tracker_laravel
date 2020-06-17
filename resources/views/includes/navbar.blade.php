@@ -62,6 +62,14 @@
           @else
           
           <?php if(auth()->user()->role != "user"){?>
+            <?php if(Request::path() == 'planner' || Request::path() == 'stickynote'|| Request::segment(1) == 'manageproject'){?>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ route('pages.planner') }}">Project Planner</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ route('pages.sticky_note') }}">Sticky Note</a>
+              </li>
+            <?php } else { ?>
           <li class="nav-item">
             <a class="nav-link" href="{{ route('pages.newproject') }}">New Project</a>
           </li>
