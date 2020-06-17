@@ -112,6 +112,20 @@ class HomeController extends Controller
     }
 
     /**
+     * Checks if inputted number field was left blank. Assigns the number -1 and
+     * parses it from String to Integer.
+     * @param $integer - inputted number to be checked and converted. 
+     * @return $integer
+     */
+    protected function intCheck($integer)
+    {
+        if($integer == null || $integer == ""){
+            $integer = 0;
+        }
+        return ((int)$integer);
+    }
+
+    /**
      * Updates the user's name and email based on $id.
      * @param $id - the id of the user to be updated.
      * @param Request $request
@@ -120,7 +134,11 @@ class HomeController extends Controller
     public function update_account(Request $request, $id){
         $user = User::find($id);
         $user->name = $request->get('name');
+        $user->nickname = $request->get('nickname');
         $user->email = $request->get('email');
+        $user->jobclass = $request->get('jobclass');
+        $user->perhourdollar = $this->intCheck($request->get('perhourdollar'));
+        $user->role = $request->get('role');
         $user->save();
         return redirect()->route('pages.roles')->with('success', 'Success! User has been successfully updated.');
     }

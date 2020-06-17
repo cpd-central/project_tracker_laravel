@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Project;
 use App\Timesheet;
+use App\User;
 use MongoDB\BSON\UTCDateTime; 
 use App\Charts\HoursChart;
 
@@ -707,8 +708,15 @@ class ProjectController extends Controller
   }
 
   public function get_employee_list($keyword){
-    //This array is for CEG personnel, the second field has no role in the code currently 
-    $employee_list = array( array("Vince"       ,"senior project manager"  ,170,"senior"         , "vince@ceg.mn"                  ),
+    //This array is for CEG personnel, the second field has no role in the code currently
+    $employee_list = array();
+    $users = User::all();
+    foreach($users as $user){
+      $user_array = array($user->nickname, $user->perhourdollar, $user->jobclass, $user->email);
+      array_push($employee_list, $user_array);
+    }
+    return $employee_list;
+    /*$employee_list = array( array("Vince"       ,"senior project manager"  ,170,"senior"         , "vince@ceg.mn"                  ),
                            array("Max"         ,"senior engineer"         ,160,"senior"         , "mbartholomay@ceg-engineers.com"),
                            array("Pete"        ,"senior project manager"  ,160,"senior"         , "pmalamen@ceg-engineers.com"    ),
                            array("Jim"         ,"senior project manager"  ,160,"senior"         , ""                              ),
@@ -751,7 +759,7 @@ class ProjectController extends Controller
                            array("Tim"         ,"intern"                  ,60 ,"interns-admin"  , ""                              ),
                            array("noname"      ,""                        ,60 ,"interns-admin"  , ""                              ));
 
-    return $employee_list;
+    return $employee_list;*/
   }
 
   public function drafter_hours()
@@ -764,12 +772,12 @@ class ProjectController extends Controller
     //just a counter
     $z = 0; 
     foreach ($employeeLIST as $emp) {
-      if ($emp[3] == 'drafting') {
-        if ($emp[4]) 
-          $employee_emails[$emp[0]] = $emp[4];
-        }
-        $z++;
+      if ($emp[2] == 'drafting') {
+        if ($emp[3]) 
+          $employee_emails[$emp[0]] = $emp[3];
       }
+      $z++;
+    }
       
     $today = app('App\Http\Controllers\TimesheetController')->getDate();
     $end_date = clone $today;
@@ -1020,7 +1028,7 @@ class ProjectController extends Controller
                 $individual_project_monies[$emp_count] = 0;  //need to fix soon
               } else {
                 $individual_project_hours[$emp_count] = $people_hours[$employeeLIST[$emp_count][0]];  //need to fix soon
-                $individual_project_monies[$emp_count] = $people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];  //need to fix soon
+                $individual_project_monies[$emp_count] = $people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][1];  //need to fix soon
               }
               array_push($individual_project_hours_arr[$emp_count], $individual_project_hours[$emp_count]);  
               array_push($individual_project_monies_arr[$emp_count], $individual_project_monies[$emp_count]);  
@@ -1039,17 +1047,17 @@ class ProjectController extends Controller
                 }
 
                 if ($month == $previous_month AND $current_year==$year) {
-                  $previous_month_project_monies = $previous_month_project_monies + $people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
+                  $previous_month_project_monies = $previous_month_project_monies + $people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][1];
                 }
               }
-              switch ($employeeLIST[$emp_count][3]) {
+              switch ($employeeLIST[$emp_count][2]) {
                 case "senior":
                   if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours))) {
                     $total_individual_hours[0]=$total_individual_hours[0]+0;
                     $total_individual_monies[0]=$total_individual_monies[0]+0;
                   } else {
                     $total_individual_hours[0]=$total_individual_hours[0]+$people_hours[$employeeLIST[$emp_count][0]];
-                    $total_individual_monies[0]=$total_individual_monies[0]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
+                    $total_individual_monies[0]=$total_individual_monies[0]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][1];
                   }
                   break;
                 case "project":
@@ -1058,7 +1066,7 @@ class ProjectController extends Controller
                     $total_individual_monies[1]=$total_individual_monies[1]+0;
                   } else {
                     $total_individual_hours[1]=$total_individual_hours[1]+$people_hours[$employeeLIST[$emp_count][0]];
-                    $total_individual_monies[1]=$total_individual_monies[1]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
+                    $total_individual_monies[1]=$total_individual_monies[1]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][1];
                   }
                   break;
                 case "SCADA":
@@ -1067,7 +1075,7 @@ class ProjectController extends Controller
                     $total_individual_monies[2]=$total_individual_monies[2]+0;
                   } else {
                     $total_individual_hours[2]=$total_individual_hours[2]+$people_hours[$employeeLIST[$emp_count][0]];
-                    $total_individual_monies[2]=$total_individual_monies[2]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
+                    $total_individual_monies[2]=$total_individual_monies[2]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][1];
                   }
                   break;
                 case "drafting":
@@ -1076,7 +1084,7 @@ class ProjectController extends Controller
                     $total_individual_monies[3]=$total_individual_monies[3]+0;
                   } else {
                     $total_individual_hours[3]=$total_individual_hours[3]+$people_hours[$employeeLIST[$emp_count][0]];
-                    $total_individual_monies[3]=$total_individual_monies[3]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
+                    $total_individual_monies[3]=$total_individual_monies[3]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][1];
                   }
                   break;
                 case "interns-admin":
@@ -1085,7 +1093,7 @@ class ProjectController extends Controller
                     $total_individual_monies[4]=$total_individual_monies[4]+0;
                   } else {
                     $total_individual_hours[4]=$total_individual_hours[4]+$people_hours[$employeeLIST[$emp_count][0]];
-                    $total_individual_monies[4]=$total_individual_monies[4]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][2];
+                    $total_individual_monies[4]=$total_individual_monies[4]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][1];
                   }
                   break;
                 default:
