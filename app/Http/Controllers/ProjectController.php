@@ -705,36 +705,9 @@ class ProjectController extends Controller
     return view('pages.editproject', compact('project'));
   }
 
-  /**
-   * Makes hours graph for all employees and employment grouping.
-   * @param $request - Request variable with attributes to be assigned to $project.
-   * @return array contains labels and dateset
-   */
-  public function hours_graph(Request $request, $drafter_page = false) 
-  {
-    //variable to determine if this is the drafers' hours page or everyone's
-    //if this is false, then this means we're coming from the "hours by project" link, and want everyone's hours
-    //if tihs is true, then we are coming from the drafter hours page, and only want drafter hours for the past month (daily) 
-    #$drafter_page = true; 
-    
-    //if (!isset($request['switch_chart_button'])) {//This is a button to toggle whether hours or dollars is displayed in the graph.  
-    if (!isset($request['toggle_dollars'])) {//This is a button to toggle whether hours or dollars is displayed in the graph.  
-      $chart_units = 'hours';
-    } 
-    else { 
-      $chart_units = 'dollars';
-    }
-
-    if (!isset($request['toggle_all'])) {
-      $filter_all = false;
-    }
-    else{
-      $filter_all = true;
-    }
-
-    $project_grand_total = 0;
+  public function get_employee_list($keyword){
     //This array is for CEG personnel, the second field has no role in the code currently 
-    $employeeLIST = array( array("Vince"       ,"senior project manager"  ,170,"senior"         , "vince@ceg.mn"                  ),
+    $employee_list = array( array("Vince"       ,"senior project manager"  ,170,"senior"         , "vince@ceg.mn"                  ),
                            array("Max"         ,"senior engineer"         ,160,"senior"         , "mbartholomay@ceg-engineers.com"),
                            array("Pete"        ,"senior project manager"  ,160,"senior"         , "pmalamen@ceg-engineers.com"    ),
                            array("Jim"         ,"senior project manager"  ,160,"senior"         , ""                              ),
@@ -776,7 +749,39 @@ class ProjectController extends Controller
                            array("Keerti"      ,"intern"                  ,60 ,"interns-admin"  , ""                              ),
                            array("Tim"         ,"intern"                  ,60 ,"interns-admin"  , ""                              ),
                            array("noname"      ,""                        ,60 ,"interns-admin"  , ""                              ));
-  
+
+    return $employee_list;
+  }
+
+  /**
+   * Makes hours graph for all employees and employment grouping.
+   * @param $request - Request variable with attributes to be assigned to $project.
+   * @return array contains labels and dateset
+   */
+  public function hours_graph(Request $request, $drafter_page = false) 
+  {
+    //variable to determine if this is the drafers' hours page or everyone's
+    //if this is false, then this means we're coming from the "hours by project" link, and want everyone's hours
+    //if tihs is true, then we are coming from the drafter hours page, and only want drafter hours for the past month (daily) 
+    #$drafter_page = true; 
+    
+    //if (!isset($request['switch_chart_button'])) {//This is a button to toggle whether hours or dollars is displayed in the graph.  
+    if (!isset($request['toggle_dollars'])) {//This is a button to toggle whether hours or dollars is displayed in the graph.  
+      $chart_units = 'hours';
+    } 
+    else { 
+      $chart_units = 'dollars';
+    }
+
+    if (!isset($request['toggle_all'])) {
+      $filter_all = false;
+    }
+    else{
+      $filter_all = true;
+    }
+
+    $project_grand_total = 0;
+    $employeeLIST = $this->get_employee_list(null);
                            
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////
