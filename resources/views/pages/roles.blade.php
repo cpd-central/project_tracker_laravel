@@ -17,7 +17,7 @@
           <th>Job Class</th>
           <th>Per hour $ value</th>
           <th>Role</th>
-          <th>Terminate</th>
+          <th>Activation</th>
       </tr>
     </thead>
 @stop
@@ -35,7 +35,11 @@
     <td align="center">{{ $user['jobclass'] }}</td>
     <td align="center">{{ $user['perhourdollar'] }}</td>
     <td align="center">{{ $user['role'] }}</td>
-    <td align="center"><a href='{{ route('pages.rolesDelete', $user['_id']) }}' role="button" class="btn btn-danger" onclick="return confirm('This will delete the user from the database.  Are you sure you want to do this?')">Delete</a></td>
+    @if($user['active'] == true)
+    <td align="center"><a href='{{ route('pages.rolesActivation', $user['_id']) }}' role="button" class="btn btn-danger" onclick="return confirm('This will deactivate the user from the database.  Are you sure you want to do this?')">Deactivate</a></td>
+    @else
+    <td align="center"><a href='{{ route('pages.rolesActivation', $user['_id']) }}' role="button" class="btn btn-success">Activate</td>
+    @endif
         </tr>
 @endforeach 
 @stop

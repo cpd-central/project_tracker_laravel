@@ -67,37 +67,28 @@ class HomeController extends Controller
     }
 
     /**
-     * Takes the $id of the user to be terminated.
-     * @param $id - the id of the user to be terminated.
+     * Takes the $id of the user to be activated/deactivated.
+     * @param $id - the id of the user to be activated/deactivated.
      * @return redirect - redirects the admin to the dashboard.
      */
-    public function destroy($id)
+    public function activation($id)
     {
         if(isset($id)){
             $user = User::find($id);
-            $user->delete();
-        }
-        return redirect('/home');
-    }
-
-    /**
-     * Updates all user roles based on the radio button fields on the page.
-     * @param Request $request
-     * @return redirect - redirects the admin to the dashboard.
-     */
-    public function update_role(Request $request)
-    {
-        $users = User::all();
-        foreach($users as $user){
-            if($user['role'] == 'sudo'){
-                continue;
+            if(isset($user->active)){
+                if($user->active == true){
+                    $user->active = false;
+                }
+                else{
+                    $user->active = true;
+                }
             }
-            $stringSplit = explode(".", $user['email']);
-            $string = $stringSplit[0]."_".$stringSplit[1];
-            $user['role'] = $request[$string];
-            $user->save();
+            else{
+                $user->active = true;
+            }
         }
-        return redirect('/home');
+        $user->save();
+        return $this->edit_roles();
     }
 
     /**
