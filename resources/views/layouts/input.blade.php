@@ -1,6 +1,5 @@
 <?php
-
-    /**
+  /**
    * Checks if array $typeArray is not null and then checks to see if $type is in $typeArray.
    * @param $type - variable to be checked if its in $typeArray. 
    * @param $typeArray - array that contains keywords of boxes that are checked.
@@ -11,6 +10,25 @@
       return false;
     }else
     {if(in_array($type, $typeArray)) {
+        return true;
+      }
+      else{
+        return false;
+      }
+    }
+  }
+
+  /**
+   * Checks if $saved_bill is not null and then checks to see if $type is equal to $saved_bill.
+   * @param $type - billing type string to be checked if its equal to $saved_bill 
+   * @param $saved_bill - string that contains keyword of radio button to be checked.
+   * @return boolean
+   */
+  function check_billing_method($type, $saved_bill) {
+    if($saved_bill == null || $saved_bill == "") {
+      return false;
+    }else
+    {if($type == $saved_bill) {
         return true;
       }
       else{
@@ -41,6 +59,11 @@
 <!doctype html>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<style>
+  input[type="radio"]{  
+  margin: 0 2px 0 15px;
+}
+</style>
 <html>
   <title id="page-title">@yield('page-title')</title>
   <head>
@@ -68,7 +91,6 @@
       <form method="post">
         @csrf
         <div class="row">
-          <!--<div class="col-md-4"></div>-->
           <div class="form-group col-md-4">
             <label for="cegproposalauther">CEG Proposal Author</label>
           <input type="text" class="form-control" name="cegproposalauthor" value="@if(old('cegproposalauthor')){{ old('cegproposalauthor') }} @else<?= $__env->yieldContent('cegproposalauthor')?>@endif">
@@ -141,7 +163,7 @@
                       $mm = ((int) date('n', strtotime($project['datentp'])) - 1);
                       $year = (int) date('Y', strtotime($project['datentp']));
 
-                      $row = (int) (count($project['monthlypercent']) / 4);             //4 text boxes per row
+                      $row = (int) (count($project['monthlypercent']) / 4);   //4 text boxes per row
                       $mod = count($project['monthlypercent']) % 4;
                       $i = 0;
 
@@ -324,7 +346,6 @@
         </div>
 
         <div class="row">
-          <!--<div class="col-md-4"></div>-->
           <div class="form-group col-md-4">
             <label for="billingcontact">Billing Contact</label>
           <input type="text" class="form-control" name="billingcontact" value="@if(old('billingcontact')){{ old('billingcontact') }} @else<?= $__env->yieldContent('billingcontact')?>@endif">
@@ -334,6 +355,32 @@
             <input type="text" class="form-control" name="billingcontactemail" value="@if(old('billingcontactemail')){{ old('billingcontactemail') }} @else<?= $__env->yieldContent('billingcontactemail')?>@endif">
           </div>
           <div class="form-group col-md-4">
+            <label for="billingmethod">Billing Method:</label><br>
+            @if(isset($project))
+              <label class="billingmethod" for="TandM">
+                <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="TandM" @if(check_billing_method('TandM', $project['billing_method'])){{"checked"}}@else<?= $__env->yieldContent('TandM')?>@endif/>T&M
+              </label>
+              <label class="billingmethod" for="Lump">
+              <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="Lump" @if(check_billing_method('Lump', $project['billing_method'])){{"checked"}}@else<?= $__env->yieldContent('Lump')?>@endif/>Lump
+              </label>
+              <label class="billingmethod" for="SOV">
+                <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="SOV" @if(check_billing_method('SOV', $project['billing_method'])){{"checked"}}@else<?= $__env->yieldContent('SOV')?>@endif/>SOV
+              </label>
+            @else
+              <label class="billingmethod" for="TandM">
+                <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="TandM" <?= $__env->yieldContent('TandM')?>/>T&M
+              </label>
+              <label class="billingmethod" for="Lump">
+              <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="Lump" <?= $__env->yieldContent('Lump')?>/>Lump
+              </label>
+              <label class="billingmethod" for="SOV">
+                <input id="element_10_1" name="billingmethod" class="element checkbox" type="radio" value="SOV" <?= $__env->yieldContent('SOV')?>/>SOV
+              </label>
+            @endif
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-md-12">
             <label for="billingnotes">Billing Notes:</label>
             <input type="text" class="form-control" name="billingnotes" value="@if(old('billingnotes')){{ old('billingnotes') }} @else<?= $__env->yieldContent('billingnotes')?>@endif">
           </div>
@@ -352,8 +399,6 @@
             <input type="text" class="form-control" name="filelocationofproject" value="@if(old('filelocationofproject')){{ old('filelocationofproject') }} @else<?= $__env->yieldContent('filelocationofproject')?>@endif">
           </div>
         </div>
-
-
       </form>
     </div>
     <script type="text/javascript" src="{{ URL::asset('js/monthlypercent.js')}}"></script>

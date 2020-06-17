@@ -13,10 +13,12 @@
       @yield('sort') 
       <div class="container">
       @yield('toptool')
-        @if (\Session::has('success'))
+      
+        @if (Session::has('success'))
         <div class="alert alert-success">
-          <p>{{ \Session::get('success') }}</p>
-        </div><br />
+          <p>{{ Session::get('success') }}</p>
+        </div>
+        <br>
         @endif
         <h2><b>@yield('table-title')</b></h2> 
         @yield('table-header')
