@@ -754,12 +754,176 @@ class ProjectController extends Controller
     return $employee_list;
   }
 
+  public function drafter_hours()
+  {
+    $employeeLIST = $this->get_employee_list(null);
+                           
+    //truncate the employee list if we're in the drafter hours page
+    //store the emails for the drafters 
+    $employee_emails = array(); 
+    //just a counter
+    $z = 0; 
+    foreach ($employeeLIST as $emp) {
+      if ($emp[3] == 'drafting') {
+        if ($emp[4]) 
+          $employee_emails[$emp[0]] = $emp[4];
+        }
+        $z++;
+      }
+      
+    $today = app('App\Http\Controllers\TimesheetController')->getDate();
+    $end_date = clone $today;
+    //date range of 14 days 
+    $start_date = $today->sub(new DateInterval('P14D'));
+    //now, we want access to some of the functions in our Timesheetcontroller, since the collecting of the 
+    //drafters' hours is very similar to what we do in the timesheet app
+    $date_arr = app('App\Http\Controllers\TimesheetController')->get_dates($start_date, $end_date)[0];
+      
+    $current_month = date('F');
+    $previous_month = date('F', strtotime('-14 days'));
+    $current_year = date('Y');
+    $previous_year = date('Y', strtotime('-14 days')); //Not meant to be previous year other than January
+      
+    $non_zero_projects = Project::whereRaw([
+      '$and' => array([
+        'hours_data' => ['$exists' => 'true'],
+        '$and' => array([
+          "hours_data.{$previous_year}.{$previous_month}.Total"=> ['$exists' => true],  
+          "hours_data.{$previous_year}.{$previous_month}.Total" =>['$ne'=>0]
+        ])
+      ])
+    ])->get()->sortByDesc("hours_data.{$previous_year}.{$previous_month}.Total"); 
+    //we really just need the codes from this, since that's what we will use to look up the hours in the timesheet
+    $codes_arr = array();
+    foreach($non_zero_projects as $project) {
+      if(!in_array($project['projectcode'], $codes_arr)){
+        array_push($codes_arr, $project['projectcode']);
+      }
+    }
+
+    $choosen_line_colors = array('#396AB1','#DA7C30','#3E9651','#CC2529','#6B4C9A','#BFBF1E', '#00CCCC', '#6e4d00');
+    $fill_colors = [
+      'rgb(97, 136, 193, 0.4)',
+      'rgb(255, 150, 89, 0.4)',
+      'rgb(101, 171, 116, 0.4)',
+      'rgb(214, 81, 84, 0.4)',
+      'rgb(137, 112, 174, 0.4)',
+      'rgb(245, 245, 116, 0.4)',
+      'rgb(51, 214, 214, 0.4)',
+      'rgb(159, 109, 0, 0.4)'];
+    $c_color_loop = 0;
+    $color_max = 7;
+
+    //holds the data for all charts 
+    $charts = array(); 
+    $all_data_arr = array();
+    foreach(array_keys($employee_emails) as $name) {
+       
+      //make the chart and add the labels
+      $chart = new HoursChart;
+      $chart->title($name);
+      $chart->labels($date_arr);
+      //this array will be for storing the hours that this employee has for this project within the time window (31 days) 
+      $employee_arr = array(); 
+     
+        //we only need the name for the charting, but we need email to access the timesheet 
+        $email = $employee_emails[$name]; 
+        //this is technically a "collection" of timesheets, but there's only 1. 
+        //we want the 0th element of the collection 
+        $timesheet = Timesheet::where('user', $email)->get()[0];
+        $timesheet_codes = $timesheet['Codes'];
+        $total_hours_in_period = 0;
+        $non_billable_hours = 0;
+        $project_count = 0;
+        $options = [];
+        $options['scales']['xAxes'][]['stacked'] = true;
+        $options['scales']['yAxes'][]['stacked'] = true;
+        $options['legend']['labels']['boxWidth'] = 10;
+        $options['legend']['labels']['padding'] = 6;
+        foreach($codes_arr as $code) {
+          //if ($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU") {
+            //continue;
+          //}
+        if (in_array($code, array_keys($timesheet_codes))) {
+          //note, we're just getting the first description.  for most drafters, I'm assuming this will be fine,
+          //but note that this is a limitation at the moment. 
+          $index = array_search($code,array_keys($timesheet_codes));
+          $projectNames = array_values($timesheet_codes)[$index];
+          $i = 0;
+          foreach($projectNames as $project_hours){
+            $names = array_keys($projectNames);
+            $projectName = $names[$i];
+              $i++;
+             if($projectName == "Holiday" || $projectName == "PTO"){
+              continue;
+            }
+            //this will store the time from this date range as a kvp ('date' => 'hours') 
+            $project_hours_in_date_range = array();
+            foreach($date_arr as $day) {
+              if (in_array($day, array_keys($project_hours))) {
+                $hours = $project_hours[$day];
+              }
+              else {
+                $hours = 0;
+              }
+              $project_hours_in_date_range[$day] = $hours;
+            }
+            //If a project has no hours in the period, then don't add it to the chart.
+            $code_total = 0;
+            foreach($project_hours_in_date_range as $date){
+              $code_total = $code_total + $date;
+            }
+            $total_hours_in_period = $total_hours_in_period + $code_total;
+            if($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU"){
+              $non_billable_hours = $non_billable_hours + $code_total;
+              if(isset($options[$code])){
+                $options[$code] = $options[$code] + $code_total;
+              }
+              else{
+                $options[$code] = $code_total;
+              }
+              continue;
+            }
+            if($code_total <= 0){
+              continue;
+            }
+            //////
+            $project_count++;
+            $chart->dataset($projectName, 'bar', array_values($project_hours_in_date_range))->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'backgroundColor'=>$fill_colors[$c_color_loop], 'fill' => true, 'hidden' => false]); 
+            $options['percent_billable'] = round((($total_hours_in_period - $non_billable_hours) / $total_hours_in_period) * 100);
+            $options['projectcount'] = $project_count;
+            $chart->options($options);
+            
+            //now, set the project hours in the date range as the value for this employee's name
+            $employee_arr[$name] = $project_hours_in_date_range;
+            $c_color_loop++;
+            if($c_color_loop > $color_max){
+              $c_color_loop = 0;
+            }
+          }
+        }
+        else {
+          continue;
+        }
+      }
+      //now, set the employee array for the code
+      $all_data_arr[$code] = $employee_arr;
+      //put the chart in the charts array
+      //note, we don't push if the chart has no dataset,  e.g. if no employees had hours for this period
+      if(!empty($chart->datasets)) {
+        array_push($charts, $chart);
+      } 
+      $c_color_loop = 0;
+    }      
+    return view('pages.drafterhours', compact('charts'));     
+  }
+
   /**
    * Makes hours graph for all employees and employment grouping.
    * @param $request - Request variable with attributes to be assigned to $project.
    * @return array contains labels and dateset
    */
-  public function hours_graph(Request $request, $drafter_page = false) 
+  public function hours_graph(Request $request) 
   {
     //variable to determine if this is the drafers' hours page or everyone's
     //if this is false, then this means we're coming from the "hours by project" link, and want everyone's hours
@@ -783,198 +947,6 @@ class ProjectController extends Controller
 
     $project_grand_total = 0;
     $employeeLIST = $this->get_employee_list(null);
-                           
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////Drafter Hours Page starts here/////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    //truncate the employee list if we're in the drafter hours page
-    if ($drafter_page) {
-      //store the emails for the drafters 
-      $employee_emails = array(); 
-      //just a counter
-      $z = 0; 
-      foreach ($employeeLIST as $emp) {
-        if ($emp[3] == 'drafting') {
-          if ($emp[4]) 
-          $employee_emails[$emp[0]] = $emp[4];
-        }
-        $z++;
-      }
-      
-      $today = app('App\Http\Controllers\TimesheetController')->getDate();
-      $end_date = clone $today;
-      //date range of 14 days 
-      $start_date = $today->sub(new DateInterval('P14D'));
-      //now, we want access to some of the functions in our Timesheetcontroller, since the collecting of the 
-      //drafters' hours is very similar to what we do in the timesheet app
-      $date_arr = app('App\Http\Controllers\TimesheetController')->get_dates($start_date, $end_date)[0];
-      
-      $current_month = date('F');
-      $previous_month = date('F', strtotime('-14 days'));
-      $current_year = date('Y');
-      $previous_year = date('Y', strtotime('-14 days')); //Not meant to be previous year other than January
-      
-      $non_zero_projects = Project::whereRaw([
-        '$and' => array([
-          'hours_data' => ['$exists' => 'true'],
-          '$and' => array([
-            "hours_data.{$previous_year}.{$previous_month}.Total"=> ['$exists' => true],  
-            "hours_data.{$previous_year}.{$previous_month}.Total" =>['$ne'=>0]
-          ])
-        ])
-      ])->get()->sortByDesc("hours_data.{$previous_year}.{$previous_month}.Total"); 
-      //we really just need the codes from this, since that's what we will use to look up the hours in the timesheet
-      $codes_arr = array();
-      foreach($non_zero_projects as $project) {
-        if(!in_array($project['projectcode'], $codes_arr)){
-          array_push($codes_arr, $project['projectcode']);
-        }
-      }
-
-      $choosen_line_colors = array('#396AB1','#DA7C30','#3E9651','#CC2529','#6B4C9A','#BFBF1E', '#00CCCC', '#6e4d00');
-      $fill_colors = [
-        'rgb(97, 136, 193, 0.4)',
-        'rgb(255, 150, 89, 0.4)',
-        'rgb(101, 171, 116, 0.4)',
-        'rgb(214, 81, 84, 0.4)',
-        'rgb(137, 112, 174, 0.4)',
-        'rgb(245, 245, 116, 0.4)',
-        'rgb(51, 214, 214, 0.4)',
-        'rgb(159, 109, 0, 0.4)'];
-      $c_color_loop = 0;
-      $color_max = 7;
-
-      //holds the data for all charts 
-      $charts = array(); 
-      $all_data_arr = array();
-      foreach(array_keys($employee_emails) as $name) {
-         
-        //make the chart and add the labels
-        $chart = new HoursChart;
-        $chart->title($name);
-        $chart->labels($date_arr);
-        //this array will be for storing the hours that this employee has for this project within the time window (31 days) 
-        $employee_arr = array(); 
-       
-          //we only need the name for the charting, but we need email to access the timesheet 
-          $email = $employee_emails[$name]; 
-          //this is technically a "collection" of timesheets, but there's only 1. 
-          //we want the 0th element of the collection 
-          $timesheet = Timesheet::where('user', $email)->get()[0];
-          $timesheet_codes = $timesheet['Codes'];
-          $total_hours_in_period = 0;
-          $non_billable_hours = 0;
-          $project_count = 0;
-          $options = [];
-          $options['scales']['xAxes'][]['stacked'] = true;
-          $options['scales']['yAxes'][]['stacked'] = true;
-          $options['legend']['labels']['boxWidth'] = 10;
-          $options['legend']['labels']['padding'] = 6;
-          foreach($codes_arr as $code) {
-            //if ($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU") {
-              //continue;
-            //}
-          if (in_array($code, array_keys($timesheet_codes))) {
-            //note, we're just getting the first description.  for most drafters, I'm assuming this will be fine,
-            //but note that this is a limitation at the moment. 
-            $index = array_search($code,array_keys($timesheet_codes));
-            $projectNames = array_values($timesheet_codes)[$index];
-            $i = 0;
-            foreach($projectNames as $project_hours){
-              $names = array_keys($projectNames);
-              $projectName = $names[$i];
-              $i++;
-              if($projectName == "Holiday" || $projectName == "PTO"){
-                continue;
-              }
-
-              //this will store the time from this date range as a kvp ('date' => 'hours') 
-              $project_hours_in_date_range = array();
-              foreach($date_arr as $day) {
-                if (in_array($day, array_keys($project_hours))) {
-                  $hours = $project_hours[$day];
-                }
-                else {
-                  $hours = 0;
-                }
-                $project_hours_in_date_range[$day] = $hours;
-              }
-              //If a project has no hours in the period, then don't add it to the chart.
-              $code_total = 0;
-              foreach($project_hours_in_date_range as $date){
-                $code_total = $code_total + $date;
-              }
-              $total_hours_in_period = $total_hours_in_period + $code_total;
-              if($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU"){
-                $non_billable_hours = $non_billable_hours + $code_total;
-                if(isset($options[$code])){
-                  $options[$code] = $options[$code] + $code_total;
-                }
-                else{
-                  $options[$code] = $code_total;
-                }
-                continue;
-              }
-              if($code_total <= 0){
-                continue;
-              }
-              //////
-              $project_count++;
-              $chart->dataset($projectName, 'bar', array_values($project_hours_in_date_range))->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'backgroundColor'=>$fill_colors[$c_color_loop], 'fill' => true, 'hidden' => false]); 
-              $options['percent_billable'] = round((($total_hours_in_period - $non_billable_hours) / $total_hours_in_period) * 100);
-              $options['projectcount'] = $project_count;
-              $chart->options($options);
-              
-              //now, set the project hours in the date range as the value for this employee's name
-              $employee_arr[$name] = $project_hours_in_date_range;
-              $c_color_loop++;
-              if($c_color_loop > $color_max){
-                $c_color_loop = 0;
-              }
-            }
-          }
-          else {
-            continue;
-          }
-         // if($code == "CEGMISC01"){
-           // $code = 
-         // }
-          //put the hours in as the dataset
-          //$chart->dataset($code, 'bar', array_values($project_hours_in_date_range))->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'backgroundColor'=>$fill_colors[$c_color_loop], 'fill' => true, 'hidden' => false]); 
-//          $options = [];
-//          $options['scales']['xAxes'][]['stacked'] = true;
-  //        $options['scales']['yAxes'][]['stacked'] = true;
-    //      $options['legend']['labels']['boxWidth'] = 10;
-      //    $options['legend']['labels']['padding'] = 6;
-        //  $chart->options($options);
-          
-          //now, set the project hours in the date range as the value for this employee's name
-//          $employee_arr[$name] = $project_hours_in_date_range;
-  //        $c_color_loop++;
-    //      if($c_color_loop > $color_max){
-      //      $c_color_loop = 0;
-        //  }
-        }
-        //now, set the employee array for the code
-        $all_data_arr[$code] = $employee_arr;
-        //put the chart in the charts array
-        //note, we don't push if the chart has no dataset,  e.g. if no employees had hours for this period
-        if(!empty($chart->datasets)) {
-          array_push($charts, $chart);
-        } 
-        $c_color_loop = 0;
-      }      
-      return view('pages.hoursgraph', compact('charts', 'drafter_page'));     
-    }
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////Drafter Hours Page ends here///////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-
     $groupLIST = array("senior","project","SCADA","drafter","interns-admin","blank");
 
     $choosen_line_colors = array('#396AB1','#DA7C30','#3E9651','#CC2529','#535154','#6B4C9A','#922428','#948B3D','#488f31','#58508d','#bc5090','ff6361','#ffa600','#7BEEA5','#127135','#008080','#1AE6E6');

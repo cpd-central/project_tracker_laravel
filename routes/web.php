@@ -28,7 +28,7 @@ Route::post('/wonprojectsummary', 'ProjectController@search')->middleware('verif
 Route::post('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummarySearch');
 
 
-Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified');
+Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified', 'role');
 Route::post('/hoursgraph','ProjectController@submit_billing')->middleware('verified');
 
 Route::get('/monthendbilling', 'ProjectController@billing')->name('pages.monthendbilling')->middleware('verified', 'role');
@@ -41,10 +41,8 @@ Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verifi
 Route::get('/monthendbilling', 'ProjectController@monthendfunction')->name('pages.monthendbilling')->middleware('verified');
 Route::post('/monthendbilling', 'ProjectController@monthendfunction');
 
-Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified', 'role');
-#the drafter hours will use the same function, but pass in a variable indicating that this is the drafters' hours
-#Route::get('/drafterhours', array('as' => 'drafter_page', 'uses' => 'ProjectController@hours_graph'))->name('pages.drafterhours')->middleware('verified')->where('drafter_page', 'true');
-Route::get('/drafterhours/{drafter_page}', 'ProjectController@hours_graph')->name('pages.drafterhours')->middleware('verified');
+
+Route::get('/drafterhours', 'ProjectController@drafter_hours')->name('pages.drafterhours')->middleware('verified', 'role');
 
 
 Route::delete('{id}', 'ProjectController@destroy')->middleware('verified');
