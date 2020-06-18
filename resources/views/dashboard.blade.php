@@ -149,7 +149,7 @@ else{
 						@csrf
 					  </form>
 			</div>
-			@if(isset($timesheet) && $diff->d > 2)
+			@if(isset($timesheet) && $diff->d > 3)
 			<div class="card-footer">
 				<label style="color:white;">Reminder: It has been {{$diff->d}} days since you filled</label>
 				<label style="color:white;">your timesheet. Please do so when convenient.</label>
