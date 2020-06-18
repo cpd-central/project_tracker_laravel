@@ -247,7 +247,14 @@ class ProjectController extends Controller
    */
   public function new_project()
   {
-    return view('pages.newproject');
+      return view('pages.newproject');
+  }
+
+  public function copy_project($id)
+  {
+    $project = Project::find($id);
+    $project = $this->displayFormat($project);
+    return view('pages.editproject', compact('project'));
   }
 
   /**
@@ -257,13 +264,17 @@ class ProjectController extends Controller
    * @param $req - Request variable with attributes to be assigned to $project. 
    * @return redirect /projectindex
    */
-  public function create(Request $request)
+  public function create(Request $request, $id = null)
   {
     $this->validate_request($request);
     $project = new Project();
     $project->created_by = auth()->user()->email;
     $this->store($project, $request);
-    return redirect('/projectindex')->with('success', 'Success! Project has been successfully added.');
+    if($id != null){
+      return redirect('/projectindex')->with('success', 'Success! Project has been copied and successfully added.');
+    }else{
+      return redirect('/projectindex')->with('success', 'Success! Project has been successfully added.');
+    }
   }
 
   /**
