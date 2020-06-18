@@ -28,7 +28,7 @@ Route::post('/wonprojectsummary', 'ProjectController@search')->middleware('verif
 Route::post('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummarySearch');
 
 
-Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified');
+Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified', 'role');
 Route::post('/hoursgraph','ProjectController@submit_billing')->middleware('verified');
 
 Route::get('/monthendbilling', 'ProjectController@billing')->name('pages.monthendbilling')->middleware('verified', 'role');
@@ -36,6 +36,14 @@ Route::get('/monthendbilling', 'ProjectController@billing')->name('pages.monthen
 
 Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject')->middleware('verified');
 Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verified');
+//Route::post('/editproject/{id}', 'ProjectController@update2')->middleware('verified');
+
+Route::get('/monthendbilling', 'ProjectController@monthendfunction')->name('pages.monthendbilling')->middleware('verified');
+Route::post('/monthendbilling', 'ProjectController@monthendfunction');
+
+
+Route::get('/drafterhours', 'ProjectController@drafter_hours')->name('pages.drafterhours')->middleware('verified', 'role');
+
 
 Route::delete('{id}', 'ProjectController@destroy')->middleware('verified');
 
@@ -47,7 +55,7 @@ Route::get('/timesheet', 'TimesheetController@check')->name('pages.timesheet')->
 Route::post('/timesheet', 'TimesheetController@timesheetSave')->name('pages.timesheetSave')->middleware('verified');
 
 Route::get('/roles', 'HomeController@edit_roles')->name('pages.roles')->middleware('verified', 'role');
-Route::get('/roles/{id}', 'HomeController@destroy')->name('pages.rolesDelete')->middleware('verified');
+Route::get('/roles/{id}', 'HomeController@activation')->name('pages.rolesActivation')->middleware('verified');
 Route::post('/roles', 'HomeController@update_role')->name('pages.rolesUpdate')->middleware('verified');
 
 Route::get('/editaccount/{id}', 'HomeController@edit_account')->name('pages.editaccount')->middleware('verified', 'role');

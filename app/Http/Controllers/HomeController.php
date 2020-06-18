@@ -67,37 +67,28 @@ class HomeController extends Controller
     }
 
     /**
-     * Takes the $id of the user to be terminated.
-     * @param $id - the id of the user to be terminated.
+     * Takes the $id of the user to be activated/deactivated.
+     * @param $id - the id of the user to be activated/deactivated.
      * @return redirect - redirects the admin to the dashboard.
      */
-    public function destroy($id)
+    public function activation($id)
     {
         if(isset($id)){
             $user = User::find($id);
-            $user->delete();
-        }
-        return redirect('/home');
-    }
-
-    /**
-     * Updates all user roles based on the radio button fields on the page.
-     * @param Request $request
-     * @return redirect - redirects the admin to the dashboard.
-     */
-    public function update_role(Request $request)
-    {
-        $users = User::all();
-        foreach($users as $user){
-            if($user['role'] == 'sudo'){
-                continue;
+            if(isset($user->active)){
+                if($user->active == true){
+                    $user->active = false;
+                }
+                else{
+                    $user->active = true;
+                }
             }
-            $stringSplit = explode(".", $user['email']);
-            $string = $stringSplit[0]."_".$stringSplit[1];
-            $user['role'] = $request[$string];
-            $user->save();
+            else{
+                $user->active = true;
+            }
         }
-        return redirect('/home');
+        $user->save();
+        return $this->edit_roles();
     }
 
     /**
@@ -112,6 +103,20 @@ class HomeController extends Controller
     }
 
     /**
+     * Checks if inputted number field was left blank. Assigns the number -1 and
+     * parses it from String to Integer.
+     * @param $integer - inputted number to be checked and converted. 
+     * @return $integer
+     */
+    protected function intCheck($integer)
+    {
+        if($integer == null || $integer == ""){
+            $integer = 0;
+        }
+        return ((int)$integer);
+    }
+
+    /**
      * Updates the user's name and email based on $id.
      * @param $id - the id of the user to be updated.
      * @param Request $request
@@ -120,7 +125,11 @@ class HomeController extends Controller
     public function update_account(Request $request, $id){
         $user = User::find($id);
         $user->name = $request->get('name');
+        $user->nickname = $request->get('nickname');
         $user->email = $request->get('email');
+        $user->jobclass = $request->get('jobclass');
+        $user->perhourdollar = $this->intCheck($request->get('perhourdollar'));
+        $user->role = $request->get('role');
         $user->save();
         return redirect()->route('pages.roles')->with('success', 'Success! User has been successfully updated.');
     }
