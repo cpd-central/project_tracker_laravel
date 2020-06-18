@@ -3,6 +3,14 @@
 
 @section('page-title', 'Drafter Hours')
 @section('content')
+    <form action="{{ route('pages.drafterhours') }}" method="GET">
+    @csrf
+        @if(isset($filter_all) && $filter_all == true)
+        <button class="btn btn-dark" id="toggleid" name="toggle" value="false" type="submit">Only Billable</button>
+        @else
+        <button class="btn btn-dark" id="toggleid" name="toggle" value="true" type="submit">All Hours</button>
+        @endif
+    </form>
     @isset($charts)
     @foreach($charts as $chart) 
         <div class="htmlgraphhours">

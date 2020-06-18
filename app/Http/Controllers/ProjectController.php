@@ -11,6 +11,7 @@ use App\Charts\HoursChart;
 
 use DateInterval;
 use DatePeriod;
+use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Support\Facades\Date;
 
 class ProjectController extends Controller
@@ -762,10 +763,17 @@ class ProjectController extends Controller
     return $employee_list;*/
   }
 
-  public function drafter_hours()
+  public function drafter_hours(Request $request)
   {
     $employeeLIST = $this->get_employee_list(null);
-                           
+    
+    $filter_all = false;
+    if(null !== $request->get('toggle')){
+      if($request->get('toggle') == 'true'){
+        $filter_all = true;
+      }
+    }
+
     //truncate the employee list if we're in the drafter hours page
     //store the emails for the drafters 
     $employee_emails = array(); 
@@ -878,22 +886,42 @@ class ProjectController extends Controller
             }
             //If a project has no hours in the period, then don't add it to the chart.
             $code_total = 0;
-            foreach($project_hours_in_date_range as $date){
-              $code_total = $code_total + $date;
-            }
-            $total_hours_in_period = $total_hours_in_period + $code_total;
-            if($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU"){
-              $non_billable_hours = $non_billable_hours + $code_total;
-              if(isset($options[$code])){
-                $options[$code] = $options[$code] + $code_total;
+            if($filter_all == true){
+              foreach($project_hours_in_date_range as $date){
+                $code_total = $code_total + $date;
               }
-              else{
-                $options[$code] = $code_total;
+              $total_hours_in_period = $total_hours_in_period + $code_total;
+              if($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU"){
+                $non_billable_hours = $non_billable_hours + $code_total;
+                if(isset($options[$code])){
+                  $options[$code] = $options[$code] + $code_total;
+                }
+                else{
+                  $options[$code] = $code_total;
+                }
               }
-              continue;
+              if($code_total <= 0){
+                continue;
+              }
             }
-            if($code_total <= 0){
-              continue;
+            else{
+              foreach($project_hours_in_date_range as $date){
+                $code_total = $code_total + $date;
+              }
+              $total_hours_in_period = $total_hours_in_period + $code_total;
+              if($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU"){
+                $non_billable_hours = $non_billable_hours + $code_total;
+                if(isset($options[$code])){
+                  $options[$code] = $options[$code] + $code_total;
+                }
+                else{
+                  $options[$code] = $code_total;
+                }
+                continue;
+              }
+              if($code_total <= 0){
+                continue;
+              }
             }
             //////
             $project_count++;
@@ -923,7 +951,7 @@ class ProjectController extends Controller
       } 
       $c_color_loop = 0;
     }      
-    return view('pages.drafterhours', compact('charts'));     
+    return view('pages.drafterhours', compact('charts', 'filter_all'));     
   }
 
   /**

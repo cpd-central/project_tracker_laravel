@@ -43,6 +43,7 @@ Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verifi
 
 
 Route::get('/drafterhours', 'ProjectController@drafter_hours')->name('pages.drafterhours')->middleware('verified', 'role');
+//Route::get('/drafterhours/{filter_all}', 'ProjectController@drafter_hours')->name('pages.drafterhoursall')->middleware('verified', 'role');
 
 
 Route::delete('{id}', 'ProjectController@destroy')->middleware('verified');
