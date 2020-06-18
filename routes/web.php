@@ -36,14 +36,9 @@ Route::get('/monthendbilling', 'ProjectController@billing')->name('pages.monthen
 
 Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject')->middleware('verified');
 Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verified');
-//Route::post('/editproject/{id}', 'ProjectController@update2')->middleware('verified');
-
-//Route::get('/monthendbilling', 'ProjectController@monthendfunction')->name('pages.monthendbilling')->middleware('verified');
-//Route::post('/monthendbilling', 'ProjectController@monthendfunction');
 
 
 Route::get('/drafterhours', 'ProjectController@drafter_hours')->name('pages.drafterhours')->middleware('verified', 'role');
-//Route::get('/drafterhours/{filter_all}', 'ProjectController@drafter_hours')->name('pages.drafterhoursall')->middleware('verified', 'role');
 
 
 Route::delete('{id}', 'ProjectController@destroy')->middleware('verified');
