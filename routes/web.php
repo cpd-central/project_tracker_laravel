@@ -38,8 +38,8 @@ Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.e
 Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verified');
 //Route::post('/editproject/{id}', 'ProjectController@update2')->middleware('verified');
 
-Route::get('/monthendbilling', 'ProjectController@monthendfunction')->name('pages.monthendbilling')->middleware('verified');
-Route::post('/monthendbilling', 'ProjectController@monthendfunction');
+//Route::get('/monthendbilling', 'ProjectController@monthendfunction')->name('pages.monthendbilling')->middleware('verified');
+//Route::post('/monthendbilling', 'ProjectController@monthendfunction');
 
 
 Route::get('/drafterhours', 'ProjectController@drafter_hours')->name('pages.drafterhours')->middleware('verified', 'role');
