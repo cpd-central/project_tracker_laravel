@@ -44,7 +44,7 @@ class TimesheetController extends Controller
      * Gets todays date to determine the date range when rendering the timesheet page.
      * @return $php_date
      */
-    protected function getDate(){
+    public function getDate(){
         $time = date("Y-m-d H:i:s");
         $php_date = new \DateTime($time, new \DateTimeZone('America/Chicago'));
         return $php_date;
@@ -104,7 +104,7 @@ class TimesheetController extends Controller
      * gets dates for timesheetSave method.
      * @return Array
      */
-    protected function get_dates($start, $end)
+    public function get_dates($start, $end)
     {
         $start->setTime(0,0,0);
         $end->setTime(0,0,1);
@@ -485,5 +485,10 @@ class TimesheetController extends Controller
     public function edit($timesheet, $date, $message = null, $reference_list, $arr, $header_arr, $start, $end)
     {
         return view('pages.timesheet', compact('timesheet', 'date', 'message', 'reference_list', 'arr', 'header_arr', 'start', 'end'));
+    }
+
+    public function drafter_hours()
+    {
+        return view('pages.drafterhours');
     }
 }

@@ -66,7 +66,7 @@
 
 @section('page-title', 'Hours By Project Graph')
 @section('content')
-{{ old('project_id') }}
+
 <?php $x=0; $id=0; ?>
 
 @foreach($chart_variable as $var2)
@@ -85,7 +85,7 @@
     <span class="slider round"></span>
   </label><label>Toggle Dollars</label>
   <br>
-  <button class="btn btn-dark" id="switch_chart_button" name="switch_chart_button" type="submit">Toggle</button>
+  <button class="btn btn-dark" type="submit">Toggle</button>
 </form>
 <form action="{{ route('pages.hoursgraph') }}" method="POST">
   @csrf

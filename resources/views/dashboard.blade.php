@@ -1,11 +1,15 @@
 <?php use App\Timesheet;
 $collection = Timesheet::where('user', auth()->user()->email)->get();
 if(!$collection->isEmpty()){
-    $timesheet = $collection[0];
+	$timesheet = $collection[0];
+	$last_update = $timesheet['updated_at'];
+	$today = new \DateTime("now", new \DateTimeZone("UTC"));
+	$diff = $today->diff($last_update);
 }
 else{
     $timesheet = null;
-}?>
+}
+?>
 
 <!DOCTYPE html>
 <html>
@@ -26,7 +30,6 @@ align-content: center;
 }
 
 .card{
-height: 370px;
 margin-top: auto;
 margin-bottom: auto;
 width: 400px;
@@ -36,6 +39,10 @@ background-color: rgba(0,0,0,0.5) !important;
 .card-header h3{
 color: white;
 text-align: center;
+}
+
+.card-footer {
+background-color: rgba(0, 0, 0, 0.25) !important;
 }
 
 .form-group{
@@ -92,7 +99,7 @@ if(auth()->user()->role == "proposer" || auth()->user()->role == "admin"){
 	$style_string = "height:15%";
 }
 elseif(auth()->user()->role == "sudo"){
-	$style_string = "height:15%";
+	$style_string = "height:9%";
 }
 else{
 	$style_string = "height:35%";
@@ -102,7 +109,7 @@ else{
 <body>
 <div class="container">
 	<div class="d-flex justify-content-center h-100">
-		<div class="card">
+		<div class="card text-center">
 			<div class="card-header">
 				<h3>Dashboard</h3>
 			</div>
@@ -117,7 +124,7 @@ else{
 					</div>
 					
 					<?php } ?>
-                    <div class="form-group" style="{{$style_string}}">
+					<div class="form-group" style="{{$style_string}}">
                         <a href={{ route('pages.timesheet') }} class="btn login_btn">Timesheet</a>
 					</div>
 					<!--Corey adding link for timesheet sent status page-->
@@ -125,12 +132,16 @@ else{
                         <a href={{ route('pages.timesheetsentstatus') }} class="btn login_btn">Timesheet Sent Status</a>
                     </div>
 					<!--End Corey new code-->
-					<?php if(auth()->user()->role == "sudo") {?>
+					<?php if(auth()->user()->role == "drafting_manager") {?>
 					<div class="form-group" style="{{$style_string}}">
-                        <a href={{ route('pages.roles') }} class="btn login_btn">Roles</a>
+						<a class="nav-link" href="{{ route('pages.drafterhours', ['drafter_page' => true]) }}">Drafter Hours</a>
 					</div>
-					<?php } ?>
-                    <div class="form-group" style="{{$style_string}}">
+					<?php } elseif (auth()->user()->role == "sudo") { ?>
+					<div class="form-group" style="{{$style_string}}">
+						<a href={{ route('pages.roles') }} class="btn login_btn">Account Directory</a>
+					</div>	
+					<?php } ?>               
+					<div class="form-group" style="{{$style_string}}">
                         <a href={{ route('logout') }} class="btn login_btn" onclick="event.preventDefault();
 						document.getElementById('logout-form').submit();">Logout</a>
 					</div>
@@ -138,8 +149,12 @@ else{
 						@csrf
 					  </form>
 			</div>
-			<div class="card-footer">				
+			@if(isset($timesheet) && $diff->d > 3)
+			<div class="card-footer">
+				<label style="color:white;">Reminder: It has been {{$diff->d}} days since you filled</label>
+				<label style="color:white;">your timesheet. Please do so when convenient.</label>
 			</div>
+			@endif
 		</div>
 		<?php if(auth()->user()->role != "user" && !empty($billing)) {?>
 		<div class="card">

@@ -24,56 +24,93 @@
 @stop
 @section('dateenergization', $project['dateenergization'])
 
-@section('physical90person1', $project['duedates']['physical90']['person1'])
-@section('physical90person2', $project['duedates']['physical90']['person2'])
-@section('physical90due', $project['duedates']['physical90']['due'])
-
-@section('physicalifcperson1', $project['duedates']['physicalifc']['person1'])
-@section('physicalifcperson2', $project['duedates']['physicalifc']['person2'])
-@section('physicalifcdue', $project['duedates']['physicalifc']['due'])
-
-@section('wire90person1', $project['duedates']['wiring90']['person1'])
-@section('wire90person2', $project['duedates']['wiring90']['person2'])
-@section('wire90due', $project['duedates']['wiring90']['due'])
-
-@section('wireifcperson1', $project['duedates']['wiringifc']['person1'])
-@section('wireifcperson2', $project['duedates']['wiringifc']['person2'])
-@section('wireifcdue', $project['duedates']['wiringifc']['due'])
-
-@section('collection90person1', $project['duedates']['collection90']['person1'])
-@section('collection90person2', $project['duedates']['collection90']['person2'])
-@section('collection90due', $project['duedates']['collection90']['due'])
-
-@section('collectionifcperson1', $project['duedates']['collectionifc']['person1'])
-@section('collectionifcperson2', $project['duedates']['collectionifc']['person2'])
-@section('collectionifcdue', $project['duedates']['collectionifc']['due'])
-
-@section('transmission90person1', $project['duedates']['transmission90']['person1'])
-@section('transmission90person2', $project['duedates']['transmission90']['person2'])
-@section('transmission90due', $project['duedates']['transmission90']['due'])
-
-@section('transmissionifcperson1', $project['duedates']['transmissionifc']['person1'])
-@section('transmissionifcperson2', $project['duedates']['transmissionifc']['person2'])
-@section('transmissionifcdue', $project['duedates']['transmissionifc']['due'])
-
-@section('scadaperson1', $project['duedates']['scada']['person1'])
-@section('scadaperson2', $project['duedates']['scada']['person2'])
-@section('scadadue', $project['duedates']['scada']['due'])
-
-@section('reactiveperson1', $project['duedates']['reactive']['person1'])
-@section('reactivedue', $project['duedates']['reactive']['due'])
-
-@section('ampacityperson1', $project['duedates']['ampacity']['person1'])
-@section('ampacitydue', $project['duedates']['ampacity']['due'])
-
-@section('arcflashperson1', $project['duedates']['arcflash']['person1'])
-@section('arcflashdue', $project['duedates']['arcflash']['due'])
-
-@section('relayperson1', $project['duedates']['relay']['person1'])
-@section('relaydue', $project['duedates']['relay']['due'])
-
-@section('allperson1', $project['duedates']['allothers']['person1'])
-@section('alldue', $project['duedates']['allothers']['due'])
-
+@if(isset($project['duedates']['studies']))
+  @section('studiesperson1', $project['duedates']['studies']['person1'])
+  @section('studiesdue', $project['duedates']['studies']['due'])
+  <?php $keys = array_keys($project['duedates']['studies']); ?>
+  <?php $i = 1; ?>
+  @foreach($keys as $key)
+    <?php if ($key != "person1" && $key != "due"){ ?>
+      @section('study'.$i.'person1', $project['duedates']['studies'][$key]['person1'])
+      @section('study'.$i.'due', $project['duedates']['studies'][$key]['due'])
+      <?php $i++; ?>
+    <?php } ?>
+  @endforeach
+@endif
+@if(isset($project['duedates']['scada']))
+  @section('scadaperson1', $project['duedates']['scada']['person1'])
+  @section('scadaperson2', $project['duedates']['scada']['person2'])
+  @section('scadadue', $project['duedates']['scada']['due'])
+  <?php $keys = array_keys($project['duedates']['scada']); ?>
+  <?php $i = 1; ?>
+  @foreach($keys as $key)
+    <?php if ($key != "person1" && $key != "person2" && $key != "due"){ ?>
+      @section('scada'.$i.'person1', $project['duedates']['scada'][$key]['person1'])
+      @section('scada'.$i.'person2', $project['duedates']['scada'][$key]['person2'])
+      @section('scada'.$i.'due', $project['duedates']['scada'][$key]['due'])
+      <?php $i++; ?>
+    <?php } ?>
+  @endforeach
+@endif
+@if(isset($project['duedates']['transmission']))
+  @section('transmissionperson1', $project['duedates']['transmission']['person1'])
+  @section('transmissionperson2', $project['duedates']['transmission']['person2'])
+  @section('transmissiondue', $project['duedates']['transmission']['due'])
+  <?php $keys = array_keys($project['duedates']['transmission']); ?>
+  <?php $i = 1; ?>
+  @foreach($keys as $key)
+    <?php if ($key != "person1" && $key != "person2" && $key != "due"){ ?>
+      @section('transmission'.$i.'person1', $project['duedates']['transmission'][$key]['person1'])
+      @section('transmission'.$i.'person2', $project['duedates']['transmission'][$key]['person2'])
+      @section('transmission'.$i.'due', $project['duedates']['transmission'][$key]['due'])
+      <?php $i++; ?>
+    <?php } ?>
+  @endforeach
+@endif
+@if(isset($project['duedates']['collection']))
+  @section('collectionperson1', $project['duedates']['collection']['person1'])
+  @section('collectionperson2', $project['duedates']['collection']['person2'])
+  @section('collectiondue', $project['duedates']['collection']['due'])
+  <?php $keys = array_keys($project['duedates']['collection']); ?>
+  <?php $i = 1; ?>
+  @foreach($keys as $key)
+    <?php if ($key != "person1" && $key != "person2" && $key != "due"){ ?>
+      @section('collection'.$i.'person1', $project['duedates']['collection'][$key]['person1'])
+      @section('collection'.$i.'person2', $project['duedates']['collection'][$key]['person2'])
+      @section('collection'.$i.'due', $project['duedates']['collection'][$key]['due'])
+      <?php $i++; ?>
+    <?php } ?>
+  @endforeach
+@endif
+@if(isset($project['duedates']['control']))
+  @section('controlperson1', $project['duedates']['control']['person1'])
+  @section('controlperson2', $project['duedates']['control']['person2'])
+  @section('controldue', $project['duedates']['control']['due'])
+  <?php $keys = array_keys($project['duedates']['control']); ?>
+  <?php $i = 1; ?>
+  @foreach($keys as $key)
+    <?php if ($key != "person1" && $key != "person2" && $key != "due"){ ?>
+      @section('control'.$i.'person1', $project['duedates']['control'][$key]['person1'])
+      @section('control'.$i.'person2', $project['duedates']['control'][$key]['person2'])
+      @section('control'.$i.'due', $project['duedates']['control'][$key]['due'])
+      <?php $i++; ?>
+    <?php } ?>
+  @endforeach
+@endif
+@if(isset($project['duedates']['physical']))
+  @section('physicalperson1', $project['duedates']['physical']['person1'])
+  @section('physicalperson2', $project['duedates']['physical']['person2'])
+  @section('physicaldue', $project['duedates']['physical']['due'])
+  <?php $keys = array_keys($project['duedates']['physical']); ?>
+  <?php $i = 1; ?>
+  @foreach($keys as $key)
+    <?php if ($key != "person1" && $key != "person2" && $key != "due"){ ?>
+      @section('physical'.$i.'person1', $project['duedates']['physical'][$key]['person1'])
+      @section('physical'.$i.'person2', $project['duedates']['physical'][$key]['person2'])
+      @section('physical'.$i.'due', $project['duedates']['physical'][$key]['due'])
+      <?php $i++; ?>
+    <?php } ?>
+  @endforeach
+@endif
 @section('dynamic_field')
 
