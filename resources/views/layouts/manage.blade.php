@@ -46,147 +46,490 @@
         <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit Details</a></td>
         </br>
         </br>
-        <h5><b>Physical Drawing Package 90%</b></h5>
-          <div class="row">
-            <div class="form-group col-md-4">
-                <label for="physical90person1">Engineer/Person 1</label>
-              <input type="text" class="form-control" name="physical90person1" value="@if(old('physical90person1')){{ old('physical90person1') }} @else<?= $__env->yieldContent('physical90person1')?>@endif">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="physical90person2">Drafter/Person 2</label>
-                <input type="text" class="form-control" id="physical90person2" name="physical90person2" value="@if(old('physical90person2'))<?= old('physical90person2') ?>@else<?= $__env->yieldContent('physical90person2')?>@endif">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="physical90due">Due Date</label>
-                <input type="date" class="form-control" id="physical90due" name="physical90due" value="@if(old('physical90due'))<?= old('physical90due') ?>@else<?= $__env->yieldContent('physical90due')?>@endif">
-            </div>
-        </div> 
-      </br>
-    </br>        
-        <h5><b>Physical Drawing Package IFC</b></h5>
-         <div class="row">
-            <div class="form-group col-md-4">
-                <label for="physicalifcperson1">Engineer/Person 1</label>
-              <input type="text" class="form-control" name="physicalifcperson1" value="@if(old('physicalifcperson1')){{ old('physicalifcperson1') }} @else<?= $__env->yieldContent('physicalifcperson1')?>@endif">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="physicalifcperson2">Drafter/Person 2</label>
-                <input type="text" class="form-control" id="physicalifcperson2" name="physicalifcperson2" value="@if(old('physicalifcperson2'))<?= old('physicalifcperson2') ?>@else<?= $__env->yieldContent('physicalifcperson2')?>@endif">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="physicalifcdue">Due Date</label>
-                <input type="date" class="form-control" id="physicalifcdue" name="physicalifcdue" value="@if(old('physicalifcdue'))<?= old('physicalifcdue') ?>@else<?= $__env->yieldContent('physicalifcdue')?>@endif">
-            </div>
-         </div>
-        </br>
-    </br>
-    <h5><b>Wiring and Controls Drawing Package 90%</b></h5>
-         <div class="row">
-            <div class="form-group col-md-4">
-                <label for="wire90person1">Engineer/Person 1</label>
-              <input type="text" class="form-control" name="wire90person1" value="@if(old('wire90person1')){{ old('wire90person1') }} @else<?= $__env->yieldContent('wire90person1')?>@endif">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="wire90person2">Drafter/Person 2</label>
-                <input type="text" class="form-control" id="wire90person2" name="wire90person2" value="@if(old('wire90person2'))<?= old('wire90person2') ?>@else<?= $__env->yieldContent('wire90person2')?>@endif">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="wire90due">Due Date</label>
-                <input type="date" class="form-control" id="wire90due" name="wire90due" value="@if(old('wire90due'))<?= old('wire90due') ?>@else<?= $__env->yieldContent('wire90due')?>@endif">
-            </div>
-         </div>
-        </br>
-      </br>
-    <h5><b>Wiring and Controls Drawing Package IFC</b></h5>
-         <div class="row">
-            <div class="form-group col-md-4">
-                <label for="wireifcperson1">Engineer/Person 1</label>
-              <input type="text" class="form-control" name="wireifcperson1" value="@if(old('wireifcperson1')){{ old('wireifcperson1') }} @else<?= $__env->yieldContent('wireifcperson1')?>@endif">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="wireifcperson2">Drafter/Person 2</label>
-                <input type="text" class="form-control" id="wireifcperson2" name="wireifcperson2" value="@if(old('wireifcperson2'))<?= old('wireifcperson2') ?>@else<?= $__env->yieldContent('wireifcperson2')?>@endif">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="wireifcdue">Due Date</label>
-                <input type="date" class="form-control" id="wireifcdue" name="wireifcdue" value="@if(old('wireifcdue'))<?= old('wireifcdue') ?>@else<?= $__env->yieldContent('wireifcdue')?>@endif">
-            </div>
-         </div>
-        </br>
-      </br>
-    <h5><b> Collection System Drawing Package 90%</b></h5>
+        @if($physicalfields >= 0 || !isset($project['duedates']['physical']))
+        <h5><b> Physical Drawing Package</b></h5>
+        <div class="row">
+          <div class="form-group col-md-4">
+            <button type="button" class="btn btn-danger btn_remove" id="removephysical">Remove All Physical Fields</button>
+          </div>
+        </div>
         <div class="row">
             <div class="form-group col-md-4">
-                <label for="collection90person1">Engineer/Person 1</label>
-                <input type="text" class="form-control" name="collection90person1" value="@if(old('collection90person1')){{ old('collection90person1') }} @else<?= $__env->yieldContent('collection90person1')?>@endif">
+                <label for="physicalperson1">Engineer/Person 1</label>
+                <input type="text" class="form-control" name="physicalperson1" value="@if(old('physicalperson1')){{ old('physicalperson1') }} @else<?= $__env->yieldContent('physicalperson1')?>@endif">
             </div>
             <div class="form-group col-md-4">
-                <label for="collection90person2">Drafter/Person 2</label>
-                <input type="text" class="form-control" id="collection90person2" name="collection90person2" value="@if(old('collection90person2'))<?= old('collection90person2') ?>@else<?= $__env->yieldContent('collection90person2')?>@endif">
+                <label for="physicalperson2">Drafter/Person 2</label>
+                <input type="text" class="form-control" id="physicalperson2" name="physicalperson2" value="@if(old('physicalperson2'))<?= old('physicalperson2') ?>@else<?= $__env->yieldContent('physicalperson2')?>@endif">
             </div>
             <div class="form-group col-md-4">
-                <label for="collection90due">Due Date</label>
-                <input type="date" class="form-control" id="collection90due" name="collection90due" value="@if(old('collection90due'))<?= old('collection90due') ?>@else<?= $__env->yieldContent('collection90due')?>@endif">
+                <label for="physicaldue">Due Date</label>
+                <input type="date" class="form-control" id="physicaldue" name="physicaldue" value="@if(old('physicaldue'))<?= old('physicaldue') ?>@else<?= $__env->yieldContent('physicaldue')?>@endif">
             </div>
         </div>
-      </br>
-    </br>
-    <h5><b> Collection System Drawing Package IFC</b></h5>
-      <div class="row">
-          <div class="form-group col-md-4">
-              <label for="collectionifcperson1">Engineer/Person 1</label>
-            <input type="text" class="form-control" name="collectionifcperson1" value="@if(old('collectionifcperson1')){{ old('collectionifcperson1') }} @else<?= $__env->yieldContent('collectionifcperson1')?>@endif">
-          </div>
-          <div class="form-group col-md-4">
-              <label for="collectionifcperson2">Drafter/Person 2</label>
-              <input type="text" class="form-control" id="collectionifcperson2" name="collectionifcperson2" value="@if(old('collectionifcperson2'))<?= old('collectionifcperson2') ?>@else<?= $__env->yieldContent('collectionifcperson2')?>@endif">
-          </div>
-          <div class="form-group col-md-4">
-              <label for="collectionifcdue">Due Date</label>
-              <input type="date" class="form-control" id="collectionifcdue" name="collectionifcdue" value="@if(old('collectionifcdue'))<?= old('collectionifcdue') ?>@else<?= $__env->yieldContent('collectionifcdue')?>@endif">
-          </div>
-      </div>
-      </br>
-    </br>
-    <h5><b> Transmission Line Drawing Package 90%</b></h5>
-        <div class="row">
+        </br>
+      @endif
+      @if(!isset($project['duedates']['physical']))
+        <?php $i = 1; ?>
+        <h6 style="margin-left: 55px"><b>90</b></h6>
+            <div style="margin-left: 40px" class="row">
+                <div class="form-group col-md-4">
+                <label for="physical{{$i}}person1">Engineer/Person 1</label>
+                    <input type="text" class="form-control" name="physical{{$i}}person1" value="@if(old('physical{{$i}}person1'))<?= old('physical{{$i}}person1') ?>@else<?= $__env->yieldContent('physical{{$i}}person1')?>@endif">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="physical{{$i}}person2">Drafter/Person 2</label>
+                    <input type="text" class="form-control" id="physical{{$i}}person2" name="physical{{$i}}person2" value="@if(old('physical{{$i}}person2'))<?= old('physical{{$i}}person2') ?>@else<?= $__env->yieldContent('physical{{$i}}person2')?>@endif">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="physical{{$i}}due">Due Date</label>
+                    <input type="date" class="form-control" id="physical{{$i}}due" name="physical{{$i}}due" value="@if(old('physical{{$i}}due'))<?= old('physical{{$i}}due') ?>@else<?= $__env->yieldContent('physical{{$i}}due')?>@endif">
+                </div>
+                <input type="hidden" id="physical{{$i}}name" name="physical{{$i}}name" value="90" readonly />
+                <?php $i++; ?>
+            </div>
+          </br>
+          <div style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
-                <label for="transmission90person1">Engineer/Person 1</label>
-                <input type="text" class="form-control" name="transmission90person1" value="@if(old('transmission90person1')){{ old('transmission90person1') }} @else<?= $__env->yieldContent('transmission90person1')?>@endif">
+              <button type="button" class="btn btn-danger btn_remove" id="removephysical">Remove Fields</button>
+            </div>
+          </div>
+        </br>
+        <h6 style="margin-left: 55px"><b>IFC</b></h6>
+          <div style="margin-left: 40px" class="row">
+              <div class="form-group col-md-4">
+                  <label for="physical{{$i}}person1">Engineer/Person 1</label>
+                <input type="text" class="form-control" name="physical{{$i}}person1" value="@if(old('physical{{$i}}person1'))<?= old('physical{{$i}}person1') ?> @else<?= $__env->yieldContent('physical{{$i}}person1')?>@endif">
+              </div>
+              <div class="form-group col-md-4">
+              <label for="physical{{$i}}person2">Drafter/Person 2</label>
+                  <input type="text" class="form-control" id="physical{{$i}}person2" name="physical{{$i}}person2" value="@if(old('physical{{$i}}person2'))<?= old('physical{{$i}}person2') ?>@else<?= $__env->yieldContent('physical{{$i}}person2')?>@endif">
+              </div>
+              <div class="form-group col-md-4">
+                  <label for="physical{{$i}}due">Due Date</label>
+              <input type="date" class="form-control" id="physical{{$i}}due" name="physical{{$i}}due" value="@if(old('physical{{$i}}due'))<?= old('physical{{$i}}due') ?>@else<?= $__env->yieldContent('physical{{$i}}due')?>@endif">
+              </div>
+              <input type="hidden" id="physical{{$i}}name" name="physical{{$i}}name" value="IFC" readonly />
+          </div>
+          </br>
+          <div style="margin-left: 40px" class="row">
+            <div class="form-group col-md-4">
+              <button type="button" class="btn btn-danger btn_remove" id="removephysical">Remove Fields</button>
+            </div>
+          </div>
+          </br>
+          <div style="margin-left: 40px" class="row">
+            <div class="form-group col-md-4">
+              <button type="button" class="btn btn-warning" id="addphysical">Add New Field</button> 
+            </div>
+          </div>
+          <input type="hidden" id="physicalfields" name="physicalfields" value={{$i}} readonly />
+          </br>
+          </br>
+      @elseif($physicalfields > 0)
+      <?php $keycounter = 3; ?>
+      <?php for($i = 1; $i <= $physicalfields; $i++){?>
+        <?php $keys = array_keys($project['duedates']['physical']);?>
+        <h6 style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
+        <div style="margin-left: 40px" class="row">
+            <div class="form-group col-md-4">
+                <label for="physical{{$i}}person1">Engineer/Person 1</label>
+                <input type="text" class="form-control" id="physical{{$i}}person1" name="physical{{$i}}person1" value="@if(old('physical{{$i}}person1'))<?= old('physical{{$i}}person1') ?>@else<?= $project['duedates']['physical'][$keys[$keycounter]]['person1'] ?>@endif">
             </div>
             <div class="form-group col-md-4">
-                <label for="transmission90person2">Drafter/Person 2</label>
-                <input type="text" class="form-control" id="transmission90person2" name="transmission90person2" value="@if(old('transmission90person2'))<?= old('transmission90person2') ?>@else<?= $__env->yieldContent('transmission90person2')?>@endif">
+              <label for="physical{{$i}}person2">Drafter/Person 2</label>
+              <input type="text" class="form-control" id="physical{{$i}}person2" name="physical{{$i}}person2" value="@if(old('physical{{$i}}person2'))<?= old('physical{{$i}}person2') ?>@else<?= $project['duedates']['physical'][$keys[$keycounter]]['person2'] ?>@endif">
             </div>
             <div class="form-group col-md-4">
-                <label for="transmission90due">Due Date</label>
-                <input type="date" class="form-control" id="transmission90due" name="transmission90due" value="@if(old('transmission90due'))<?= old('transmission90due') ?>@else<?= $__env->yieldContent('transmission90due')?>@endif">
+                <label for="physical{{$i}}due">Due Date</label>
+                <input type="date" class="form-control" id="physical{{$i}}due" name="physical{{$i}}due" value="@if(old('physical{{$i}}due'))<?= old('physical{{$i}}due') ?>@else<?= $project['duedates']['physical'][$keys[$keycounter]]['due'] ?>@endif">
             </div>
+            <input type="hidden" id="physical{{$i}}name" name="physical{{$i}}name" value={{$keys[$keycounter]}} readonly />
+            <?php $keycounter++; ?>
         </div>
-      </br>
-    </br>
-    <h5><b> Transmission Line Drawing Package IFC</b></h5>
-      <div class="row">
+        </br>
+        <div style="margin-left: 40px" class="row">
           <div class="form-group col-md-4">
-              <label for="transmissionifcperson1">Engineer/Person 1</label>
-            <input type="text" class="form-control" name="transmissionifcperson1" value="@if(old('transmissionifcperson1')){{ old('transmissionifcperson1') }} @else<?= $__env->yieldContent('transmissionifcperson1')?>@endif">
+            <button type="button" class="btn btn-danger btn_remove" id="removephysical">Remove Fields</button>
           </div>
-          <div class="form-group col-md-4">
-              <label for="transmissionifcperson2">Drafter/Person 2</label>
-              <input type="text" class="form-control" id="transmissionifcperson2" name="transmissionifcperson2" value="@if(old('transmissionifcperson2'))<?= old('transmissionifcperson2') ?>@else<?= $__env->yieldContent('transmissionifcperson2')?>@endif">
-          </div>
-          <div class="form-group col-md-4">
-              <label for="transmissionifcdue">Due Date</label>
-              <input type="date" class="form-control" id="transmissionifcdue" name="transmissionifcdue" value="@if(old('transmissionifcdue'))<?= old('transmissionifcdue') ?>@else<?= $__env->yieldContent('transmissionifcdue')?>@endif">
-          </div>
+        </div>
+        </br>
+      <?php } ?>
+      <input type="hidden" id="physicalfields" name="physicalfields" value={{$physicalfields}} readonly />
+      <div style="margin-left: 40px" class="row">
+        <div class="form-group col-md-4">
+          <button type="button" class="btn btn-warning" id="addphysical">Add New Field</button> 
+        </div>
       </div>
-      </br>
-    </br>
-    <h5><b>SCADA</b></h5>
+      @endif
+
+
+    @if($controlfields >= 0 || !isset($project['duedates']['control']))
+    <h5><b> Wiring and Controls Drawing Package</b></h5>
+    <div class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-danger btn_remove" id="removecontrol">Remove All Control Fields</button>
+      </div>
+    </div>
     <div class="row">
         <div class="form-group col-md-4">
-            <label for="scadaperson1">Engineer/Person 1r</label>
-          <input type="text" class="form-control" name="scadaperson1" value="@if(old('scadaperson1')){{ old('scadaperson1') }} @else<?= $__env->yieldContent('scadaperson1')?>@endif">
+            <label for="controlperson1">Engineer/Person 1</label>
+            <input type="text" class="form-control" name="controlperson1" value="@if(old('controlperson1')){{ old('controlperson1') }} @else<?= $__env->yieldContent('controlperson1')?>@endif">
+        </div>
+        <div class="form-group col-md-4">
+            <label for="controlperson2">Drafter/Person 2</label>
+            <input type="text" class="form-control" id="controlperson2" name="controlperson2" value="@if(old('controlperson2'))<?= old('controlperson2') ?>@else<?= $__env->yieldContent('controlperson2')?>@endif">
+        </div>
+        <div class="form-group col-md-4">
+            <label for="controldue">Due Date</label>
+            <input type="date" class="form-control" id="controldue" name="controldue" value="@if(old('controldue'))<?= old('controldue') ?>@else<?= $__env->yieldContent('controldue')?>@endif">
+        </div>
+    </div>
+    </br>
+  @endif
+  @if(!isset($project['duedates']['control']))
+    <?php $i = 1; ?>
+    <h6 style="margin-left: 55px"><b>90</b></h6>
+        <div style="margin-left: 40px" class="row">
+            <div class="form-group col-md-4">
+            <label for="control{{$i}}person1">Engineer/Person 1</label>
+                <input type="text" class="form-control" name="control{{$i}}person1" value="@if(old('control{{$i}}person1'))<?= old('control{{$i}}person1') ?>@else<?= $__env->yieldContent('control{{$i}}person1')?>@endif">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="control{{$i}}person2">Drafter/Person 2</label>
+                <input type="text" class="form-control" id="control{{$i}}person2" name="control{{$i}}person2" value="@if(old('control{{$i}}person2'))<?= old('control{{$i}}person2') ?>@else<?= $__env->yieldContent('control{{$i}}person2')?>@endif">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="control{{$i}}due">Due Date</label>
+                <input type="date" class="form-control" id="control{{$i}}due" name="control{{$i}}due" value="@if(old('control{{$i}}due'))<?= old('control{{$i}}due') ?>@else<?= $__env->yieldContent('control{{$i}}due')?>@endif">
+            </div>
+            <input type="hidden" id="control{{$i}}name" name="control{{$i}}name" value="90" readonly />
+            <?php $i++; ?>
+        </div>
+      </br>
+      <div style="margin-left: 40px" class="row">
+        <div class="form-group col-md-4">
+          <button type="button" class="btn btn-danger btn_remove" id="removecontrol">Remove Fields</button>
+        </div>
+      </div>
+    </br>
+    <h6 style="margin-left: 55px"><b>IFC</b></h6>
+      <div style="margin-left: 40px" class="row">
+          <div class="form-group col-md-4">
+              <label for="control{{$i}}person1">Engineer/Person 1</label>
+            <input type="text" class="form-control" name="control{{$i}}person1" value="@if(old('control{{$i}}person1'))<?= old('control{{$i}}person1') ?> @else<?= $__env->yieldContent('control{{$i}}person1')?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+          <label for="control{{$i}}person2">Drafter/Person 2</label>
+              <input type="text" class="form-control" id="control{{$i}}person2" name="control{{$i}}person2" value="@if(old('control{{$i}}person2'))<?= old('control{{$i}}person2') ?>@else<?= $__env->yieldContent('control{{$i}}person2')?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+              <label for="control{{$i}}due">Due Date</label>
+          <input type="date" class="form-control" id="control{{$i}}due" name="control{{$i}}due" value="@if(old('control{{$i}}due'))<?= old('control{{$i}}due') ?>@else<?= $__env->yieldContent('control{{$i}}due')?>@endif">
+          </div>
+          <input type="hidden" id="control{{$i}}name" name="control{{$i}}name" value="IFC" readonly />
+      </div>
+      </br>
+      <div style="margin-left: 40px" class="row">
+        <div class="form-group col-md-4">
+          <button type="button" class="btn btn-danger btn_remove" id="removecontrol">Remove Fields</button>
+        </div>
+      </div>
+      </br>
+      <div style="margin-left: 40px" class="row">
+        <div class="form-group col-md-4">
+          <button type="button" class="btn btn-warning" id="addcontrol">Add New Field</button> 
+        </div>
+      </div>
+      <input type="hidden" id="controlfields" name="controlfields" value={{$i}} readonly />
+      </br>
+      </br>
+  @elseif($controlfields > 0)
+  <?php $keycounter = 3; ?>
+  <?php for($i = 1; $i <= $controlfields; $i++){?>
+    <?php $keys = array_keys($project['duedates']['control']);?>
+    <h6 style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
+    <div style="margin-left: 40px" class="row">
+        <div class="form-group col-md-4">
+            <label for="control{{$i}}person1">Engineer/Person 1</label>
+            <input type="text" class="form-control" id="control{{$i}}person1" name="control{{$i}}person1" value="@if(old('control{{$i}}person1'))<?= old('control{{$i}}person1') ?>@else<?= $project['duedates']['control'][$keys[$keycounter]]['person1'] ?>@endif">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="control{{$i}}person2">Drafter/Person 2</label>
+          <input type="text" class="form-control" id="control{{$i}}person2" name="control{{$i}}person2" value="@if(old('control{{$i}}person2'))<?= old('control{{$i}}person2') ?>@else<?= $project['duedates']['control'][$keys[$keycounter]]['person2'] ?>@endif">
+        </div>
+        <div class="form-group col-md-4">
+            <label for="control{{$i}}due">Due Date</label>
+            <input type="date" class="form-control" id="control{{$i}}due" name="control{{$i}}due" value="@if(old('control{{$i}}due'))<?= old('control{{$i}}due') ?>@else<?= $project['duedates']['control'][$keys[$keycounter]]['due'] ?>@endif">
+        </div>
+        <input type="hidden" id="control{{$i}}name" name="control{{$i}}name" value={{$keys[$keycounter]}} readonly />
+        <?php $keycounter++; ?>
+    </div>
+    </br>
+    <div style="margin-left: 40px" class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-danger btn_remove" id="removecontrol">Remove Fields</button>
+      </div>
+    </div>
+    </br>
+  <?php } ?>
+  <input type="hidden" id="controlfields" name="controlfields" value={{$controlfields}} readonly />
+  <div style="margin-left: 40px" class="row">
+    <div class="form-group col-md-4">
+      <button type="button" class="btn btn-warning" id="addcontrol">Add New Field</button> 
+    </div>
+  </div>
+  @endif
+
+
+      @if($collectionfields >= 0 || !isset($project['duedates']['collection']))
+      <h5><b> Collection Line Drawing Package</b></h5>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <button type="button" class="btn btn-danger btn_remove" id="removecollection">Remove All Collection Fields</button>
+        </div>
+      </div>
+      <div class="row">
+          <div class="form-group col-md-4">
+              <label for="collectionperson1">Engineer/Person 1</label>
+              <input type="text" class="form-control" name="collectionperson1" value="@if(old('collectionperson1')){{ old('collectionperson1') }} @else<?= $__env->yieldContent('collectionperson1')?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+              <label for="collectionperson2">Drafter/Person 2</label>
+              <input type="text" class="form-control" id="collectionperson2" name="collectionperson2" value="@if(old('collectionperson2'))<?= old('collectionperson2') ?>@else<?= $__env->yieldContent('collectionperson2')?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+              <label for="collectiondue">Due Date</label>
+              <input type="date" class="form-control" id="collectiondue" name="collectiondue" value="@if(old('collectiondue'))<?= old('collectiondue') ?>@else<?= $__env->yieldContent('collectiondue')?>@endif">
+          </div>
+      </div>
+      </br>
+    @endif
+    @if(!isset($project['duedates']['collection']))
+      <?php $i = 1; ?>
+      <h6 style="margin-left: 55px"><b>90</b></h6>
+          <div style="margin-left: 40px" class="row">
+              <div class="form-group col-md-4">
+              <label for="collection{{$i}}person1">Engineer/Person 1</label>
+                  <input type="text" class="form-control" name="collection{{$i}}person1" value="@if(old('collection{{$i}}person1'))<?= old('collection{{$i}}person1') ?>@else<?= $__env->yieldContent('collection{{$i}}person1')?>@endif">
+              </div>
+              <div class="form-group col-md-4">
+                  <label for="collection{{$i}}person2">Drafter/Person 2</label>
+                  <input type="text" class="form-control" id="collection{{$i}}person2" name="collection{{$i}}person2" value="@if(old('collection{{$i}}person2'))<?= old('collection{{$i}}person2') ?>@else<?= $__env->yieldContent('collection{{$i}}person2')?>@endif">
+              </div>
+              <div class="form-group col-md-4">
+                  <label for="collection{{$i}}due">Due Date</label>
+                  <input type="date" class="form-control" id="collection{{$i}}due" name="collection{{$i}}due" value="@if(old('collection{{$i}}due'))<?= old('collection{{$i}}due') ?>@else<?= $__env->yieldContent('collection{{$i}}due')?>@endif">
+              </div>
+              <input type="hidden" id="collection{{$i}}name" name="collection{{$i}}name" value="90" readonly />
+              <?php $i++; ?>
+          </div>
+        </br>
+        <div style="margin-left: 40px" class="row">
+          <div class="form-group col-md-4">
+            <button type="button" class="btn btn-danger btn_remove" id="removecollection">Remove Fields</button>
+          </div>
+        </div>
+      </br>
+      <h6 style="margin-left: 55px"><b>IFC</b></h6>
+        <div style="margin-left: 40px" class="row">
+            <div class="form-group col-md-4">
+                <label for="collection{{$i}}person1">Engineer/Person 1</label>
+              <input type="text" class="form-control" name="collection{{$i}}person1" value="@if(old('collection{{$i}}person1'))<?= old('collection{{$i}}person1') ?> @else<?= $__env->yieldContent('collection{{$i}}person1')?>@endif">
+            </div>
+            <div class="form-group col-md-4">
+            <label for="collection{{$i}}person2">Drafter/Person 2</label>
+                <input type="text" class="form-control" id="collection{{$i}}person2" name="collection{{$i}}person2" value="@if(old('collection{{$i}}person2'))<?= old('collection{{$i}}person2') ?>@else<?= $__env->yieldContent('collection{{$i}}person2')?>@endif">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="collection{{$i}}due">Due Date</label>
+            <input type="date" class="form-control" id="collection{{$i}}due" name="collection{{$i}}due" value="@if(old('collection{{$i}}due'))<?= old('collection{{$i}}due') ?>@else<?= $__env->yieldContent('collection{{$i}}due')?>@endif">
+            </div>
+            <input type="hidden" id="collection{{$i}}name" name="collection{{$i}}name" value="IFC" readonly />
+        </div>
+        </br>
+        <div style="margin-left: 40px" class="row">
+          <div class="form-group col-md-4">
+            <button type="button" class="btn btn-danger btn_remove" id="removecollection">Remove Fields</button>
+          </div>
+        </div>
+        </br>
+        <div style="margin-left: 40px" class="row">
+          <div class="form-group col-md-4">
+            <button type="button" class="btn btn-warning" id="addcollection">Add New Field</button> 
+          </div>
+        </div>
+        <input type="hidden" id="collectionfields" name="collectionfields" value={{$i}} readonly />
+        </br>
+        </br>
+    @elseif($collectionfields > 0)
+    <?php $keycounter = 3; ?>
+    <?php for($i = 1; $i <= $collectionfields; $i++){?>
+      <?php $keys = array_keys($project['duedates']['collection']);?>
+      <h6 style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
+      <div style="margin-left: 40px" class="row">
+          <div class="form-group col-md-4">
+              <label for="collection{{$i}}person1">Engineer/Person 1</label>
+              <input type="text" class="form-control" id="collection{{$i}}person1" name="collection{{$i}}person1" value="@if(old('collection{{$i}}person1'))<?= old('collection{{$i}}person1') ?>@else<?= $project['duedates']['collection'][$keys[$keycounter]]['person1'] ?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="collection{{$i}}person2">Drafter/Person 2</label>
+            <input type="text" class="form-control" id="collection{{$i}}person2" name="collection{{$i}}person2" value="@if(old('collection{{$i}}person2'))<?= old('collection{{$i}}person2') ?>@else<?= $project['duedates']['collection'][$keys[$keycounter]]['person2'] ?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+              <label for="collection{{$i}}due">Due Date</label>
+              <input type="date" class="form-control" id="collection{{$i}}due" name="collection{{$i}}due" value="@if(old('collection{{$i}}due'))<?= old('collection{{$i}}due') ?>@else<?= $project['duedates']['collection'][$keys[$keycounter]]['due'] ?>@endif">
+          </div>
+          <input type="hidden" id="collection{{$i}}name" name="collection{{$i}}name" value={{$keys[$keycounter]}} readonly />
+          <?php $keycounter++; ?>
+      </div>
+      </br>
+      <div style="margin-left: 40px" class="row">
+        <div class="form-group col-md-4">
+          <button type="button" class="btn btn-danger btn_remove" id="removecollection">Remove Fields</button>
+        </div>
+      </div>
+      </br>
+    <?php } ?>
+    <input type="hidden" id="collectionfields" name="collectionfields" value={{$collectionfields}} readonly />
+    <div style="margin-left: 40px" class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-warning" id="addcollection">Add New Field</button> 
+      </div>
+    </div>
+    @endif
+
+
+
+  @if($transmissionfields >= 0 || !isset($project['duedates']['transmission']))
+    <h5><b> Transmission Line Drawing Package</b></h5>
+    <div class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-danger btn_remove" id="removetransmission">Remove All Transmission Fields</button>
+      </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-4">
+            <label for="transmissionperson1">Engineer/Person 1</label>
+            <input type="text" class="form-control" name="transmissionperson1" value="@if(old('transmissionperson1')){{ old('transmissionperson1') }} @else<?= $__env->yieldContent('transmissionperson1')?>@endif">
+        </div>
+        <div class="form-group col-md-4">
+            <label for="transmissionperson2">Drafter/Person 2</label>
+            <input type="text" class="form-control" id="transmissionperson2" name="transmissionperson2" value="@if(old('transmissionperson2'))<?= old('transmissionperson2') ?>@else<?= $__env->yieldContent('transmissionperson2')?>@endif">
+        </div>
+        <div class="form-group col-md-4">
+            <label for="transmissiondue">Due Date</label>
+            <input type="date" class="form-control" id="transmissiondue" name="transmissiondue" value="@if(old('transmissiondue'))<?= old('transmissiondue') ?>@else<?= $__env->yieldContent('transmissiondue')?>@endif">
+        </div>
+    </div>
+    </br>
+  @endif
+  @if(!isset($project['duedates']['transmission']))
+    <?php $i = 1; ?>
+    <h6 style="margin-left: 55px"><b>90</b></h6>
+        <div style="margin-left: 40px" class="row">
+            <div class="form-group col-md-4">
+            <label for="transmission{{$i}}person1">Engineer/Person 1</label>
+                <input type="text" class="form-control" name="transmission{{$i}}person1" value="@if(old('transmission{{$i}}person1'))<?= old('transmission{{$i}}person1') ?>@else<?= $__env->yieldContent('transmission{{$i}}person1')?>@endif">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="transmission{{$i}}person2">Drafter/Person 2</label>
+                <input type="text" class="form-control" id="transmission{{$i}}person2" name="transmission{{$i}}person2" value="@if(old('transmission{{$i}}person2'))<?= old('transmission{{$i}}person2') ?>@else<?= $__env->yieldContent('transmission{{$i}}person2')?>@endif">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="transmission{{$i}}due">Due Date</label>
+                <input type="date" class="form-control" id="transmission{{$i}}due" name="transmission{{$i}}due" value="@if(old('transmission{{$i}}due'))<?= old('transmission{{$i}}due') ?>@else<?= $__env->yieldContent('transmission{{$i}}due')?>@endif">
+            </div>
+            <input type="hidden" id="transmission{{$i}}name" name="transmission{{$i}}name" value="90" readonly />
+            <?php $i++; ?>
+        </div>
+      </br>
+      <div style="margin-left: 40px" class="row">
+        <div class="form-group col-md-4">
+          <button type="button" class="btn btn-danger btn_remove" id="removetransmission">Remove Fields</button>
+        </div>
+      </div>
+    </br>
+    <h6 style="margin-left: 55px"><b>IFC</b></h6>
+      <div style="margin-left: 40px" class="row">
+          <div class="form-group col-md-4">
+              <label for="transmission{{$i}}person1">Engineer/Person 1</label>
+            <input type="text" class="form-control" name="transmission{{$i}}person1" value="@if(old('transmission{{$i}}person1'))<?= old('transmission{{$i}}person1') ?> @else<?= $__env->yieldContent('transmission{{$i}}person1')?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+          <label for="transmission{{$i}}person2">Drafter/Person 2</label>
+              <input type="text" class="form-control" id="transmission{{$i}}person2" name="transmission{{$i}}person2" value="@if(old('transmission{{$i}}person2'))<?= old('transmission{{$i}}person2') ?>@else<?= $__env->yieldContent('transmission{{$i}}person2')?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+              <label for="transmission{{$i}}due">Due Date</label>
+          <input type="date" class="form-control" id="transmission{{$i}}due" name="transmission{{$i}}due" value="@if(old('transmission{{$i}}due'))<?= old('transmission{{$i}}due') ?>@else<?= $__env->yieldContent('transmission{{$i}}due')?>@endif">
+          </div>
+          <input type="hidden" id="transmission{{$i}}name" name="transmission{{$i}}name" value="IFC" readonly />
+      </div>
+      </br>
+      <div style="margin-left: 40px" class="row">
+        <div class="form-group col-md-4">
+          <button type="button" class="btn btn-danger btn_remove" id="removetransmission">Remove Fields</button>
+        </div>
+      </div>
+      </br>
+      <div style="margin-left: 40px" class="row">
+        <div class="form-group col-md-4">
+          <button type="button" class="btn btn-warning" id="addtransmission">Add New Field</button> 
+        </div>
+      </div>
+      <input type="hidden" id="transmissionfields" name="transmissionfields" value={{$i}} readonly />
+      </br>
+      </br>
+  @elseif($transmissionfields > 0)
+  <?php $keycounter = 3; ?>
+  <?php for($i = 1; $i <= $transmissionfields; $i++){?>
+    <?php $keys = array_keys($project['duedates']['transmission']);?>
+    <h6 style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
+    <div style="margin-left: 40px" class="row">
+        <div class="form-group col-md-4">
+            <label for="transmission{{$i}}person1">Engineer/Person 1</label>
+            <input type="text" class="form-control" id="transmission{{$i}}person1" name="transmission{{$i}}person1" value="@if(old('transmission{{$i}}person1'))<?= old('transmission{{$i}}person1') ?>@else<?= $project['duedates']['transmission'][$keys[$keycounter]]['person1'] ?>@endif">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="transmission{{$i}}person2">Drafter/Person 2</label>
+          <input type="text" class="form-control" id="transmission{{$i}}person2" name="transmission{{$i}}person2" value="@if(old('transmission{{$i}}person2'))<?= old('transmission{{$i}}person2') ?>@else<?= $project['duedates']['transmission'][$keys[$keycounter]]['person2'] ?>@endif">
+        </div>
+        <div class="form-group col-md-4">
+            <label for="transmission{{$i}}due">Due Date</label>
+            <input type="date" class="form-control" id="transmission{{$i}}due" name="transmission{{$i}}due" value="@if(old('transmission{{$i}}due'))<?= old('transmission{{$i}}due') ?>@else<?= $project['duedates']['transmission'][$keys[$keycounter]]['due'] ?>@endif">
+        </div>
+        <input type="hidden" id="transmission{{$i}}name" name="transmission{{$i}}name" value={{$keys[$keycounter]}} readonly />
+        <?php $keycounter++; ?>
+    </div>
+    </br>
+    <div style="margin-left: 40px" class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-danger btn_remove" id="removestudies">Remove Fields</button>
+      </div>
+    </div>
+    </br>
+  <?php } ?>
+  <input type="hidden" id="transmissionfields" name="transmissionfields" value={{$transmissionfields}} readonly />
+  <div style="margin-left: 40px" class="row">
+    <div class="form-group col-md-4">
+      <button type="button" class="btn btn-warning" id="addtransmission">Add New Field</button> 
+    </div>
+  </div>
+  @endif
+
+
+  @if($scadafields >= 0 || !isset($project['duedates']['scada']))
+    <h5><b> SCADA </b></h5>
+    <div class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-danger btn_remove" id="removescada">Remove All SCADA Fields</button>
+      </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-4">
+            <label for="scadaperson1">Engineer/Person 1</label>
+            <input type="text" class="form-control" name="scadaperson1" value="@if(old('scadaperson1')){{ old('scadaperson1') }} @else<?= $__env->yieldContent('scadaperson1')?>@endif">
         </div>
         <div class="form-group col-md-4">
             <label for="scadaperson2">Drafter/Person 2</label>
@@ -196,73 +539,205 @@
             <label for="scadadue">Due Date</label>
             <input type="date" class="form-control" id="scadadue" name="scadadue" value="@if(old('scadadue'))<?= old('scadadue') ?>@else<?= $__env->yieldContent('scadadue')?>@endif">
         </div>
-     </div>
-  </br>
-  </br>
-    <h5><b>Reactive Study</b></h5>
+    </div>
+    <?php $i = 1; ?>
+    <div style="margin-left: 40px" class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-warning" id="addscada">Add New Field</button> 
+      </div>
+      <input type="hidden" id="scadafields" name="scadafields" value={{$i}} readonly />
+    </div>
+    </br>
+    </br>
+  @endif
+  @if($scadafields > 0)
+  <?php $keycounter = 3; ?>
+  <?php for($i = 1; $i <= $scadafields; $i++){?>
+    <?php $keys = array_keys($project['duedates']['scada']);?>
+    <h6 style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
+    <div style="margin-left: 40px" class="row">
+        <div class="form-group col-md-4">
+            <label for="scada{{$i}}person1">Engineer/Person 1</label>
+            <input type="text" class="form-control" id="scada{{$i}}person1" name="scada{{$i}}person1" value="@if(old('scada{{$i}}person1'))<?= old('scada{{$i}}person1') ?>@else<?= $project['duedates']['scada'][$keys[$keycounter]]['person1'] ?>@endif">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="scada{{$i}}person2">Drafter/Person 2</label>
+          <input type="text" class="form-control" id="scada{{$i}}person2" name="scada{{$i}}person2" value="@if(old('scada{{$i}}person2'))<?= old('scada{{$i}}person2') ?>@else<?= $project['duedates']['scada'][$keys[$keycounter]]['person2'] ?>@endif">
+        </div>
+        <div class="form-group col-md-4">
+            <label for="scada{{$i}}due">Due Date</label>
+            <input type="date" class="form-control" id="scada{{$i}}due" name="scada{{$i}}due" value="@if(old('scada{{$i}}due'))<?= old('scada{{$i}}due') ?>@else<?= $project['duedates']['scada'][$keys[$keycounter]]['due'] ?>@endif">
+        </div>
+        <input type="hidden" id="scada{{$i}}name" name="scada{{$i}}name" value={{$keys[$keycounter]}} readonly />
+        <?php $keycounter++; ?>
+    </div>
+    </br>
+    <div style="margin-left: 40px" class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-danger btn_remove" id="removescada">Remove Fields</button>
+      </div>
+    </div>
+    </br>
+  <?php } ?>
+  <input type="hidden" id="scadafields" name="scadafields" value={{$scadafields}} readonly />
+  <div style="margin-left: 40px" class="row">
+    <div class="form-group col-md-4">
+      <button type="button" class="btn btn-warning" id="addscada">Add New Field</button> 
+    </div>
+  </div>
+  @endif
+
+  <!-- Studies Starts -->
+
+  @if($totalstudies >= 0 || !isset($project['duedates']['studies']))
+    <h5><b>Studies</b></h5>
     <div class="row">
-        <div class="form-group col-md-4">
-            <label for="reactiveperson1">Engineer/Person 1</label>
-            <input type="text" class="form-control" id="reactiveperson1" name="reactiveperson1" value="@if(old('reactiveperson1'))<?= old('reactiveperson1') ?>@else<?= $__env->yieldContent('reactiveperson1')?>@endif">
-        </div>
-        <div class="form-group col-md-4">
-            <label for="reactivedue">Due Date</label>
-            <input type="date" class="form-control" id="reactivedue" name="reactivedue" value="@if(old('reactivedue'))<?= old('reactivedue') ?>@else<?= $__env->yieldContent('reactivedue')?>@endif">
-        </div>
-     </div>
-    </br>
-    </br>
-    <h5><b>Ampacity Study</b></h5>
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-danger btn_remove" id="removestudies">Remove All Studies</button>
+      </div>
+    </div>
+    <h6><b>All Studies</b></h6>
     <div class="row">
+      <div class="form-group col-md-4">
+          <label for="studiesperson1">Engineer/Person 1</label>
+          <input type="text" class="form-control" id="studiesperson1" name="studiesperson1" value="@if(old('studiesperson1'))<?= old('studiesperson1') ?>@else<?= $__env->yieldContent('studiesperson1')?>@endif">
+      </div>
+      <div class="form-group col-md-4">
+          <label for="studiesdue">Due Date</label>
+          <input type="date" class="form-control" id="studiesdue" name="studiesdue" value="@if(old('studiesdue'))<?= old('studiesdue') ?>@else<?= $__env->yieldContent('studiesdue')?>@endif">
+      </div>
+    </div>
+    </br>
+    </br>
+  @endif
+  @if(!isset($project['duedates']['studies']))
+    <?php $i = 1; ?>
+    <h6 style="margin-left: 55px"><b>Reactive Study</b></h6>
+    <div style="margin-left: 40px" class="row">
         <div class="form-group col-md-4">
-            <label for="ampacityperson1">Engineer/Person 1</label>
-            <input type="text" class="form-control" id="ampacityperson1" name="ampacityperson1" value="@if(old('ampacityperson1'))<?= old('ampacityperson1') ?>@else<?= $__env->yieldContent('ampacityperson1')?>@endif">
+            <label for="study{{$i}}person1">Engineer/Person 1</label>
+            <input type="text" class="form-control" id="study{{$i}}person1" name="study{{$i}}person1" value="@if(old('study{{$i}}person1'))<?= old('study{{$i}}person1') ?>@else<?= $__env->yieldContent('study{{$i}}person1')?>@endif">
         </div>
         <div class="form-group col-md-4">
-            <label for="ampacitydue">Due Date</label>
-            <input type="date" class="form-control" id="ampacitydue" name="ampacitydue" value="@if(old('ampacitydue'))<?= old('ampacitydue') ?>@else<?= $__env->yieldContent('ampacitydue')?>@endif">
+            <label for="study{{$i}}due">Due Date</label>
+            <input type="date" class="form-control" id="study{{$i}}due" name="study{{$i}}due" value="@if(old('study{{$i}}due'))<?= old('study{{$i}}due') ?>@else<?= $__env->yieldContent('study{{$i}}due')?>@endif">
         </div>
+        <input type="hidden" id="study{{$i}}name" name="study{{$i}}name" value="Reactive Study" readonly />
+        <?php $i++ ?>
      </div>
     </br>
+    <div style="margin-left: 40px" class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-danger btn_remove" id="removestudies">Remove Study</button>
+      </div>
+    </div>
     </br>
-    <h5><b>Arc Flash Study</b></h5>
-    <div class="row">
+
+    <h6 style="margin-left: 55px"><b>Ampacity Study</b></h6>
+    <div style="margin-left: 40px" class="row">
         <div class="form-group col-md-4">
-            <label for="arcflashperson1">Engineer/Person 1</label>
-            <input type="text" class="form-control" id="arcflashperson1" name="arcflashperson1" value="@if(old('arcflashperson1'))<?= old('arcflashperson1') ?>@else<?= $__env->yieldContent('arcflashperson1')?>@endif">
+            <label for="study{{$i}}person1">Engineer/Person 1</label>
+            <input type="text" class="form-control" id="study{{$i}}person1" name="study{{$i}}person1" value="@if(old('study{{$i}}person1'))<?= old('study{{$i}}person1') ?>@else<?= $__env->yieldContent('study{{$i}}person1')?>@endif">
         </div>
         <div class="form-group col-md-4">
-            <label for="arcflashdue">Due Date</label>
-            <input type="date" class="form-control" id="arcflashdue" name="arcflashdue" value="@if(old('arcflashdue'))<?= old('arcflashdue') ?>@else<?= $__env->yieldContent('arcflashdue')?>@endif">
+            <label for="study{{$i}}due">Due Date</label>
+            <input type="date" class="form-control" id="study{{$i}}due" name="study{{$i}}due" value="@if(old('study{{$i}}due'))<?= old('study{{$i}}due') ?>@else<?= $__env->yieldContent('study{{$i}}due')?>@endif">
         </div>
+        <input type="hidden" id="study{{$i}}name" name="study{{$i}}name" value="Ampacity Study" readonly />
+        <?php $i++ ?>
      </div>
     </br>
+    <div style="margin-left: 40px" class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-danger btn_remove" id="removestudies">Remove Study</button>
+      </div>
+    </div>
     </br>
-    <h5><b>Relay and Coordination Study</b></h5>
-    <div class="row">
+
+    <h6 style="margin-left: 55px"><b>Load Flow Study</b></h6>
+    <div style="margin-left: 40px" class="row">
         <div class="form-group col-md-4">
-            <label for="relayperson1">Engineer/Person 1</label>
-            <input type="text" class="form-control" id="relayperson1" name="relayperson1" value="@if(old('relayperson1'))<?= old('relayperson1') ?>@else<?= $__env->yieldContent('relayperson1')?>@endif">
+            <label for="study{{$i}}person1">Engineer/Person 1</label>
+            <input type="text" class="form-control" id="study{{$i}}person1" name="study{{$i}}person1" value="@if(old('study{{$i}}person1'))<?= old('study{{$i}}person1') ?>@else<?= $__env->yieldContent('study{{$i}}person1')?>@endif">
         </div>
         <div class="form-group col-md-4">
-            <label for="relaydue">Due Date</label>
-            <input type="date" class="form-control" id="relaydue" name="relaydue" value="@if(old('relaydue'))<?= old('relaydue') ?>@else<?= $__env->yieldContent('relaydue')?>@endif">
+            <label for="study{{$i}}due">Due Date</label>
+            <input type="date" class="form-control" id="study{{$i}}due" name="study{{$i}}due" value="@if(old('study{{$i}}due'))<?= old('study{{$i}}due') ?>@else<?= $__env->yieldContent('study{{$i}}due')?>@endif">
         </div>
+        <input type="hidden" id="study{{$i}}name" name="study{{$i}}name" value="Load Flow Study" readonly />
+        <?php $i++ ?>
      </div>
     </br>
+    <div style="margin-left: 40px" class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-danger btn_remove" id="removestudy">Remove Study</button>
+      </div>
+    </div>
     </br>
-    <h5><b>All Others Study</b></h5>
-    <div class="row">
+
+    <h6 style="margin-left: 55px"><b>Relay and Coordination Study</b></h6>
+    <div style="margin-left: 40px" class="row">
         <div class="form-group col-md-4">
-            <label for="allperson1">Engineer/Person 1</label>
-            <input type="text" class="form-control" id="allperson1" name="allperson1" value="@if(old('allperson1'))<?= old('allperson1') ?>@else<?= $__env->yieldContent('allperson1')?>@endif">
+            <label for="study{{$i}}person1">Engineer/Person 1</label>
+            <input type="text" class="form-control" id="study{{$i}}person1" name="study{{$i}}person1" value="@if(old('study{{$i}}person1'))<?= old('study{{$i}}person1') ?>@else<?= $__env->yieldContent('study{{$i}}person1')?>@endif">
         </div>
         <div class="form-group col-md-4">
-            <label for="alldue">Due Date</label>
-            <input type="date" class="form-control" id="alldue" name="alldue" value="@if(old('alldue'))<?= old('alldue') ?>@else<?= $__env->yieldContent('alldue')?>@endif">
+            <label for="study{{$i}}due">Due Date</label>
+            <input type="date" class="form-control" id="study{{$i}}due" name="study{{$i}}due" value="@if(old('study{{$i}}due'))<?= old('study{{$i}}due') ?>@else<?= $__env->yieldContent('study{{$i}}due')?>@endif">
         </div>
+        <input type="hidden" id="study{{$i}}name" name="study{{$i}}name" value="Relay and Coordination Study" readonly />
      </div>
     </br>
+     <div style="margin-left: 40px" class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-danger btn_remove" id="removestudies">Remove Study</button>
+      </div>
+    </div>
+    </br>
+     <div style="margin-left: 40px" class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-warning" id="addstudy">Add New Study</button> 
+      </div>
+    </div>
+    <input type="hidden" id="totalstudies" name="totalstudies" value={{$i}} readonly />
+    </br>
+    </br>
+
+  @elseif ($totalstudies > 0)
+    <?php $keycounter = 2; ?>
+    <?php for($i = 1; $i <= $totalstudies; $i++){?>
+      <?php $keys = array_keys($project['duedates']['studies']);?>
+      <h6 style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
+      <div style="margin-left: 40px" class="row">
+          <div class="form-group col-md-4">
+              <label for="study{{$i}}person1">Engineer/Person 1</label>
+              <input type="text" class="form-control" id="study{{$i}}person1" name="study{{$i}}person1" value="@if(old('study{{$i}}person1'))<?= old('study{{$i}}person1') ?>@else<?= $project['duedates']['studies'][$keys[$keycounter]]['person1'] ?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+              <label for="study{{$i}}due">Due Date</label>
+              <input type="date" class="form-control" id="study{{$i}}due" name="study{{$i}}due" value="@if(old('study{{$i}}due'))<?= old('study{{$i}}due') ?>@else<?= $project['duedates']['studies'][$keys[$keycounter]]['due'] ?>@endif">
+          </div>
+          <input type="hidden" id="study{{$i}}name" name="study{{$i}}name" value={{$keys[$keycounter]}} readonly />
+          <?php $keycounter++; ?>
+      </div>
+      </br>
+      <div style="margin-left: 40px" class="row">
+        <div class="form-group col-md-4">
+          <button type="button" class="btn btn-danger btn_remove" id="removestudies">Remove Study</button>
+        </div>
+      </div>
+      </br>
+    <?php } ?>
+    <input type="hidden" id="totalstudies" name="totalstudies" value={{$totalstudies}} readonly />
+    <div style="margin-left: 40px" class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-warning" id="addstudy">Add New Study</button> 
+      </div>
+    </div>
+  @endif
+
+
+
     <div id="dynamic_field">
     <?php
     $c = 1;
@@ -300,6 +775,7 @@
 
     </div>
     </br>
+    <h5><b>Miscellaneous Add Form</b></h5>
     <div class="row">
       <div class="form-group col-md-4">
         <button type="button" class="btn btn-warning" id="addform">Add Form</button>

@@ -41,20 +41,12 @@
       <th>Action</th>
       <th>Project Name</th>
       <th>Date of Energization</th>
-      <th>Physical Drawing Package 90%</th>
-      <th>Physical Drawing Package IFC</th>
-      <th>Wiring Drawing Package 90%</th>
-      <th>Wiring Drawing Package IFC</th>
-      <th>Collection Drawing Package 90%</th>
-      <th>Collection Drawing Package IFC</th>
-      <th>Transmission Drawing Package 90%</th>
-      <th>Transmission Drawing Package IFC</th>
+      <th>Physical Drawing Package</th>
+      <th>Wiring and Controls Drawing Package</th>
+      <th>Collection Drawing Package</th>
+      <th>Transmission Drawing Package</th>
       <th>Scada</th>
-      <th>Reactive Study</th>
-      <th>Ampacity Study</th>
-      <th>Arc Flash Study</th>
-      <th>Relay and Coordination Study</th>
-      <th>All Others Study</th>
+      <th>Studies</th>
     </tr>
   </thead>
 @stop
@@ -65,20 +57,24 @@
         <td><a href="{{action('ProjectController@manage_project', $project['_id'])}}" class="btn btn-warning">Manage Project</a></td>
         <td>{{$project['projectname']}}</td>
         <td>{{$project['dateenergization']}}</td>
-        <td>{{$project['duedates']['physical90']['due']}}</td>
-        <td>{{$project['duedates']['physicalifc']['due']}}</td>
-        <td>{{$project['duedates']['wiring90']['due']}}</td>
-        <td>{{$project['duedates']['wiringifc']['due']}}</td>
-        <td>{{$project['duedates']['collection90']['due']}}</td>
-        <td>{{$project['duedates']['collectionifc']['due']}}</td>
-        <td>{{$project['duedates']['transmission90']['due']}}</td>
-        <td>{{$project['duedates']['transmissionifc']['due']}}</td>
+        @if(isset($project['duedates']['physical']))
+        <td>{{$project['duedates']['physical']['due']}}</td>
+        @endif
+        @if(isset($project['duedates']['control']))
+        <td>{{$project['duedates']['control']['due']}}</td>
+        @endif
+        @if(isset($project['duedates']['collection']))
+        <td>{{$project['duedates']['collection']['due']}}</td>
+        @endif
+        @if(isset($project['duedates']['transmission']))
+        <td>{{$project['duedates']['transmission']['due']}}</td>
+        @endif
+        @if(isset($project['duedates']['scada']))
         <td>{{$project['duedates']['scada']['due']}}</td>
-        <td>{{$project['duedates']['reactive']['due']}}</td>
-        <td>{{$project['duedates']['ampacity']['due']}}</td>
-        <td>{{$project['duedates']['arcflash']['due']}}</td>
-        <td>{{$project['duedates']['relay']['due']}}</td>
-        <td>{{$project['duedates']['allothers']['due']}}</td>
+        @endif
+        @if(isset($project['duedates']['studies']))
+        <td>{{$project['duedates']['studies']['due']}}</td>
+        @endif
     </tr>
 @endforeach
 @stop
