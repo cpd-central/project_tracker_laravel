@@ -1127,7 +1127,7 @@ class ProjectController extends Controller
    */ 
   public function planner(Request $request){
     $projects = Project::all()->where('projectstatus', 'Won');
-    //$projects = $this->sort_by_closest_date($projects);
+    $projects = $this->sort_by_closest_date($projects);
     $search = $request['search'];
     $term = $request['sort'];
     $invert = $request['invert']; 
@@ -1148,7 +1148,7 @@ class ProjectController extends Controller
         $name = $project['projectname'];
         $duedates = $project['duedates'];
         if(isset($duedates)){
-          $dates = [$project['dateenergization'], $duedates['physical90']['due'], $duedates['physicalifc']['due'], $duedates['wiring90']['due'], $duedates['wiringifc']['due'], $duedates['collection90']['due'], $duedates['collectionifc']['due'], $duedates['transmission90']['due'], $duedates['transmissionifc']['due'], $duedates['scada']['due'], $duedates['reactive']['due'], $duedates['ampacity']['due'], $duedates['arcflash']['due'], $duedates['relay']['due'], $duedates['allothers']['due']];
+          $dates = [$project['dateenergization'], $duedates['physical']['due'], $duedates['control']['due'], $duedates['collection']['due'], $duedates['transmission']['due'], $duedates['scada']['due'], $duedates['studies']['due']];
           sort($dates);
           foreach($dates as $date){
             if($this->dateToStr($date, null) > $today){
@@ -1312,6 +1312,7 @@ class ProjectController extends Controller
    */
   protected function validate_dates($req, $project)
   {
+    /*
     $today = date("Y-m-d");
       $this->validate($req, [
         'physical90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
@@ -1339,7 +1340,7 @@ class ProjectController extends Controller
       if ($numfields == null || $numfields == ''){
         $numfields = sizeof($keys);
       }
-      //dd($numfields);
+      dd($numfields);
 
       for($i = 1; $i <= $numfields; $i++){
         $namefield = $req->get('row'.$i.'name');
@@ -1349,6 +1350,26 @@ class ProjectController extends Controller
         $this->validate($req, [
           'row'.$i.'due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
         ]);
+    }
+    */
+    if (isset($project['duedates']['physical'])){
+      $physical = $project['duedates']['physical'];
+    }
+    else{
+      $physical = array();
+    }
+    $keys = array_keys($physical);
+    $numfields = $req->get('physicalfields');
+    dd($numfields);
+
+    for($i = 1; $i <= $numfields; $i++){
+      $namefield = $req->get('row'.$i.'name');
+      if (!isset($namefield)){
+        continue;
+      }
+      $this->validate($req, [
+        'row'.$i.'due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
+      ]);
     }
   }
 
@@ -1739,7 +1760,7 @@ class ProjectController extends Controller
   public function sticky_note(){
     $projects = Project::all()->where('projectstatus', 'Won');
     $projects = $this->sort_by_closest_date($projects);
-    $project = $projects[0];
+    //$project = $projects[0];
     $json = [];
     $counter = 0;
     foreach($projects as $project){
@@ -1781,6 +1802,7 @@ class ProjectController extends Controller
       $i = 0;
       foreach($duedates as $duedate){
         // Sets the additionalfields as a JSON format
+        /*
         if($i == 14){
           $addeddates = $duedates['additionalfields'];
           $addedcount = 14;
@@ -1825,6 +1847,7 @@ class ProjectController extends Controller
           }
         break; 
         }
+        */
         //Sets all other fields as a JSON format
         $pname = $keys[$i];
         $id = 'id_'.$i.$project['projectname'];
