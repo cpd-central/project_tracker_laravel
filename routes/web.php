@@ -18,6 +18,9 @@ Route::get('/', function () {
 Route::get('/newproject', 'ProjectController@new_project')->name('pages.newproject')->middleware('verified', 'role');
 Route::post('/newproject', 'ProjectController@create')->middleware('verified');
 
+Route::get('/copyproject/{id}', 'ProjectController@copy_project')->name('pages.copyproject')->middleware('verified', 'role');
+Route::post('/copyproject/{id}', 'ProjectController@create')->middleware('verified');
+
 Route::get('/projectindex', 'ProjectController@index')->name('pages.projectindex')->middleware('verified', 'role');
 Route::post('/projectindex', 'ProjectController@search');
 
