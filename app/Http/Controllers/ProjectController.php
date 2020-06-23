@@ -1536,8 +1536,8 @@ class ProjectController extends Controller
    */
   protected function validate_dates($req, $project)
   {
-    /*
-    $today = date("Y-m-d");
+    
+    $today = date("Y-m-d"); /*
       $this->validate($req, [
         'physical90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
         'physicalifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
