@@ -58,7 +58,7 @@ class HomeController extends Controller
     /**
      * Pulls all users for the Account Directory page.
      *
-     * @return view - returns the roles/'Account Directory' page.
+     * @return view - returns the Account Directory page.
      */
     public function account_directory()
     {
@@ -120,7 +120,7 @@ class HomeController extends Controller
      * Updates the user's name and email based on $id.
      * @param $id - the id of the user to be updated.
      * @param Request $request
-     * @return redirect - redirects the admin to the roles/'Account Directory' page with a success message.
+     * @return redirect - redirects the admin to the Account Directory page with a success message.
      */
     public function update_account(Request $request, $id){
         $user = User::find($id);

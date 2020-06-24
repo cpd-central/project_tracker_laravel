@@ -54,7 +54,7 @@ Route::get('/timesheet', 'TimesheetController@check')->name('pages.timesheet')->
 Route::post('/timesheet', 'TimesheetController@timesheetSave')->name('pages.timesheetSave')->middleware('verified');
 
 Route::get('/accountdirectory', 'HomeController@account_directory')->name('pages.accountdirectory')->middleware('verified', 'role');
-Route::get('/accountdirectory/{id}', 'HomeController@activation')->name('pages.rolesActivation')->middleware('verified');
+Route::get('/accountdirectory/{id}', 'HomeController@activation')->name('pages.activation')->middleware('verified');
 
 Route::get('/editaccount/{id}', 'HomeController@edit_account')->name('pages.editaccount')->middleware('verified', 'role');
 Route::post('/editaccount/{id}', 'HomeController@update_account')->middleware('verified');
