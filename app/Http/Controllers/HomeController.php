@@ -56,14 +56,14 @@ class HomeController extends Controller
     }
 
     /**
-     * Pulls all users for the roles/'Account Directory' page.
+     * Pulls all users for the Account Directory page.
      *
      * @return view - returns the roles/'Account Directory' page.
      */
-    public function edit_roles()
+    public function account_directory()
     {
         $users = User::all();
-        return view('pages.roles', compact('users'));
+        return view('pages.accountdirectory', compact('users'));
     }
 
     /**
@@ -88,7 +88,7 @@ class HomeController extends Controller
             }
         }
         $user->save();
-        return $this->edit_roles();
+        return $this->account_directory();
     }
 
     /**
@@ -131,6 +131,6 @@ class HomeController extends Controller
         $user->perhourdollar = $this->intCheck($request->get('perhourdollar'));
         $user->role = $request->get('role');
         $user->save();
-        return redirect()->route('pages.roles')->with('success', 'Success! User has been successfully updated.');
+        return redirect()->route('pages.accountdirectory')->with('success', 'Success! User has been successfully updated.');
     }
 }
