@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 
+
 <head>
     @include('includes.navbar')
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
@@ -19,32 +20,48 @@
     </style>
 </head>
 <body>
-<div id="gantt_here" style='width:100%; height:100%;'></div>
+<div id="gantt_here" style='width:100%; height:75%;'></div>
 
 <script type="text/javascript">
+
     gantt.config.readonly = true;
 
-/*
+
     gantt.config.layout = {
     css: "gantt_container",
-    rows: [
-    {
-    cols: [
-        {view: "grid", id: "grid", scrollX: "scrollHor", scrollY: "scrollVer"},
-        {view: "timeline", id: "timeline", scrollX: "scrollHor", scrollY: "scrollVer"},
-        {view: "scrollbar", scroll: "y", id: "scrollVer"}
+    rows:[
+        {
+           cols: [
+            {
+              // the default grid view  
+              view: "grid",  
+              scrollX:"scrollHor", 
+              scrollY:"scrollVer"
+            },
+            {
+              // the default timeline view
+              view: "timeline", 
+              scrollX:"scrollHor", 
+              scrollY:"scrollVer"
+            },
+            {
+              view: "scrollbar", 
+              id:"scrollVer"
+            }
+        ]},
+        {
+            view: "scrollbar", 
+            id:"scrollHor"
+        }
     ]
-    },
-    {view: "scrollbar", id: "scrollHor"}
-    ]
-    };
-    */
+}
 
     gantt.config.columns =  [
     {name:"text",       label:"Project name",  tree:true, width: 250 },
     {name:"end_date",   label:"End date",   align:"center", width: 75 },
     {name:"name_1",   label:"Employee 1",   align:"center", width: 100 },
     {name:"name_2",   label:"Employee 2",   align:"center", width: 100 },
+    {name:"add",        label:"",           width:30 }
     ];
     
     

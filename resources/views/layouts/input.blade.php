@@ -86,6 +86,7 @@
       @endif
       <h2><b>@yield('title')</b></h2>    
       <h4>@yield('h4proposal')</h4>
+      <td><a href="{{action('ProjectController@manage_project', $project['_id'])}}" class="btn btn-warning">Manage Due Dates</a></td>
       <div class="container">
       </div>
       <form method="post">

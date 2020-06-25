@@ -1,7 +1,8 @@
 @extends('layouts.manage')
-@section('page-title', 'Manage Project')
+
+@section('page-title', 'Manage '. $project['projectname'])
 @section('title', 'Manage Project Form')
-@section('h4proposal', 'Edit Project Plans')
+@section('h4proposal', 'Edit Project Due Dates')
 @section('projectname', $project['projectname'])
 @section('projectmanager')
 <?php $projectmanagers = "";
@@ -48,6 +49,51 @@
       @section('scada'.$i.'person1', $project['duedates']['scada'][$key]['person1'])
       @section('scada'.$i.'person2', $project['duedates']['scada'][$key]['person2'])
       @section('scada'.$i.'due', $project['duedates']['scada'][$key]['due'])
+      <?php $i++; ?>
+    <?php } ?>
+  @endforeach
+@endif
+@if(isset($project['duedates']['rtac']))
+  @section('rtacperson1', $project['duedates']['rtac']['person1'])
+  @section('rtacperson2', $project['duedates']['rtac']['person2'])
+  @section('rtacdue', $project['duedates']['rtac']['due'])
+  <?php $keys = array_keys($project['duedates']['rtac']); ?>
+  <?php $i = 1; ?>
+  @foreach($keys as $key)
+    <?php if ($key != "person1" && $key != "person2" && $key != "due"){ ?>
+      @section('rtac'.$i.'person1', $project['duedates']['rtac'][$key]['person1'])
+      @section('rtac'.$i.'person2', $project['duedates']['rtac'][$key]['person2'])
+      @section('rtac'.$i.'due', $project['duedates']['rtac'][$key]['due'])
+      <?php $i++; ?>
+    <?php } ?>
+  @endforeach
+@endif
+@if(isset($project['duedates']['communication']))
+  @section('communicationperson1', $project['duedates']['communication']['person1'])
+  @section('communicationperson2', $project['duedates']['communication']['person2'])
+  @section('communicationdue', $project['duedates']['communication']['due'])
+  <?php $keys = array_keys($project['duedates']['communication']); ?>
+  <?php $i = 1; ?>
+  @foreach($keys as $key)
+    <?php if ($key != "person1" && $key != "person2" && $key != "due"){ ?>
+      @section('communication'.$i.'person1', $project['duedates']['communication'][$key]['person1'])
+      @section('communication'.$i.'person2', $project['duedates']['communication'][$key]['person2'])
+      @section('communication'.$i.'due', $project['duedates']['communication'][$key]['due'])
+      <?php $i++; ?>
+    <?php } ?>
+  @endforeach
+@endif
+@if(isset($project['duedates']['fieldwork']))
+  @section('fieldworkperson1', $project['duedates']['fieldwork']['person1'])
+  @section('fieldworkperson2', $project['duedates']['fieldwork']['person2'])
+  @section('fieldworkdue', $project['duedates']['fieldwork']['due'])
+  <?php $keys = array_keys($project['duedates']['fieldwork']); ?>
+  <?php $i = 1; ?>
+  @foreach($keys as $key)
+    <?php if ($key != "person1" && $key != "person2" && $key != "due"){ ?>
+      @section('fieldwork'.$i.'person1', $project['duedates']['fieldwork'][$key]['person1'])
+      @section('fieldwork'.$i.'person2', $project['duedates']['fieldwork'][$key]['person2'])
+      @section('fieldwork'.$i.'due', $project['duedates']['fieldwork'][$key]['due'])
       <?php $i++; ?>
     <?php } ?>
   @endforeach
