@@ -1385,17 +1385,8 @@ class ProjectController extends Controller
           if (isset($duedates['transmission'])){
             array_push($dates, $duedates['transmission']['due']);
           }
-          if (isset($duedates['communication'])){
-            array_push($dates, $duedates['communication']['due']);
-          }
-          if (isset($duedates['fieldwork'])){
-            array_push($dates, $duedates['fieldwork']['due']);
-          }
           if (isset($duedates['scada'])){
             array_push($dates, $duedates['scada']['due']);
-          }
-          if (isset($duedates['rtac'])){
-            array_push($dates, $duedates['rtac']['due']);
           }
           if (isset($duedates['studies'])){
             array_push($dates, $duedates['studies']['due']);
@@ -1483,8 +1474,6 @@ class ProjectController extends Controller
       $controlfields = 0;
       $physicalfields = 0;
       $scadafields = 0;
-      $rtacfields = 0;
-      $fieldworkfields = 0;
       $communicationfields = 0;
     }
     else{
@@ -1556,62 +1545,30 @@ class ProjectController extends Controller
       }
     if (isset($duedates['scada'])){
       $scadafields = 0;
+      $communicationfields = 0;
       $scada = $duedates['scada'];
       $keys = array_keys($scada);
       foreach($keys as $key){
         if ($key != "person1" && $key != "person2" && $key != "due"){
           $scadafields++;
+          if($key == 'Communication'){
+            $comkeys = array_keys($scada['Communication']);
+            foreach($comkeys as $comkey){
+              if ($comkey != "person1" && $comkey != "person2" && $comkey != "due"){
+                $communicationfields++;
+              }
+            }
+          }
         }
       }
     }
     else{
       $scadafields = null;
-    }
-
-    if (isset($duedates['rtac'])){
-      $rtacfields = 0;
-      $rtac = $duedates['rtac'];
-      $keys = array_keys($rtac);
-      foreach($keys as $key){
-        if ($key != "person1" && $key != "person2" && $key != "due"){
-          $rtacfields++;
-        }
-      }
-    }
-    else{
-      $rtacfields = null;
-    }
-
-    if (isset($duedates['fieldwork'])){
-      $fieldworkfields = 0;
-      $fieldwork = $duedates['fieldwork'];
-      $keys = array_keys($fieldwork);
-      foreach($keys as $key){
-        if ($key != "person1" && $key != "person2" && $key != "due"){
-          $fieldworkfields++;
-        }
-      }
-    }
-    else{
-      $fieldworkfields = null;
-    }
-
-    if (isset($duedates['communication'])){
-      $communicationfields = 0;
-      $communication = $duedates['communication'];
-      $keys = array_keys($communication);
-      foreach($keys as $key){
-        if ($key != "person1" && $key != "person2" && $key != "due"){
-          $communicationfields++;
-        }
-      }
-    }
-    else{
       $communicationfields = null;
     }
   }
     $project = $this->format_due_dates($project);
-    return view('pages.manage_project', compact('project', 'totalstudies', 'transmissionfields', 'collectionfields', 'controlfields', 'physicalfields', 'scadafields', 'communicationfields', 'rtacfields', 'fieldworkfields'));
+    return view('pages.manage_project', compact('project', 'totalstudies', 'transmissionfields', 'collectionfields', 'controlfields', 'physicalfields', 'scadafields', 'communicationfields'));
   }
 
   /**
@@ -1757,41 +1714,6 @@ class ProjectController extends Controller
         $duedates['transmission'] = $transmissions;
       }
 
-      if (!is_null($req->get('communicationfields'))){
-        $communication = array();
-        $communication['person1'] = $req->get('communicationperson1');
-        $communication['person2'] = $req->get('communicationperson2');
-        $communication['due'] = $this->strToDate($req->get('communicationdue'),null);
-        for($i = 1; $i <= $req->get('communicationfields'); $i++){
-          $communicationname = $req->get('communication'.$i.'name');
-          if ($communicationname == null){
-            continue;
-          }
-          $communication[$communicationname] = array();
-          $communication[$communicationname]['person1'] = $req->get('communication'.$i.'person1');
-          $communication[$communicationname]['person2'] = $req->get('communication'.$i.'person2');
-          $communication[$communicationname]['due'] = $this->strToDate($req->get('communication'.$i.'due'), null);
-        }
-        $duedates['communication'] = $communication;
-      }
-
-      if (!is_null($req->get('fieldworkfields'))){
-        $fieldwork = array();
-        $fieldwork['person1'] = $req->get('fieldworkperson1');
-        $fieldwork['person2'] = $req->get('fieldworkperson2');
-        $fieldwork['due'] = $this->strToDate($req->get('fieldworkdue'),null);
-        for($i = 1; $i <= $req->get('fieldworkfields'); $i++){
-          $fieldworkname = $req->get('fieldwork'.$i.'name');
-          if ($fieldworkname == null){
-            continue;
-          }
-          $fieldwork[$fieldworkname] = array();
-          $fieldwork[$fieldworkname]['person1'] = $req->get('fieldwork'.$i.'person1');
-          $fieldwork[$fieldworkname]['person2'] = $req->get('fieldwork'.$i.'person2');
-          $fieldwork[$fieldworkname]['due'] = $this->strToDate($req->get('fieldwork'.$i.'due'), null);
-        }
-        $duedates['fieldwork'] = $fieldwork;
-      }
 
       if (!is_null($req->get('scadafields'))){
         $scada = array();
@@ -1807,26 +1729,20 @@ class ProjectController extends Controller
           $scada[$scadaname]['person1'] = $req->get('scada'.$i.'person1');
           $scada[$scadaname]['person2'] = $req->get('scada'.$i.'person2');
           $scada[$scadaname]['due'] = $this->strToDate($req->get('scada'.$i.'due'), null);
+          if($scadaname == 'Communication'){
+            for($j = 1; $j <= $req->get('communicationfields'); $j++){
+              $communicationname = $req->get('communication'.$j.'name');
+              if ($communicationname == null){
+                continue;
+              }
+              $scada[$scadaname][$communicationname] = array();
+              $scada[$scadaname][$communicationname]['person1'] = $req->get('communication'.$j.'person1');
+              $scada[$scadaname][$communicationname]['person2'] = $req->get('communication'.$j.'person2');
+              $scada[$scadaname][$communicationname]['due'] = $this->strToDate($req->get('communication'.$j.'due'), null);
+            }
+          }
         }
         $duedates['scada'] = $scada;
-      }
-
-      if (!is_null($req->get('rtacfields'))){
-        $rtac = array();
-        $rtac['person1'] = $req->get('rtacperson1');
-        $rtac['person2'] = $req->get('rtacperson2');
-        $rtac['due'] = $this->strToDate($req->get('rtacdue'),null);
-        for($i = 1; $i <= $req->get('rtacfields'); $i++){
-          $rtacname = $req->get('rtac'.$i.'name');
-          if ($rtacname == null){
-            continue;
-          }
-          $rtac[$rtacname] = array();
-          $rtac[$rtacname]['person1'] = $req->get('rtac'.$i.'person1');
-          $rtac[$rtacname]['person2'] = $req->get('rtac'.$i.'person2');
-          $rtac[$rtacname]['due'] = $this->strToDate($req->get('rtac'.$i.'due'), null);
-        }
-        $duedates['rtac'] = $rtac;
       }
 
       if (!is_null($req->get('total'))){
@@ -1941,36 +1857,14 @@ class ProjectController extends Controller
         foreach($keys as $key){
           if ($key != "person1" && $key != "person2" && $key != "due"){
             $duedates['scada'][$key]['due'] = $this->dateToStr($project['duedates']['scada'][$key]['due']);
-          }
-        }
-      }
-
-      if (isset($duedates['rtac'])){
-        $duedates['rtac']['due'] = $this->dateToStr($project['duedates']['rtac']['due']);
-        $keys = array_keys($duedates['rtac']);
-        foreach($keys as $key){
-          if ($key != "person1" && $key != "person2" && $key != "due"){
-            $duedates['rtac'][$key]['due'] = $this->dateToStr($project['duedates']['rtac'][$key]['due']);
-          }
-        }
-      }
-
-      if (isset($duedates['communication'])){
-        $duedates['communication']['due'] = $this->dateToStr($project['duedates']['communication']['due']);
-        $keys = array_keys($duedates['communication']);
-        foreach($keys as $key){
-          if ($key != "person1" && $key != "person2" && $key != "due"){
-            $duedates['communication'][$key]['due'] = $this->dateToStr($project['duedates']['communication'][$key]['due']);
-          }
-        }
-      }
-
-      if (isset($duedates['fieldwork'])){
-        $duedates['fieldwork']['due'] = $this->dateToStr($project['duedates']['fieldwork']['due']);
-        $keys = array_keys($duedates['fieldwork']);
-        foreach($keys as $key){
-          if ($key != "person1" && $key != "person2" && $key != "due"){
-            $duedates['fieldwork'][$key]['due'] = $this->dateToStr($project['duedates']['fieldwork'][$key]['due']);
+            if ($key == 'Communication'){
+              $comkeys = array_keys($duedates['scada']['Communication']);
+              foreach($comkeys as $comkey){
+                if ($comkey != "person1" && $comkey != "person2" && $comkey != "due"){
+                  $duedates['scada']['Communication'][$comkey]['due'] = $this->dateToStr($project['duedates']['scada']['Communication'][$comkey]['due']);
+                }
+              }
+            }
           }
         }
       }

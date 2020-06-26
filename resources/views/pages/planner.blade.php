@@ -51,10 +51,7 @@
       <th>Wiring and Controls Drawing Package</th>
       <th>Collection Drawing Package</th>
       <th>Transmission Drawing Package</th>
-      <th>Communication Architecture Drawing</th>
-      <th>Field Work Dates</th>
       <th>Scada</th>
-      <th>RTAC/Networking Configuration File</th>
       <th>Studies</th>
     </tr>
   </thead>
@@ -87,23 +84,8 @@
           @else
           <td>None</td>
           @endif
-          @if(isset($project['duedates']['communication']))
-          <td>{{$project['duedates']['communication']['due']}}</td>
-          @else
-          <td>None</td>
-          @endif
-          @if(isset($project['duedates']['fieldwork']))
-          <td>{{$project['duedates']['fieldwork']['due']}}</td>
-          @else
-          <td>None</td>
-          @endif
           @if(isset($project['duedates']['scada']))
           <td>{{$project['duedates']['scada']['due']}}</td>
-          @else
-          <td>None</td>
-          @endif
-          @if(isset($project['duedates']['rtac']))
-          <td>{{$project['duedates']['rtac']['due']}}</td>
           @else
           <td>None</td>
           @endif

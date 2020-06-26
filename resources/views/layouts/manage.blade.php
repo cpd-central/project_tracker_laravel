@@ -508,121 +508,6 @@
   </div>
 
 
-  @if(!is_null($communicationfields) || !isset($project['duedates']))
-  <div id="communicationheading">
-    <h5><b> Communication Architecture Drawing</b></h5>
-    <div class="row">
-      <div>
-        <button type="button" class="btn btn-danger btn_remove" id="removecommunication">Remove All Communication Fields</button>
-        <button style="margin:10px;" type="button" class="btn btn-warning" id="addcommunication">Add New Communication Field</button> 
-      </div>
-    </br>
-    </div>
-    <div class="row">
-        <div class="form-group col-md-4">
-            <label for="communicationperson1">Engineer/Person 1</label>
-            <input type="text" class="form-control" name="communicationperson1" value="@if(old('communicationperson1')){{ old('communicationperson1') }} @else<?= $__env->yieldContent('communicationperson1')?>@endif">
-        </div>
-        <div class="form-group col-md-4">
-            <label for="communicationperson2">Drafter/Person 2</label>
-            <input type="text" class="form-control" id="communicationperson2" name="communicationperson2" value="@if(old('communicationperson2'))<?= old('communicationperson2') ?>@else<?= $__env->yieldContent('communicationperson2')?>@endif">
-        </div>
-        <div class="form-group col-md-4">
-            <label for="communicationdue">Due Date</label>
-            <input type="date" class="form-control" id="communicationdue" name="communicationdue" value="@if(old('communicationdue'))<?= old('communicationdue') ?>@else<?= $__env->yieldContent('communicationdue')?>@endif">
-        </div>
-      </br>
-    </div>
-  </div>
-@endif
-@if(!isset($project['duedates']))
-  <div id="communicationbody">
-    <?php $communicationfields = 1; ?>
-    <h6 id="communication{{$communicationfields}}title" style="margin-left: 55px"><b>90</b></h6>
-        <div id="communication{{$communicationfields}}row" style="margin-left: 40px" class="row">
-            <div class="form-group col-md-4">
-            <label for="communication{{$communicationfields}}person1">Engineer/Person 1</label>
-                <input type="text" class="form-control" name="communication{{$communicationfields}}person1" value="@if(old('communication{{$communicationfields}}person1'))<?= old('communication{{$communicationfields}}person1') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}person1')?>@endif">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="communication{{$communicationfields}}person2">Drafter/Person 2</label>
-                <input type="text" class="form-control" id="communication{{$communicationfields}}person2" name="communication{{$communicationfields}}person2" value="@if(old('communication{{$communicationfields}}person2'))<?= old('communication{{$communicationfields}}person2') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}person2')?>@endif">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="communication{{$communicationfields}}due">Due Date</label>
-                <input type="date" class="form-control" id="communication{{$communicationfields}}due" name="communication{{$communicationfields}}due" value="@if(old('communication{{$communicationfields}}due'))<?= old('communication{{$communicationfields}}due') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}due')?>@endif">
-            </div>
-            <input type="hidden" id="communication{{$communicationfields}}name" name="communication{{$communicationfields}}name" value="90" readonly />
-          </br>
-        </div>
-      <div style="margin-left: 40px" class="row">
-        <div class="form-group col-md-4">
-          <button type="button" class="btn btn-danger btn_remove" id="communication{{$communicationfields}}">Remove Communication Field</button>
-          <?php $communicationfields++; ?>
-        </div>
-      </br>
-      </div>
-    <h6 id="communication{{$communicationfields}}title" style="margin-left: 55px"><b>IFC</b></h6>
-      <div id="communication{{$communicationfields}}row" style="margin-left: 40px" class="row">
-          <div class="form-group col-md-4">
-              <label for="communication{{$communicationfields}}person1">Engineer/Person 1</label>
-            <input type="text" class="form-control" name="communication{{$communicationfields}}person1" value="@if(old('communication{{$communicationfields}}person1'))<?= old('communication{{$communicationfields}}person1') ?> @else<?= $__env->yieldContent('communication{{$communicationfields}}person1')?>@endif">
-          </div>
-          <div class="form-group col-md-4">
-          <label for="communication{{$communicationfields}}person2">Drafter/Person 2</label>
-              <input type="text" class="form-control" id="communication{{$communicationfields}}person2" name="communication{{$communicationfields}}person2" value="@if(old('communication{{$communicationfields}}person2'))<?= old('communication{{$communicationfields}}person2') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}person2')?>@endif">
-          </div>
-          <div class="form-group col-md-4">
-              <label for="communication{{$communicationfields}}due">Due Date</label>
-          <input type="date" class="form-control" id="communication{{$communicationfields}}due" name="communication{{$communicationfields}}due" value="@if(old('communication{{$communicationfields}}due'))<?= old('communication{{$communicationfields}}due') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}due')?>@endif">
-          </div>
-          <input type="hidden" id="communication{{$communicationfields}}name" name="communication{{$communicationfields}}name" value="IFC" readonly />
-        </br>
-      </div>
-      <div style="margin-left: 40px" class="row">
-        <div class="form-group col-md-4">
-          <button type="button" class="btn btn-danger btn_remove" id="communication{{$communicationfields}}">Remove Communication Field</button>
-        </div>
-      </div>
-      </br>
-  </div>
-@elseif($communicationfields > 0)
-  <div id="communicationbody">
-    <?php $keycounter = 3; ?>
-    <?php for($i = 1; $i <= $communicationfields; $i++){?>
-      <?php $keys = array_keys($project['duedates']['communication']);?>
-      <h6 id="communication{{$i}}title" style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
-      <div id="communication{{$i}}row" style="margin-left: 40px" class="row">
-          <div class="form-group col-md-4">
-              <label for="communication{{$i}}person1">Engineer/Person 1</label>
-              <input type="text" class="form-control" id="communication{{$i}}person1" name="communication{{$i}}person1" value="@if(old('communication{{$i}}person1'))<?= old('communication{{$i}}person1') ?>@else<?= $project['duedates']['communication'][$keys[$keycounter]]['person1'] ?>@endif">
-          </div>
-          <div class="form-group col-md-4">
-            <label for="communication{{$i}}person2">Drafter/Person 2</label>
-            <input type="text" class="form-control" id="communication{{$i}}person2" name="communication{{$i}}person2" value="@if(old('communication{{$i}}person2'))<?= old('communication{{$i}}person2') ?>@else<?= $project['duedates']['communication'][$keys[$keycounter]]['person2'] ?>@endif">
-          </div>
-          <div class="form-group col-md-4">
-              <label for="communication{{$i}}due">Due Date</label>
-              <input type="date" class="form-control" id="communication{{$i}}due" name="communication{{$i}}due" value="@if(old('communication{{$i}}due'))<?= old('communication{{$i}}due') ?>@else<?= $project['duedates']['communication'][$keys[$keycounter]]['due'] ?>@endif">
-          </div>
-          <input type="hidden" id="communication{{$i}}name" name="communication{{$i}}name" value={{$keys[$keycounter]}} readonly />
-          <?php $keycounter++; ?>
-        </br>
-      </div>
-      <div style="margin-left: 40px" class="row">
-        <div class="form-group col-md-4">
-          <button type="button" class="btn btn-danger btn_remove" id="communication{{$i}}">Remove Communication Field</button>
-        </div>
-      </br>
-      </div>
-    <?php } ?>
-  </div>
-@endif
-<input type="hidden" id="communicationfields" name="communicationfields" value="{{$communicationfields}}" readonly />
-<div id="addedcommunication">
-</div>
-
-
 
   @if(!is_null($scadafields) || !isset($project['duedates']))
     <div id="scadaheading">
@@ -654,7 +539,7 @@
   @if(!isset($project['duedates']))
     <div id="scadabody">
       <?php $scadafields = 1; ?>
-      <h6 id="scada{{$scadafields}}title" style="margin-left: 55px"><b>90</b></h6>
+      <h6 id="scada{{$scadafields}}title" style="margin-left: 55px"><b>RTAC/Networking Configuration File</b></h6>
           <div id="scada{{$scadafields}}row" style="margin-left: 40px" class="row">
               <div class="form-group col-md-4">
               <label for="scada{{$scadafields}}person1">Engineer/Person 1</label>
@@ -668,7 +553,7 @@
                   <label for="scada{{$scadafields}}due">Due Date</label>
                   <input type="date" class="form-control" id="scada{{$scadafields}}due" name="scada{{$scadafields}}due" value="@if(old('scada{{$scadafields}}due'))<?= old('scada{{$scadafields}}due') ?>@else<?= $__env->yieldContent('scada{{$scadafields}}due')?>@endif">
               </div>
-              <input type="hidden" id="scada{{$scadafields}}name" name="scada{{$scadafields}}name" value="90" readonly />
+              <input type="hidden" id="scada{{$scadafields}}name" name="scada{{$scadafields}}name" value="RTAC/Networking" readonly />
             </br>
           </div>
         <div style="margin-left: 40px" class="row">
@@ -678,7 +563,7 @@
           </div>
         </br>
         </div>
-      <h6 id="scada{{$scadafields}}title" style="margin-left: 55px"><b>IFC</b></h6>
+      <h6 id="scada{{$scadafields}}title" style="margin-left: 55px"><b>Field Work Dates</b></h6>
         <div id="scada{{$scadafields}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
                 <label for="scada{{$scadafields}}person1">Engineer/Person 1</label>
@@ -692,16 +577,85 @@
                 <label for="scada{{$scadafields}}due">Due Date</label>
             <input type="date" class="form-control" id="scada{{$scadafields}}due" name="scada{{$scadafields}}due" value="@if(old('scada{{$scadafields}}due'))<?= old('scada{{$scadafields}}due') ?>@else<?= $__env->yieldContent('scada{{$scadafields}}due')?>@endif">
             </div>
-            <input type="hidden" id="scada{{$scadafields}}name" name="scada{{$scadafields}}name" value="IFC" readonly />
+            <input type="hidden" id="scada{{$scadafields}}name" name="scada{{$scadafields}}name" value="FieldWork" readonly />
           </br>
         </div>
         <div style="margin-left: 40px" class="row">
           <div class="form-group col-md-4">
             <button type="button" class="btn btn-danger btn_remove" id="scada{{$scadafields}}">Remove SCADA Field</button>
           </div>
+          <?php $scadafields++; ?>
         </div>
         </br>
+        <h6 id="scada{{$scadafields}}title" style="margin-left: 55px"><b>Communication Architecture</b></h6>
+        <div id="scada{{$scadafields}}row" style="margin-left: 40px" class="row">
+            <div class="form-group col-md-4">
+            <label for="scada{{$scadafields}}person1">Engineer/Person 1</label>
+                <input type="text" class="form-control" name="scada{{$scadafields}}person1" value="@if(old('scada{{$scadafields}}person1'))<?= old('scada{{$scadafields}}person1') ?>@else<?= $__env->yieldContent('scada{{$scadafields}}person1')?>@endif">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="scada{{$scadafields}}person2">Drafter/Person 2</label>
+                <input type="text" class="form-control" id="scada{{$scadafields}}person2" name="scada{{$scadafields}}person2" value="@if(old('scada{{$scadafields}}person2'))<?= old('scada{{$scadafields}}person2') ?>@else<?= $__env->yieldContent('scada{{$scadafields}}person2')?>@endif">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="scada{{$scadafields}}due">Due Date</label>
+                <input type="date" class="form-control" id="scada{{$scadafields}}due" name="scada{{$scadafields}}due" value="@if(old('scada{{$scadafields}}due'))<?= old('scada{{$scadafields}}due') ?>@else<?= $__env->yieldContent('scada{{$scadafields}}due')?>@endif">
+            </div>
+            <input type="hidden" id="scada{{$scadafields}}name" name="scada{{$scadafields}}name" value="Communication" readonly />
+          </br>
+        </div>
+      <div style="margin-left: 40px" class="row">
+        <div class="form-group col-md-4">
+          <button type="button" class="btn btn-danger btn_remove" id="scada{{$scadafields}}">Remove SCADA Field</button>
+        </div>
+        <?php $communicationfields = 1; ?>
+      </div>
+      <h6 id="communication{{$communicationfields}}title" style="margin-left: 95px"><b>90</b></h6>
+      <div id="communication{{$communicationfields}}row" style="margin-left: 80px" class="row">
+          <div class="form-group col-md-4">
+          <label for="communication{{$communicationfields}}person1">Engineer/Person 1</label>
+              <input type="text" class="form-control" name="communication{{$communicationfields}}person1" value="@if(old('communication{{$communicationfields}}person1'))<?= old('communication{{$communicationfields}}person1') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}person1')?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+              <label for="communication{{$communicationfields}}person2">Drafter/Person 2</label>
+              <input type="text" class="form-control" id="communication{{$communicationfields}}person2" name="communication{{$communicationfields}}person2" value="@if(old('communication{{$communicationfields}}person2'))<?= old('communication{{$communicationfields}}person2') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}person2')?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+              <label for="communication{{$communicationfields}}due">Due Date</label>
+              <input type="date" class="form-control" id="communication{{$communicationfields}}due" name="communication{{$communicationfields}}due" value="@if(old('communication{{$communicationfields}}due'))<?= old('communication{{$communicationfields}}due') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}due')?>@endif">
+          </div>
+          <input type="hidden" id="communication{{$communicationfields}}name" name="communication{{$communicationfields}}name" value="90" readonly />
+        </br>
+      </div>
+    <div style="margin-left: 80px" class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-danger btn_remove" id="communication{{$communicationfields}}">Remove Field</button>
+      </div>
+      <?php $communicationfields++; ?>
     </div>
+      <h6 id="communication{{$communicationfields}}title" style="margin-left: 95px"><b>IFC</b></h6>
+      <div id="communication{{$communicationfields}}row" style="margin-left: 80px" class="row">
+          <div class="form-group col-md-4">
+          <label for="communication{{$communicationfields}}person1">Engineer/Person 1</label>
+              <input type="text" class="form-control" name="communication{{$communicationfields}}person1" value="@if(old('communication{{$communicationfields}}person1'))<?= old('communication{{$communicationfields}}person1') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}person1')?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+              <label for="communication{{$communicationfields}}person2">Drafter/Person 2</label>
+              <input type="text" class="form-control" id="communication{{$communicationfields}}person2" name="communication{{$communicationfields}}person2" value="@if(old('communication{{$communicationfields}}person2'))<?= old('communication{{$communicationfields}}person2') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}person2')?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+              <label for="communication{{$communicationfields}}due">Due Date</label>
+              <input type="date" class="form-control" id="communication{{$communicationfields}}due" name="communication{{$communicationfields}}due" value="@if(old('communication{{$communicationfields}}due'))<?= old('communication{{$communicationfields}}due') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}due')?>@endif">
+          </div>
+          <input type="hidden" id="communication{{$communicationfields}}name" name="communication{{$communicationfields}}name" value="IFC" readonly />
+        </br>
+      </div>
+    <div style="margin-left: 80px" class="row">
+      <div class="form-group col-md-4">
+        <button type="button" class="btn btn-danger btn_remove" id="communication{{$communicationfields}}">Remove Field</button>
+      </div>
+    </div>
+  </div>
   @elseif($scadafields > 0)
     <div id="scadabody">
       <?php $keycounter = 3; ?>
@@ -722,7 +676,6 @@
                 <input type="date" class="form-control" id="scada{{$i}}due" name="scada{{$i}}due" value="@if(old('scada{{$i}}due'))<?= old('scada{{$i}}due') ?>@else<?= $project['duedates']['scada'][$keys[$keycounter]]['due'] ?>@endif">
             </div>
             <input type="hidden" id="scada{{$i}}name" name="scada{{$i}}name" value={{$keys[$keycounter]}} readonly />
-            <?php $keycounter++; ?>
           </br>
         </div>
         <div style="margin-left: 40px" class="row">
@@ -731,145 +684,44 @@
           </div>
         </br>
         </div>
+        <?php if($keys[$keycounter] == 'Communication') { ?>
+          <?php $comcounter = 3; ?>
+          <?php for($j = 1; $j <= $communicationfields; $j++){?>
+            <?php $comkeys = array_keys($project['duedates']['scada']['Communication']);?>
+            <h6 id="communication{{$j}}title" style="margin-left: 95px"><b>{{$comkeys[$comcounter]}}</b></h6>
+            <div id="communication{{$j}}row" style="margin-left: 80px" class="row">
+                <div class="form-group col-md-4">
+                    <label for="communication{{$j}}person1">Engineer/Person 1</label>
+                    <input type="text" class="form-control" id="communication{{$j}}person1" name="communication{{$j}}person1" value="@if(old('communication{{$j}}person1'))<?= old('communication{{$j}}person1') ?>@else<?= $project['duedates']['scada']['Communication'][$comkeys[$comcounter]]['person1'] ?>@endif">
+                </div>
+                <div class="form-group col-md-4">
+                  <label for="communication{{$j}}person2">Drafter/Person 2</label>
+                  <input type="text" class="form-control" id="communication{{$j}}person2" name="communication{{$j}}person2" value="@if(old('communication{{$j}}person2'))<?= old('communication{{$j}}person2') ?>@else<?= $project['duedates']['scada']['Communication'][$comkeys[$comcounter]]['person2'] ?>@endif">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="communication{{$j}}due">Due Date</label>
+                    <input type="date" class="form-control" id="communication{{$j}}due" name="communication{{$j}}due" value="@if(old('communication{{$j}}due'))<?= old('communication{{$j}}due') ?>@else<?= $project['duedates']['scada']['Communication'][$comkeys[$comcounter]]['due'] ?>@endif">
+                </div>
+                <input type="hidden" id="communication{{$j}}name" name="communication{{$j}}name" value={{$comkeys[$comcounter]}} readonly />
+              </br>
+            </div>
+            <div style="margin-left: 80px" class="row">
+              <div class="form-group col-md-4">
+                <button type="button" class="btn btn-danger btn_remove" id="communication{{$j}}">Remove Field</button>
+              </div>
+              <?php $comcounter++; ?>
+            </br>
+            </div>
+            <?php }  ?>
+        <?php }  ?>
+        <?php $keycounter++; ?>
       <?php } ?>
     </div>
   @endif
   <input type="hidden" id="scadafields" name="scadafields" value="{{$scadafields}}" readonly />
+  <input type="hidden" id="communicationfields" name="communicationfields" value="{{$communicationfields}}" readonly />
   <div id="addedscada">
   </div>
-
-  @if(!is_null($fieldworkfields) || !isset($project['duedates']))
-<div id="fieldworkheading">
-  <h5><b> Field Work Dates</b></h5>
-  <div class="row">
-    <div>
-      <button type="button" class="btn btn-danger btn_remove" id="removefieldwork">Remove All Field Work Fields</button>
-      <button style="margin:10px;" type="button" class="btn btn-warning" id="addfieldwork">Add New Field Work Field</button> 
-    </div>
-  </br>
-  </div>
-  <div class="row">
-      <div class="form-group col-md-4">
-          <label for="fieldworkperson1">Engineer/Person 1</label>
-          <input type="text" class="form-control" name="fieldworkperson1" value="@if(old('fieldworkperson1')){{ old('fieldworkperson1') }} @else<?= $__env->yieldContent('fieldworkperson1')?>@endif">
-      </div>
-      <div class="form-group col-md-4">
-          <label for="fieldworkperson2">Drafter/Person 2</label>
-          <input type="text" class="form-control" id="fieldworkperson2" name="fieldworkperson2" value="@if(old('fieldworkperson2'))<?= old('fieldworkperson2') ?>@else<?= $__env->yieldContent('fieldworkperson2')?>@endif">
-      </div>
-      <div class="form-group col-md-4">
-          <label for="fieldworkdue">Due Date</label>
-          <input type="date" class="form-control" id="fieldworkdue" name="fieldworkdue" value="@if(old('fieldworkdue'))<?= old('fieldworkdue') ?>@else<?= $__env->yieldContent('fieldworkdue')?>@endif">
-      </div>
-    </br>
-  </div>
-  @if(!isset($project['duedates']))
-    <?php $fieldworkields = 0; ?>
-  @endif
-</div>
-@endif
-@if($fieldworkfields > 0)
-<div id="fieldworkbody">
-  <?php $keycounter = 3; ?>
-  <?php for($i = 1; $i <= $fieldworkfields; $i++){?>
-    <?php $keys = array_keys($project['duedates']['fieldwork']);?>
-    <h6 id="fieldwork{{$i}}title" style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
-    <div id="fieldwork{{$i}}row" style="margin-left: 40px" class="row">
-        <div class="form-group col-md-4">
-            <label for="fieldwork{{$i}}person1">Engineer/Person 1</label>
-            <input type="text" class="form-control" id="fieldwork{{$i}}person1" name="fieldwork{{$i}}person1" value="@if(old('fieldwork{{$i}}person1'))<?= old('fieldwork{{$i}}person1') ?>@else<?= $project['duedates']['fieldwork'][$keys[$keycounter]]['person1'] ?>@endif">
-        </div>
-        <div class="form-group col-md-4">
-          <label for="fieldwork{{$i}}person2">Drafter/Person 2</label>
-          <input type="text" class="form-control" id="fieldwork{{$i}}person2" name="fieldwork{{$i}}person2" value="@if(old('fieldwork{{$i}}person2'))<?= old('fieldwork{{$i}}person2') ?>@else<?= $project['duedates']['fieldwork'][$keys[$keycounter]]['person2'] ?>@endif">
-        </div>
-        <div class="form-group col-md-4">
-            <label for="fieldwork{{$i}}due">Due Date</label>
-            <input type="date" class="form-control" id="fieldwork{{$i}}due" name="fieldwork{{$i}}due" value="@if(old('fieldwork{{$i}}due'))<?= old('fieldwork{{$i}}due') ?>@else<?= $project['duedates']['fieldwork'][$keys[$keycounter]]['due'] ?>@endif">
-        </div>
-        <input type="hidden" id="fieldwork{{$i}}name" name="fieldwork{{$i}}name" value={{$keys[$keycounter]}} readonly />
-        <?php $keycounter++; ?>
-      </br>
-    </div>
-    <div style="margin-left: 40px" class="row">
-      <div class="form-group col-md-4">
-        <button type="button" class="btn btn-danger btn_remove" id="fieldwork{{$i}}">Remove Field Work Field</button>
-      </div>
-    </br>
-    </div>
-  <?php } ?>
-</div>
-@endif
-<input type="hidden" id="fieldworkfields" name="fieldworkfields" value="{{$fieldworkfields}}" readonly />
-<div id="addedfieldwork">
-</div>
-
-
-  @if(!is_null($rtacfields) || !isset($project['duedates']))
-  <div id="rtacheading">
-    <h5><b> RTAC/Networking Configuration File </b></h5>
-    <div class="row">
-      <div>
-        <button type="button" class="btn btn-danger btn_remove" id="removertac">Remove All RTAC Fields</button>
-        <button style="margin:10px;" type="button" class="btn btn-warning" id="addrtac">Add New RTAC Field</button> 
-      </div>
-    </br>
-    </div>
-    <div class="row">
-        <div class="form-group col-md-4">
-            <label for="rtacperson1">Engineer/Person 1</label>
-            <input type="text" class="form-control" name="rtacperson1" value="@if(old('rtacperson1')){{ old('rtacperson1') }} @else<?= $__env->yieldContent('rtacperson1')?>@endif">
-        </div>
-        <div class="form-group col-md-4">
-            <label for="rtacperson2">Drafter/Person 2</label>
-            <input type="text" class="form-control" id="rtacperson2" name="rtacperson2" value="@if(old('rtacperson2'))<?= old('rtacperson2') ?>@else<?= $__env->yieldContent('rtacperson2')?>@endif">
-        </div>
-        <div class="form-group col-md-4">
-            <label for="rtacdue">Due Date</label>
-            <input type="date" class="form-control" id="rtacdue" name="rtacdue" value="@if(old('rtacdue'))<?= old('rtacdue') ?>@else<?= $__env->yieldContent('rtacdue')?>@endif">
-        </div>
-    </div>
-    @if(!isset($project['duedates']))
-      <?php $rtacfields = 0; ?>
-    @endif
-  </div>
-</br>
-@endif
-@if($rtacfields > 0)
-  <div id="rtacbody">
-    <?php $keycounter = 3; ?>
-    <?php for($i = 1; $i <= $rtacfields; $i++){?>
-      <?php $keys = array_keys($project['duedates']['rtac']);?>
-      <h6 id="rtac{{$i}}title" style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
-      <div id="rtac{{$i}}row" style="margin-left: 40px" class="row">
-          <div class="form-group col-md-4">
-              <label for="rtac{{$i}}person1">Engineer/Person 1</label>
-              <input type="text" class="form-control" id="rtac{{$i}}person1" name="rtac{{$i}}person1" value="@if(old('rtac{{$i}}person1'))<?= old('rtac{{$i}}person1') ?>@else<?= $project['duedates']['rtac'][$keys[$keycounter]]['person1'] ?>@endif">
-          </div>
-          <div class="form-group col-md-4">
-            <label for="rtac{{$i}}person2">Drafter/Person 2</label>
-            <input type="text" class="form-control" id="rtac{{$i}}person2" name="rtac{{$i}}person2" value="@if(old('rtac{{$i}}person2'))<?= old('rtac{{$i}}person2') ?>@else<?= $project['duedates']['rtac'][$keys[$keycounter]]['person2'] ?>@endif">
-          </div>
-          <div class="form-group col-md-4">
-              <label for="rtac{{$i}}due">Due Date</label>
-              <input type="date" class="form-control" id="rtac{{$i}}due" name="rtac{{$i}}due" value="@if(old('rtac{{$i}}due'))<?= old('rtac{{$i}}due') ?>@else<?= $project['duedates']['rtac'][$keys[$keycounter]]['due'] ?>@endif">
-          </div>
-          <input type="hidden" id="rtac{{$i}}name" name="rtac{{$i}}name" value={{$keys[$keycounter]}} readonly />
-          <?php $keycounter++; ?>
-        </br>
-      </div>
-      <div style="margin-left: 40px" class="row">
-        <div class="form-group col-md-4">
-          <button type="button" class="btn btn-danger btn_remove" id="rtac{{$i}}">Remove Scada Field</button>
-        </div>
-      </br>
-      </div>
-    <?php } ?>
-  </div>
-@endif
-<input type="hidden" id="rtacfields" name="rtacfields" value="{{$rtacfields}}" readonly />
-<div id="addedrtac">
-</div>
 
   <!-- Studies Starts -->
 
@@ -1077,10 +929,8 @@ var physicalfields = parseInt("<?php echo $physicalfields ?>");
 var controlfields = parseInt("<?php echo $controlfields ?>");
 var collectionfields = parseInt("<?php echo $collectionfields ?>");
 var transmissionfields = parseInt("<?php echo $transmissionfields ?>");
-var communicationfields = parseInt("<?php echo $communicationfields ?>");
-var fieldworkfields = parseInt("<?php echo $fieldworkfields ?>");
 var scadafields = parseInt("<?php echo $scadafields ?>");
-var rtacfields = parseInt("<?php echo $rtacfields ?>");
+var communicationfields = parseInt("<?php echo $communicationfields ?>");
 var totalstudies = parseInt("<?php echo $totalstudies ?>");
 
 $(document).ready(function() {
@@ -1321,104 +1171,6 @@ for(i = 1; i <= transmissionfields; i++){
       $('#'+button_id+'').remove();
     });
 
-$("#addcommunication").on('click', function() {
-                var name = window.prompt('Enter the name of the new Communication field: ');
-                if (name != null && name != ""){
-                  communicationfields ++;
-                  var field = '<h6  style="margin-left: 55px" id= "communication' + communicationfields+ 'title" ><b>' + name + '</b></h6>' +
-                      '<div style="margin-left: 40px" class="row" id = "communication'+communicationfields+'row" >' + 
-                          '<div class="form-group col-md-4">' + 
-                              '<label for="communication'+communicationfields+'person1">Engineer/Person 1</label>' + 
-                              '<input type="text" class="form-control" id="communication'+ communicationfields+'person1" name="communication'+ communicationfields+'person1">' +
-                          '</div>' +
-                          '<div class="form-group col-md-4">' + 
-                              '<label for="communication'+ communicationfields+'person2">Drafter/Person 2</label>' + 
-                              '<input type="text" class="form-control" id="communication'+ communicationfields+'person2" name="communication'+ communicationfields+'person2">' + 
-                          '</div>' + 
-                          '<div class="form-group col-md-4">' + 
-                              '<label for="communication'+ communicationfields+'due">Due Date</label>' + 
-                              '<input type="date" class="form-control" id="communication'+ communicationfields+'due" name="communication'+ communicationfields+'due">' + 
-                          '</div>' + 
-                          '</div>' +
-                          '<input type="hidden" id="communication'+ communicationfields+'name" name="communication'+ communicationfields+'name" value="'+ name + '" readonly />' +
-                          '</br>' +
-                          '<div class="row">' +
-                          '<div style="margin-left: 55px" class="form-group col-md-4">' +
-                            '<button type="button" class="btn btn-danger btn_remove" id="communication'+communicationfields+'">Remove Fields</button>'+
-                          '</div>' +
-                          '</div>'; 
-                  communicationfield();
-                  $('#addedcommunication').append(field);
-                } 
-});
-
-for(i = 1; i <= communicationfields; i++){
-    $("#communication" + i).on('click', function() {
-      var button_id = $(this).attr("id");
-      $('#'+button_id+'title').remove();
-      $('#'+button_id+'name').remove();
-      $('#'+button_id+'row').remove();
-      $('#'+button_id+'').remove();
-    }); 
-  }
-
-  $("#addedcommunication").on('click', '.btn_remove', function() {
-      var button_id = $(this).attr("id");
-      $('#'+button_id+'title').remove();
-      $('#'+button_id+'name').remove();
-      $('#'+button_id+'row').remove();
-      $('#'+button_id+'').remove();
-    });
-
-$("#addfieldwork").on('click', function() {
-                var name = window.prompt('Enter the name of the new Field Work field: ');
-                if (name != null && name != ""){
-                  fieldworkfields ++;
-                  var field = '<h6  style="margin-left: 55px" id= "fieldwork' + fieldworkfields+ 'title" ><b>' + name + '</b></h6>' +
-                      '<div style="margin-left: 40px" class="row" id = "fieldwork'+fieldworkfields+'row" >' + 
-                          '<div class="form-group col-md-4">' + 
-                              '<label for="fieldwork'+fieldworkfields+'person1">Engineer/Person 1</label>' + 
-                              '<input type="text" class="form-control" id="fieldwork'+ fieldworkfields+'person1" name="fieldwork'+ fieldworkfields+'person1">' +
-                          '</div>' +
-                          '<div class="form-group col-md-4">' + 
-                              '<label for="fieldwork'+ fieldworkfields+'person2">Engineer/Person 2</label>' + 
-                              '<input type="text" class="form-control" id="fieldwork'+ fieldworkfields+'person2" name="fieldwork'+ fieldworkfields+'person2">' + 
-                          '</div>' + 
-                          '<div class="form-group col-md-4">' + 
-                              '<label for="fieldwork'+ fieldworkfields+'due">Due Date</label>' + 
-                              '<input type="date" class="form-control" id="fieldwork'+ fieldworkfields+'due" name="fieldwork'+ fieldworkfields+'due">' + 
-                          '</div>' + 
-                          '</div>' +
-                          '<input type="hidden" id="fieldwork'+ fieldworkfields+'name" name="fieldwork'+ fieldworkfields+'name" value="'+ name + '" readonly />' +
-                          '</br>' +
-                          '<div class="row">' +
-                          '<div style="margin-left: 55px" class="form-group col-md-4">' +
-                            '<button type="button" class="btn btn-danger btn_remove" id="fieldwork'+fieldworkfields+'">Remove Fields</button>'+
-                          '</div>' +
-                          '</div>'; 
-                  fieldworkfield();
-                  $('#addedfieldwork').append(field);
-                } 
-});
-
-for(i = 1; i <= fieldworkfields; i++){
-    $("#fieldwork" + i).on('click', function() {
-      var button_id = $(this).attr("id");
-      $('#'+button_id+'title').remove();
-      $('#'+button_id+'name').remove();
-      $('#'+button_id+'row').remove();
-      $('#'+button_id+'').remove();
-    }); 
-  }
-
-  $("#addedfieldwork").on('click', '.btn_remove', function() {
-      var button_id = $(this).attr("id");
-      $('#'+button_id+'title').remove();
-      $('#'+button_id+'name').remove();
-      $('#'+button_id+'row').remove();
-      $('#'+button_id+'').remove();
-    });
-
 $("#addscada").on('click', function() {
                 var name = window.prompt('Enter the name of the new SCADA field: ');
                 if (name != null && name != ""){
@@ -1460,57 +1212,17 @@ for(i = 1; i <= scadafields; i++){
     }); 
   }
 
-  $("#addedscada").on('click', '.btn_remove', function() {
+  for(i = 1; i <= communicationfields; i++){
+    $("#communication" + i).on('click', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
     });
-
-
-    $("#addrtac").on('click', function() {
-                var name = window.prompt('Enter the name of the new RTAC field: ');
-                if (name != null && name != ""){
-                  rtacfields ++;
-                  var field = '<h6  style="margin-left: 55px" id= "rtac' + rtacfields+ 'title" ><b>' + name + '</b></h6>' +
-                      '<div style="margin-left: 40px" class="row" id = "rtac'+rtacfields+'row" >' + 
-                          '<div class="form-group col-md-4">' + 
-                              '<label for="rtac'+rtacfields+'person1">Engineer/Person 1</label>' + 
-                              '<input type="text" class="form-control" id="rtac'+ rtacfields+'person1" name="rtac'+ rtacfields+'person1">' +
-                          '</div>' +
-                          '<div class="form-group col-md-4">' + 
-                              '<label for="rtac'+ rtacfields+'person2">Drafter/Person 2</label>' + 
-                              '<input type="text" class="form-control" id="rtac'+ rtacfields+'person2" name="rtac'+ rtacfields+'person2">' + 
-                          '</div>' + 
-                          '<div class="form-group col-md-4">' + 
-                              '<label for="rtac'+ rtacfields+'due">Due Date</label>' + 
-                              '<input type="date" class="form-control" id="rtac'+ rtacfields+'due" name="rtac'+ rtacfields+'due">' + 
-                          '</div>' + 
-                          '</div>' +
-                          '<input type="hidden" id="rtac'+ rtacfields+'name" name="rtac'+ rtacfields+'name" value="'+ name + '" readonly />' +
-                          '</br>' +
-                          '<div class="row">' +
-                          '<div style="margin-left: 55px" class="form-group col-md-4">' +
-                            '<button type="button" class="btn btn-danger btn_remove" id="rtac'+rtacfields+'">Remove Fields</button>'+
-                          '</div>' +
-                          '</div>'; 
-                  rtacfield();
-                  $('#addedrtac').append(field);
-                } 
-});
-
-for(i = 1; i <= rtacfields; i++){
-    $("#rtac" + i).on('click', function() {
-      var button_id = $(this).attr("id");
-      $('#'+button_id+'title').remove();
-      $('#'+button_id+'name').remove();
-      $('#'+button_id+'row').remove();
-      $('#'+button_id+'').remove();
-    }); 
   }
 
-  $("#addedrtac").on('click', '.btn_remove', function() {
+  $("#addedscada").on('click', '.btn_remove', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
       $('#'+button_id+'name').remove();
@@ -1598,24 +1310,6 @@ for(i = 1; i <= totalstudies; i++){
     transmissionfields = null;
     transmissionfield();
   });
-  
-  $('#removecommunication').on('click', function() {
-    var button_id = $(this).attr("id");
-    $('#communicationheading').remove();
-    $('#addedcommunication').remove();
-    $('#communicationbody').remove();
-    communicationfields = null;
-    communicationfield();
-  });
-
-  $('#removefieldwork').on('click', function() {
-    var button_id = $(this).attr("id");
-    $('#fieldworkheading').remove();
-    $('#addedfieldwork').remove();
-    $('#fieldworkbody').remove();
-    fieldworkfields = null;
-    fieldworkfield();
-  });
 
   $('#removescada').on('click', function() {
     var button_id = $(this).attr("id");
@@ -1624,15 +1318,6 @@ for(i = 1; i <= totalstudies; i++){
     $('#scadabody').remove();
     scadafields = null;
     scadafield();
-  });
-
-  $('#removertac').on('click', function() {
-    var button_id = $(this).attr("id");
-    $('#rtacheading').remove();
-    $('#addedrtac').remove();
-    $('#rtacbody').remove();
-    rtacfields = null;
-    rtacfield();
   });
 
   $('#removestudies').on('click', function() {
@@ -1651,7 +1336,6 @@ function hiddenfield(){
   var field = '<input type="hidden" id="total" name="total" value="'+total+'" readonly />';
   $('#dynamic_field').append(field); 
 }
-
 
 function physicalfield(){
   '<input type="hidden" id="row_total" name="row_total" value="'+row+'" readonly />'
@@ -1677,28 +1361,10 @@ function transmissionfield(){
   $('#addedtransmission').append(field);
 }
 
-function communicationfield(){
-  $('#communicationfields').remove();
-  var field = '<input type="hidden" id="communicationfields" name="communicationfields" value="'+communicationfields+'" readonly />';
-  $('#addedcommunication').append(field);
-}
-
-function fieldworkfield(){
-  $('#fieldworkfields').remove();
-  var field = '<input type="hidden" id="fieldworkfields" name="fieldworkfields" value="'+fieldworkfields+'" readonly />';
-  $('#addedfieldwork').append(field);
-}
-
 function scadafield(){
   $('#scadafields').remove();
   var field = '<input type="hidden" id="scadafields" name="scadafields" value="'+scadafields+'" readonly />';
   $('#addedscada').append(field);
-}
-
-function rtacfield(){
-  $('#rtacfields').remove();
-  var field = '<input type="hidden" id="rtacfields" name="rtacfields" value="'+rtacfields+'" readonly />';
-  $('#addedrtac').append(field);
 }
 
 function studyfield(){
