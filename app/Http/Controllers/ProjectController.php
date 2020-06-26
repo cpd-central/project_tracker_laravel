@@ -1641,7 +1641,6 @@ class ProjectController extends Controller
         }
         $duedates['studies'] = $studies;
       }
-
       if (!is_null($req->get('physicalfields'))){
         $physicals = array();
         $physicals['person1'] = $req->get('physicalperson1');

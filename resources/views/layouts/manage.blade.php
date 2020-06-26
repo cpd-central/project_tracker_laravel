@@ -1275,58 +1275,77 @@ for(i = 1; i <= totalstudies; i++){
       $('#'+button_id+'').remove();
     });
 
+
   $('#removephysical').on('click', function() {
-    var button_id = $(this).attr("id");
-    $('#physicalheading').remove();
-    $('#addedphysical').remove();
-    $('#physicalbody').remove();
-    physicalfields = null;
-    physicalfield();
+    var c = window.confirm("Are you sure you want to remove the entire Physical field?");
+    if(c == true){
+      var button_id = $(this).attr("id");
+      $('#physicalheading').remove();
+      $('#addedphysical').remove();
+      $('#physicalbody').remove();
+      physicalfields = null;
+      physicalfield();
+    }
   });
 
   $('#removecontrol').on('click', function() {
-    var button_id = $(this).attr("id");
-    $('#controlheading').remove();
-    $('#addedcontrol').remove();
-    $('#controlbody').remove();
-    controlfields = null;
-    controlfield();
+    var c = window.confirm("Are you sure you want to remove the entire Control field?");
+    if(c == true){
+      var button_id = $(this).attr("id");
+      $('#controlheading').remove();
+      $('#addedcontrol').remove();
+      $('#controlbody').remove();
+      controlfields = null;
+      controlfield();
+    }
   });
 
   $('#removecollection').on('click', function() {
-    var button_id = $(this).attr("id");
-    $('#collectionheading').remove();
-    $('#addedcollection').remove();
-    $('#collectionbody').remove();
-    collectionfields = null;
-    collectionfield();
+    var c = window.confirm("Are you sure you want to remove the entire Collection field?");
+    if(c == true){
+      var button_id = $(this).attr("id");
+      $('#collectionheading').remove();
+      $('#addedcollection').remove();
+      $('#collectionbody').remove();
+      collectionfields = null;
+      collectionfield();
+    }
   });
 
   $('#removetransmission').on('click', function() {
-    var button_id = $(this).attr("id");
-    $('#transmissionheading').remove();
-    $('#addedtransmission').remove();
-    $('#transmissionbody').remove();
-    transmissionfields = null;
-    transmissionfield();
+    var c = window.confirm("Are you sure you want to remove the entire Transmission field?");
+    if(c == true){
+      var button_id = $(this).attr("id");
+      $('#transmissionheading').remove();
+      $('#addedtransmission').remove();
+      $('#transmissionbody').remove();
+      transmissionfields = null;
+      transmissionfield();
+    }
   });
 
   $('#removescada').on('click', function() {
-    var button_id = $(this).attr("id");
-    $('#scadaheading').remove();
-    $('#addedscada').remove();
-    $('#scadabody').remove();
-    scadafields = null;
-    scadafield();
+    var c = window.confirm("Are you sure you want to remove the entire SCADA field?");
+    if(c == true){
+      var button_id = $(this).attr("id");
+      $('#scadaheading').remove();
+      $('#addedscada').remove();
+      $('#scadabody').remove();
+      scadafields = null;
+      scadafield();
+    }
   });
 
   $('#removestudies').on('click', function() {
-    var button_id = $(this).attr("id");
-    $('#studiesheading').remove();
-    $('#addedstudy').remove();
-    $('#studiesbody').remove();
-    totalstudies = null;
-    studyfield();
+    var c = window.confirm("Are you sure you want to remove the entire Studies field?");
+    if(c == true){
+      var button_id = $(this).attr("id");
+      $('#studiesheading').remove();
+      $('#addedstudy').remove();
+      $('#studiesbody').remove();
+      totalstudies = null;
+      studyfield();
+    }
   });
 
 });
