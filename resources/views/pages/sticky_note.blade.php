@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-
+<?php //dd($json); ?>
 
 <head>
     @include('includes.navbar')

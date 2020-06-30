@@ -1475,6 +1475,7 @@ class ProjectController extends Controller
       $physicalfields = 0;
       $scadafields = 0;
       $communicationfields = 0;
+      $miscfields = 0;
     }
     else{
       $duedates = $project['duedates'];
@@ -1566,9 +1567,27 @@ class ProjectController extends Controller
       $scadafields = null;
       $communicationfields = null;
     }
+
+    if (isset($duedates['additionalfields'])){
+      $miscfields = 0;
+      $additionalfields = $duedates['additionalfields'];
+      foreach($additionalfields as $additionalfield){
+        $fieldkeys = array_keys($additionalfield);
+        foreach($fieldkeys as $fk){
+          if ($fk != "person1" && $fk != "person2" && $fk != "due"){
+            $miscfields++;
+          }
+        }
+      }
+    }
+    else{
+      $miscfields = null;
+    }
+    
   }
+  
     $project = $this->format_due_dates($project);
-    return view('pages.manage_project', compact('project', 'totalstudies', 'transmissionfields', 'collectionfields', 'controlfields', 'physicalfields', 'scadafields', 'communicationfields'));
+    return view('pages.manage_project', compact('project', 'totalstudies', 'transmissionfields', 'collectionfields', 'controlfields', 'physicalfields', 'scadafields', 'communicationfields', 'miscfields'));
   }
 
   /**
@@ -1624,8 +1643,6 @@ class ProjectController extends Controller
   protected function store_dates($project, $req)
   {
       $duedates = array();
-      //dd($req->get('collectionfields'));
-      //dd($req->get('controlfields'));
       if (!is_null($req->get('totalstudies'))){
         $studies = array();
         $studies['person1'] = $req->get('studiesperson1');
@@ -1756,6 +1773,11 @@ class ProjectController extends Controller
           $additionalfields[$namefield]['person2'] = $req->get('row'.$i.'person2');
           $additionalfields[$namefield]['due'] = $this->strToDate($req->get('row'.$i.'due'), null);
         }
+        /*
+        for($i = 1; $i <= $req->get('miscfields'); $i++){
+            
+        }
+        */
         $duedates['additionalfields'] = $additionalfields;
       }
 

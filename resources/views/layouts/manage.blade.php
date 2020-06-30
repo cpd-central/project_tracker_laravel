@@ -1,4 +1,6 @@
 <!doctype html>
+<!-- This page creates the entire field layout of the manage_project page, as well as the javascrpit for all the buttons -->
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <html>
@@ -144,7 +146,7 @@
                     <label for="physical{{$i}}due">Due Date</label>
                     <input type="date" class="form-control" id="physical{{$i}}due" name="physical{{$i}}due" value="@if(old('physical{{$i}}due'))<?= old('physical{{$i}}due') ?>@else<?= $project['duedates']['physical'][$keys[$keycounter]]['due'] ?>@endif">
                 </div>
-                <input type="hidden" id="physical{{$i}}name" name="physical{{$i}}name" value={{$keys[$keycounter]}} readonly />
+                <input type="hidden" id="physical{{$i}}name" name="physical{{$i}}name" value="{{$keys[$keycounter]}}" readonly />
                 <?php $keycounter++; ?>
               </br>
             </div>
@@ -259,7 +261,7 @@
                 <label for="control{{$i}}due">Due Date</label>
                 <input type="date" class="form-control" id="control{{$i}}due" name="control{{$i}}due" value="@if(old('control{{$i}}due'))<?= old('control{{$i}}due') ?>@else<?= $project['duedates']['control'][$keys[$keycounter]]['due'] ?>@endif">
             </div>
-            <input type="hidden" id="control{{$i}}name" name="control{{$i}}name" value={{$keys[$keycounter]}} readonly />
+            <input type="hidden" id="control{{$i}}name" name="control{{$i}}name" value="{{$keys[$keycounter]}}" readonly />
             <?php $keycounter++; ?>
           </br>
         </div>
@@ -374,7 +376,7 @@
                   <label for="collection{{$i}}due">Due Date</label>
                   <input type="date" class="form-control" id="collection{{$i}}due" name="collection{{$i}}due" value="@if(old('collection{{$i}}due'))<?= old('collection{{$i}}due') ?>@else<?= $project['duedates']['collection'][$keys[$keycounter]]['due'] ?>@endif">
               </div>
-              <input type="hidden" id="collection{{$i}}name" name="collection{{$i}}name" value={{$keys[$keycounter]}} readonly />
+              <input type="hidden" id="collection{{$i}}name" name="collection{{$i}}name" value="{{$keys[$keycounter]}}" readonly />
               <?php $keycounter++; ?>
             </br>
           </div>
@@ -490,7 +492,7 @@
                 <label for="transmission{{$i}}due">Due Date</label>
                 <input type="date" class="form-control" id="transmission{{$i}}due" name="transmission{{$i}}due" value="@if(old('transmission{{$i}}due'))<?= old('transmission{{$i}}due') ?>@else<?= $project['duedates']['transmission'][$keys[$keycounter]]['due'] ?>@endif">
             </div>
-            <input type="hidden" id="transmission{{$i}}name" name="transmission{{$i}}name" value={{$keys[$keycounter]}} readonly />
+            <input type="hidden" id="transmission{{$i}}name" name="transmission{{$i}}name" value="{{$keys[$keycounter]}}" readonly />
             <?php $keycounter++; ?>
           </br>
         </div>
@@ -675,7 +677,7 @@
                 <label for="scada{{$i}}due">Due Date</label>
                 <input type="date" class="form-control" id="scada{{$i}}due" name="scada{{$i}}due" value="@if(old('scada{{$i}}due'))<?= old('scada{{$i}}due') ?>@else<?= $project['duedates']['scada'][$keys[$keycounter]]['due'] ?>@endif">
             </div>
-            <input type="hidden" id="scada{{$i}}name" name="scada{{$i}}name" value={{$keys[$keycounter]}} readonly />
+            <input type="hidden" id="scada{{$i}}name" name="scada{{$i}}name" value="{{$keys[$keycounter]}}" readonly />
           </br>
         </div>
         <div style="margin-left: 40px" class="row">
@@ -702,7 +704,7 @@
                     <label for="communication{{$j}}due">Due Date</label>
                     <input type="date" class="form-control" id="communication{{$j}}due" name="communication{{$j}}due" value="@if(old('communication{{$j}}due'))<?= old('communication{{$j}}due') ?>@else<?= $project['duedates']['scada']['Communication'][$comkeys[$comcounter]]['due'] ?>@endif">
                 </div>
-                <input type="hidden" id="communication{{$j}}name" name="communication{{$j}}name" value={{$comkeys[$comcounter]}} readonly />
+                <input type="hidden" id="communication{{$j}}name" name="communication{{$j}}name" value="{{$comkeys[$comcounter]}}" readonly />
               </br>
             </div>
             <div style="margin-left: 80px" class="row">
@@ -851,7 +853,7 @@
                 <label for="study{{$i}}due">Due Date</label>
                 <input type="date" class="form-control" id="study{{$i}}due" name="study{{$i}}due" value="@if(old('study{{$i}}due'))<?= old('study{{$i}}due') ?>@else<?= $project['duedates']['studies'][$keys[$keycounter]]['due'] ?>@endif">
             </div>
-            <input type="hidden" id="study{{$i}}name" name="study{{$i}}name" value={{$keys[$keycounter]}} readonly />
+            <input type="hidden" id="study{{$i}}name" name="study{{$i}}name" value="{{$keys[$keycounter]}}" readonly />
             <?php $keycounter++; ?>
           </br>
         </div>
@@ -882,7 +884,8 @@
         <h5 id="name{{$c}}"><b> {{$key}} </b></h5>
                 <div class="row">
                   <div class="form-group col-md-4">
-                    <button type="button" class="btn btn-danger btn_remove" id="{{$c}}">Remove Form</button>
+                    <button type="button" class="btn btn-danger btn_remove" id="{{$c}}">Remove {{$key}} Form</button>
+                    <button type="button" class="btn btn-warning" id="{{$c}}">Add To {{$key}}</button>
                   </div>
                 </div> 
                 <div class="row" id= "row{{$c}}">
@@ -899,7 +902,9 @@
                         <input type="date" class="form-control" id="row{{$c}}due" name="row{{$c}}due" value= {{$additionalfields[$key]['due']}}>
                     </div>
                       <input type="hidden" id="row{{$c}}name" name="row{{$c}}name" value= "{{$key}}" readonly /> 
-                    </div>
+                </div>
+                <div id= "addedmisc{{$c}}">
+                </div>
   <?php } ?>
     <input type="hidden" id="total" name="total" value="{{$c}}" readonly />
    <?php } ?>
@@ -924,7 +929,8 @@
 <script type="text/javascript">
 var row = "<?php echo $c ?>";
 var total = parseInt(row);
-
+var miscfields = parseInt("<?php echo $miscfields ?>");
+console.log(miscfields);
 var physicalfields = parseInt("<?php echo $physicalfields ?>");
 var controlfields = parseInt("<?php echo $controlfields ?>");
 var collectionfields = parseInt("<?php echo $collectionfields ?>");
@@ -932,7 +938,6 @@ var transmissionfields = parseInt("<?php echo $transmissionfields ?>");
 var scadafields = parseInt("<?php echo $scadafields ?>");
 var communicationfields = parseInt("<?php echo $communicationfields ?>");
 var totalstudies = parseInt("<?php echo $totalstudies ?>");
-
 $(document).ready(function() {
 
 $("#addform").on('click', function() {
@@ -942,10 +947,11 @@ $("#addform").on('click', function() {
                 var field = '<h5 id= name' + total+ '><b>' + name + '</b></h5>' + 
                       '<div class="row">' +
                         '<div class="form-group col-md-4">' +
-                          '<button type="button" class="btn btn-danger btn_remove" id="'+total+'">Remove Form</button>'+
+                          '<button type="button" class="btn btn-danger btn_remove" id="'+total+'">Remove '+name+' Forms</button>'+
+                          '<button style="margin:10px;" type="button" class="btn btn-warning" id="'+total+'">Add To '+name+'</button>' +
                         '</div>' +
                       '</div>'+
-                      '<div class="row" id = row' + total + '>' + 
+                      '<div id="row'+total+'" class="row" >' + 
                         '<div class="form-group col-md-4">' + 
                             '<label for="row'+total+'person1">Engineer/Person 1</label>' + 
                             '<input type="text" class="form-control" id="row'+ total+'person1" name="row'+ total+'person1">' +
@@ -959,19 +965,76 @@ $("#addform").on('click', function() {
                             '<input type="date" class="form-control" id="row'+ total+'due" name="row'+ total+'due">' + 
                         '</div>' + 
                         '<input type="hidden" id="row'+ total+'name" name="row'+ total+'name" value="'+ name + '" readonly />' +
+                      '</div>' +
+                      '<div id="addedmisc'+total+'">' +
                       '</div>';
                 hiddenfield();
                 $('#dynamic_field').append(field);  
                         }
 });
 
+$("#dynamic_field").on('click', '.btn-warning', function() {
+      var button_id = $(this).attr("id");
+      var name = window.prompt('Enter the name of the new Subfield: ');
+      if (name != null && name != ""){
+        miscfields++;
+        console.log(miscfields);
+        var field = '<h6 style="margin-left: 55px" id="misc' +miscfields+ 'title" ><b>' + name + '</b></h6>' +
+                        '<div style="margin-left: 40px" class="row" id = "misc'+miscfields+'row" >' + 
+                            '<div class="form-group col-md-4">' + 
+                                '<label for="misc'+miscfields+'person1">Engineer/Person 1</label>' + 
+                                '<input type="text" class="form-control" id="misc'+miscfields+'person1" name="misc'+miscfields+'person1">' +
+                            '</div>' +
+                            '<div class="form-group col-md-4">' + 
+                                '<label for="misc'+miscfields+'person2">Drafter/Person 2</label>' + 
+                                '<input type="text" class="form-control" id="misc'+miscfields+'person2" name="misc'+miscfields+'person2">' + 
+                            '</div>' + 
+                            '<div class="form-group col-md-4">' + 
+                                '<label for="misc'+miscfields+'due">Due Date</label>' + 
+                                '<input type="date" class="form-control" id="misc'+miscfields+'due" name="misc'+miscfields+'due">' + 
+                            '</div>' + 
+                        '</div>' +
+                            '<input type="hidden" id="misc'+miscfields+'name" name="misc'+miscfields+'name" value="'+ name + '" readonly />' +
+                            '</br>' +
+                            '<div class="row">' +
+                              '<div style="margin-left: 55px" class="form-group col-md-4">' +
+                                '<button type="button" class="btn btn-danger btn_remove" id="misc'+miscfields+'">Remove Subfields</button>'+
+                              '</div>' +
+                            '</div>'; 
+                    miscfield();
+                    $('#addedmisc'+button_id).append(field);
+      }
+    }); 
+/*
+for(i = 1; i <= miscfields; i++){
+    $("#misc" + i).on('click', function() {
+      var button_id = $(this).attr("id");
+      console.log(button_id);
+      $('#'+button_id+'title').remove();
+      $('#'+button_id+'name').remove();
+      $('#'+button_id+'row').remove();
+      $('#'+button_id+'').remove();
+    }); 
+}
+
+$("#addedmisc").on('click', '.btn_remove', function() {
+      var button_id = $(this).attr("id");
+      console.log(button_id);
+      $('#'+button_id+'title').remove();
+      $('#'+button_id+'name').remove();
+      $('#'+button_id+'row').remove();
+      $('#'+button_id+'').remove();
+    });
+    */
+
 $("#dynamic_field").on('click', '.btn_remove', function() {
   var button_id = $(this).attr("id");
+  console.log(button_id);
   $('#row'+button_id+'').remove();
   $('#name'+button_id+'').remove();
   $('#'+button_id+'').remove();
-  $('#addfield'+button_id+'').remove();
-  hiddenfield();
+  $('#'+button_id+'').remove();
+  $('#addedmisc'+button_id+'').remove();
 }); 
 
 $("#addphysical").on('click', function() {
@@ -1356,8 +1419,14 @@ function hiddenfield(){
   $('#dynamic_field').append(field); 
 }
 
+function miscfield(){
+  $('#miscfields').remove();
+  var field = '<input type="hidden" id="miscfields" name="miscfields" value="'+miscfields+'" readonly />';
+  $('#dynamic_field').append(field);
+}
+
 function physicalfield(){
-  '<input type="hidden" id="row_total" name="row_total" value="'+row+'" readonly />'
+  $('#physicalfields').remove();
   var field = '<input type="hidden" id="physicalfields" name="physicalfields" value="'+physicalfields+'" readonly />';
   $('#addedphysical').append(field); 
 }
