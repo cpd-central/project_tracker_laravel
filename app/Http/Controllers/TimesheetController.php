@@ -85,8 +85,22 @@ class TimesheetController extends Controller
      * @return view pages.timesheetsentstatus
      */
 	protected function get_user_timesheet_status(){
-		$timesheets = Timesheet::all();
-		$users = User::all();
+        $timesheets = Timesheet::all();
+        $not_active_users = User::all()->where('active', false);
+        $non_active_array = [];
+        foreach($not_active_users as $non){
+            array_push($non_active_array, $non['email']);
+        }
+        $i = 0;
+        foreach($timesheets as $timesheet){
+            if(in_array($timesheet['user'], $non_active_array)){
+                unset($timesheets[$i]);
+            }
+            $i++;
+        }
+        $users = User::all()->where('active', true);
+
+        //$users = User::all();
 		return view('pages.timesheetsentstatus', compact('timesheets','users'));
 	}
 
