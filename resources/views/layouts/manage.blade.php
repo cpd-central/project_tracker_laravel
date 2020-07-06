@@ -1,4 +1,5 @@
 <!doctype html>
+
 <!-- This page creates the entire field layout of the manage_project page, as well as the javascrpit for all the buttons -->
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -31,6 +32,7 @@
         </div>
         <form method="post">
           @csrf
+          <!-- Title that displays the project name, project manager and date of energization for the project that is being managed -->
           <div class="row">
             <div class="form-group col-md-4">
                 <label for="projectname">Project Name:</label>
@@ -48,7 +50,11 @@
         <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit Details</a></td>
         </br>
         </br>
+
+      <!-- Physical Drawing Package -->
+
       @if(!is_null($physicalfields) || !isset($project['duedates']))
+      <!-- Heading for Physical Drawing Package, displays the title and second-level fields -->
         <div id="physicalheading">
           <h5><b> Physical Drawing Package</b></h5>
           <div class="row">
@@ -76,6 +82,7 @@
         </div>
       @endif
       @if(!isset($project['duedates']))
+        <!-- Body for Physical Drawing Package if the project has no due dates yet, displays third-level fields -->
         <div id="physicalbody">
           <?php $physicalfields = 1; ?>
           <h6 id="physical{{$physicalfields}}title" style="margin-left: 55px"><b>90</b></h6>
@@ -128,6 +135,7 @@
             </br>
         </div>
       @elseif($physicalfields > 0)
+      <!-- Body for Physical Drawing Package if the project has saved due dates, displays third-level fields -->
         <div id="physicalbody">
           <?php $keycounter = 3; ?>
           <?php for($i = 1; $i <= $physicalfields; $i++){?>
@@ -163,8 +171,10 @@
       <div id = "addedphysical">
       </div>
 
-
+  <!-- Wiring and Controls Drawing Package -->
+  
   @if(!is_null($controlfields) || !isset($project['duedates']))
+    <!-- Heading for Wiring and Controls Drawing Package, displays the title and second-level fields -->
     <div id="controlheading">
       <h5><b> Wiring and Controls Drawing Package</b></h5>
       <div class="row">
@@ -192,6 +202,7 @@
     </div>
   @endif
   @if(!isset($project['duedates']))
+  <!-- Body for Wiring and Controls Drawing Package if the project has not saved any due dates, displays third-level fields -->
     <div id= "controlbody">
       <?php $controlfields = 1; ?>
       <h6 id="control{{$controlfields}}title" style="margin-left: 55px"><b>90</b></h6>
@@ -243,6 +254,7 @@
         </br>
     </div>
   @elseif($controlfields > 0)
+    <!-- Body for Wiring and Controls Drawing Package if the project has saved due dates, displays third-level fields -->
     <div id="controlbody">
       <?php $keycounter = 3; ?>
       <?php for($i = 1; $i <= $controlfields; $i++){?>
@@ -278,8 +290,10 @@
   <div id = "addedcontrol">
   </div>
 
+    <!-- Collection Line Drawing Package -->
 
     @if(!is_null($collectionfields) || !isset($project['duedates']))
+      <!-- Heading for Collection Line Drawing Package, displays the title and second-level fields -->
       <div id="collectionheading">
         <h5><b> Collection Line Drawing Package</b></h5>
         <div class="row">
@@ -307,6 +321,7 @@
       </div>
     @endif
     @if(!isset($project['duedates']))
+    <!-- Body for Collection Line Drawing Package if the project has not saved any due dates, displays third-level fields -->
       <div id="collectionbody">
         <?php $collectionfields = 1; ?>
         <h6 id="collection{{$collectionfields}}title" style="margin-left: 55px"><b>90</b></h6>
@@ -358,6 +373,7 @@
           </br>
       </div>
     @elseif($collectionfields > 0)
+    <!-- Body for Collection Line Drawing Package if the project has saved due dates, displays third-level fields -->
       <div id="collectionbody">
         <?php $keycounter = 3; ?>
         <?php for($i = 1; $i <= $collectionfields; $i++){?>
@@ -393,9 +409,10 @@
     <div id= "addedcollection">
     </div>
 
-
+  <!-- Transmission Line Drawing Package -->
 
   @if(!is_null($transmissionfields) || !isset($project['duedates']))
+  <!-- Heading for Transmission Line Drawing Package, displays the title and second-level fields -->
     <div id="transmissionheading">
       <h5><b> Transmission Line Drawing Package</b></h5>
       <div class="row">
@@ -423,6 +440,7 @@
     </div>
   @endif
   @if(!isset($project['duedates']))
+  <!-- Body for Transmission Line Drawing Package if the project has not saved any due dates, displays third-level fields -->
     <div id="transmissionbody">
       <?php $transmissionfields = 1; ?>
       <h6 id="transmission{{$transmissionfields}}title" style="margin-left: 55px"><b>90</b></h6>
@@ -474,6 +492,7 @@
         </br>
     </div>
   @elseif($transmissionfields > 0)
+  <!-- Body for Transmission Line Drawing Package if the project has saved due dates, displays third-level fields -->
     <div id="transmissionbody">
       <?php $keycounter = 3; ?>
       <?php for($i = 1; $i <= $transmissionfields; $i++){?>
@@ -509,9 +528,10 @@
   <div id="addedtransmission">
   </div>
 
-
+  <!-- SCADA -->
 
   @if(!is_null($scadafields) || !isset($project['duedates']))
+  <!-- Heading for SCADA, displays the title and second-level fields -->
     <div id="scadaheading">
       <h5><b> SCADA </b></h5>
       <div class="row">
@@ -539,6 +559,7 @@
   </br>
   @endif
   @if(!isset($project['duedates']))
+  <!-- Body for SCADA if the project has not saved any due dates, displays third-level fields as well as fourth-level under communication -->
     <div id="scadabody">
       <?php $scadafields = 1; ?>
       <h6 id="scada{{$scadafields}}title" style="margin-left: 55px"><b>RTAC/Networking Configuration File</b></h6>
@@ -659,6 +680,7 @@
     </div>
   </div>
   @elseif($scadafields > 0)
+  <!-- Body for SCADA if the project has saved due dates, displays third-level fields as well as fourth-level under communication -->
     <div id="scadabody">
       <?php $keycounter = 3; ?>
       <?php for($i = 1; $i <= $scadafields; $i++){?>
@@ -725,9 +747,10 @@
   <div id="addedscada">
   </div>
 
-  <!-- Studies Starts -->
+  <!-- Studies -->
 
   @if(!is_null($totalstudies) || !isset($project['duedates']))
+  <!-- Heading for Studies, displays the title and second-level fields -->
     <div id="studiesheading">
       <h5><b>Studies</b></h5>
       <div class="row">
@@ -752,6 +775,7 @@
     </div>
   @endif
   @if(!isset($project['duedates']))
+  <!-- Body for Studies if the project has not saved any due dates, displays third-level fields -->
     <div id="studiesbody">
       <?php $totalstudies = 1; ?>
       <h6 id="study{{$totalstudies}}title" style="margin-left: 55px"><b>Reactive Study</b></h6>
@@ -839,6 +863,7 @@
       </br>
     </div>
   @elseif ($totalstudies > 0)
+  <!-- Body for Studies if the project has saved due dates, displays third-level fields -->
     <div id="studiesbody">
       <?php $keycounter = 2; ?>
       <?php for($i = 1; $i <= $totalstudies; $i++){?>
@@ -875,12 +900,15 @@
     <div id="dynamic_field">
     <?php
     $c = 0;
+    $misccount = 0;
+    //Displays the miscellaneous fields that have been saved into the Database
     if(isset($project['duedates']['additionalfields'])) {
       $additionalfields = $project['duedates']['additionalfields'];
       $keys = array_keys($additionalfields);
       foreach($keys as $key){
         $c = $c + 1;
         ?>
+        <div id="misc{{$c}}heading">
         <h5 id="name{{$c}}"><b> {{$key}} </b></h5>
                 <div class="row">
                   <div class="form-group col-md-4">
@@ -903,9 +931,43 @@
                     </div>
                       <input type="hidden" id="row{{$c}}name" name="row{{$c}}name" value= "{{$key}}" readonly /> 
                 </div>
-                <div id= "addedmisc{{$c}}">
+              </div>
+              <div id="misc{{$c}}body">
+                <?php 
+                $subkeys = array_keys($additionalfields[$key]);
+                foreach($subkeys as $subkey){
+                  if ($subkey != "person1" && $subkey != "person2" && $subkey != "due"){
+                    $misccount = $misccount + 1;
+                ?>
+                <h6 style="margin-left: 55px" id="{{$c}}misc{{$misccount}}title" ><b>{{$subkey}}</b></h6>
+                <div style="margin-left: 40px" class="row" id="{{$c}}misc{{$misccount}}row" >
+                    <div class="form-group col-md-4"> 
+                        <label for="{{$c}}misc{{$misccount}}person1">Engineer/Person 1</label>
+                        <input type="text" class="form-control" id="{{$c}}misc{{$misccount}}person1" name="{{$c}}misc{{$misccount}}person1" value= {{$additionalfields[$key][$subkey]['person1']}}>
+                    </div>
+                    <div class="form-group col-md-4"> 
+                        <label for="{{$c}}misc{{$misccount}}person2">Drafter/Person 2</label> 
+                        <input type="text" class="form-control" id="{{$c}}misc{{$misccount}}person2" name="{{$c}}misc{{$misccount}}person2" value= {{$additionalfields[$key][$subkey]['person2']}}> 
+                    </div> 
+                    <div class="form-group col-md-4"> 
+                        <label for="{{$c}}misc{{$misccount}}due">Due Date</label>
+                        <input type="date" class="form-control" id="{{$c}}misc{{$misccount}}due" name="{{$c}}misc{{$misccount}}due" value= {{$additionalfields[$key][$subkey]['due']}}>
+                    </div> 
                 </div>
+                    <input type="hidden" id="{{$c}}misc{{$misccount}}name" name="{{$c}}misc{{$misccount}}name" value="{{$subkey}}" readonly />
+                    </br>
+                    <div class="row">
+                      <div style="margin-left: 55px" class="form-group col-md-4">
+                        <button type="button" class="btn btn-danger btn_remove" id="{{$c}}misc{{$misccount}}">Remove Field</button>
+                      </div>
+                    </div> 
+                    <?php } ?>
+                <?php } ?>
+              </div>
+              <div id= "addedmisc{{$c}}">
+              </div>
   <?php } ?>
+  <input type="hidden" id="miscfields" name="miscfields" value="{{$misccount}}" readonly />
     <input type="hidden" id="total" name="total" value="{{$c}}" readonly />
    <?php } ?>
 
@@ -926,11 +988,14 @@
   </div>
   </form>
 
+<!-- Javascript Start -->
+
 <script type="text/javascript">
+//initializes field variables passed from the php code
 var row = "<?php echo $c ?>";
 var total = parseInt(row);
 var miscfields = parseInt("<?php echo $miscfields ?>");
-console.log(miscfields);
+//var miscnames = [];
 var physicalfields = parseInt("<?php echo $physicalfields ?>");
 var controlfields = parseInt("<?php echo $controlfields ?>");
 var collectionfields = parseInt("<?php echo $collectionfields ?>");
@@ -938,11 +1003,15 @@ var transmissionfields = parseInt("<?php echo $transmissionfields ?>");
 var scadafields = parseInt("<?php echo $scadafields ?>");
 var communicationfields = parseInt("<?php echo $communicationfields ?>");
 var totalstudies = parseInt("<?php echo $totalstudies ?>");
+//function that contains every JS function for the page. Says that the document is ready to take action on input
 $(document).ready(function() {
 
+//adds a row of miscellaneous forms when the miscellaneous add button is pressed
 $("#addform").on('click', function() {
   var name = window.prompt('Enter the name of the new Field: ');
             if (name != null && name != ""){
+                //miscnames.push(name);
+                //console.log(miscnames);
                 total ++;
                 var field = '<h5 id= name' + total+ '><b>' + name + '</b></h5>' + 
                       '<div class="row">' +
@@ -973,70 +1042,80 @@ $("#addform").on('click', function() {
                         }
 });
 
+//adds a row of third level forms when the add button by the second level miscellaneous field is pressed
 $("#dynamic_field").on('click', '.btn-warning', function() {
       var button_id = $(this).attr("id");
       var name = window.prompt('Enter the name of the new Subfield: ');
       if (name != null && name != ""){
         miscfields++;
-        console.log(miscfields);
-        var field = '<h6 style="margin-left: 55px" id="misc' +miscfields+ 'title" ><b>' + name + '</b></h6>' +
-                        '<div style="margin-left: 40px" class="row" id = "misc'+miscfields+'row" >' + 
+        console.log(button_id+'misc'+miscfields);
+        var field = '<h6 style="margin-left: 55px" id="'+button_id+'misc' +miscfields+ 'title" ><b>' + name + '</b></h6>' +
+                        '<div style="margin-left: 40px" class="row" id="'+button_id+'misc'+miscfields+'row">' + 
                             '<div class="form-group col-md-4">' + 
-                                '<label for="misc'+miscfields+'person1">Engineer/Person 1</label>' + 
-                                '<input type="text" class="form-control" id="misc'+miscfields+'person1" name="misc'+miscfields+'person1">' +
+                                '<label for="'+button_id+'misc'+miscfields+'person1">Engineer/Person 1</label>' + 
+                                '<input type="text" class="form-control" id="'+button_id+'misc'+miscfields+'person1" name="'+button_id+'misc'+miscfields+'person1">' +
                             '</div>' +
                             '<div class="form-group col-md-4">' + 
-                                '<label for="misc'+miscfields+'person2">Drafter/Person 2</label>' + 
-                                '<input type="text" class="form-control" id="misc'+miscfields+'person2" name="misc'+miscfields+'person2">' + 
+                                '<label for="'+button_id+'misc'+miscfields+'person2">Drafter/Person 2</label>' + 
+                                '<input type="text" class="form-control" id="'+button_id+'misc'+miscfields+'person2" name="'+button_id+'misc'+miscfields+'person2">' + 
                             '</div>' + 
                             '<div class="form-group col-md-4">' + 
-                                '<label for="misc'+miscfields+'due">Due Date</label>' + 
-                                '<input type="date" class="form-control" id="misc'+miscfields+'due" name="misc'+miscfields+'due">' + 
+                                '<label for="'+button_id+'misc'+miscfields+'due">Due Date</label>' + 
+                                '<input type="date" class="form-control" id="'+button_id+'misc'+miscfields+'due" name="'+button_id+'misc'+miscfields+'due">' + 
                             '</div>' + 
                         '</div>' +
-                            '<input type="hidden" id="misc'+miscfields+'name" name="misc'+miscfields+'name" value="'+ name + '" readonly />' +
+                            '<input type="hidden" id="'+button_id+'misc'+miscfields+'name" name="'+button_id+'misc'+miscfields+'name" value="'+ name + '" readonly />' +
                             '</br>' +
                             '<div class="row">' +
                               '<div style="margin-left: 55px" class="form-group col-md-4">' +
-                                '<button type="button" class="btn btn-danger btn_remove" id="misc'+miscfields+'">Remove Subfields</button>'+
+                                '<button type="button" class="btn btn-danger btn_remove" id="'+button_id+'misc'+miscfields+'">Remove Field</button>'+
                               '</div>' +
                             '</div>'; 
                     miscfield();
                     $('#addedmisc'+button_id).append(field);
       }
     }); 
-/*
-for(i = 1; i <= miscfields; i++){
-    $("#misc" + i).on('click', function() {
+
+//removes an existing third row field under the miscellaneous category
+for (i = 1; i <= total; i++){
+  for(j = 1; j <= miscfields; j++){
+    //console.log("#"+ i +"misc" + j);
+    $("#"+ i +"misc" + j).on('click', function() {
       var button_id = $(this).attr("id");
-      console.log(button_id);
+      //console.log(button_id);
       $('#'+button_id+'title').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
     }); 
+  }
 }
 
-$("#addedmisc").on('click', '.btn_remove', function() {
-      var button_id = $(this).attr("id");
-      console.log(button_id);
-      $('#'+button_id+'title').remove();
-      $('#'+button_id+'name').remove();
-      $('#'+button_id+'row').remove();
-      $('#'+button_id+'').remove();
-    });
-    */
+//removes a third row field that has just been added under the miscellaneous category
+for (i = 1; i <= total; i++){
+  $("#addedmisc" + i).on('click', '.btn_remove', function() {
+    var button_id = $(this).attr("id");
+    //console.log(button_id)
+    $('#'+button_id+'title').remove();
+    $('#'+button_id+'name').remove();
+    $('#'+button_id+'row').remove();
+    $('#'+button_id+'').remove();
+  });
+}
 
+//removes an entire miscellaneous field along with its third level fields
 $("#dynamic_field").on('click', '.btn_remove', function() {
-  var button_id = $(this).attr("id");
-  console.log(button_id);
-  $('#row'+button_id+'').remove();
-  $('#name'+button_id+'').remove();
-  $('#'+button_id+'').remove();
-  $('#'+button_id+'').remove();
-  $('#addedmisc'+button_id+'').remove();
+  var c = window.confirm("Are you sure you want to remove the entire Control field?");
+  if(c == true){
+    var button_id = $(this).attr("id");
+    //console.log(button_id);
+    $('#misc'+button_id+'heading').remove();
+    $('#misc'+button_id+'body').remove();
+    $('#addedmisc'+button_id+'').remove();
+  }
 }); 
 
+//adds a new row of third level fields under the Physical Drawing Package
 $("#addphysical").on('click', function() {
                 var name = window.prompt('Enter the name of the new Physical field: ');
                 if (name != null && name != ""){
@@ -1068,6 +1147,7 @@ $("#addphysical").on('click', function() {
                 } 
 });
 
+//removes an existing third row field under the Physical Drawing Package
   for(i = 1; i <= physicalfields; i++){
     $("#physical" + i).on('click', function() {
       var button_id = $(this).attr("id");
@@ -1078,6 +1158,7 @@ $("#addphysical").on('click', function() {
     }); 
   }
 
+//removes a third row field that has just been added under the Physical Drawing Package
   $("#addedphysical").on('click', '.btn_remove', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
@@ -1086,6 +1167,7 @@ $("#addphysical").on('click', function() {
       $('#'+button_id+'').remove();
     }); 
 
+//adds a new row of third level fields under the Wiring and Controls Drawing Package
 $("#addcontrol").on('click', function() {
                 var name = window.prompt('Enter the name of the new Control field: ');
                 if (name != null && name != ""){
@@ -1117,7 +1199,7 @@ $("#addcontrol").on('click', function() {
                 } 
 });
 
-
+//removes an existing third row field under the Wiring and Controls Drawing Package
 for(i = 1; i <= controlfields; i++){
     $("#control" + i).on('click', function() {
       var button_id = $(this).attr("id");
@@ -1128,6 +1210,7 @@ for(i = 1; i <= controlfields; i++){
     }); 
   }
 
+//removes a third row field that has just been added under the Wiring and Controls Drawing Package
   $("#addedcontrol").on('click', '.btn_remove', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
@@ -1136,6 +1219,7 @@ for(i = 1; i <= controlfields; i++){
       $('#'+button_id+'').remove();
     });
 
+//adds a new row of third level fields under the Collection Line Drawing Package
 $("#addcollection").on('click', function() {
                 var name = window.prompt('Enter the name of the new Collection field: ');
                 if (name != null && name != ""){
@@ -1167,6 +1251,7 @@ $("#addcollection").on('click', function() {
                 } 
 });
 
+//removes an existing third row field under the Collection Line Drawing Package
 for(i = 1; i <= collectionfields; i++){
     $("#collection" + i).on('click', function() {
       var button_id = $(this).attr("id");
@@ -1177,6 +1262,7 @@ for(i = 1; i <= collectionfields; i++){
     }); 
   }
 
+//removes a third row field that has just been added under the Collection Line Drawing Package
   $("#addedcollection").on('click', '.btn_remove', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
@@ -1185,6 +1271,7 @@ for(i = 1; i <= collectionfields; i++){
       $('#'+button_id+'').remove();
     });
 
+//adds a new row of third level fields under the Transmission Line Drawing Package
 $("#addtransmission").on('click', function() {
                 var name = window.prompt('Enter the name of the new Transmission field: ');
                 if (name != null && name != ""){
@@ -1216,6 +1303,7 @@ $("#addtransmission").on('click', function() {
                 } 
 });
 
+//removes an existing third row field under the Transmission Line Drawing Package
 for(i = 1; i <= transmissionfields; i++){
     $("#transmission" + i).on('click', function() {
       var button_id = $(this).attr("id");
@@ -1226,6 +1314,7 @@ for(i = 1; i <= transmissionfields; i++){
     }); 
   }
 
+//removes a third row field that has just been added under the Transmission Line Drawing Package
   $("#addedtransmission").on('click', '.btn_remove', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
@@ -1234,6 +1323,7 @@ for(i = 1; i <= transmissionfields; i++){
       $('#'+button_id+'').remove();
     });
 
+//adds a new row of third level fields under the SCADA category
 $("#addscada").on('click', function() {
                 var name = window.prompt('Enter the name of the new SCADA field: ');
                 if (name != null && name != ""){
@@ -1265,6 +1355,7 @@ $("#addscada").on('click', function() {
                 } 
 });
 
+//removes an existing third row field under the SCADA category
 for(i = 1; i <= scadafields; i++){
     $("#scada" + i).on('click', function() {
       var button_id = $(this).attr("id");
@@ -1275,6 +1366,7 @@ for(i = 1; i <= scadafields; i++){
     }); 
   }
 
+//Removes fourth level fields that are under the Communication category in SCADA
   for(i = 1; i <= communicationfields; i++){
     $("#communication" + i).on('click', function() {
       var button_id = $(this).attr("id");
@@ -1285,6 +1377,7 @@ for(i = 1; i <= scadafields; i++){
     });
   }
 
+//removes a third row field that has just been added under the SCADA category
   $("#addedscada").on('click', '.btn_remove', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
@@ -1293,6 +1386,7 @@ for(i = 1; i <= scadafields; i++){
       $('#'+button_id+'').remove();
     });
 
+//adds a new row of third level fields under the Studies category
 $("#addstudy").on('click', function() {
                 var name = window.prompt('Enter the name of the new study: ');
                 if (name != null && name != ""){
@@ -1320,6 +1414,7 @@ $("#addstudy").on('click', function() {
                 } 
 });
 
+//removes an existing third row field under the Studies category
 for(i = 1; i <= totalstudies; i++){
     $("#study" + i).on('click', function() {
       var button_id = $(this).attr("id");
@@ -1329,7 +1424,7 @@ for(i = 1; i <= totalstudies; i++){
       $('#'+button_id+'').remove();
     }); 
   }
-
+//removes a third row field that has just been added under the Studies category
   $("#addedstudy").on('click', '.btn_remove', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
@@ -1338,6 +1433,7 @@ for(i = 1; i <= totalstudies; i++){
       $('#'+button_id+'').remove();
     });
 
+//functions that remove an entire category of default tasks 
 
   $('#removephysical').on('click', function() {
     var c = window.confirm("Are you sure you want to remove the entire Physical field?");
@@ -1412,6 +1508,8 @@ for(i = 1; i <= totalstudies; i++){
   });
 
 });
+
+//Helper functions that replace the field counter hidden variables with updated values whenever called
 
 function hiddenfield(){
   $('#total').remove();

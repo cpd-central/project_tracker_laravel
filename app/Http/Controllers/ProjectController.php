@@ -1352,6 +1352,7 @@ class ProjectController extends Controller
   public function planner(Request $request){
     $projects = Project::all()->where('projectstatus', 'Won');
     $projects = $this->sort_by_closest_date($projects);
+    //These variables are used for the searching and sorting tools on the planner page
     $search = $request['search'];
     $term = $request['sort'];
     $invert = $request['invert']; 
@@ -1364,10 +1365,15 @@ class ProjectController extends Controller
     return view('pages.planner', compact('projects','term', 'search', 'invert'));
   }
 
+   /**
+   * Sorts projects based on its due date that is closest to the present date
+   * @return $sortedprojects the sorted list of all Won projects
+   */ 
   public function sort_by_closest_date($projects){
     $today = date("Y-m-d");
     $alldates = array();
     $sortedprojects = array();
+    //loops through each project and gets all of the second-level due dates from each project
       foreach($projects as $project){
         $name = $project['projectname'];
         $duedates = $project['duedates'];
@@ -1392,6 +1398,7 @@ class ProjectController extends Controller
             array_push($dates, $duedates['studies']['due']);
           }
           sort($dates);
+          //finds the first date out of the sorted dates that isn't in the past, and saves it to the variable $earliestdate
           foreach($dates as $date){
             if($this->dateToStr($date, null) > $today){
               $earliestdate = $date;
@@ -1400,6 +1407,7 @@ class ProjectController extends Controller
           }
         }
         else{
+          //if a project has no other due dates, the date of energization will be its earliest date
           if($this->dateToStr($project['dateenergization'], null) > $today){
             $earliestdate = $project['dateenergization'];
           }
@@ -1410,6 +1418,11 @@ class ProjectController extends Controller
         $alldates[$name] = $earliestdate;
       }
       asort($alldates);
+      /*
+      Loops through $alldates, which is a sorted list of every project's earliest date.
+      In this loop, it finds the project associated with that date and appends the entire project to the $sortedprojects variable.
+      That way instead of having just the dates sorted, it has the entire projects sorted and ready to display
+      */
       foreach($alldates as $key => $value){
         foreach ($projects as $project){
           if ($project['projectname'] == $key){
@@ -1450,8 +1463,6 @@ class ProjectController extends Controller
 
     else {
       $projects = $won_projects->orderBy($sort_term, $asc_desc)->get();
-      //echo print_r(count($projects));
-      //echo '<br>';
     }
 
     foreach ($projects as $project) {
@@ -1467,6 +1478,7 @@ class ProjectController extends Controller
    */ 
   public function manage_project($id){
     $project = Project::find($id);
+    //sets field number variables to 0 if the project hasn't saved any due dates yet
     if(!isset($project['duedates'])){
       $totalstudies = 0;
       $transmissionfields = 0;
@@ -1479,6 +1491,7 @@ class ProjectController extends Controller
     }
     else{
       $duedates = $project['duedates'];
+      //counts the number of third-level studies if the second-level field exists
       if (isset($duedates['studies'])){
         $totalstudies = 0;
         $studies = $duedates['studies'];
@@ -1492,6 +1505,7 @@ class ProjectController extends Controller
       else{
         $totalstudies = null;
       }
+     //counts the number of third-level transmission fields if the second-level field exists
       if (isset($duedates['transmission'])){
         $transmissionfields = 0;
         $transmissions = $duedates['transmission'];
@@ -1505,6 +1519,7 @@ class ProjectController extends Controller
       else{
         $transmissionfields = null;
       }
+      //counts the number of third-level collection fields if the second-level field exists
       if (isset($duedates['collection'])){
         $collectionfields = 0;
         $collections = $duedates['collection'];
@@ -1518,6 +1533,7 @@ class ProjectController extends Controller
       else{
         $collectionfields = null;
       }
+      //counts the number of third-level control fields if the second-level field exists
       if (isset($duedates['control'])){
         $controlfields = 0;
         $controls = $duedates['control'];
@@ -1531,6 +1547,7 @@ class ProjectController extends Controller
       else{
         $controlfields = null;
       }
+      //counts the number of third-level physical fields if the second-level field exists
       if (isset($duedates['physical'])){
         $physicalfields = 0;
         $physicals = $duedates['physical'];
@@ -1544,6 +1561,7 @@ class ProjectController extends Controller
       else{
         $physicalfields = null;
       }
+      //counts the number of third-level SCADA fields if the second-level field exists, as well as fourth-level fields under communication
     if (isset($duedates['scada'])){
       $scadafields = 0;
       $communicationfields = 0;
@@ -1567,7 +1585,7 @@ class ProjectController extends Controller
       $scadafields = null;
       $communicationfields = null;
     }
-
+    //counts the number of second-level and third-level additional fields
     if (isset($duedates['additionalfields'])){
       $miscfields = 0;
       $additionalfields = $duedates['additionalfields'];
@@ -1585,7 +1603,6 @@ class ProjectController extends Controller
     }
     
   }
-  
     $project = $this->format_due_dates($project);
     return view('pages.manage_project', compact('project', 'totalstudies', 'transmissionfields', 'collectionfields', 'controlfields', 'physicalfields', 'scadafields', 'communicationfields', 'miscfields'));
   }
@@ -1599,40 +1616,9 @@ class ProjectController extends Controller
   public function edit_due_dates(Request $request, $id)
   {
     $project = Project::find($id);
-    //$this->validate_dates($request, $project);
     $this->store_dates($project, $request);
     return redirect('/planner')->with('Success!', 'Project has been successfully updated');
   }
-
-    /**
-   * 
-   * @param $req - Request variable with attributes to be assigned to $project.
-   */
-  /*
-  protected function validate_dates($req, $project)
-  {
-    if (isset($project['duedates']['physical'])){
-      $physical = $project['duedates']['physical'];
-    }
-    else{
-      $physical = array();
-    }
-    $keys = array_keys($physical);
-    $numfields = $req->get('physicalfields');
-    dd($numfields);
-
-// NOT DONE YET!!!
-    for($i = 1; $i <= $numfields; $i++){
-      $namefield = $req->get('physical'.$i.'name');
-      if (!isset($namefield)){
-        continue;
-      }
-      $this->validate($req, [
-        'physical'.$i.'due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-      ]);
-    }
-  }
-  */
 
 
       /**
@@ -1643,6 +1629,7 @@ class ProjectController extends Controller
   protected function store_dates($project, $req)
   {
       $duedates = array();
+      //stores all of the people and due dates for all studies fields
       if (!is_null($req->get('totalstudies'))){
         $studies = array();
         $studies['person1'] = $req->get('studiesperson1');
@@ -1658,6 +1645,7 @@ class ProjectController extends Controller
         }
         $duedates['studies'] = $studies;
       }
+      //stores all of the people and due dates for all physical fields
       if (!is_null($req->get('physicalfields'))){
         $physicals = array();
         $physicals['person1'] = $req->get('physicalperson1');
@@ -1675,7 +1663,7 @@ class ProjectController extends Controller
         }
         $duedates['physical'] = $physicals;
       }
-    
+      //stores all of the people and due dates for all control fields
       if (!is_null($req->get('controlfields'))){
         $controls = array();
         $controls['person1'] = $req->get('controlperson1');
@@ -1693,7 +1681,7 @@ class ProjectController extends Controller
         }
         $duedates['control'] = $controls;
       }
-
+      //stores all of the people and due dates for all collection fields
       if (!is_null($req->get('collectionfields'))){
         $collections = array();
         $collections['person1'] = $req->get('collectionperson1');
@@ -1711,7 +1699,7 @@ class ProjectController extends Controller
         }
         $duedates['collection'] = $collections;
       }
-
+      //stores all of the people and due dates for all transmission fields
       if (!is_null($req->get('transmissionfields'))){
         $transmissions = array();
         $transmissions['person1'] = $req->get('transmissionperson1');
@@ -1729,8 +1717,7 @@ class ProjectController extends Controller
         }
         $duedates['transmission'] = $transmissions;
       }
-
-
+      //stores all of the people and due dates for all SCADA fields
       if (!is_null($req->get('scadafields'))){
         $scada = array();
         $scada['person1'] = $req->get('scadaperson1');
@@ -1760,7 +1747,7 @@ class ProjectController extends Controller
         }
         $duedates['scada'] = $scada;
       }
-
+      //stores all of the people and due dates for all miscellaneous fields
       if (!is_null($req->get('total'))){
         $additionalfields = array();
         for($i = 1; $i <= $req->get('total'); $i++){
@@ -1772,39 +1759,19 @@ class ProjectController extends Controller
           $additionalfields[$namefield]['person1'] = $req->get('row'.$i.'person1');
           $additionalfields[$namefield]['person2'] = $req->get('row'.$i.'person2');
           $additionalfields[$namefield]['due'] = $this->strToDate($req->get('row'.$i.'due'), null);
+          for($j = 1; $j <= $req->get('miscfields'); $j++){
+            $subname = $req->get(''.$i.'misc'.$j.'name');
+            if($subname == null){
+              continue;
+            }
+            $additionalfields[$namefield][$subname] = array();
+            $additionalfields[$namefield][$subname]['person1'] = $req->get(''.$i.'misc'.$j.'person1');
+            $additionalfields[$namefield][$subname]['person2'] = $req->get(''.$i.'misc'.$j.'person2');
+            $additionalfields[$namefield][$subname]['due'] = $this->strToDate($req->get(''.$i.'misc'.$j.'due'), null);
+          }
         }
-        /*
-        for($i = 1; $i <= $req->get('miscfields'); $i++){
-            
-        }
-        */
         $duedates['additionalfields'] = $additionalfields;
       }
-
-        /*
-      if (!isset($duedates['additionalfields'])){
-        $additionalfields = array();
-        $duedates['additionalfields'] = $additionalfields;
-      } 
-      $additionalfields = $duedates['additionalfields'];
-      $keys = array_keys($additionalfields);
-
-      $numfields = $req->get('total');
-      if ($numfields == null || $numfields == ''){
-        $numfields = sizeof($keys);
-      }
-      $duedates['additionalfields'] = array();
-      for($i = 1; $i <= $numfields; $i++){
-        $namefield = $req->get('row'.$i.'name');
-        if (!isset($namefield)){
-          continue;
-        }
-        $duedates['additionalfields'][$namefield] = array();
-        $duedates['additionalfields'][$namefield]['person1'] = $req->get('row'.$i.'person1');
-        $duedates['additionalfields'][$namefield]['person2'] = $req->get('row'.$i.'person2');
-        $duedates['additionalfields'][$namefield]['due'] = $this->strToDate($req->get('row'.$i.'due'), null);
-      }
-      */
 
     $project->duedates = $duedates;
     $project->save();
@@ -1817,9 +1784,8 @@ class ProjectController extends Controller
    */
   protected function format_due_dates($project){
 
-    // Will format specific due dates if the project has been assigned them.
     $project['dateenergization'] = $this->dateToStr($project['dateenergization']);
-    
+    //changes due dates stored in the database into strings in order to be displayed properly
     if (isset($project['duedates'])){
       $duedates = $project['duedates'];
 
@@ -1895,7 +1861,12 @@ class ProjectController extends Controller
       $keys = array_keys($additionalfields);
         foreach ($keys as $key){
           $additionalfields[$key]['due'] = $this->dateToStr($additionalfields[$key]['due']);
-          
+          $subkeys = array_keys($additionalfields[$key]);
+          foreach($subkeys as $subkey){
+            if ($subkey != "person1" && $subkey != "person2" && $subkey != "due"){
+              $additionalfields[$key][$subkey]['due'] = $this->dateToStr($additionalfields[$key][$subkey]['due']);
+            }
+          }
         }
         $duedates['additionalfields'] = $additionalfields;
       }
@@ -1912,15 +1883,14 @@ class ProjectController extends Controller
   public function sticky_note(){
     $projects = Project::all()->where('projectstatus', 'Won');
     $projects = $this->sort_by_closest_date($projects);
-    //$project = $projects[0];
     $json = [];
     $counter = 0;
+    //calls the project_to_json method for each project that has due dates saved
     foreach($projects as $project){
       if ($this->project_to_json($project) != null){
         $json[$counter] = $this->project_to_json($project);
         $counter++;
       }
-    //$json = $this->project_to_json($project);
     }
     return view('pages.sticky_note', compact('json'));
   }
@@ -1993,6 +1963,47 @@ class ProjectController extends Controller
             );
             $jstring = json_encode($jstring);
             array_push($json, $jstring);
+
+            //adds subfields for the miscellaneous tasks
+            $subkeys = array_keys($addeddate);
+            $miscsubcount = 0;
+            foreach($addeddate as $task){
+              $taskname = $subkeys[$miscsubcount];
+              if($taskname != "person1" && $taskname != "person2" && $taskname != "due"){
+                $tid = 'id_'.$taskname.'_'.$pname.'_'.$project['projectname'];
+                $taskstart = $task['due'];
+                $taskstart = $this->dateToStr($taskstart);
+                if($taskstart == "None" || $taskstart < $today){
+                  $miscsubcount++;
+                  continue;
+                }
+                $taskend = new \DateTime($this->dateToStr($taskstart));
+                $taskend = $taskend->add(new DateInterval('P1D'));
+                $taskend = date_format($taskend, 'Y-m-d');
+                $taskend = $this->dateToStr($taskend);
+                $taskname1 = $task['person1'];
+                if($startweek <= $taskstart && $taskstart <= $endweek){
+                  $color = "rgb(255, 99, 132, 0.4)";
+                } 
+                else{
+                  $color = "rgb(54, 162, 235, 0.4)";
+                }
+                  $taskname2 = $task['person2'];
+                  $jstring = array(
+                    "id" => $tid,
+                    "text" => $taskname,
+                    "start_date" => $taskstart,
+                    "end_date" => $taskend,
+                    "parent" => $id,
+                    "name_1" => $taskname1,
+                    "name_2" => $taskname2,
+                    "color" => $color
+                  );
+                $jstring = json_encode($jstring);
+                array_push($json, $jstring);
+              }
+              $miscsubcount++;
+            }
             $addedcount++;  
             $j++;      
           }
@@ -2053,8 +2064,6 @@ class ProjectController extends Controller
         foreach($duedate as $task){
           $taskname = $subkeys[$subcount];
           if($taskname != "person1" && $taskname != "person2" && $taskname != "due"){
-            //dd($task);
-            //$idcount = $i + $subcount;
             $tid = 'id_'.$taskname.'_'.$pname.'_'.$project['projectname'];
             $taskstart = $task['due'];
             $taskstart = $this->dateToStr($taskstart);

@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 
-<?php //dd($json); ?>
-
 <head>
     @include('includes.navbar')
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
