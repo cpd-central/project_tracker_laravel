@@ -1,7 +1,8 @@
 @extends('layouts.manage')
-@section('page-title', 'Manage Project')
+
+@section('page-title', 'Manage '. $project['projectname'])
 @section('title', 'Manage Project Form')
-@section('h4proposal', 'Edit Project Plans')
+@section('h4proposal', 'Edit Project Due Dates')
 @section('projectname', $project['projectname'])
 @section('projectmanager')
 <?php $projectmanagers = "";
