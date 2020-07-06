@@ -42,7 +42,8 @@
   @section('table-title', 'Project Index')
   @section('table-header')
   <table class="table table-striped">
-    <thead>
+    <div id='divhead'>
+      <thead id='header'>
       <tr> 
         <th class="text-center" colspan="3">Action</th>
         <th>CEG Proposal Author</th>
@@ -61,6 +62,7 @@
         <th>Project Manager</th>
       </tr>
     </thead>
+  </div>
   @stop
 
   @section('table-content')
