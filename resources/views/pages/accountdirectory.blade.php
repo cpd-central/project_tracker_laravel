@@ -36,9 +36,9 @@
     <td align="center">{{ $user['perhourdollar'] }}</td>
     <td align="center">{{ $user['role'] }}</td>
     @if($user['active'] == true)
-    <td align="center"><a href='{{ route('pages.rolesActivation', $user['_id']) }}' role="button" class="btn btn-danger" onclick="return confirm('This will deactivate the user from the database.  Are you sure you want to do this?')">Deactivate</a></td>
+    <td align="center"><a href='{{ route('pages.activation', $user['_id']) }}' role="button" class="btn btn-danger" onclick="return confirm('This will deactivate the user from the database.  Are you sure you want to do this?')">Deactivate</a></td>
     @else
-    <td align="center"><a href='{{ route('pages.rolesActivation', $user['_id']) }}' role="button" class="btn btn-success">Activate</td>
+    <td align="center"><a href='{{ route('pages.activation', $user['_id']) }}' role="button" class="btn btn-success">Activate</td>
     @endif
         </tr>
 @endforeach 

@@ -138,7 +138,7 @@ else{
 					</div>
 					<?php } elseif (auth()->user()->role == "sudo") { ?>
 					<div class="form-group" style="{{$style_string}}">
-						<a href={{ route('pages.roles') }} class="btn login_btn">Account Directory</a>
+						<a href={{ route('pages.accountdirectory') }} class="btn login_btn">Account Directory</a>
 					</div>	
 					<?php } ?>               
 					<div class="form-group" style="{{$style_string}}">

@@ -1,4 +1,10 @@
 @extends('layouts.index')
+<style>
+  th {position: sticky;
+  top: 0;
+  background-color:lightgray;
+  }
+</style>
 
 @section('toptool')
 
@@ -57,23 +63,37 @@
         <td><a href="{{action('ProjectController@manage_project', $project['_id'])}}" class="btn btn-warning">Manage Project</a></td>
         <td>{{$project['projectname']}}</td>
         <td>{{$project['dateenergization']}}</td>
-        @if(isset($project['duedates']['physical']))
-        <td>{{$project['duedates']['physical']['due']}}</td>
-        @endif
-        @if(isset($project['duedates']['control']))
-        <td>{{$project['duedates']['control']['due']}}</td>
-        @endif
-        @if(isset($project['duedates']['collection']))
-        <td>{{$project['duedates']['collection']['due']}}</td>
-        @endif
-        @if(isset($project['duedates']['transmission']))
-        <td>{{$project['duedates']['transmission']['due']}}</td>
-        @endif
-        @if(isset($project['duedates']['scada']))
-        <td>{{$project['duedates']['scada']['due']}}</td>
-        @endif
-        @if(isset($project['duedates']['studies']))
-        <td>{{$project['duedates']['studies']['due']}}</td>
+        @if(isset($project['duedates']))
+          @if(isset($project['duedates']['physical']))
+          <td>{{$project['duedates']['physical']['due']}}</td>
+          @else
+          <td>None</td>
+          @endif
+          @if(isset($project['duedates']['control']))
+          <td>{{$project['duedates']['control']['due']}}</td>
+          @else
+          <td>None</td>
+          @endif
+          @if(isset($project['duedates']['collection']))
+          <td>{{$project['duedates']['collection']['due']}}</td>
+          @else
+          <td>None</td>
+          @endif
+          @if(isset($project['duedates']['transmission']))
+          <td>{{$project['duedates']['transmission']['due']}}</td>
+          @else
+          <td>None</td>
+          @endif
+          @if(isset($project['duedates']['scada']))
+          <td>{{$project['duedates']['scada']['due']}}</td>
+          @else
+          <td>None</td>
+          @endif
+          @if(isset($project['duedates']['studies']))
+          <td>{{$project['duedates']['studies']['due']}}</td>
+          @else
+          <td>None</td>
+          @endif
         @endif
     </tr>
 @endforeach
