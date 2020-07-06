@@ -3,7 +3,8 @@ $year = date("Y");
 $month = date('F', strtotime('-21 day'));
 ?>
 <style>
-  #header {
+  th {position: sticky;
+  top: 0;
   background-color:lightblue;
   }
 </style>
@@ -31,9 +32,13 @@ $month = date('F', strtotime('-21 day'));
               <tr> 
                 <th>Project Name</th>
                 <th>Project Code</th>
-                <th>HOLD or BILL this month?</th>
-                <th>Project Manager</th>
+                <th style="min-width: 150px">HOLD or BILL this month?</th>
+                <th style="min-width: 200px">Project Manager</th>
                 <th>T&M/Lump/SOV</th>
+                <th style="min-width: 150px">Billing Contact</th>
+                <th>Billing Contact Email</th>
+                <th style="min-width: 250px">File Location of proposal</th>
+                <th style="min-width: 300px">Billing Notes</th>
               </tr>
             </thead>
           </div>
@@ -67,6 +72,10 @@ $month = date('F', strtotime('-21 day'));
                     <?php echo $project['billingmethod'] ?>
                   @endif
               @endif </td>
+            <td>{{ $project['billingcontact'] }}</td>
+            <td>{{ $project['billingcontactemail'] }}</td>
+            <td>{{ $project['filelocationofproposal'] }}</td>
+            <td>{{ $project['billingnotes'] }}</td>
           </tr>
         @endforeach
       </div>
