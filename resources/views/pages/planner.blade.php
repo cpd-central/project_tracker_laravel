@@ -60,7 +60,9 @@
 @section('table-content')
 @foreach($projects as $project)
     <tr>
-        <td><a href="{{action('ProjectController@manage_project', $project['_id'])}}" class="btn btn-warning">Manage Project</a></td>
+        <td>
+            <a href="{{action('ProjectController@manage_project', $project['_id'])}}" class="btn btn-warning">Manage Project</a>
+        </td>
         <td>{{$project['projectname']}}</td>
         <td>{{$project['dateenergization']}}</td>
         @if(isset($project['duedates']))

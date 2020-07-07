@@ -1011,9 +1011,10 @@ $("#addform").on('click', function() {
   var name = window.prompt('Enter the name of the new Field: ');
             if (name != null && name != ""){
                 //miscnames.push(name);
-                //console.log(miscnames);
                 total ++;
-                var field = '<h5 id= name' + total+ '><b>' + name + '</b></h5>' + 
+                console.log(total);
+                var field = '<div id="misc'+total+'heading">' +
+                '<h5 id= name' + total+ '><b>' + name + '</b></h5>' + 
                       '<div class="row">' +
                         '<div class="form-group col-md-4">' +
                           '<button type="button" class="btn btn-danger btn_remove" id="'+total+'">Remove '+name+' Forms</button>'+
@@ -1034,6 +1035,7 @@ $("#addform").on('click', function() {
                             '<input type="date" class="form-control" id="row'+ total+'due" name="row'+ total+'due">' + 
                         '</div>' + 
                         '<input type="hidden" id="row'+ total+'name" name="row'+ total+'name" value="'+ name + '" readonly />' +
+                      '</div>' +
                       '</div>' +
                       '<div id="addedmisc'+total+'">' +
                       '</div>';
@@ -1082,7 +1084,7 @@ for (i = 1; i <= total; i++){
     //console.log("#"+ i +"misc" + j);
     $("#"+ i +"misc" + j).on('click', function() {
       var button_id = $(this).attr("id");
-      //console.log(button_id);
+      console.log('remove1');
       $('#'+button_id+'title').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
@@ -1095,6 +1097,8 @@ for (i = 1; i <= total; i++){
 for (i = 1; i <= total; i++){
   $("#addedmisc" + i).on('click', '.btn_remove', function() {
     var button_id = $(this).attr("id");
+    console.log('remove2');
+    console.log(button_id);
     //console.log(button_id)
     $('#'+button_id+'title').remove();
     $('#'+button_id+'name').remove();
@@ -1102,18 +1106,7 @@ for (i = 1; i <= total; i++){
     $('#'+button_id+'').remove();
   });
 }
-
-//removes an entire miscellaneous field along with its third level fields
-$("#dynamic_field").on('click', '.btn_remove', function() {
-  var c = window.confirm("Are you sure you want to remove the entire Control field?");
-  if(c == true){
-    var button_id = $(this).attr("id");
-    //console.log(button_id);
-    $('#misc'+button_id+'heading').remove();
-    $('#misc'+button_id+'body').remove();
-    $('#addedmisc'+button_id+'').remove();
-  }
-}); 
+ 
 
 //adds a new row of third level fields under the Physical Drawing Package
 $("#addphysical").on('click', function() {
@@ -1506,6 +1499,18 @@ for(i = 1; i <= totalstudies; i++){
       studyfield();
     }
   });
+
+  //removes an entire miscellaneous field along with its third level fields
+$("#dynamic_field").on('click', '.btn_remove', function() {
+  var c = window.confirm("Are you sure you want to remove the entire Miscellaneous field?");
+  if(c == true){
+    console.log('remove3');
+    var button_id = $(this).attr("id");
+    $('#misc'+button_id+'heading').remove();
+    $('#misc'+button_id+'body').remove();
+    $('#addedmisc'+button_id+'').remove();
+  }
+});
 
 });
 
