@@ -298,6 +298,8 @@ class ProjectController extends Controller
    */
   public function submit_billing(Request $request)
   {
+      //$timestamp = $this->strToDate(date("Y-m-d H:i:s", time()), null);
+      //dd($timestamp);
       $id_billing_array=array();
       $x=0;
       for ($x=0; $x <= $request['graph_count']; $x++) 
@@ -333,7 +335,7 @@ class ProjectController extends Controller
   public function billing(Request $request){
     $term = $request['sort'];
     if(!isset($term)){
-      $term = "projectname";
+      $term = "projectmanager";
     }
     $projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy($term);
     return view('pages.monthendbilling', compact('projects', 'term'));
