@@ -95,7 +95,7 @@
         if($filter_all == false){
         $fulltext = $var->options['title']['text'];
         $splittextfull = explode(", ", $fulltext);
-        $split_pm = ltrim($splittextfull[2], 'PM is '); 
+        $split_pm = $splittextfull[2];
         if($split_pm != "" || $split_pm == null){
           if(auth()->user()->name != $split_pm) {
             continue;
@@ -190,7 +190,7 @@
         if($filter_all == false){
         $fulltext = $var->options['title']['text'];
         $splittextfull = explode(", ", $fulltext);
-        $split_pm = ltrim($splittextfull[2], 'PM is '); 
+        $split_pm = $splittextfull[2];
         if($split_pm != "" || $split_pm == null){
           if(auth()->user()->name != $split_pm) {
             continue;
