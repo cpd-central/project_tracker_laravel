@@ -1355,14 +1355,19 @@ class ProjectController extends Controller
     //These variables are used for the searching and sorting tools on the planner page
     $search = $request['search'];
     $term = $request['sort'];
-    $invert = $request['invert']; 
+    $invert = $request['invert'];
+    $copy = $request['copyproject'];
+    if(!is_null($copy)){
+      $copy = Project::find($request['copyproject']);
+    }
+
     if(isset($search) || (isset($term) && $term != "Closest Due Date")){
       $projects = $this->planner_search($search, $term, $invert);
     }
     foreach($projects as $project){
       $this->format_due_dates($project);
     }
-    return view('pages.planner', compact('projects','term', 'search', 'invert'));
+    return view('pages.planner', compact('projects','term', 'search', 'invert', 'copy'));
   }
 
    /**
@@ -1470,6 +1475,28 @@ class ProjectController extends Controller
     }
     return $projects;
 
+  }
+
+  public function paste_dates(Request $request){
+    $copyproject = Project::find($request->get('copyproject'));
+    $pasteproject = Project::find($request->get('pasteproject'));
+    $pasteproject['duedates'] = array();
+    $pasteproject['duedates'] = $copyproject['duedates'];
+    $pasteid = $pasteproject['id'];
+    $pasteproject->save();
+    /*
+    $projects = Project::all()->where('projectstatus', 'Won');
+    $projects = $this->sort_by_closest_date($projects);
+    $copy = null;
+    foreach($projects as $project){
+      $this->format_due_dates($project);
+    }
+    return view('pages.planner', compact('projects', 'copy'));
+    */
+
+    //manage_project($pasteid);
+    return redirect('/manageproject/'.$pasteid);
+    //return action('ProjectController@manage_project', $pasteid);
   }
 
    /**

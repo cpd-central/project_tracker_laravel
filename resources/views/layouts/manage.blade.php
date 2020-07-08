@@ -1012,7 +1012,6 @@ $("#addform").on('click', function() {
             if (name != null && name != ""){
                 //miscnames.push(name);
                 total ++;
-                console.log(total);
                 var field = '<div id="misc'+total+'heading">' +
                 '<h5 id= name' + total+ '><b>' + name + '</b></h5>' + 
                       '<div class="row">' +
@@ -1050,7 +1049,6 @@ $("#dynamic_field").on('click', '.btn-warning', function() {
       var name = window.prompt('Enter the name of the new Subfield: ');
       if (name != null && name != ""){
         miscfields++;
-        console.log(button_id+'misc'+miscfields);
         var field = '<h6 style="margin-left: 55px" id="'+button_id+'misc' +miscfields+ 'title" ><b>' + name + '</b></h6>' +
                         '<div style="margin-left: 40px" class="row" id="'+button_id+'misc'+miscfields+'row">' + 
                             '<div class="form-group col-md-4">' + 
@@ -1070,7 +1068,7 @@ $("#dynamic_field").on('click', '.btn-warning', function() {
                             '</br>' +
                             '<div class="row">' +
                               '<div style="margin-left: 55px" class="form-group col-md-4">' +
-                                '<button type="button" class="btn btn-danger btn_remove" id="'+button_id+'misc'+miscfields+'">Remove Field</button>'+
+                                '<button type="button" class="btn btn-primary" id="'+button_id+'misc'+miscfields+'">Remove Field</button>'+
                               '</div>' +
                             '</div>'; 
                     miscfield();
@@ -1081,10 +1079,8 @@ $("#dynamic_field").on('click', '.btn-warning', function() {
 //removes an existing third row field under the miscellaneous category
 for (i = 1; i <= total; i++){
   for(j = 1; j <= miscfields; j++){
-    //console.log("#"+ i +"misc" + j);
     $("#"+ i +"misc" + j).on('click', function() {
       var button_id = $(this).attr("id");
-      console.log('remove1');
       $('#'+button_id+'title').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
@@ -1094,18 +1090,13 @@ for (i = 1; i <= total; i++){
 }
 
 //removes a third row field that has just been added under the miscellaneous category
-for (i = 1; i <= total; i++){
-  $("#addedmisc" + i).on('click', '.btn_remove', function() {
+  $("#dynamic_field").on('click', '.btn-primary', function() {
     var button_id = $(this).attr("id");
-    console.log('remove2');
-    console.log(button_id);
-    //console.log(button_id)
     $('#'+button_id+'title').remove();
     $('#'+button_id+'name').remove();
     $('#'+button_id+'row').remove();
     $('#'+button_id+'').remove();
   });
-}
  
 
 //adds a new row of third level fields under the Physical Drawing Package
@@ -1132,7 +1123,7 @@ $("#addphysical").on('click', function() {
                           '</br>' +
                           '<div class="row">' +
                           '<div style="margin-left: 55px" class="form-group col-md-4">' +
-                            '<button type="button" class="btn btn-danger btn_remove" id="physical'+physicalfields+'">Remove New Fields</button>'+
+                            '<button type="button" class="btn btn-primary" id="physical'+physicalfields+'">Remove Fields</button>'+
                           '</div>' +
                           '</div>'; 
                   physicalfield();
@@ -1152,7 +1143,7 @@ $("#addphysical").on('click', function() {
   }
 
 //removes a third row field that has just been added under the Physical Drawing Package
-  $("#addedphysical").on('click', '.btn_remove', function() {
+  $("#addedphysical").on('click', '.btn-primary', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
       $('#'+button_id+'name').remove();
@@ -1184,7 +1175,7 @@ $("#addcontrol").on('click', function() {
                           '</br>' +
                           '<div class="row">' +
                           '<div style="margin-left: 55px" class="form-group col-md-4">' +
-                            '<button type="button" class="btn btn-danger btn_remove" id="control'+controlfields+'">Remove Fields</button>'+
+                            '<button type="button" class="btn btn-primary" id="control'+controlfields+'">Remove Fields</button>'+
                           '</div>' +
                           '</div>'; 
                   controlfield();
@@ -1204,7 +1195,7 @@ for(i = 1; i <= controlfields; i++){
   }
 
 //removes a third row field that has just been added under the Wiring and Controls Drawing Package
-  $("#addedcontrol").on('click', '.btn_remove', function() {
+  $("#addedcontrol").on('click', '.btn-primary', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
       $('#'+button_id+'name').remove();
@@ -1236,7 +1227,7 @@ $("#addcollection").on('click', function() {
                           '</br>' +
                           '<div class="row">' +
                           '<div style="margin-left: 55px" class="form-group col-md-4">' +
-                            '<button type="button" class="btn btn-danger btn_remove" id="collection'+collectionfields+'">Remove Fields</button>'+
+                            '<button type="button" class="btn btn-primary" id="collection'+collectionfields+'">Remove Fields</button>'+
                           '</div>' +
                           '</div>'; 
                   collectionfield();
@@ -1256,7 +1247,7 @@ for(i = 1; i <= collectionfields; i++){
   }
 
 //removes a third row field that has just been added under the Collection Line Drawing Package
-  $("#addedcollection").on('click', '.btn_remove', function() {
+  $("#addedcollection").on('click', '.btn-primary', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
       $('#'+button_id+'name').remove();
@@ -1288,7 +1279,7 @@ $("#addtransmission").on('click', function() {
                           '</br>' +
                           '<div class="row">' +
                           '<div style="margin-left: 55px" class="form-group col-md-4">' +
-                            '<button type="button" class="btn btn-danger btn_remove" id="transmission'+transmissionfields+'">Remove Fields</button>'+
+                            '<button type="button" class="btn btn-primary" id="transmission'+transmissionfields+'">Remove Fields</button>'+
                           '</div>' +
                           '</div>'; 
                   transmissionfield();
@@ -1308,7 +1299,7 @@ for(i = 1; i <= transmissionfields; i++){
   }
 
 //removes a third row field that has just been added under the Transmission Line Drawing Package
-  $("#addedtransmission").on('click', '.btn_remove', function() {
+  $("#addedtransmission").on('click', '.btn-primary', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
       $('#'+button_id+'name').remove();
@@ -1340,7 +1331,7 @@ $("#addscada").on('click', function() {
                           '</br>' +
                           '<div class="row">' +
                           '<div style="margin-left: 55px" class="form-group col-md-4">' +
-                            '<button type="button" class="btn btn-danger btn_remove" id="scada'+scadafields+'">Remove Fields</button>'+
+                            '<button type="button" class="btn btn-primary" id="scada'+scadafields+'">Remove Fields</button>'+
                           '</div>' +
                           '</div>'; 
                   scadafield();
@@ -1371,7 +1362,7 @@ for(i = 1; i <= scadafields; i++){
   }
 
 //removes a third row field that has just been added under the SCADA category
-  $("#addedscada").on('click', '.btn_remove', function() {
+  $("#addedscada").on('click', '.btn-primary', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
       $('#'+button_id+'name').remove();
@@ -1399,7 +1390,7 @@ $("#addstudy").on('click', function() {
                           '</br>' +
                           '<div class="row">' +
                           '<div style="margin-left: 55px" class="form-group col-md-4">' +
-                            '<button type="button" class="btn btn-danger btn_remove" id="study'+totalstudies+'">Remove Fields</button>'+
+                            '<button type="button" class="btn btn-primary" id="study'+totalstudies+'">Remove Fields</button>'+
                           '</div>' +
                           '</div>'; 
                   studyfield();
@@ -1418,7 +1409,7 @@ for(i = 1; i <= totalstudies; i++){
     }); 
   }
 //removes a third row field that has just been added under the Studies category
-  $("#addedstudy").on('click', '.btn_remove', function() {
+  $("#addedstudy").on('click', '.btn-primary', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
       $('#'+button_id+'name').remove();
@@ -1504,7 +1495,6 @@ for(i = 1; i <= totalstudies; i++){
 $("#dynamic_field").on('click', '.btn_remove', function() {
   var c = window.confirm("Are you sure you want to remove the entire Miscellaneous field?");
   if(c == true){
-    console.log('remove3');
     var button_id = $(this).attr("id");
     $('#misc'+button_id+'heading').remove();
     $('#misc'+button_id+'body').remove();
