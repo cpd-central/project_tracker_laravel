@@ -1,5 +1,6 @@
 <?php
 
+  use App\User;
   /**
    * Checks if array $typeArray is not null and then checks to see if $type is in $typeArray.
    * @param $type - variable to be checked if its in $typeArray. 
@@ -158,25 +159,23 @@
 @stop
 
 @section('projectcode', $project['projectcode'])
+
+<?php $pms = User::all()->where('role', 'proposer')?>
 @section('projectmanager')
-<?php $projectmanagers = "";
-        if($project['projectmanager'] != null){
-          if(is_array($project['projectmanager'])){
-            for($i=1; $i <= count($project['projectmanager']); $i++){
-              if($i == count($project['projectmanager'])){
-                $projectmanagers = $projectmanagers.$project['projectmanager'][$i-1];
-              }
-              else{
-                $projectmanagers = $projectmanagers.$project['projectmanager'][$i-1].', ';
-              }
-            } 
-          }
-          else{
-            $projectmanagers = $project['projectmanager'];
-          }
-        }
-        echo $projectmanagers?>
+<?php if ($project['projectmanager'][0] == "" || $project['projectmanager'][0] == null){?>
+  <option value="" selected="selected">No Project Manager</option>
+  <?php } else { ?>
+    <option value="">No Project Manager</option>
+<?php } ?>
+@foreach($pms as $pm)
+<?php if ($project['projectmanager'][0] == $pm->name){?>
+  <option value="<?=$pm->name?>" selected="selected"><?=$pm->name?></option>
+<?php } else { ?>
+  <option value="<?=$pm->name?>"><?=$pm->name?></option>
+<?php } ?>
+@endforeach
 @stop
+
 @section('projectnotes', $project['projectnotes'])
 
 @section('billingcontact', $project['billingcontact'])

@@ -329,11 +329,25 @@
             <label for="projectcode">Project Code:</label>
             <input type="text" class="form-control" name="projectcode" value="@if(old('projectcode'))<?= old('projectcode') ?>@else<?= $__env->yieldContent('projectcode')?>@endif">
           </div>
+
           <div class="form-group col-md-4">
             <label for="projectmanager">CEG Project Manager:</label>
-            <input type="text" class="form-control" name="projectmanager" value="@if(old('projectmanager'))<?= old('projectmanager') ?>@else<?= $__env->yieldContent('projectmanager')?>@endif">
+            <select class="form-control" id="sel2" name="projectmanager">  
+            @if(old('projectmanager'))   
+              @foreach($pms as $pm)
+                <?php if (old('projectmanager') == $pm->name){?>
+                  <option value="<?=$pm->name?>" selected="selected"><?=$pm->name?></option>
+                <?php } else { ?>
+                  <option value="<?=$pm->name?>"><?=$pm->name?></option>
+                <?php } ?>
+              @endforeach
+            @else
+              @yield('projectmanager')
+            @endif
+            </select>
           </div>
         </div>
+
         <div class="form-group">
           <label for="projectnotes">Project Notes:</label>
           <textarea class="form-control" name="projectnotes" id="projectnotes" rows="3">@if(old('projectnotes'))<?= old('projectnotes') ?>@else<?= $__env->yieldContent('projectnotes')?>@endif</textarea>
