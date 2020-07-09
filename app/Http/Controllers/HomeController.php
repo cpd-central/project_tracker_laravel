@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Project;
+use App\Timesheet;
 
 class HomeController extends Controller
 {
@@ -29,7 +30,29 @@ class HomeController extends Controller
         if(date('F', strtotime('+7 day')) != date('F')){ //so, let's build the billing_widget data
             $billing = $this->billing_widget();
         }
+        $first_payperiod_end = strtotime('2019-08-25'); //The very first pay period end date recorded
+        //first_payperiod_end modulus 14 days in epoch second divided by 1 day in epoch seconds.
+        if(($first_payperiod_end % 1209600)/86400 >= 3){
+            $this->timesheetStatusCheck();
+        }
         return view('dashboard', compact('billing'));
+    }
+
+    /**
+     * Retrieves all Timesheets that have 'pay_period_sent' as false.
+     * It then checks to see if the timesheet has been updated in the last 3 days, and if so
+     * we count that at the timesheet sent so we set it to true and save it.
+     */
+    protected function timesheetStatusCheck(){
+        $timesheets = Timesheet::whereRaw(['$and' => array(['pay_period_sent' => ['$ne' => null]], ['pay_period_sent' => false])])->get();
+        $today = new \DateTime("now", new \DateTimeZone("UTC"));
+        foreach($timesheets as $timesheet){
+            $diff = $today->diff($timesheet['updated_at']);
+            if($diff->d < 3){
+                $timesheet['pay_period_sent'] = true;
+                $timesheet->save();
+            }
+        }
     }
 
     /**

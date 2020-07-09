@@ -21,7 +21,7 @@
 <tbody>
     @csrf
 @foreach($timesheets as $timesheet)
-    <tr>
+    <tr style="background-color:#fff;">
 	<?php if ($timesheet['user'] == null) {
 		continue;
 	} ?>
@@ -31,7 +31,6 @@
 			<td align="center">{{ $user['name'] }}</td>
 		<?php } ?>
 	@endforeach 
-    
 	<?php if ($timesheet['pay_period_sent'] == 1){ ?>
 		<td style="background-color:#0f0;" align="center">Yes</td>
 	<?php } else { ?>
