@@ -32,7 +32,7 @@
 
 @section('projectcode', '')
 
-<?php $pms = User::all()->where('role', 'proposer')?>
+<?php $pms = User::all()->except('role', 'user')?>
 @section('projectmanager')
 <option value="">No Project Manager</option>
 @foreach($pms as $pm)

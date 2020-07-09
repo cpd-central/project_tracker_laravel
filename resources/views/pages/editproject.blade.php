@@ -160,7 +160,7 @@
 
 @section('projectcode', $project['projectcode'])
 
-<?php $pms = User::all()->where('role', 'proposer')?>
+<?php $pms = User::where('role', 'proposer')->orWhere('role', 'admin')->get()?>
 @section('projectmanager')
 <?php if ($project['projectmanager'][0] == "" || $project['projectmanager'][0] == null){?>
   <option value="" selected="selected">No Project Manager</option>
