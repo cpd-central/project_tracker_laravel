@@ -67,11 +67,12 @@ class ProjectController extends Controller
    * @param $req - Request variable with attributes to be assigned to $project.
    * @param $month - an option parameter. 
    */
-  protected function validate_request($req)
+  protected function validate_request($req, $id = 0)
   {
     $messages = array(
       'cegproposalauthor.required' => 'The CEG Proposal Author is required.',
       'projectname.required' => 'The Project Name is required.',
+      'projectname.unique' => 'The Project Name must be unique.',
       'clientcontactname.required' => 'The Client Contact Name is required.',
       'dollarvalueinhouse.required' => 'The Dollar Value in-house expense is required.',
       'datentp.required' => 'The Date of Notice To Proceed is required',
@@ -79,7 +80,7 @@ class ProjectController extends Controller
     );
     $this->validate($req, [
       'cegproposalauthor' => 'required',
-      'projectname' => 'required',
+      'projectname' => 'required|unique:projects,projectname,'.$id.',_id',
       'clientcontactname' => 'required'
     ], $messages);
 
@@ -285,8 +286,8 @@ class ProjectController extends Controller
    */
   public function update(Request $request, $id)
   {
-    $this->validate_request($request);   
-    $project = Project::find($id);  
+    $this->validate_request($request, $id);  
+    $project = Project::find($id);   
     $this->store($project, $request);
     return redirect('/projectindex')->with('success', 'Success! Project has been successfully updated.');
   }
