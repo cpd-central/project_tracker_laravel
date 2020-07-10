@@ -1360,14 +1360,19 @@ class ProjectController extends Controller
     //These variables are used for the searching and sorting tools on the planner page
     $search = $request['search'];
     $term = $request['sort'];
-    $invert = $request['invert']; 
+    $invert = $request['invert'];
+    $copy = $request['copyproject'];
+    if(!is_null($copy)){
+      $copy = Project::find($request['copyproject']);
+    }
+
     if(isset($search) || (isset($term) && $term != "Closest Due Date")){
       $projects = $this->planner_search($search, $term, $invert);
     }
     foreach($projects as $project){
       $this->format_due_dates($project);
     }
-    return view('pages.planner', compact('projects','term', 'search', 'invert'));
+    return view('pages.planner', compact('projects','term', 'search', 'invert', 'copy'));
   }
 
    /**
@@ -1475,6 +1480,16 @@ class ProjectController extends Controller
     }
     return $projects;
 
+  }
+
+  public function paste_dates(Request $request){
+    $copyproject = Project::find($request->get('copyproject'));
+    $pasteproject = Project::find($request->get('pasteproject'));
+    $pasteproject['duedates'] = array();
+    $pasteproject['duedates'] = $copyproject['duedates'];
+    $pasteid = $pasteproject['id'];
+    $pasteproject->save();
+    return redirect('/manageproject/'.$pasteid);
   }
 
    /**
@@ -1623,73 +1638,6 @@ class ProjectController extends Controller
     $project = Project::find($id);
     $this->store_dates($project, $request);
     return redirect('/planner')->with('Success!', 'Project has been successfully updated');
-  }
-
-    /**
-   * 
-   * @param $req - Request variable with attributes to be assigned to $project.
-   */
-  protected function validate_dates($req, $project)
-  {
-    
-    $today = date("Y-m-d"); /*
-      $this->validate($req, [
-        'physical90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'physicalifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'wire90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'wireifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'collection90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'collectionifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'transmission90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'transmissionifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'scadadue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'ampacitydue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'arcflashdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'relaydue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'alldue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-      ]);
-      if (isset($project['duedates']['additionalfields'])){
-        $additionalfields = $project['duedates']['additionalfields'];
-      }
-      else{
-        $additionalfields = array();
-      }
-      $keys = array_keys($additionalfields);
-      $numfields = $req->get('total');
-      if ($numfields == null || $numfields == ''){
-        $numfields = sizeof($keys);
-      }
-      dd($numfields);
-
-      for($i = 1; $i <= $numfields; $i++){
-        $namefield = $req->get('row'.$i.'name');
-        if (!isset($namefield)){
-          continue;
-        }
-        $this->validate($req, [
-          'row'.$i.'due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        ]);
-    }
-    */
-    if (isset($project['duedates']['physical'])){
-      $physical = $project['duedates']['physical'];
-    }
-    else{
-      $physical = array();
-    }
-    $keys = array_keys($physical);
-    $numfields = $req->get('physicalfields');
-    dd($numfields);
-
-    for($i = 1; $i <= $numfields; $i++){
-      $namefield = $req->get('row'.$i.'name');
-      if (!isset($namefield)){
-        continue;
-      }
-      $this->validate($req, [
-        'row'.$i.'due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-      ]);
-    }
   }
 
       /**

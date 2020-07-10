@@ -62,6 +62,7 @@ Route::post('/editaccount/{id}', 'HomeController@update_account')->middleware('v
 Route::get('/timesheetsentstatus', 'TimesheetController@get_user_timesheet_status')->name('pages.timesheetsentstatus')->middleware('verified');
 
 Route::get('/planner', 'ProjectController@planner')->name('pages.planner')->middleware('verified');
+Route::post('/planner', 'ProjectController@paste_dates')->middleware('verified');
 
 Route::get('/manageproject/{id}', 'ProjectController@manage_project')->name('pages.manage_project')->middleware('verified');
 Route::post('/manageproject/{id}', 'ProjectController@edit_due_dates')->middleware('verified');

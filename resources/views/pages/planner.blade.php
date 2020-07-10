@@ -1,17 +1,15 @@
 @extends('layouts.index')
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <style>
   th {position: sticky;
   top: 0;
   background-color:lightgray;
   }
 </style>
-
 @section('toptool')
 
-<div class="row"> 
-  <td><a href="{{action('ProjectController@sticky_note')}}" class="btn btn-success">Sticky Note Gantt Chart</a></td>
-</div>
-
+@if($copy == null)
 <div class="container">
   <h2><b>Project Search</b></h2> 
   <br />
@@ -38,13 +36,14 @@
     <option @if(isset($term) && $term == "duedates")selected @endif value= "duedates">Due Dates</option>
   </form> 
   @stop
+  @endif
 
 @section('table-title', 'Projects to Manage')
 @section('table-header')
 <table class="table table-striped">
   <thead>
     <tr> 
-      <th>Action</th>
+      <th class="text-center" colspan="2">Action</th>
       <th>Project Name</th>
       <th>Date of Energization</th>
       <th>Physical Drawing Package</th>
@@ -60,7 +59,32 @@
 @section('table-content')
 @foreach($projects as $project)
     <tr>
-        <td><a href="{{action('ProjectController@manage_project', $project['_id'])}}" class="btn btn-warning">Manage Project</a></td>
+        
+          @if($copy == null)
+            <td><a href="{{action('ProjectController@manage_project', $project['_id'])}}" class="btn btn-warning">Manage Project</a></td>
+            <td>
+            <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.planner') }}"> 
+                @csrf 
+                <button class="btn btn-success" type="submit">Copy</button>
+                <input type="hidden" id="copyproject" name="copyproject" value="{{$project['_id']}}" readonly />
+            </form> 
+            </td>
+          @else
+            @if($project['_id'] != $copy['_id'])
+            <td>
+            <form class="form-inline md-form mr-auto mb-4" method="post" action="{{ route('pages.planner') }}"> 
+              @csrf 
+              <button class="btn btn-success" id="paste" type="submit">Paste</button>
+              <input type="hidden" id="copyproject" name="copyproject" value="{{$copy['_id']}}" readonly />
+              <input type="hidden" id="pasteproject" name="pasteproject" value="{{$project['_id']}}" readonly />
+            </form>
+            </td>
+            <td></td>
+            @else
+            <td><a href="{{action('ProjectController@planner')}}" class="btn btn-warning">Cancel Copy</a></td>
+            <td></td>
+            @endif
+          @endif
         <td>{{$project['projectname']}}</td>
         <td>{{$project['dateenergization']}}</td>
         @if(isset($project['duedates']))

@@ -1,4 +1,7 @@
-<?php use App\Timesheet;
+<?php 
+use App\Timesheet;
+use App\Project;
+use App\User;
 $collection = Timesheet::where('user', auth()->user()->email)->get();
 if(!$collection->isEmpty()){
 	$timesheet = $collection[0];
@@ -9,6 +12,121 @@ if(!$collection->isEmpty()){
 else{
     $timesheet = null;
 }
+
+$username =  auth()->user()->name;
+$projects = Project::all()->where('projectstatus', 'Won');
+$today = new \DateTime("now", new \DateTimeZone("UTC"));
+$userprojects = [];
+$userduedates = [];
+$usertasknames = [];
+$usertaskdesc = [];
+foreach($projects as $project){
+	if (isset($project['duedates'])){
+		$duedates = $project['duedates'];
+		$keys = array_keys($duedates);
+		$count = 0;
+		foreach($duedates as $duedate){
+			//if(in_array($project, $userprojects) == true){
+				//break;
+			//}
+			if($keys[$count] != 'additionalfields'){
+				if (isset($duedate['person2'])){
+					if($duedate['person1'] == $username || $duedate['person2'] == $username){
+						array_push($userprojects, $project);
+						if($duedate['due'] == "None" || $duedate['due']->toDateTime() < $today){
+							$daystodue = 999;
+						}
+						else{
+							$due = $duedate['due']->toDateTime();
+							$daystodue = $due->diff($today)->format("%d");
+						}
+						array_push($userduedates, $daystodue);
+						array_push($usertasknames, $keys[$count]);
+						array_push($usertaskdesc, "");
+					}
+				}
+				else{
+					if($duedate['person1'] == $username){
+						array_push($userprojects, $project);
+						if($duedate['due'] == "None" || $duedate['due']->toDateTime() < $today){
+							$daystodue = 999;
+						}
+						else{
+							$due = $duedate['due']->toDateTime();
+							$daystodue = $due->diff($today)->format("%d");
+						}
+						array_push($userduedates, $daystodue);
+						array_push($usertasknames, $keys[$count]);
+						array_push($usertaskdesc, "");
+					}
+				}
+				$subkeys = array_keys($duedate);
+				$subcount = 0;
+				foreach($duedate as $task){
+					$taskname = $subkeys[$subcount];
+					if($taskname != "person1" && $taskname != "person2" && $taskname != "due"){
+						if (isset($task['person2'])){
+							if($task['person1'] == $username || $task['person2'] == $username){
+								array_push($userprojects, $project);
+								if($task['due'] == "None" || $task['due']->toDateTime() < $today){
+									$daystodue = 999;
+								}
+								else{
+									$due = $task['due']->toDateTime();
+									$daystodue = $due->diff($today)->format("%d");
+								}
+								array_push($userduedates, $daystodue);
+								array_push($usertasknames, $keys[$count]);
+								array_push($usertaskdesc, $taskname);
+							}
+						}
+						else{
+							if($task['person1'] == $username){
+								array_push($userprojects, $project);
+								if($task['due'] == "None" || $task['due']->toDateTime() < $today){
+								$daystodue = 999;
+								}
+								else{
+									$due = $task['due']->toDateTime();
+									$daystodue = $due->diff($today)->format("%d");
+								}
+								array_push($userduedates, $daystodue);
+								array_push($usertasknames, $keys[$count]);
+								array_push($usertaskdesc, $taskname);
+							}
+						}
+					}
+					if($taskname == "Communication"){
+						$comkeys = array_keys($task);
+						$comcount = 0;
+						foreach($task as $communicationtask){
+							$comname = $comkeys[$comcount];
+							if($comname != "person1" && $comname != "person2" && $comname != "due"){
+								if($communicationtask['person1'] == $username || $communicationtask['person2'] == $username){
+									array_push($userprojects, $project);
+									if($communicationtask['due'] == "None" || $communicationtask['due']->toDateTime() < $today){
+									$daystodue = 999;
+									}
+									else{
+										$due = $communicationtask['due']->toDateTime();
+										$daystodue = $due->diff($today)->format("%d");
+									}
+									array_push($userduedates, $daystodue);
+									array_push($usertasknames, $keys[$count]);
+									array_push($usertaskdesc, "".$subkeys[$subcount]." ".$comkeys[$comcount]);
+								}
+							}
+							$comcount++;
+						}
+					}
+					$subcount++;
+				}
+			}
+			$count++;
+		}
+	}
+}
+//dd($userprojects);
 ?>
 
 <!DOCTYPE html>
@@ -174,9 +292,40 @@ else{
                     </div>
 			</div>
 		</div>
+		<?php } ?>
+		<?php if(sizeof($userduedates) > 0){ ?>
+		<div class="card">
+			<div class="card-header">
+				<h3>Upcoming Due Dates:</h3>
+			</div>
+			<div class="card-body">
+				<?php for($i = 0; $i < sizeof($userprojects); $i++) { ?>
+					<?php if($userduedates[$i] <= 14){ ?>
+						<br>
+						<?php if($usertasknames[$i] == "studies"){ ?>
+							<label style="color:white;">{{$userprojects[$i]['projectname']}} {{$usertaskdesc[$i]}} is due in {{$userduedates[$i]}} days.</label>
+						<?php } ?>
+						<?php if($usertasknames[$i] == "physical"){ ?>
+							<label style="color:white;">{{$userprojects[$i]['projectname']}} Physical Drawing Package {{$usertaskdesc[$i]}} is due in {{$userduedates[$i]}} days.</label>
+						<?php } ?>
+						<?php if($usertasknames[$i] == "control"){ ?>
+							<label style="color:white;">{{$userprojects[$i]['projectname']}} Wiring and Controls Drawing Package {{$usertaskdesc[$i]}} is due in {{$userduedates[$i]}} days.</label>
+						<?php } ?>
+						<?php if($usertasknames[$i] == "collection"){ ?>
+							<label style="color:white;">{{$userprojects[$i]['projectname']}} Collection Drawing Package {{$usertaskdesc[$i]}} is due in {{$userduedates[$i]}} days.</label>
+						<?php } ?>
+						<?php if($usertasknames[$i] == "transmission"){ ?>
+							<label style="color:white;">{{$userprojects[$i]['projectname']}} Transmission Drawing Package {{$usertaskdesc[$i]}} is due in {{$userduedates[$i]}} days.</label>
+						<?php } ?>
+						<?php if($usertasknames[$i] == "scada"){ ?>
+							<label style="color:white;">{{$userprojects[$i]['projectname']}} SCADA {{$usertaskdesc[$i]}} is due in {{$userduedates[$i]}} days.</label>
+						<?php } ?>
+					<?php } ?>
+				<?php } ?>
+			</div>
+		</div>
 	<?php } ?>
 	</div>
-
 </div>
 </body>
 </html>
