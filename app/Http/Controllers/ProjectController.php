@@ -338,8 +338,10 @@ class ProjectController extends Controller
     if(!isset($term)){
       $term = "projectmanager";
     }
+    $previous_month = date('F', strtotime('-21 day'));
+    $year_of_previous_month = date('Y', strtotime('-21 day'));
     $projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy($term);
-    return view('pages.monthendbilling', compact('projects', 'term'));
+    return view('pages.monthendbilling', compact('projects', 'term', 'previous_month', 'year_of_previous_month'));
   }
 
   /**

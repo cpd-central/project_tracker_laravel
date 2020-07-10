@@ -19,13 +19,22 @@ $month = date('F', strtotime('-21 day'));
       </br>
       </br>
       <div class="container">
+      <table>
+        <tr>
         <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.monthendbilling') }}"> 
           @csrf  
-          <select id="sort" name='sort' class="form-control" onchange="this.form.submit()">
-            <option @if(isset($term) && $term == "projectmanager") selected @endif value="projectmanager">A-Z Project Manager</option>
-            <option @if(isset($term) && $term == "projectname") selected @endif value="projectname">A-Z Project Name</option>
-          </select>
-          </form>
+            <td>
+            <select id="sort" name='sort' class="form-control" onchange="this.form.submit()">
+              <option @if(isset($term) && $term == "projectmanager") selected @endif value="projectmanager">A-Z Project Manager</option>
+              <option @if(isset($term) && $term == "projectname") selected @endif value="projectname">A-Z Project Name</option>
+            </select>
+            </form>
+            </td>
+            <td style="padding-left:20px; padding-top:20px">
+            <label><h2><b>Billing for {{$previous_month}} {{$year_of_previous_month}}</b></h2></label>
+            </td>
+          </tr>
+        </table> 
         <table class="table table-striped">
           <div id='divhead'>
             <thead id='header'>
