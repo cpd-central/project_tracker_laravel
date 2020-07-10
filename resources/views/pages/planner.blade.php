@@ -43,7 +43,7 @@
 <table class="table table-striped">
   <thead>
     <tr> 
-      <th>Action</th>
+      <th class="text-center" colspan="2">Action</th>
       <th>Project Name</th>
       <th>Date of Energization</th>
       <th>Physical Drawing Package</th>
@@ -59,29 +59,32 @@
 @section('table-content')
 @foreach($projects as $project)
     <tr>
-        <td>
+        
           @if($copy == null)
-          <a href="{{action('ProjectController@manage_project', $project['_id'])}}" class="btn btn-warning">Manage Project</a>
-
-          <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.planner') }}"> 
+            <td><a href="{{action('ProjectController@manage_project', $project['_id'])}}" class="btn btn-warning">Manage Project</a></td>
+            <td>
+            <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.planner') }}"> 
+                @csrf 
+                <button class="btn btn-success" type="submit">Copy</button>
+                <input type="hidden" id="copyproject" name="copyproject" value="{{$project['_id']}}" readonly />
+            </form> 
+            </td>
+          @else
+            @if($project['_id'] != $copy['_id'])
+            <td>
+            <form class="form-inline md-form mr-auto mb-4" method="post" action="{{ route('pages.planner') }}"> 
               @csrf 
-              <button class="btn btn-success" type="submit">Copy</button>
-              <input type="hidden" id="copyproject" name="copyproject" value="{{$project['_id']}}" readonly />
-          </form> 
-          @else
-          @if($project['_id'] != $copy['_id'])
-          <form class="form-inline md-form mr-auto mb-4" method="post" action="{{ route('pages.planner') }}"> 
-            @csrf 
-            <button class="btn btn-danger" id="paste" type="submit">Paste</button>
-            <input type="hidden" id="copyproject" name="copyproject" value="{{$copy['_id']}}" readonly />
-            <input type="hidden" id="pasteproject" name="pasteproject" value="{{$project['_id']}}" readonly />
-          </form>
-          @else
-          <a href="{{action('ProjectController@planner')}}" class="btn btn-warning">Cancel Copy</a>
+              <button class="btn btn-success" id="paste" type="submit">Paste</button>
+              <input type="hidden" id="copyproject" name="copyproject" value="{{$copy['_id']}}" readonly />
+              <input type="hidden" id="pasteproject" name="pasteproject" value="{{$project['_id']}}" readonly />
+            </form>
+            </td>
+            <td></td>
+            @else
+            <td><a href="{{action('ProjectController@planner')}}" class="btn btn-warning">Cancel Copy</a></td>
+            <td></td>
+            @endif
           @endif
-
-          @endif
-        </td>
         <td>{{$project['projectname']}}</td>
         <td>{{$project['dateenergization']}}</td>
         @if(isset($project['duedates']))
