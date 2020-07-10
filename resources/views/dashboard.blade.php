@@ -132,11 +132,7 @@ else{
                         <a href={{ route('pages.timesheetsentstatus') }} class="btn login_btn">Timesheet Sent Status</a>
                     </div>
 					<!--End Corey new code-->
-					<?php if(auth()->user()->role == "drafting_manager") {?>
-					<div class="form-group" style="{{$style_string}}">
-						<a class="nav-link" href="{{ route('pages.drafterhours', ['drafter_page' => true]) }}">Drafter Hours</a>
-					</div>
-					<?php } elseif (auth()->user()->role == "sudo") { ?>
+					<?php if (auth()->user()->role == "sudo" || auth()->user()->role == "admin") { ?>
 					<div class="form-group" style="{{$style_string}}">
 						<a href={{ route('pages.accountdirectory') }} class="btn login_btn">Account Directory</a>
 					</div>	

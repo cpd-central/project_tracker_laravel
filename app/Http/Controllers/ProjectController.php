@@ -67,11 +67,12 @@ class ProjectController extends Controller
    * @param $req - Request variable with attributes to be assigned to $project.
    * @param $month - an option parameter. 
    */
-  protected function validate_request($req)
+  protected function validate_request($req, $id = 0)
   {
     $messages = array(
       'cegproposalauthor.required' => 'The CEG Proposal Author is required.',
       'projectname.required' => 'The Project Name is required.',
+      'projectname.unique' => 'The Project Name must be unique.',
       'clientcontactname.required' => 'The Client Contact Name is required.',
       'dollarvalueinhouse.required' => 'The Dollar Value in-house expense is required.',
       'datentp.required' => 'The Date of Notice To Proceed is required',
@@ -79,7 +80,7 @@ class ProjectController extends Controller
     );
     $this->validate($req, [
       'cegproposalauthor' => 'required',
-      'projectname' => 'required',
+      'projectname' => 'required|unique:projects,projectname,'.$id.',_id',
       'clientcontactname' => 'required'
     ], $messages);
 
@@ -285,8 +286,8 @@ class ProjectController extends Controller
    */
   public function update(Request $request, $id)
   {
-    $this->validate_request($request);   
-    $project = Project::find($id);  
+    $this->validate_request($request, $id);  
+    $project = Project::find($id);   
     $this->store($project, $request);
     return redirect('/projectindex')->with('success', 'Success! Project has been successfully updated.');
   }
@@ -298,6 +299,8 @@ class ProjectController extends Controller
    */
   public function submit_billing(Request $request)
   {
+      //$timestamp = $this->strToDate(date("Y-m-d H:i:s", time()), null);
+      //dd($timestamp);
       $id_billing_array=array();
       $x=0;
       for ($x=0; $x <= $request['graph_count']; $x++) 
@@ -333,10 +336,12 @@ class ProjectController extends Controller
   public function billing(Request $request){
     $term = $request['sort'];
     if(!isset($term)){
-      $term = "projectname";
+      $term = "projectmanager";
     }
+    $previous_month = date('F', strtotime('-21 day'));
+    $year_of_previous_month = date('Y', strtotime('-21 day'));
     $projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy($term);
-    return view('pages.monthendbilling', compact('projects', 'term'));
+    return view('pages.monthendbilling', compact('projects', 'term', 'previous_month', 'year_of_previous_month'));
   }
 
   /**

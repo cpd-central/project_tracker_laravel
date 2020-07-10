@@ -19,17 +19,27 @@ $month = date('F', strtotime('-21 day'));
       </br>
       </br>
       <div class="container">
+      <table>
+        <tr>
         <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.monthendbilling') }}"> 
           @csrf  
-          <select id="sort" name='sort' class="form-control" onchange="this.form.submit()">
-            <option @if(isset($term) && $term == "projectname") selected @endif value="projectname">A-Z Project Name</option>
-            <option @if(isset($term) && $term == "projectmanager") selected @endif value="projectmanager">A-Z Project Manager</option>
-          </select>
-          </form>
+            <td>
+            <select id="sort" name='sort' class="form-control" onchange="this.form.submit()">
+              <option @if(isset($term) && $term == "projectmanager") selected @endif value="projectmanager">A-Z Project Manager</option>
+              <option @if(isset($term) && $term == "projectname") selected @endif value="projectname">A-Z Project Name</option>
+            </select>
+            </form>
+            </td>
+            <td style="padding-left:20px; padding-top:20px">
+            <label><h2><b>Billing for {{$previous_month}} {{$year_of_previous_month}}</b></h2></label>
+            </td>
+          </tr>
+        </table> 
         <table class="table table-striped">
           <div id='divhead'>
             <thead id='header'>
               <tr> 
+                <th>Edit Project</th>
                 <th>Project Name</th>
                 <th>Project Code</th>
                 <th style="min-width: 150px">HOLD or BILL this month?</th>
@@ -44,6 +54,7 @@ $month = date('F', strtotime('-21 day'));
           </div>
         @foreach ($projects as $project)
           <tr>
+            <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit</a></td>
             <td>{{$project['projectname']}}</td>
             <td>{{$project['projectcode']}}</td>
             <td><?php if(isset($project['bill_amount'][$year])){

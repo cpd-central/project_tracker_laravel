@@ -11,8 +11,8 @@
     <table class="table table-striped">
     <thead style="text-align:center">
       <tr>
-          <th>User</th>
-          <th>Timesheet Sent?</th>
+          <th><h5>User</h5></th>
+          <th><h5>Timesheet Sent?</h5></th>
       </tr>
     </thead>
 @stop
@@ -28,13 +28,13 @@
 	
 	@foreach($users as $user)
 		<?php if ($timesheet['user'] == $user['email']) { ?>
-			<td align="center">{{ $user['name'] }}</td>
+			<td align="center"><h5>{{ $user['name'] }}</h5></td>
 		<?php } ?>
 	@endforeach 
 	<?php if ($timesheet['pay_period_sent'] == 1){ ?>
-		<td style="background-color:#0f0;" align="center">Yes</td>
+		<td style="background-color:#0f0;" align="center"><h5>Yes</h5></td>
 	<?php } else { ?>
-		<td style="background-color:#f00;" align="center">No</td>
+		<td style="background-color:#f00;" align="center"><h5>No</h5></td>
 	<?php } ?>
 	</tr>
 @endforeach

@@ -1,3 +1,6 @@
+<?php
+  use App\User; 
+?>
 @extends('layouts.input')
 
 @section('page-title', 'New Project')
@@ -28,7 +31,15 @@
 @stop
 
 @section('projectcode', '')
-@section('projectmanager', '')
+
+<?php $pms = User::all()->except('role', 'user')?>
+@section('projectmanager')
+<option value="">No Project Manager</option>
+@foreach($pms as $pm)
+  <option value="<?=$pm->name?>"><?=$pm->name?></option>
+@endforeach
+@stop
+
 @section('projectnotes', '')
 
 @section('billingcontact', '')
