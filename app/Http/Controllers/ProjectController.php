@@ -67,11 +67,12 @@ class ProjectController extends Controller
    * @param $req - Request variable with attributes to be assigned to $project.
    * @param $month - an option parameter. 
    */
-  protected function validate_request($req)
+  protected function validate_request($req, $id = 0)
   {
     $messages = array(
       'cegproposalauthor.required' => 'The CEG Proposal Author is required.',
       'projectname.required' => 'The Project Name is required.',
+      'projectname.unique' => 'The Project Name must be unique.',
       'clientcontactname.required' => 'The Client Contact Name is required.',
       'dollarvalueinhouse.required' => 'The Dollar Value in-house expense is required.',
       'datentp.required' => 'The Date of Notice To Proceed is required',
@@ -79,7 +80,7 @@ class ProjectController extends Controller
     );
     $this->validate($req, [
       'cegproposalauthor' => 'required',
-      'projectname' => 'required',
+      'projectname' => 'required|unique:projects,projectname,'.$id.',_id',
       'clientcontactname' => 'required'
     ], $messages);
 
@@ -285,8 +286,8 @@ class ProjectController extends Controller
    */
   public function update(Request $request, $id)
   {
-    $this->validate_request($request);   
-    $project = Project::find($id);  
+    $this->validate_request($request, $id);  
+    $project = Project::find($id);   
     $this->store($project, $request);
     return redirect('/projectindex')->with('success', 'Success! Project has been successfully updated.');
   }
@@ -298,6 +299,8 @@ class ProjectController extends Controller
    */
   public function submit_billing(Request $request)
   {
+      //$timestamp = $this->strToDate(date("Y-m-d H:i:s", time()), null);
+      //dd($timestamp);
       $id_billing_array=array();
       $x=0;
       for ($x=0; $x <= $request['graph_count']; $x++) 
@@ -333,10 +336,12 @@ class ProjectController extends Controller
   public function billing(Request $request){
     $term = $request['sort'];
     if(!isset($term)){
-      $term = "projectname";
+      $term = "projectmanager";
     }
+    $previous_month = date('F', strtotime('-21 day'));
+    $year_of_previous_month = date('Y', strtotime('-21 day'));
     $projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy($term);
-    return view('pages.monthendbilling', compact('projects', 'term'));
+    return view('pages.monthendbilling', compact('projects', 'term', 'previous_month', 'year_of_previous_month'));
   }
 
   /**
@@ -1232,7 +1237,7 @@ class ProjectController extends Controller
 
         $total_project_monies_per_month_arr_start_end = array_slice($total_project_monies_per_month_arr, -count($labels),count($labels));
         $total_project_monies_per_month_dataset = array('Total Dollars', 'line', $total_project_monies_per_month_arr_start_end);
-        return (array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}, {$selected_project['projectcode']}, PM is {$selected_project['projectmanager'][0]}", 'individual_dataset' => $individual_dataset, 'individual_dataset_monies' => $individual_dataset_monies, 'project_grand_total' => $project_grand_total, 'dollarvalueinhouse' => $dollarvalueinhouse, 'dateenergization' => $dateenergization, 'group_dataset' => $group_dataset, 'group_dataset_monies' => $group_dataset_monies,'previous_month_project_hours' => $previous_month_project_hours, 'total_project_dollars' => $total_project_dollars,'previous_month_project_monies' => $previous_month_project_monies, 'total_project_monies_per_month_dataset' => $total_project_monies_per_month_dataset, 'total_project_hours_per_month_dataset' => $total_project_hours_per_month_dataset, 'id' => "{$selected_project['id']}", 'last_bill_amount' => $last_bill_amount, 'last_bill_month' => $last_bill_month, 'billing_data' => $billing_data));
+        return (array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}, {$selected_project['projectcode']}, {$selected_project['projectmanager'][0]}", 'individual_dataset' => $individual_dataset, 'individual_dataset_monies' => $individual_dataset_monies, 'project_grand_total' => $project_grand_total, 'dollarvalueinhouse' => $dollarvalueinhouse, 'dateenergization' => $dateenergization, 'group_dataset' => $group_dataset, 'group_dataset_monies' => $group_dataset_monies,'previous_month_project_hours' => $previous_month_project_hours, 'total_project_dollars' => $total_project_dollars,'previous_month_project_monies' => $previous_month_project_monies, 'total_project_monies_per_month_dataset' => $total_project_monies_per_month_dataset, 'total_project_hours_per_month_dataset' => $total_project_hours_per_month_dataset, 'id' => "{$selected_project['id']}", 'last_bill_amount' => $last_bill_amount, 'last_bill_month' => $last_bill_month, 'billing_data' => $billing_data));
       } else {
         return Null;
       }
