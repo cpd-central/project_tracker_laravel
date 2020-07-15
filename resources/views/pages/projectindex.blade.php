@@ -1,16 +1,35 @@
 @extends('layouts.index')
 @section('toptool')
-
 <div class="container">
   <h2><b>Project Search</b></h2> 
-  <br />
+  <br>
   <!-- Search Bar Form -->
   <div class="active-pink-3 active-pink-4 mb-4">
       <form class="form-inline md-form mr-auto mb-4" method="post" action="{{ route('pages.projectindex') }}"> 
           @csrf 
           <input name="search" class="form-control mr-sm-2" type="text" placeholder="Search Projects" aria-label="Search" value='@if(isset($search)){{$search}}@endif'>
           <button class="btn aqua-gradient btn-rounded btn-sm my-0" type="submit">Submit</button> 
-        </form> 
+          <div class="my-custom-scrollbar table-wrapper-scroll-y ">
+  <table class="table table-bordered table-striped mb-0">
+    <thead>
+      <tr>
+        <th scope="col">Code</th>
+        <th scope="col">Project Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if(!empty($missing_projects))
+      @foreach(array_keys($missing_projects) as $mp)
+      <tr>
+        <td>{{$mp}}</td>
+        <td>{{$missing_projects[$mp]}}</td>
+      </tr>
+      @endforeach
+      @endif
+      </tbody>
+    </table>
+  </div>
+    </form> 
   </div>
   @stop
   
