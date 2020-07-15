@@ -68,4 +68,5 @@ Route::get('/manageproject/{id}', 'ProjectController@manage_project')->name('pag
 Route::post('/manageproject/{id}', 'ProjectController@edit_due_dates')->middleware('verified');
 
 Route::get('/stickynote', 'ProjectController@sticky_note')->name('pages.sticky_note')->middleware('verified');
+Route::post('/stickynote', 'ProjectController@employee_gantt')->middleware('verified');
 

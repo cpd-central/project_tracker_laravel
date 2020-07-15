@@ -1911,8 +1911,62 @@ class ProjectController extends Controller
         $counter++;
       }
     }
-    return view('pages.sticky_note', compact('json'));
+    $filtered = false;
+    return view('pages.sticky_note', compact('json', 'filtered'));
   }
+
+      /**
+   * Loads a single employee's data for the Sticky Note Gantt chart.
+   * @return view 'pages.sticky_note'
+   */
+  public function employee_gantt(Request $request){
+    //loads all projects if an individual's projects are currently loaded
+    if($request->get('loaded') == 'your'){
+      $projects = Project::all()->where('projectstatus', 'Won');
+      $projects = $this->sort_by_closest_date($projects);
+      $json = [];
+      $counter = 0;
+      //calls the project_to_json method for each project that has due dates saved
+      foreach($projects as $project){
+        if ($this->project_to_json($project) != null){
+          $json[$counter] = $this->project_to_json($project);
+          $counter++;
+        }
+      }
+      $filtered = false;
+    }
+    //loads an individual's projects if all projects are currently loaded
+    else{
+      $projects = Project::all()->where('projectstatus', 'Won');
+      $projects = $this->sort_by_closest_date($projects);
+      $json = [];
+      $counter = 0;
+      //calls the project_to_json method for each project that has due dates saved, then adds projects that the current user is involved in
+      foreach($projects as $project){
+        if ($this->project_to_json($project) != null){
+          $convertedproject = $this->project_to_json($project);
+          for($i = 1; $i < sizeof($convertedproject); $i++){
+            $decode = json_decode($convertedproject[$i], true);
+            if(array_key_exists('name_2', $decode)){
+              if ($decode['name_1'] == auth()->user()->name || $decode['name_2'] == auth()->user()->name){
+                $json[$counter] = $this->project_to_json($project);
+                $counter++;
+              }
+            }
+            else{
+              if ($decode['name_1'] == auth()->user()->name){
+                $json[$counter] = $this->project_to_json($project);
+                $counter++;
+              }
+            }
+          }
+        }
+      }
+      $filtered = true;
+  }
+  return view('pages.sticky_note', compact('json', 'filtered'));
+  }
+
     /**
    * Turns information on the project from the database into a JSON format so the Gantt chart can display the information.
    * @param $project is the current project that's information is being converted to a JSON format.
@@ -1987,7 +2041,7 @@ class ProjectController extends Controller
             $subkeys = array_keys($addeddate);
             $miscsubcount = 0;
             foreach($addeddate as $task){
-              $taskname = $subkeys[$miscsubcount];
+              $taskname = strval($subkeys[$miscsubcount]);
               if($taskname != "person1" && $taskname != "person2" && $taskname != "due"){
                 $tid = 'id_'.$taskname.'_'.$pname.'_'.$project['projectname'];
                 $taskstart = $task['due'];
@@ -2081,7 +2135,7 @@ class ProjectController extends Controller
         $subkeys = array_keys($duedate);
         $subcount = 0;
         foreach($duedate as $task){
-          $taskname = $subkeys[$subcount];
+          $taskname = strval($subkeys[$subcount]);
           if($taskname != "person1" && $taskname != "person2" && $taskname != "due"){
             $tid = 'id_'.$taskname.'_'.$pname.'_'.$project['projectname'];
             $taskstart = $task['due'];

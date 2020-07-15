@@ -772,11 +772,11 @@ h6 {
                 <div class="row" id= "row{{$c}}">
                     <div class="form-group col-md-4"> 
                         <label for="row{{$c}}person1">Engineer/Person 1</label> 
-                        <input type="text" class="form-control" id="row{{$c}}person1" name= "row{{$c}}person1" value= {{$additionalfields[$key]['person1']}}>
+                        <input type="text" class="form-control" id="row{{$c}}person1" name= "row{{$c}}person1" value= "{{$additionalfields[$key]['person1']}}">
                     </div>
                     <div class="form-group col-md-4"> 
                         <label for="row{{$c}}person2">Drafter/Person 2</label> 
-                        <input type="text" class="form-control" id="row{{$c}}person2" name="row{{$c}}person2" value= {{$additionalfields[$key]['person2']}}> 
+                        <input type="text" class="form-control" id="row{{$c}}person2" name="row{{$c}}person2" value= "{{$additionalfields[$key]['person2']}}"> 
                     </div> 
                     <div class="form-group col-md-4"> 
                         <label for="row{{$c}}due">Due Date</label> 
@@ -797,11 +797,11 @@ h6 {
                 <div style="margin-left: 40px" class="row" id="{{$c}}misc{{$misccount}}row">
                     <div class="form-group col-md-4"> 
                         <label for="{{$c}}misc{{$misccount}}person1">Engineer/Person 1</label>
-                        <input type="text" class="form-control" id="{{$c}}misc{{$misccount}}person1" name="{{$c}}misc{{$misccount}}person1" value= {{$additionalfields[$key][$subkey]['person1']}}>
+                        <input type="text" class="form-control" id="{{$c}}misc{{$misccount}}person1" name="{{$c}}misc{{$misccount}}person1" value= "{{$additionalfields[$key][$subkey]['person1']}}">
                     </div>
                     <div class="form-group col-md-4"> 
                         <label for="{{$c}}misc{{$misccount}}person2">Drafter/Person 2</label> 
-                        <input type="text" class="form-control" id="{{$c}}misc{{$misccount}}person2" name="{{$c}}misc{{$misccount}}person2" value= {{$additionalfields[$key][$subkey]['person2']}}> 
+                        <input type="text" class="form-control" id="{{$c}}misc{{$misccount}}person2" name="{{$c}}misc{{$misccount}}person2" value= "{{$additionalfields[$key][$subkey]['person2']}}"> 
                     </div> 
                     <div class="form-group col-md-4"> 
                         <label for="{{$c}}misc{{$misccount}}due">Due Date</label>
