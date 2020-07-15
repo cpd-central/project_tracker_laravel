@@ -26,9 +26,6 @@ foreach($projects as $project){
 		$keys = array_keys($duedates);
 		$count = 0;
 		foreach($duedates as $duedate){
-			//if(in_array($project, $userprojects) == true){
-				//break;
-			//}
 			if($keys[$count] != 'additionalfields'){
 				if (isset($duedate['person2'])){
 					if($duedate['person1'] == $username || $duedate['person2'] == $username){
@@ -120,6 +117,48 @@ foreach($projects as $project){
 						}
 					}
 					$subcount++;
+				}
+			}
+			else{
+				$addedkeys = array_keys($duedate);
+				$addedcount = 0;
+				foreach($duedate as $additionalfield){
+					$addedname = $addedkeys[$addedcount];
+					if($additionalfield['person1'] == $username || $additionalfield['person2'] == $username){
+						array_push($userprojects, $project);
+						if($additionalfield['due'] == "None" || $additionalfield['due']->toDateTime() < $today){
+							$daystodue = 999;
+						}
+						else{
+							$due = $additionalfield['due']->toDateTime();
+							$daystodue = $due->diff($today)->format("%d");
+						}
+						array_push($userduedates, $daystodue);
+						array_push($usertasknames, $addedkeys[$addedcount]);
+						array_push($usertaskdesc, "");
+					}
+					$subkeys = array_keys($additionalfield);
+					$subcount = 0;
+					foreach($additionalfield as $task){
+						$taskname = $subkeys[$subcount];
+						if($taskname != "person1" && $taskname != "person2" && $taskname != "due"){
+							if($task['person1'] == $username || $task['person2'] == $username){
+								array_push($userprojects, $project);
+								if($task['due'] == "None" || $task['due']->toDateTime() < $today){
+									$daystodue = 999;
+								}
+								else{
+									$due = $task['due']->toDateTime();
+									$daystodue = $due->diff($today)->format("%d");
+								}
+								array_push($userduedates, $daystodue);
+								array_push($usertasknames, $addedkeys[$addedcount]);
+								array_push($usertaskdesc, $taskname);
+							}
+						}
+						$subcount++;
+					}
+					$addedcount++;
 				}
 			}
 			$count++;
@@ -250,11 +289,7 @@ else{
                         <a href={{ route('pages.timesheetsentstatus') }} class="btn login_btn">Timesheet Sent Status</a>
                     </div>
 					<!--End Corey new code-->
-					<?php if(auth()->user()->role == "drafting_manager") {?>
-					<div class="form-group" style="{{$style_string}}">
-						<a class="nav-link" href="{{ route('pages.drafterhours', ['drafter_page' => true]) }}">Drafter Hours</a>
-					</div>
-					<?php } elseif (auth()->user()->role == "sudo") { ?>
+					<?php if (auth()->user()->role == "sudo" || auth()->user()->role == "admin") { ?>
 					<div class="form-group" style="{{$style_string}}">
 						<a href={{ route('pages.accountdirectory') }} class="btn login_btn">Account Directory</a>
 					</div>	
@@ -308,21 +343,18 @@ else{
 						<br>
 						<?php if($usertasknames[$i] == "studies"){ ?>
 							<label style="color:white;">{{$userprojects[$i]['projectname']}} {{$usertaskdesc[$i]}} is due in {{$userduedates[$i]}} days.</label>
-						<?php } ?>
-						<?php if($usertasknames[$i] == "physical"){ ?>
+						<?php } elseif($usertasknames[$i] == "physical"){ ?>
 							<label style="color:white;">{{$userprojects[$i]['projectname']}} Physical Drawing Package {{$usertaskdesc[$i]}} is due in {{$userduedates[$i]}} days.</label>
-						<?php } ?>
-						<?php if($usertasknames[$i] == "control"){ ?>
+						<?php } elseif($usertasknames[$i] == "control"){ ?>
 							<label style="color:white;">{{$userprojects[$i]['projectname']}} Wiring and Controls Drawing Package {{$usertaskdesc[$i]}} is due in {{$userduedates[$i]}} days.</label>
-						<?php } ?>
-						<?php if($usertasknames[$i] == "collection"){ ?>
+						<?php } elseif($usertasknames[$i] == "collection"){ ?>
 							<label style="color:white;">{{$userprojects[$i]['projectname']}} Collection Drawing Package {{$usertaskdesc[$i]}} is due in {{$userduedates[$i]}} days.</label>
-						<?php } ?>
-						<?php if($usertasknames[$i] == "transmission"){ ?>
+						<?php } elseif($usertasknames[$i] == "transmission"){ ?>
 							<label style="color:white;">{{$userprojects[$i]['projectname']}} Transmission Drawing Package {{$usertaskdesc[$i]}} is due in {{$userduedates[$i]}} days.</label>
-						<?php } ?>
-						<?php if($usertasknames[$i] == "scada"){ ?>
+						<?php } elseif($usertasknames[$i] == "scada"){ ?>
 							<label style="color:white;">{{$userprojects[$i]['projectname']}} SCADA {{$usertaskdesc[$i]}} is due in {{$userduedates[$i]}} days.</label>
+						<?php } else {?>
+							<label style="color:white;">{{$userprojects[$i]['projectname']}} {{$usertasknames[$i]}} {{$usertaskdesc[$i]}} is due in {{$userduedates[$i]}} days.</label>
 						<?php } ?>
 					<?php } ?>
 				<?php } ?>
