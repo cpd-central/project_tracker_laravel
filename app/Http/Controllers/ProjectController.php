@@ -362,11 +362,23 @@ class ProjectController extends Controller
     else{
       $projects=Project::all();
     }
+    $codes = [];
     foreach($projects as $project)
     {
       $project = $this->displayFormat($project);
-    } 
-    return view('pages.projectindex', compact('projects', 'term', 'search', 'invert'));
+      if($project['projectcode'] != null){
+        $codes[$project['projectcode']] = $project['projectname'];
+      }
+    }
+    $ref_list = Timesheet::where('name', 'reference_list')->get();
+    $ref_list = $ref_list[0]['codes'];
+    $missing_projects = [];
+    foreach(array_keys($ref_list) as $ref){
+      if(!array_key_exists($ref, $codes)){
+        $missing_projects[$ref] = $ref_list[$ref];
+      }
+    }
+    return view('pages.projectindex', compact('projects', 'term', 'search', 'invert', 'missing_projects'));
   }
 
   /**

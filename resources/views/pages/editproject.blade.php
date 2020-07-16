@@ -36,7 +36,17 @@
 @section('h4proposal', 'Edit Project - Proposal Details')
 @section('h4won', 'Edit Project - Won Details')
 
-@section('cegproposalauthor', $project['cegproposalauthor'])
+<?php $authors = User::all()->except('role', 'user')?>
+@section('cegproposalauthor')
+@foreach($authors as $author)
+<?php if ($project['cegproposalauthor'] == $author->name){?>
+  <option value="<?=$author->name?>" selected="selected"><?=$author->name?></option>
+<?php } else { ?>
+  <option value="<?=$author->name?>"><?=$author->name?></option>
+<?php } ?>
+@endforeach
+@stop
+
 @section('projectname', $project['projectname'])
 @section('clientcontactname', $project['clientcontactname'])
 @section('state', $project['state'])
