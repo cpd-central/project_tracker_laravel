@@ -95,8 +95,20 @@
         @csrf
         <div class="row">
           <div class="form-group col-md-4">
-            <label for="cegproposalauther">CEG Proposal Author</label>
-          <input type="text" class="form-control" name="cegproposalauthor" value="@if(old('cegproposalauthor')){{ old('cegproposalauthor') }}@else<?= $__env->yieldContent('cegproposalauthor')?>@endif">
+            <label for="cegproposalauthor">CEG Proposal Author:</label>
+            <select class="form-control" id="sel2" name="cegproposalauthor">  
+            @if(old('cegproposalauthor'))   
+              @foreach($authors as $author)
+                <?php if (old('cegproposalauthor') == $author->name){?>
+                  <option value="<?=$author->name?>" selected="selected"><?=$author->name?></option>
+                <?php } else { ?>
+                  <option value="<?=$author->name?>"><?=$author->name?></option>
+                <?php } ?>
+              @endforeach
+            @else
+              @yield('cegproposalauthor')
+            @endif
+            </select>
           </div>
           <div class="form-group col-md-4">
             <label for="projectname">Project Name:</label>
