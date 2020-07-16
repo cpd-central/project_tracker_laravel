@@ -41,7 +41,7 @@
 
 @section('projectcode', '')
 
-<?php $pms = User::all()->except('role', 'user')?>
+<?php $pms = User::where('role', 'proposer')->orWhere('role', 'admin')->get()?>
 @section('projectmanager')
 <option value="">No Project Manager</option>
 @foreach($pms as $pm)
