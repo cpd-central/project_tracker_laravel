@@ -290,21 +290,21 @@ table.center {
 
     function make_array(description_code_sort){  
       for(var y = 0; y < reference_desc.length; y++){
-        array[reference_desc[y]] = reference_code[y];
+        array[reference_code[y]] = reference_desc[y];
       }
-      sorted_codes = Object.values(array).sort(); 
-      sorted_descriptions = Object.keys(array).sort();
+      sorted_descriptions = Object.values(array).sort(); 
+      sorted_codes = Object.keys(array).sort();
 
-      if (description_code_sort === 'description') {
+      if (description_code_sort === 'code') {
         sorted_array = {};
         for (var i = 0; i < Object.keys(array).length; i++) {
-          sorted_array[sorted_descriptions[i]] = array[sorted_descriptions[i]]
+          sorted_array[sorted_codes[i]] = array[sorted_codes[i]]
         }
       }
-      else if (description_code_sort === 'code') { 
-        sorted_array = {} 
+      else if (description_code_sort === 'description') { 
+        sorted_array = {};
         for (var j = 0; j < Object.keys(array).length; j++) {
-          sorted_array[Object.keys(array).find(key => array[key] === sorted_codes[j])] = sorted_codes[j];
+            sorted_array[Object.keys(array).find(key => array[key] === sorted_descriptions[j])] = sorted_descriptions[j];
         }
       }
 
@@ -348,10 +348,10 @@ table.center {
         for(var z = 0; z < reference_desc.length; z++){
           var tableRef = tableRef + '<tr>' +
                   '<td>' +
-                      sorted_array[Object.keys(sorted_array)[z]] + 
+                      Object.keys(sorted_array)[z] +
                   '</td>' +
                   '<td>' +
-                      Object.keys(sorted_array)[z] +
+                      sorted_array[Object.keys(sorted_array)[z]] + 
                   '</td>' +
                 '</tr>';
         }
