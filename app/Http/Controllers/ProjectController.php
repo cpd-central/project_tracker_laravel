@@ -1899,20 +1899,71 @@ class ProjectController extends Controller
    * Loads data for the Sticky Note Gantt chart.
    * @return view 'pages.sticky_note'
    */
-  public function sticky_note(){
+  public function sticky_note(Request $request){
     $projects = Project::all()->where('projectstatus', 'Won');
     $projects = $this->sort_by_closest_date($projects);
     $json = [];
     $counter = 0;
-    //calls the project_to_json method for each project that has due dates saved
-    foreach($projects as $project){
-      if ($this->project_to_json($project) != null){
-        $json[$counter] = $this->project_to_json($project);
-        $counter++;
+    $term = $request['employeesearch'];
+    //dd($term);
+    if($term == 'SCADA' || $term == 'drafting' || $term == 'senior' || $term == 'project' || $term == 'interns-admin'){
+      $filteredemployees = User::all()->where('jobclass', $term);
+      foreach($projects as $project){
+        if ($this->project_to_json($project) != null){
+          $convertedproject = $this->project_to_json($project);
+          for($i = 1; $i < sizeof($convertedproject); $i++){
+            $decode = json_decode($convertedproject[$i], true);
+            foreach($filteredemployees as $emp){
+              if(array_key_exists('name_2', $decode)){
+                if ($decode['name_1'] == $emp['name'] || $decode['name_2'] == $emp['name']){
+                  $json[$counter] = $this->project_to_json($project);
+                  $counter++;
+                }
+              }
+              else{
+                if ($decode['name_1'] == $emp['name']){
+                  $json[$counter] = $this->project_to_json($project);
+                  $counter++;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    elseif($term != null && $term != 'Filter:'){
+      foreach($projects as $project){
+        if ($this->project_to_json($project) != null){
+          $convertedproject = $this->project_to_json($project);
+          for($i = 1; $i < sizeof($convertedproject); $i++){
+            $decode = json_decode($convertedproject[$i], true);
+            if(array_key_exists('name_2', $decode)){
+              if ($decode['name_1'] == $term || $decode['name_2'] == $term){
+                $json[$counter] = $this->project_to_json($project);
+                $counter++;
+              }
+            }
+            else{
+              if ($decode['name_1'] == $term){
+                $json[$counter] = $this->project_to_json($project);
+                $counter++;
+              }
+            }
+          }
+        }
+      }
+    }
+    else{
+      //calls the project_to_json method for each project that has due dates saved
+      foreach($projects as $project){
+        if ($this->project_to_json($project) != null){
+          $json[$counter] = $this->project_to_json($project);
+          $counter++;
+        }
       }
     }
     $filtered = false;
-    return view('pages.sticky_note', compact('json', 'filtered'));
+    return view('pages.sticky_note', compact('json', 'filtered', 'term'));
   }
 
       /**
