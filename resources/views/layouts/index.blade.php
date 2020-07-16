@@ -1,5 +1,17 @@
 <!doctype html>
 <html>
+<style>
+.my-custom-scrollbar {
+display: block;
+height: 200px;
+overflow: auto;
+width: 50%;
+padding-left: 50px;
+}
+.table-wrapper-scroll-y {
+display: block;
+}
+</style>
   <title id="page-title">@yield('page-title')</title>
   <head>
     @include('includes.navbar')
@@ -10,10 +22,10 @@
       </br>
       </br>
       
-      @yield('sort') 
-      <div class="container">
-      @yield('toptool')
       
+      <div class="container">
+            @yield('sort') 
+            @yield('toptool')
         @if (Session::has('success'))
         <div class="alert alert-success">
           <p>{{ Session::get('success') }}</p>
