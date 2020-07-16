@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 
-<?php use App\User; ?>
+<?php 
+use App\User; 
+$employees = User::all();
+?>
 <head>
     @include('includes.navbar')
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
@@ -22,7 +25,7 @@
     </style>
 </head>
 <body>
-<div id="gantt_here" style='width:100%; height:75%;'></div>
+<div id="gantt_here" style='width:100%; height:70%;'></div>
 <br>
 <form method="post">
 @csrf
@@ -35,9 +38,23 @@
 @else
 <button style="margin:10px;" type="submit" class="btn btn-warning" id="loadallprojects">Load All Projects</button>
 <input type="hidden" id="loaded" name="loaded" value="your" readonly />
-
 @endif
 <button style="margin:10px;" type="button" class="btn btn-success" id="export">Export To Excel</button>
+</form>
+<form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.sticky_note') }}"> 
+    @csrf
+    <select id="employeesearch" name='employeesearch'>
+        <option @if(!isset($term))selected @endif>Filter:</option>
+        <option @if(isset($term) && $term == 'SCADA')selected @endif value="SCADA">SCADA</option>
+        <option @if(isset($term) && $term == 'drafting')selected @endif value="drafting">Drafter</option>
+        <option @if(isset($term) && $term == 'senior')selected @endif value="senior">Senior</option>
+        <option @if(isset($term) && $term == 'project')selected @endif value="project">Project Manager</option>
+        <option @if(isset($term) && $term == 'interns-admin')selected @endif value="interns-admin">Interns-Admins</option>
+        @foreach($employees as $employee)
+            <option @if(isset($term) && $term == $employee->name)selected @endif value="<?=$employee->name?>"><?=$employee->name?></option>
+        @endforeach
+    </select>
+    <button style="margin:10px;" type="submit" class="btn btn-warning" id="filter">Filter</button>
 </form>
 <script type="text/javascript">
     gantt.config.readonly = true;
