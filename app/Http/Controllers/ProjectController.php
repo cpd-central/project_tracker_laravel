@@ -67,11 +67,12 @@ class ProjectController extends Controller
    * @param $req - Request variable with attributes to be assigned to $project.
    * @param $month - an option parameter. 
    */
-  protected function validate_request($req)
+  protected function validate_request($req, $id = 0)
   {
     $messages = array(
       'cegproposalauthor.required' => 'The CEG Proposal Author is required.',
       'projectname.required' => 'The Project Name is required.',
+      'projectname.unique' => 'The Project Name must be unique.',
       'clientcontactname.required' => 'The Client Contact Name is required.',
       'dollarvalueinhouse.required' => 'The Dollar Value in-house expense is required.',
       'datentp.required' => 'The Date of Notice To Proceed is required',
@@ -79,7 +80,7 @@ class ProjectController extends Controller
     );
     $this->validate($req, [
       'cegproposalauthor' => 'required',
-      'projectname' => 'required',
+      'projectname' => 'required|unique:projects,projectname,'.$id.',_id',
       'clientcontactname' => 'required'
     ], $messages);
 
@@ -285,8 +286,8 @@ class ProjectController extends Controller
    */
   public function update(Request $request, $id)
   {
-    $this->validate_request($request);   
-    $project = Project::find($id);  
+    $this->validate_request($request, $id);  
+    $project = Project::find($id);   
     $this->store($project, $request);
     return redirect('/projectindex')->with('success', 'Success! Project has been successfully updated.');
   }
@@ -298,6 +299,8 @@ class ProjectController extends Controller
    */
   public function submit_billing(Request $request)
   {
+      //$timestamp = $this->strToDate(date("Y-m-d H:i:s", time()), null);
+      //dd($timestamp);
       $id_billing_array=array();
       $x=0;
       for ($x=0; $x <= $request['graph_count']; $x++) 
@@ -333,10 +336,12 @@ class ProjectController extends Controller
   public function billing(Request $request){
     $term = $request['sort'];
     if(!isset($term)){
-      $term = "projectname";
+      $term = "projectmanager";
     }
+    $previous_month = date('F', strtotime('-21 day'));
+    $year_of_previous_month = date('Y', strtotime('-21 day'));
     $projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy($term);
-    return view('pages.monthendbilling', compact('projects', 'term'));
+    return view('pages.monthendbilling', compact('projects', 'term', 'previous_month', 'year_of_previous_month'));
   }
 
   /**
@@ -357,11 +362,23 @@ class ProjectController extends Controller
     else{
       $projects=Project::all();
     }
+    $codes = [];
     foreach($projects as $project)
     {
       $project = $this->displayFormat($project);
-    } 
-    return view('pages.projectindex', compact('projects', 'term', 'search', 'invert'));
+      if($project['projectcode'] != null){
+        $codes[$project['projectcode']] = $project['projectname'];
+      }
+    }
+    $ref_list = Timesheet::where('name', 'reference_list')->get();
+    $ref_list = $ref_list[0]['codes'];
+    $missing_projects = [];
+    foreach(array_keys($ref_list) as $ref){
+      if(!array_key_exists($ref, $codes)){
+        $missing_projects[$ref] = $ref_list[$ref];
+      }
+    }
+    return view('pages.projectindex', compact('projects', 'term', 'search', 'invert', 'missing_projects'));
   }
 
   /**
@@ -1232,7 +1249,7 @@ class ProjectController extends Controller
 
         $total_project_monies_per_month_arr_start_end = array_slice($total_project_monies_per_month_arr, -count($labels),count($labels));
         $total_project_monies_per_month_dataset = array('Total Dollars', 'line', $total_project_monies_per_month_arr_start_end);
-        return (array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}, {$selected_project['projectcode']}, PM is {$selected_project['projectmanager'][0]}", 'individual_dataset' => $individual_dataset, 'individual_dataset_monies' => $individual_dataset_monies, 'project_grand_total' => $project_grand_total, 'dollarvalueinhouse' => $dollarvalueinhouse, 'dateenergization' => $dateenergization, 'group_dataset' => $group_dataset, 'group_dataset_monies' => $group_dataset_monies,'previous_month_project_hours' => $previous_month_project_hours, 'total_project_dollars' => $total_project_dollars,'previous_month_project_monies' => $previous_month_project_monies, 'total_project_monies_per_month_dataset' => $total_project_monies_per_month_dataset, 'total_project_hours_per_month_dataset' => $total_project_hours_per_month_dataset, 'id' => "{$selected_project['id']}", 'last_bill_amount' => $last_bill_amount, 'last_bill_month' => $last_bill_month, 'billing_data' => $billing_data));
+        return (array('labels' => $labels, 'dataset' => $dataset, 'title' => "{$selected_project['projectname']}, {$selected_project['projectcode']}, {$selected_project['projectmanager'][0]}", 'individual_dataset' => $individual_dataset, 'individual_dataset_monies' => $individual_dataset_monies, 'project_grand_total' => $project_grand_total, 'dollarvalueinhouse' => $dollarvalueinhouse, 'dateenergization' => $dateenergization, 'group_dataset' => $group_dataset, 'group_dataset_monies' => $group_dataset_monies,'previous_month_project_hours' => $previous_month_project_hours, 'total_project_dollars' => $total_project_dollars,'previous_month_project_monies' => $previous_month_project_monies, 'total_project_monies_per_month_dataset' => $total_project_monies_per_month_dataset, 'total_project_hours_per_month_dataset' => $total_project_hours_per_month_dataset, 'id' => "{$selected_project['id']}", 'last_bill_amount' => $last_bill_amount, 'last_bill_month' => $last_bill_month, 'billing_data' => $billing_data));
       } else {
         return Null;
       }
@@ -1355,14 +1372,19 @@ class ProjectController extends Controller
     //These variables are used for the searching and sorting tools on the planner page
     $search = $request['search'];
     $term = $request['sort'];
-    $invert = $request['invert']; 
+    $invert = $request['invert'];
+    $copy = $request['copyproject'];
+    if(!is_null($copy)){
+      $copy = Project::find($request['copyproject']);
+    }
+
     if(isset($search) || (isset($term) && $term != "Closest Due Date")){
       $projects = $this->planner_search($search, $term, $invert);
     }
     foreach($projects as $project){
       $this->format_due_dates($project);
     }
-    return view('pages.planner', compact('projects','term', 'search', 'invert'));
+    return view('pages.planner', compact('projects','term', 'search', 'invert', 'copy'));
   }
 
    /**
@@ -1470,6 +1492,16 @@ class ProjectController extends Controller
     }
     return $projects;
 
+  }
+
+  public function paste_dates(Request $request){
+    $copyproject = Project::find($request->get('copyproject'));
+    $pasteproject = Project::find($request->get('pasteproject'));
+    $pasteproject['duedates'] = array();
+    $pasteproject['duedates'] = $copyproject['duedates'];
+    $pasteid = $pasteproject['id'];
+    $pasteproject->save();
+    return redirect('/manageproject/'.$pasteid);
   }
 
    /**
@@ -1618,73 +1650,6 @@ class ProjectController extends Controller
     $project = Project::find($id);
     $this->store_dates($project, $request);
     return redirect('/planner')->with('Success!', 'Project has been successfully updated');
-  }
-
-    /**
-   * 
-   * @param $req - Request variable with attributes to be assigned to $project.
-   */
-  protected function validate_dates($req, $project)
-  {
-    
-    $today = date("Y-m-d"); /*
-      $this->validate($req, [
-        'physical90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'physicalifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'wire90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'wireifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'collection90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'collectionifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'transmission90due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'transmissionifcdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'scadadue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'ampacitydue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'arcflashdue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'relaydue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        'alldue' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-      ]);
-      if (isset($project['duedates']['additionalfields'])){
-        $additionalfields = $project['duedates']['additionalfields'];
-      }
-      else{
-        $additionalfields = array();
-      }
-      $keys = array_keys($additionalfields);
-      $numfields = $req->get('total');
-      if ($numfields == null || $numfields == ''){
-        $numfields = sizeof($keys);
-      }
-      dd($numfields);
-
-      for($i = 1; $i <= $numfields; $i++){
-        $namefield = $req->get('row'.$i.'name');
-        if (!isset($namefield)){
-          continue;
-        }
-        $this->validate($req, [
-          'row'.$i.'due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-        ]);
-    }
-    */
-    if (isset($project['duedates']['physical'])){
-      $physical = $project['duedates']['physical'];
-    }
-    else{
-      $physical = array();
-    }
-    $keys = array_keys($physical);
-    $numfields = $req->get('physicalfields');
-    dd($numfields);
-
-    for($i = 1; $i <= $numfields; $i++){
-      $namefield = $req->get('row'.$i.'name');
-      if (!isset($namefield)){
-        continue;
-      }
-      $this->validate($req, [
-        'row'.$i.'due' => 'nullable|date_format:"Y-m-d"|after:' . $today,
-      ]);
-    }
   }
 
       /**
@@ -1946,20 +1911,125 @@ class ProjectController extends Controller
    * Loads data for the Sticky Note Gantt chart.
    * @return view 'pages.sticky_note'
    */
-  public function sticky_note(){
+  public function sticky_note(Request $request){
     $projects = Project::all()->where('projectstatus', 'Won');
     $projects = $this->sort_by_closest_date($projects);
     $json = [];
     $counter = 0;
-    //calls the project_to_json method for each project that has due dates saved
-    foreach($projects as $project){
-      if ($this->project_to_json($project) != null){
-        $json[$counter] = $this->project_to_json($project);
-        $counter++;
+    $term = $request['employeesearch'];
+    //dd($term);
+    if($term == 'SCADA' || $term == 'drafting' || $term == 'senior' || $term == 'project' || $term == 'interns-admin'){
+      $filteredemployees = User::all()->where('jobclass', $term);
+      foreach($projects as $project){
+        if ($this->project_to_json($project) != null){
+          $convertedproject = $this->project_to_json($project);
+          for($i = 1; $i < sizeof($convertedproject); $i++){
+            $decode = json_decode($convertedproject[$i], true);
+            foreach($filteredemployees as $emp){
+              if(array_key_exists('name_2', $decode)){
+                if ($decode['name_1'] == $emp['name'] || $decode['name_2'] == $emp['name']){
+                  $json[$counter] = $this->project_to_json($project);
+                  $counter++;
+                }
+              }
+              else{
+                if ($decode['name_1'] == $emp['name']){
+                  $json[$counter] = $this->project_to_json($project);
+                  $counter++;
+                }
+              }
+            }
+          }
+        }
       }
     }
-    return view('pages.sticky_note', compact('json'));
+    elseif($term != null && $term != 'Filter:'){
+      foreach($projects as $project){
+        if ($this->project_to_json($project) != null){
+          $convertedproject = $this->project_to_json($project);
+          for($i = 1; $i < sizeof($convertedproject); $i++){
+            $decode = json_decode($convertedproject[$i], true);
+            if(array_key_exists('name_2', $decode)){
+              if ($decode['name_1'] == $term || $decode['name_2'] == $term){
+                $json[$counter] = $this->project_to_json($project);
+                $counter++;
+              }
+            }
+            else{
+              if ($decode['name_1'] == $term){
+                $json[$counter] = $this->project_to_json($project);
+                $counter++;
+              }
+            }
+          }
+        }
+      }
+    }
+    else{
+      //calls the project_to_json method for each project that has due dates saved
+      foreach($projects as $project){
+        if ($this->project_to_json($project) != null){
+          $json[$counter] = $this->project_to_json($project);
+          $counter++;
+        }
+      }
+    }
+    $filtered = false;
+    return view('pages.sticky_note', compact('json', 'filtered', 'term'));
   }
+
+      /**
+   * Loads a single employee's data for the Sticky Note Gantt chart.
+   * @return view 'pages.sticky_note'
+   */
+  public function employee_gantt(Request $request){
+    //loads all projects if an individual's projects are currently loaded
+    if($request->get('loaded') == 'your'){
+      $projects = Project::all()->where('projectstatus', 'Won');
+      $projects = $this->sort_by_closest_date($projects);
+      $json = [];
+      $counter = 0;
+      //calls the project_to_json method for each project that has due dates saved
+      foreach($projects as $project){
+        if ($this->project_to_json($project) != null){
+          $json[$counter] = $this->project_to_json($project);
+          $counter++;
+        }
+      }
+      $filtered = false;
+    }
+    //loads an individual's projects if all projects are currently loaded
+    else{
+      $projects = Project::all()->where('projectstatus', 'Won');
+      $projects = $this->sort_by_closest_date($projects);
+      $json = [];
+      $counter = 0;
+      //calls the project_to_json method for each project that has due dates saved, then adds projects that the current user is involved in
+      foreach($projects as $project){
+        if ($this->project_to_json($project) != null){
+          $convertedproject = $this->project_to_json($project);
+          for($i = 1; $i < sizeof($convertedproject); $i++){
+            $decode = json_decode($convertedproject[$i], true);
+            if(array_key_exists('name_2', $decode)){
+              if ($decode['name_1'] == auth()->user()->name || $decode['name_2'] == auth()->user()->name){
+                $json[$counter] = $this->project_to_json($project);
+                $counter++;
+              }
+            }
+            else{
+              if ($decode['name_1'] == auth()->user()->name){
+                $json[$counter] = $this->project_to_json($project);
+                $counter++;
+              }
+            }
+          }
+        }
+      }
+      $filtered = true;
+  }
+  return view('pages.sticky_note', compact('json', 'filtered'));
+  }
+
     /**
    * Turns information on the project from the database into a JSON format so the Gantt chart can display the information.
    * @param $project is the current project that's information is being converted to a JSON format.
@@ -2034,7 +2104,7 @@ class ProjectController extends Controller
             $subkeys = array_keys($addeddate);
             $miscsubcount = 0;
             foreach($addeddate as $task){
-              $taskname = $subkeys[$miscsubcount];
+              $taskname = strval($subkeys[$miscsubcount]);
               if($taskname != "person1" && $taskname != "person2" && $taskname != "due"){
                 $tid = 'id_'.$taskname.'_'.$pname.'_'.$project['projectname'];
                 $taskstart = $task['due'];
@@ -2128,7 +2198,7 @@ class ProjectController extends Controller
         $subkeys = array_keys($duedate);
         $subcount = 0;
         foreach($duedate as $task){
-          $taskname = $subkeys[$subcount];
+          $taskname = strval($subkeys[$subcount]);
           if($taskname != "person1" && $taskname != "person2" && $taskname != "due"){
             $tid = 'id_'.$taskname.'_'.$pname.'_'.$project['projectname'];
             $taskstart = $task['due'];

@@ -95,31 +95,43 @@
         @csrf
         <div class="row">
           <div class="form-group col-md-4">
-            <label for="cegproposalauther">CEG Proposal Author</label>
-          <input type="text" class="form-control" name="cegproposalauthor" value="@if(old('cegproposalauthor')){{ old('cegproposalauthor') }} @else<?= $__env->yieldContent('cegproposalauthor')?>@endif">
+            <label for="cegproposalauthor">CEG Proposal Author:</label>
+            <select class="form-control" id="sel2" name="cegproposalauthor">  
+            @if(old('cegproposalauthor'))   
+              @foreach($authors as $author)
+                <?php if (old('cegproposalauthor') == $author->name){?>
+                  <option value="<?=$author->name?>" selected="selected"><?=$author->name?></option>
+                <?php } else { ?>
+                  <option value="<?=$author->name?>"><?=$author->name?></option>
+                <?php } ?>
+              @endforeach
+            @else
+              @yield('cegproposalauthor')
+            @endif
+            </select>
           </div>
           <div class="form-group col-md-4">
             <label for="projectname">Project Name:</label>
-            <input type="text" class="form-control" name="projectname" value="@if(old('projectname')){{ old('projectname') }} @else<?= $__env->yieldContent('projectname')?>@endif">
+            <input type="text" class="form-control" name="projectname" value="@if(old('projectname')){{ old('projectname') }}@else<?= $__env->yieldContent('projectname')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="clientcontactname">Client Contact Name:</label>
-            <input type="text" class="form-control" name="clientcontactname" value="@if(old('clientcontactname')){{ old('clientcontactname') }} @else<?= $__env->yieldContent('clientcontactname')?>@endif">
+            <input type="text" class="form-control" name="clientcontactname" value="@if(old('clientcontactname')){{ old('clientcontactname') }}@else<?= $__env->yieldContent('clientcontactname')?>@endif">
           </div>
         </div>
 
         <div class="row">
           <div class="form-group col-md-4">
             <label for="state">State:</label>
-            <input type="text" class="form-control" name="state" value="@if(old('state')){{ old('state') }} @else<?= $__env->yieldContent('state')?>@endif">
+            <input type="text" class="form-control" name="state" value="@if(old('state')){{ old('state') }}@else<?= $__env->yieldContent('state')?>@endif">
           </div>	
         <div class="form-group col-md-4">
           <label for="utility">Utility:</label>
-          <input type="text" class="form-control" name="utility" value="@if(old('utility')){{ old('utility') }} @else<?= $__env->yieldContent('utility')?>@endif">
+          <input type="text" class="form-control" name="utility" value="@if(old('utility')){{ old('utility') }}@else<?= $__env->yieldContent('utility')?>@endif">
         </div>	
           <div class="form-group col-md-4">
             <label for="clientcompany">Client Company:</label>
-            <input type="text" class="form-control" name="clientcompany" value="@if(old('clientcompany')){{ old('clientcompany') }} @else<?= $__env->yieldContent('clientcompany')?>@endif">
+            <input type="text" class="form-control" name="clientcompany" value="@if(old('clientcompany')){{ old('clientcompany') }}@else<?= $__env->yieldContent('clientcompany')?>@endif">
           </div>	
         </div>
 
@@ -332,11 +344,25 @@
             <label for="projectcode">Project Code:</label>
             <input type="text" class="form-control" name="projectcode" value="@if(old('projectcode'))<?= old('projectcode') ?>@else<?= $__env->yieldContent('projectcode')?>@endif">
           </div>
+
           <div class="form-group col-md-4">
             <label for="projectmanager">CEG Project Manager:</label>
-            <input type="text" class="form-control" name="projectmanager" value="@if(old('projectmanager'))<?= old('projectmanager') ?>@else<?= $__env->yieldContent('projectmanager')?>@endif">
+            <select class="form-control" id="sel2" name="projectmanager">  
+            @if(old('projectmanager'))   
+              @foreach($pms as $pm)
+                <?php if (old('projectmanager') == $pm->name){?>
+                  <option value="<?=$pm->name?>" selected="selected"><?=$pm->name?></option>
+                <?php } else { ?>
+                  <option value="<?=$pm->name?>"><?=$pm->name?></option>
+                <?php } ?>
+              @endforeach
+            @else
+              @yield('projectmanager')
+            @endif
+            </select>
           </div>
         </div>
+
         <div class="form-group">
           <label for="projectnotes">Project Notes:</label>
           <textarea class="form-control" name="projectnotes" id="projectnotes" rows="3">@if(old('projectnotes'))<?= old('projectnotes') ?>@else<?= $__env->yieldContent('projectnotes')?>@endif</textarea>
@@ -351,11 +377,11 @@
         <div class="row">
           <div class="form-group col-md-4">
             <label for="billingcontact">Billing Contact</label>
-          <input type="text" class="form-control" name="billingcontact" value="@if(old('billingcontact')){{ old('billingcontact') }} @else<?= $__env->yieldContent('billingcontact')?>@endif">
+          <input type="text" class="form-control" name="billingcontact" value="@if(old('billingcontact')){{ old('billingcontact') }}@else<?= $__env->yieldContent('billingcontact')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="billingcontactemail">Billing Contact Email:</label>
-            <input type="text" class="form-control" name="billingcontactemail" value="@if(old('billingcontactemail')){{ old('billingcontactemail') }} @else<?= $__env->yieldContent('billingcontactemail')?>@endif">
+            <input type="text" class="form-control" name="billingcontactemail" value="@if(old('billingcontactemail')){{ old('billingcontactemail') }}@else<?= $__env->yieldContent('billingcontactemail')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="billingmethod">Billing Method:</label><br>
@@ -385,21 +411,21 @@
         <div class="row">
           <div class="form-group col-md-12">
             <label for="billingnotes">Billing Notes:</label>
-            <input type="text" class="form-control" name="billingnotes" value="@if(old('billingnotes')){{ old('billingnotes') }} @else<?= $__env->yieldContent('billingnotes')?>@endif">
+            <input type="text" class="form-control" name="billingnotes" value="@if(old('billingnotes')){{ old('billingnotes') }}@else<?= $__env->yieldContent('billingnotes')?>@endif">
           </div>
         </div>
 
         <div class="row">
           <div class="form-group col-md-12">
             <label for="filelocationofproposal">Location of Proposal:</label>
-            <input type="text" class="form-control" name="filelocationofproposal" value="@if(old('filelocationofproposal')){{ old('filelocationofproposal') }} @else<?= $__env->yieldContent('filelocationofproposal')?>@endif">
+            <input type="text" class="form-control" name="filelocationofproposal" value="@if(old('filelocationofproposal')){{ old('filelocationofproposal') }}@else<?= $__env->yieldContent('filelocationofproposal')?>@endif">
           </div>
         </div>
 
         <div class="row">
           <div class="form-group col-md-12">
             <label for="filelocationofproject">Location of Project:</label>
-            <input type="text" class="form-control" name="filelocationofproject" value="@if(old('filelocationofproject')){{ old('filelocationofproject') }} @else<?= $__env->yieldContent('filelocationofproject')?>@endif">
+            <input type="text" class="form-control" name="filelocationofproject" value="@if(old('filelocationofproject')){{ old('filelocationofproject') }}@else<?= $__env->yieldContent('filelocationofproject')?>@endif">
           </div>
         </div>
       </form>

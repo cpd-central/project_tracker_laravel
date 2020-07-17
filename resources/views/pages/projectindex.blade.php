@@ -1,25 +1,13 @@
 @extends('layouts.index')
 @section('toptool')
-
 <div class="container">
-  <h2><b>Project Search</b></h2> 
-  <br />
   <!-- Search Bar Form -->
-  <div class="active-pink-3 active-pink-4 mb-4">
-      <form class="form-inline md-form mr-auto mb-4" method="post" action="{{ route('pages.projectindex') }}"> 
-          @csrf 
-          <input name="search" class="form-control mr-sm-2" type="text" placeholder="Search Projects" aria-label="Search" value='@if(isset($search)){{$search}}@endif'>
-          <button class="btn aqua-gradient btn-rounded btn-sm my-0" type="submit">Submit</button> 
-        </form> 
-  </div>
-  @stop
-  
-  @section('sort')
+  <div style="float: left; width: 50%" class="active-pink-3 active-pink-4">
+  <p style="padding-bottom:50px"></p>
   <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.projectindex') }}"> 
     @csrf  
-    <div class="form-group col-md-12">
       <input id="invert" name="invert" class="form-control" type="checkbox" @if(isset($invert))checked @endif value="flip"/>Flip Sort Order 
-    </div> 
+      <p style="padding-right:250px"></p>
     <select id="sort" name='sort' class="form-control">
     <option @if(!isset($term))selected @endif>-----Select-----</option>
     <option @if(isset($term) && $term == "cegproposalauthor")selected @endif value="cegproposalauthor">CEG Proposal Author</option>
@@ -36,7 +24,37 @@
     <option @if(isset($term) && $term == "projectstatus")selected @endif value="projectstatus">Project Status</option>
     <option @if(isset($term) && $term == "projectcode")selected @endif value="projectcode">Project Code</option>
     <option @if(isset($term) && $term == "projectmanager")selected @endif value="projectmanager">Project Manager(s)</option>
+  </form>
+      <form class="form-inline md-form mr-auto mb-4" method="post" action="{{ route('pages.projectindex') }}"> 
+          @csrf 
+          <input name="search" class="form-control mr-sm-2" type="text" placeholder="Search Projects" aria-label="Search" value='@if(isset($search)){{$search}}@endif'>
+          <button class="btn aqua-gradient btn-rounded btn-sm my-0" type="submit">Submit</button>           
   </form> 
+  </div>     
+  <div class="my-custom-scrollbar table-wrapper-scroll-y ">
+  <h2><b>Missing Projects:</b></h2> 
+  <table class="table table-bordered table-striped mb-0">
+    <thead>
+      <tr>
+        <th scope="col">Code</th>
+        <th scope="col">Project Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if(!empty($missing_projects))
+      @foreach(array_keys($missing_projects) as $mp)
+      <tr>
+        <td>{{$mp}}</td>
+        <td>{{$missing_projects[$mp]}}</td>
+      </tr>
+      @endforeach
+      @endif
+      </tbody>
+    </table>
+  </div>   
+  @stop
+  
+  @section('sort')
   @stop
 
   @section('table-title', 'Project Index')
