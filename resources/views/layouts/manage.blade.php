@@ -58,6 +58,7 @@ h6 {
                 <input type="date" class="form-control" id="dateenergization" name="dateenergization" readonly value="@if(old('dateenergization'))<?= old('dateenergization') ?>@else<?= $__env->yieldContent('dateenergization')?>@endif">
               </div>
          </div>
+         <!-- Hyperlink that brings you to the edit project page for the current project being managed -->
         <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit Details</a></td>
         <br>
         <br>
@@ -73,6 +74,7 @@ h6 {
               <button style="margin:10px;" type="button" class="btn btn-warning" id="addphysical">Add New Physical Field</button> 
             </div>
           </div>
+          <!-- Row containing 3 fields, 2 dropdowns to select employees and one to enter in the due date -->
           <div class="row">
               <div class="form-group col-md-4">
                   <label for="physicalperson1">Engineer/Person 1</label>
@@ -131,6 +133,7 @@ h6 {
           <?php $physicalfields = 1; ?>
           <h6 id="physical{{$physicalfields}}title" style="margin-left: 55px"><b>90</b></h6>
           <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="physical{{$physicalfields}}">Remove</button>
+              <!-- Row containing 3 fields, 2 dropdowns to select employees and one to enter in the due date -->
               <div id="physical{{$physicalfields}}row" style="margin-left: 40px" class="row">
                 <div class="form-group col-md-4">
                   <label for="physical{{$physicalfields}}person1">Engineer/Person 1</label>
@@ -159,6 +162,7 @@ h6 {
                 <?php $physicalfields++; ?>
           <h6 id="physical{{$physicalfields}}title" style="margin-left: 55px"><b>IFC</b></h6>
           <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="physical{{$physicalfields}}">Remove</button>
+            <!-- Row containing 3 fields, 2 dropdowns to select employees and one to enter in the due date -->
             <div id="physical{{$physicalfields}}row" style="margin-left: 40px" class="row">
                 <div class="form-group col-md-4">
                     <label for="physical{{$physicalfields}}person1">Engineer/Person 1</label>
@@ -193,6 +197,7 @@ h6 {
             <?php $keys = array_keys($project['duedates']['physical']);?>
             <h6 id="physical{{$i}}title" style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
             <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="physical{{$i}}">Remove</button>
+            <!-- Row containing 3 fields, 2 dropdowns to select employees and one to enter in the due date -->
             <div id="physical{{$i}}row" style="margin-left: 40px" class="row">
                 <div class="form-group col-md-4">
                     <label for="physical{{$i}}person1">Engineer/Person 1</label>
@@ -224,15 +229,19 @@ h6 {
                     <label for="physical{{$i}}due">Due Date</label>
                     <input type="date" class="form-control" id="physical{{$i}}due" name="physical{{$i}}due" value="@if(old('physical{{$i}}due'))<?= old('physical{{$i}}due') ?>@else<?= $project['duedates']['physical'][$keys[$keycounter]]['due'] ?>@endif">
                 </div>
+                <!-- Hidden input to pass on the name of the current row of fields -->
                 <input type="hidden" id="physical{{$i}}name" name="physical{{$i}}name" value="{{$keys[$keycounter]}}" readonly />
                 <?php $keycounter++; ?>
             </div>
           <?php } ?>
         </div>
       @endif
+      <!-- Hidden input to pass on the numbdr of third-level rows or subcategories for the Physical Drawing Package -->
       <input type="hidden" id="physicalfields" name="physicalfields" value="{{$physicalfields}}" readonly />
       <div id = "addedphysical">
       </div>
+
+  <!-- The following sections of code have the same layout as the Physical Drawing Package, but with different variable names -->
 
   <!-- Wiring and Controls Drawing Package -->
   
@@ -758,7 +767,9 @@ h6 {
   <div id="addedtransmission">
   </div>
 
-  <!-- SCADA -->
+  <!-- SCADA section has  -->
+
+  <!-- SCADA has the same code as the previous sections, but with different variables and more sections under the default body section-->
 
   @if(!is_null($scadafields) || !isset($project['duedates']))
   <!-- Heading for SCADA, displays the title and second-level fields -->
@@ -1058,6 +1069,9 @@ h6 {
   <div id="addedscada">
   </div>
 
+  <!-- Studies section has the same code as the previous sections, but with different variables and more sections under the default body section-->
+  <!-- Studies only have one employee per category instead of two -->
+
   <!-- Studies -->
 
   @if(!is_null($totalstudies) || !isset($project['duedates']))
@@ -1291,6 +1305,7 @@ h6 {
               </div>
               <div id="misc{{$c}}body">
                 <?php 
+                //Displays the subcategories for each miscellaneous field
                 $subkeys = array_keys($additionalfields[$key]);
                 foreach($subkeys as $subkey){
                   if ($subkey != "person1" && $subkey != "person2" && $subkey != "due"){
@@ -1381,7 +1396,6 @@ h6 {
 var row = "<?php echo $c ?>";
 var total = parseInt(row);
 var miscfields = parseInt("<?php echo $miscfields ?>");
-//var miscnames = [];
 var physicalfields = parseInt("<?php echo $physicalfields ?>");
 var controlfields = parseInt("<?php echo $controlfields ?>");
 var collectionfields = parseInt("<?php echo $collectionfields ?>");
@@ -1389,6 +1403,7 @@ var transmissionfields = parseInt("<?php echo $transmissionfields ?>");
 var scadafields = parseInt("<?php echo $scadafields ?>");
 var communicationfields = parseInt("<?php echo $communicationfields ?>");
 var totalstudies = parseInt("<?php echo $totalstudies ?>");
+//initializes the list of employees for the drop-down menus
 var employees = [];
 var empname;
 <?php for ($i = 0; $i < count($employees); $i++) {?>

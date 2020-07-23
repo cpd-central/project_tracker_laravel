@@ -57,6 +57,7 @@ $employees = User::all();
     <button style="margin:10px;" type="submit" class="btn btn-warning" id="filter">Filter</button>
 </form>
 <script type="text/javascript">
+    //sets the gantt chart to read only
     gantt.config.readonly = true;
 
 
@@ -97,9 +98,8 @@ $employees = User::all();
     {name:"name_2",   label:"Employee 2",   align:"center", width: 100 },
     ];
 
-
+    //sets the layout and scale/range of the dates on the gantt chart
     gantt.config.xml_date = "%Y-%m-%d";
-    
     gantt.config.scales = [
     {unit: "month", step: 1, format: "%F, %Y"},
     {unit: "day", step: 1, format: "%j, %D"}
@@ -128,6 +128,7 @@ $employees = User::all();
     <?php } ?>
 
     $(document).ready(function() {
+        //opens all of the folders on the gantt chart so every level can be seen
         $("#thirdlevel").on('click', function() {
             <?php for ($i = 0; $i < count($json); $i++) {?>
                 <?php for ($j = 0; $j < count($json[$i]); $j++) {?>
@@ -137,6 +138,7 @@ $employees = User::all();
             <?php } ?>
         });
 
+        //opens the first set of folders on the gantt chart so the first and second level can be seen
         $("#secondlevel").on('click', function() {
             <?php for ($i = 0; $i < count($json); $i++) {?>
                 <?php for ($j = 0; $j < count($json[$i]); $j++) {?>
@@ -148,6 +150,7 @@ $employees = User::all();
             <?php } ?>
         });
 
+        //closes all the folders so only the first level (project names) can be seen
         $("#firstlevel").on('click', function() {
             <?php for ($i = 0; $i < count($json); $i++) {?>
                 <?php for ($j = 0; $j < count($json[$i]); $j++) {?>
@@ -157,23 +160,14 @@ $employees = User::all();
             <?php } ?>
         });
 
+        //exports the information on the left side of the chart into an excel document
         $("#export").on('click', function() {
             var c = window.confirm("Would you like to export the Gantt Chart data to an Excel file?");
             if(c == true){
                 gantt.exportToExcel(project);
             }
         });
-        
-        /*
-        $("#loadyourprojects").on('click', function() {
-            <?php for ($i = 0; $i < count($json); $i++) {?>
-                <?php for ($j = 0; $j < count($json[$i]); $j++) {?>
-                    var currentjson = <?php echo $json[$i][$j] ?>;
-                    console.log(currentjson.id);
-                <?php } ?>
-            <?php } ?>
-        });
-        */
+
     });
 
 </script>

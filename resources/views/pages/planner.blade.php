@@ -24,6 +24,7 @@
   @stop
   
   @section('sort')
+    <!-- Sorting Form -->
   <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.planner') }}"> 
     @csrf  
     <div class="form-group col-md-12">
@@ -59,7 +60,7 @@
 @section('table-content')
 @foreach($projects as $project)
     <tr>
-        
+          <!-- If the copy button wasn't pressed. show the Manage Project and Copy buttons under each project -->
           @if($copy == null)
             <td><a href="{{action('ProjectController@manage_project', $project['_id'])}}" class="btn btn-warning">Manage Project</a></td>
             <td>
@@ -69,6 +70,7 @@
                 <input type="hidden" id="copyproject" name="copyproject" value="{{$project['_id']}}" readonly />
             </form> 
             </td>
+          <!-- If the copy button was pressed. show the Paste button under every project that isn't the project being copied -->
           @else
             @if($project['_id'] != $copy['_id'])
             <td>
@@ -87,6 +89,7 @@
           @endif
         <td>{{$project['projectname']}}</td>
         <td>{{$project['dateenergization']}}</td>
+        <!-- if there are due dates saved for the current project in the loop, then it will go through each category and if those categories exist, it will display the due date for it -->
         @if(isset($project['duedates']))
           @if(isset($project['duedates']['physical']))
           <td>{{$project['duedates']['physical']['due']}}</td>
