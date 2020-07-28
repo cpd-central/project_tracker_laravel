@@ -1977,6 +1977,11 @@ class ProjectController extends Controller
             //decodes back out of a JSON format just to check if the name variables are equal to one of the employees with the particular job class
             $decode = json_decode($convertedproject[$i], true);
             foreach($filteredemployees as $emp){
+              if($project['projectmanager'][0] == $emp){
+                $json[$counter] = $this->project_to_json($project);
+                $counter++;
+                continue;
+              } 
               //this if statement is here because studies don't involve two names, and it will throw an error otherwise
               if(array_key_exists('name_2', $decode)){
                 if ($decode['name_1'] == $emp['name'] || $decode['name_2'] == $emp['name']){
@@ -1996,9 +2001,14 @@ class ProjectController extends Controller
       }
     }
     //If the drop-down filter is set to a particular employee, it goes through every project and only filters in the ones that the employee is a part of
-    elseif($term != null && $term != 'Filter:'){
+    elseif($term != null && $term != 'No Filter'){
       foreach($projects as $project){
         if ($this->project_to_json($project) != null){
+          if($project['projectmanager'][0] == $term){
+            $json[$counter] = $this->project_to_json($project);
+            $counter++;
+            continue;
+          } 
           $convertedproject = $this->project_to_json($project);
           for($i = 1; $i < sizeof($convertedproject); $i++){
             $decode = json_decode($convertedproject[$i], true);
@@ -2062,6 +2072,11 @@ class ProjectController extends Controller
       //calls the project_to_json method for each project that has due dates saved, then adds projects that the current user is involved in
       foreach($projects as $project){
         if ($this->project_to_json($project) != null){
+          if($project['projectmanager'][0] == auth()->user()->name){
+            $json[$counter] = $this->project_to_json($project);
+            $counter++;
+            continue;
+          } 
           $convertedproject = $this->project_to_json($project);
           for($i = 1; $i < sizeof($convertedproject); $i++){
             $decode = json_decode($convertedproject[$i], true);
@@ -2100,12 +2115,14 @@ class ProjectController extends Controller
       $text = $project['projectname'];
       $today = date("Y-m-d");
       $energize = $this->dateToStr($project['dateenergization']);
+      $projectmanager = $project['projectmanager'];
       //$parent is the array format for the parent folder
       $parent = array(
         "id" => "id_".$text, 
         "text" => $text, 
         "start_date" => $today,
         "end_date" => $energize,
+        "name_1" => $projectmanager,
         "color" => "rgb(75, 220, 100, 0.4)"
       );
       //json_encode turns the $parent array into a JSON object
