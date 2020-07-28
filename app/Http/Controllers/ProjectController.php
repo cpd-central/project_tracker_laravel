@@ -1977,6 +1977,11 @@ class ProjectController extends Controller
             //decodes back out of a JSON format just to check if the name variables are equal to one of the employees with the particular job class
             $decode = json_decode($convertedproject[$i], true);
             foreach($filteredemployees as $emp){
+              if($project['projectmanager'][0] == $emp){
+                $json[$counter] = $this->project_to_json($project);
+                $counter++;
+                continue;
+              } 
               //this if statement is here because studies don't involve two names, and it will throw an error otherwise
               if(array_key_exists('name_2', $decode)){
                 if ($decode['name_1'] == $emp['name'] || $decode['name_2'] == $emp['name']){
@@ -1996,7 +2001,7 @@ class ProjectController extends Controller
       }
     }
     //If the drop-down filter is set to a particular employee, it goes through every project and only filters in the ones that the employee is a part of
-    elseif($term != null && $term != 'Filter:'){
+    elseif($term != null && $term != 'No Filter'){
       foreach($projects as $project){
         if ($this->project_to_json($project) != null){
           if($project['projectmanager'][0] == $term){
