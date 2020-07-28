@@ -44,7 +44,7 @@ $employees = User::all();
 <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.sticky_note') }}"> 
     @csrf
     <select id="employeesearch" name='employeesearch'>
-        <option @if(!isset($term))selected @endif>Filter:</option>
+        <option @if(!isset($term))selected @endif>No Filter</option>
         <option @if(isset($term) && $term == 'SCADA')selected @endif value="SCADA">SCADA</option>
         <option @if(isset($term) && $term == 'drafting')selected @endif value="drafting">Drafter</option>
         <option @if(isset($term) && $term == 'senior')selected @endif value="senior">Senior</option>
