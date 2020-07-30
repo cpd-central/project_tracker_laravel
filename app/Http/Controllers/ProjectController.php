@@ -1039,6 +1039,7 @@ class ProjectController extends Controller
         $previous_month_project_monies=0;
 
         $previous_month = date('F', strtotime('-1 month'));
+
         $current_year = date('Y');
         for ($emp_count=0; $emp_count<count($employeeLIST); $emp_count++) {
           $individual_project_hours_arr[$emp_count] = array();
@@ -1612,7 +1613,7 @@ class ProjectController extends Controller
           if($key == 'Communication'){
             $comkeys = array_keys($scada['Communication']);
             foreach($comkeys as $comkey){
-              if ($comkey != "person1" && $comkey != "person2" && $comkey != "due"){
+              if ($comkey != "person1" && $comkey != "person2" && $comkey != "due" && $comkey != "completed_at"){
                 $communicationfields++;
               }
             }
@@ -1681,7 +1682,12 @@ class ProjectController extends Controller
           if ($studyname == null){
             continue;
           }
+          $complete = $req->get('study'.$i.'complete');
           $studies[$studyname] = array();
+          if(!is_null($complete)){
+            $today = $this->strToDate(date("Y-m-d"), null);
+            $studies[$studyname]['completed_at'] = $today;
+          }
           $studies[$studyname]['person1'] = $req->get('study'.$i.'person1');
           $studies[$studyname]['due'] = $this->strToDate($req->get('study'.$i.'due'), null);
         }
@@ -1701,7 +1707,12 @@ class ProjectController extends Controller
           if ($physicalname == null){
             continue;
           }
+          $complete = $req->get('physical'.$i.'complete');
           $physicals[$physicalname] = array();
+          if(!is_null($complete)){
+            $today = $this->strToDate(date("Y-m-d"), null);
+            $physicals[$physicalname]['completed_at'] = $today;
+          }
           $physicals[$physicalname]['person1'] = $req->get('physical'.$i.'person1');
           $physicals[$physicalname]['person2'] = $req->get('physical'.$i.'person2');
           $physicals[$physicalname]['due'] = $this->strToDate($req->get('physical'.$i.'due'), null);
@@ -1722,7 +1733,12 @@ class ProjectController extends Controller
           if ($controlname == null){
             continue;
           }
-          $controls[$controlname] = array();
+          $complete = $req->get('control'.$i.'complete');
+          $controls[$physicalname] = array();
+          if(!is_null($complete)){
+            $today = $this->strToDate(date("Y-m-d"), null);
+            $controls[$controlname]['completed_at'] = $today;
+          }
           $controls[$controlname]['person1'] = $req->get('control'.$i.'person1');
           $controls[$controlname]['person2'] = $req->get('control'.$i.'person2');
           $controls[$controlname]['due'] = $this->strToDate($req->get('control'.$i.'due'), null);
@@ -1743,7 +1759,12 @@ class ProjectController extends Controller
           if ($collectionname == null){
             continue;
           }
+          $complete = $req->get('collection'.$i.'complete');
           $collections[$collectionname] = array();
+          if(!is_null($complete)){
+            $today = $this->strToDate(date("Y-m-d"), null);
+            $collections[$collectionname]['completed_at'] = $today;
+          }
           $collections[$collectionname]['person1'] = $req->get('collection'.$i.'person1');
           $collections[$collectionname]['person2'] = $req->get('collection'.$i.'person2');
           $collections[$collectionname]['due'] = $this->strToDate($req->get('collection'.$i.'due'), null);
@@ -1764,7 +1785,12 @@ class ProjectController extends Controller
           if ($transmissionname == null){
             continue;
           }
+          $complete = $req->get('transmission'.$i.'complete');
           $transmissions[$transmissionname] = array();
+          if(!is_null($complete)){
+            $today = $this->strToDate(date("Y-m-d"), null);
+            $transmissions[$transmissionname]['completed_at'] = $today;
+          }
           $transmissions[$transmissionname]['person1'] = $req->get('transmission'.$i.'person1');
           $transmissions[$transmissionname]['person2'] = $req->get('transmission'.$i.'person2');
           $transmissions[$transmissionname]['due'] = $this->strToDate($req->get('transmission'.$i.'due'), null);
@@ -1785,7 +1811,12 @@ class ProjectController extends Controller
           if ($scadaname == null){
             continue;
           }
+          $complete = $req->get('scada'.$i.'complete');
           $scada[$scadaname] = array();
+          if(!is_null($complete)){
+            $today = $this->strToDate(date("Y-m-d"), null);
+            $scada[$scadaname]['completed_at'] = $today;
+          }
           $scada[$scadaname]['person1'] = $req->get('scada'.$i.'person1');
           $scada[$scadaname]['person2'] = $req->get('scada'.$i.'person2');
           $scada[$scadaname]['due'] = $this->strToDate($req->get('scada'.$i.'due'), null);
@@ -1796,7 +1827,12 @@ class ProjectController extends Controller
               if ($communicationname == null){
                 continue;
               }
+              $complete = $req->get('communication'.$i.'complete');
               $scada[$scadaname][$communicationname] = array();
+              if(!is_null($complete)){
+                $today = $this->strToDate(date("Y-m-d"), null);
+                $scada[$scadaname][$communicationname]['completed_at'] = $today;
+              }
               $scada[$scadaname][$communicationname]['person1'] = $req->get('communication'.$j.'person1');
               $scada[$scadaname][$communicationname]['person2'] = $req->get('communication'.$j.'person2');
               $scada[$scadaname][$communicationname]['due'] = $this->strToDate($req->get('communication'.$j.'due'), null);
@@ -1914,7 +1950,7 @@ class ProjectController extends Controller
             if ($key == 'Communication'){
               $comkeys = array_keys($duedates['scada']['Communication']);
               foreach($comkeys as $comkey){
-                if ($comkey != "person1" && $comkey != "person2" && $comkey != "due"){
+                if ($comkey != "person1" && $comkey != "person2" && $comkey != "due" && $comkey != "completed_at"){
                   $duedates['scada']['Communication'][$comkey]['due'] = $this->dateToStr($project['duedates']['scada']['Communication'][$comkey]['due']);
                 }
               }

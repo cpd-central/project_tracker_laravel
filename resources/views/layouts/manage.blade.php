@@ -3,7 +3,22 @@
 <!-- This page creates the entire field layout of the manage_project page, as well as the javascrpit for all the buttons -->
 <?php
 use App\User; 
-$employees = User::all(); 
+$employees = User::all();
+$employeesort = [];
+foreach($employees as $employee){
+  array_push($employeesort, $employee->name);
+}
+sort($employeesort);
+$hold = [];
+for($i = 0; $i < sizeof($employeesort); $i++){
+  foreach($employees as $employee){
+    if($employee->name == $employeesort[$i]){
+      array_push($hold, $employee);
+    }
+  }
+}
+$employees = $hold;
+
 ?>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
@@ -133,6 +148,9 @@ h6 {
           <?php $physicalfields = 1; ?>
           <h6 id="physical{{$physicalfields}}title" style="margin-left: 55px"><b>90</b></h6>
           <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="physical{{$physicalfields}}">Remove</button>
+          <label id="physical{{$physicalfields}}completed" style="margin:10px;" class="checkbox-inline" for="physical{{$physicalfields}}complete">
+            <input id="physical{{$physicalfields}}complete" name="physical{{$physicalfields}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+          </label>
               <!-- Row containing 3 fields, 2 dropdowns to select employees and one to enter in the due date -->
               <div id="physical{{$physicalfields}}row" style="margin-left: 40px" class="row">
                 <div class="form-group col-md-4">
@@ -162,6 +180,9 @@ h6 {
                 <?php $physicalfields++; ?>
           <h6 id="physical{{$physicalfields}}title" style="margin-left: 55px"><b>IFC</b></h6>
           <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="physical{{$physicalfields}}">Remove</button>
+          <label id="physical{{$physicalfields}}completed" style="margin:10px;" class="checkbox-inline" for="physical{{$physicalfields}}complete">
+            <input id="physical{{$physicalfields}}complete" name="physical{{$physicalfields}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+          </label>
             <!-- Row containing 3 fields, 2 dropdowns to select employees and one to enter in the due date -->
             <div id="physical{{$physicalfields}}row" style="margin-left: 40px" class="row">
                 <div class="form-group col-md-4">
@@ -197,6 +218,9 @@ h6 {
             <?php $keys = array_keys($project['duedates']['physical']);?>
             <h6 id="physical{{$i}}title" style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
             <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="physical{{$i}}">Remove</button>
+            <label id="physical{{$i}}completed" style="margin:10px;" class="checkbox-inline" for="physical{{$i}}complete">
+                <input id="physical{{$i}}complete" name="physical{{$i}}complete" class="element checkbox" type="checkbox" value="Complete" @if(isset($project['duedates']['physical'][$keys[$keycounter]]['completed_at'])) checked @endif/>Completed
+            </label>
             <!-- Row containing 3 fields, 2 dropdowns to select employees and one to enter in the due date -->
             <div id="physical{{$i}}row" style="margin-left: 40px" class="row">
                 <div class="form-group col-md-4">
@@ -313,6 +337,9 @@ h6 {
       <?php $controlfields = 1; ?>
       <h6 id="control{{$controlfields}}title" style="margin-left: 55px"><b>90</b></h6>
       <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="control{{$controlfields}}">Remove</button>
+      <label id="control{{$controlfields}}completed" style="margin:10px;" class="checkbox-inline" for="control{{$controlfields}}complete">
+        <input id="control{{$controlfields}}complete" name="control{{$controlfields}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+      </label>
           <div id="control{{$controlfields}}row" style="margin-left: 40px" class="row">
               <div class="form-group col-md-4">
               <label for="control{{$controlfields}}person1">Engineer/Person 1</label>
@@ -341,6 +368,9 @@ h6 {
             <?php $controlfields++; ?>
       <h6 id="control{{$controlfields}}title" style="margin-left: 55px"><b>IFC</b></h6>
       <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="control{{$controlfields}}">Remove</button>
+      <label id="control{{$controlfields}}completed" style="margin:10px;" class="checkbox-inline" for="control{{$controlfields}}complete">
+        <input id="control{{$controlfields}}complete" name="control{{$controlfields}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+      </label>
         <div id="control{{$controlfields}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
                 <label for="control{{$controlfields}}person1">Engineer/Person 1</label>
@@ -374,6 +404,9 @@ h6 {
       <?php for($i = 1; $i <= $controlfields; $i++){?>
         <?php $keys = array_keys($project['duedates']['control']);?>
         <h6 id="control{{$i}}title" style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
+        <label id="control{{$i}}completed" style="margin:10px;" class="checkbox-inline" for="control{{$i}}complete">
+          <input id="control{{$i}}complete" name="control{{$i}}complete" class="element checkbox" type="checkbox" value="Complete" @if(isset($project['duedates']['control'][$keys[$keycounter]]['completed_at'])) checked @endif/>Completed
+        </label>
         <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="control{{$i}}">Remove</button>
         <div id="control{{$i}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
@@ -491,6 +524,9 @@ h6 {
         <?php $collectionfields = 1; ?>
         <h6 id="collection{{$collectionfields}}title" style="margin-left: 55px"><b>90</b></h6>
         <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="collection{{$collectionfields}}">Remove</button>
+        <label id="collection{{$collectionfields}}completed" style="margin:10px;" class="checkbox-inline" for="collection{{$collectionfields}}complete">
+          <input id="collection{{$collectionfields}}complete" name="collection{{$collectionfields}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+        </label>
             <div id="collection{{$collectionfields}}row" style="margin-left: 40px" class="row">
                 <div class="form-group col-md-4">
                 <label for="collection{{$collectionfields}}person1">Engineer/Person 1</label>
@@ -519,6 +555,9 @@ h6 {
               <?php $collectionfields++; ?>
         <h6 id="collection{{$collectionfields}}title" style="margin-left: 55px"><b>IFC</b></h6>
         <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="collection{{$collectionfields}}">Remove</button>
+        <label id="collection{{$collectionfields}}completed" style="margin:10px;" class="checkbox-inline" for="collection{{$collectionfields}}complete">
+          <input id="collection{{$collectionfields}}complete" name="collection{{$collectionfields}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+        </label>
           <div id="collection{{$collectionfields}}row" style="margin-left: 40px" class="row">
               <div class="form-group col-md-4">
                   <label for="collection{{$collectionfields}}person1">Engineer/Person 1</label>
@@ -553,6 +592,9 @@ h6 {
           <?php $keys = array_keys($project['duedates']['collection']);?>
           <h6 id="collection{{$i}}title" style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
           <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="collection{{$i}}">Remove</button>
+          <label id="collection{{$i}}completed" style="margin:10px;" class="checkbox-inline" for="collection{{$i}}complete">
+            <input id="collection{{$i}}complete" name="collection{{$i}}complete" class="element checkbox" type="checkbox" value="Complete" @if(isset($project['duedates']['collection'][$keys[$keycounter]]['completed_at'])) checked @endif/>Completed
+          </label>
           <div id="collection{{$i}}row" style="margin-left: 40px" class="row">
               <div class="form-group col-md-4">
                   <label for="collection{{$i}}person1">Engineer/Person 1</label>
@@ -664,6 +706,9 @@ h6 {
       <?php $transmissionfields = 1; ?>
       <h6 id="transmission{{$transmissionfields}}title" style="margin-left: 55px"><b>90</b></h6>
       <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="transmission{{$transmissionfields}}">Remove</button>
+      <label id="transmission{{$transmissionfields}}completed" style="margin:10px;" class="checkbox-inline" for="transmission{{$transmissionfields}}complete">
+        <input id="transmission{{$transmissionfields}}complete" name="transmission{{$transmissionfields}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+      </label>
           <div id="transmission{{$transmissionfields}}row" style="margin-left: 40px" class="row">
               <div class="form-group col-md-4">
               <label for="transmission{{$transmissionfields}}person1">Engineer/Person 1</label>
@@ -692,6 +737,9 @@ h6 {
             <?php $transmissionfields++; ?>
       <h6 id="transmission{{$transmissionfields}}title" style="margin-left: 55px"><b>IFC</b></h6>
       <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="transmission{{$transmissionfields}}">Remove</button>
+      <label id="transmission{{$transmissionfields}}completed" style="margin:10px;" class="checkbox-inline" for="transmission{{$transmissionfields}}complete">
+        <input id="transmission{{$transmissionfields}}complete" name="transmission{{$transmissionfields}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+      </label>
         <div id="transmission{{$transmissionfields}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
                 <label for="transmission{{$transmissionfields}}person1">Engineer/Person 1</label>
@@ -726,6 +774,9 @@ h6 {
         <?php $keys = array_keys($project['duedates']['transmission']);?>
         <h6 id="transmission{{$i}}title" style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
         <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="transmission{{$i}}">Remove</button>
+        <label id="transmission{{$i}}completed" style="margin:10px;" class="checkbox-inline" for="transmission{{$i}}complete">
+          <input id="transmission{{$i}}complete" name="transmission{{$i}}complete" class="element checkbox" type="checkbox" value="Complete" @if(isset($project['duedates']['transmission'][$keys[$keycounter]]['completed_at'])) checked @endif/>Completed
+        </label>
         <div id="transmission{{$i}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
                 <label for="transmission{{$i}}person1">Engineer/Person 1</label>
@@ -839,6 +890,9 @@ h6 {
       <?php $scadafields = 1; ?>
       <h6 id="scada{{$scadafields}}title" style="margin-left: 55px"><b>RTAC/Networking Configuration File</b></h6>
       <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="scada{{$scadafields}}">Remove</button>
+      <label id="scada{{$scadafields}}completed" style="margin:10px;" class="checkbox-inline" for="scada{{$scadafields}}complete">
+        <input id="scada{{$scadafields}}complete" name="scada{{$scadafields}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+      </label>
           <div id="scada{{$scadafields}}row" style="margin-left: 40px" class="row">
               <div class="form-group col-md-4">
               <label for="scada{{$scadafields}}person1">Engineer/Person 1</label>
@@ -867,6 +921,9 @@ h6 {
             <?php $scadafields++; ?>
       <h6 id="scada{{$scadafields}}title" style="margin-left: 55px"><b>Field Work Dates</b></h6>
       <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="scada{{$scadafields}}">Remove</button>
+      <label id="scada{{$scadafields}}completed" style="margin:10px;" class="checkbox-inline" for="scada{{$scadafields}}complete">
+        <input id="scada{{$scadafields}}complete" name="scada{{$scadafields}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+      </label>
         <div id="scada{{$scadafields}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
                 <label for="scada{{$scadafields}}person1">Engineer/Person 1</label>
@@ -895,6 +952,9 @@ h6 {
           <?php $scadafields++; ?>
         <h6 id="scada{{$scadafields}}title" style="margin-left: 55px"><b>Communication Architecture</b></h6>
         <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="scada{{$scadafields}}">Remove</button>
+        <label id="scada{{$scadafields}}completed" style="margin:10px;" class="checkbox-inline" for="scada{{$scadafields}}complete">
+          <input id="scada{{$scadafields}}complete" name="scada{{$scadafields}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+        </label>
         <div id="scada{{$scadafields}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
             <label for="scada{{$scadafields}}person1">Engineer/Person 1</label>
@@ -923,6 +983,9 @@ h6 {
         <?php $communicationfields = 1; ?>
       <h6 id="communication{{$communicationfields}}title" style="margin-left: 95px"><b>90</b></h6>
       <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="communication{{$communicationfields}}">Remove</button>
+      <label id="communication{{$communicationfields}}completed" style="margin:10px;" class="checkbox-inline" for="communication{{$communicationfields}}complete">
+        <input id="communication{{$communicationfields}}complete" name="communication{{$communicationfields}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+      </label>
       <div id="communication{{$communicationfields}}row" style="margin-left: 80px" class="row">
           <div class="form-group col-md-4">
           <label for="communication{{$communicationfields}}person1">Engineer/Person 1</label>
@@ -951,6 +1014,9 @@ h6 {
       <?php $communicationfields++; ?>
       <h6 id="communication{{$communicationfields}}title" style="margin-left: 95px"><b>IFC</b></h6>
       <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="communication{{$communicationfields}}">Remove</button>
+      <label id="communication{{$communicationfields}}completed" style="margin:10px;" class="checkbox-inline" for="communication{{$communicationfields}}complete">
+        <input id="communication{{$communicationfields}}complete" name="communication{{$communicationfields}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+      </label>
       <div id="communication{{$communicationfields}}row" style="margin-left: 80px" class="row">
           <div class="form-group col-md-4">
             <label for="communication{{$communicationfields}}person1">Engineer/Person 1</label>
@@ -985,6 +1051,9 @@ h6 {
         <?php $keys = array_keys($project['duedates']['scada']);?>
         <h6 id="scada{{$i}}title" style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
         <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="scada{{$i}}">Remove</button>
+        <label id="scada{{$i}}completed" style="margin:10px;" class="checkbox-inline" for="scada{{$i}}complete">
+          <input id="scada{{$i}}complete" name="scada{{$i}}complete" class="element checkbox" type="checkbox" value="Complete" @if(isset($project['duedates']['scada'][$keys[$keycounter]]['completed_at'])) checked @endif/>Completed
+        </label>
         <div id="scada{{$i}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
                 <label for="scada{{$i}}person1">Engineer/Person 1</label>
@@ -1019,11 +1088,19 @@ h6 {
             <input type="hidden" id="scada{{$i}}name" name="scada{{$i}}name" value="{{$keys[$keycounter]}}" readonly />
         </div>
         <?php if($keys[$keycounter] == 'Communication') { ?>
-          <?php $comcounter = 3; ?>
+          <?php 
+          $comcounter = 3; 
+          if(isset($project['duedates']['scada']['Communication']['completed_at'])){
+            $comcounter++;
+          }
+          ?>
           <?php for($j = 1; $j <= $communicationfields; $j++){?>
             <?php $comkeys = array_keys($project['duedates']['scada']['Communication']);?>
             <h6 id="communication{{$j}}title" style="margin-left: 95px"><b>{{$comkeys[$comcounter]}}</b></h6>
             <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="communication{{$j}}">Remove</button>
+            <label id="communication{{$j}}completed" style="margin:10px;" class="checkbox-inline" for="communication{{$j}}complete">
+              <input id="communication{{$j}}complete" name="communication{{$j}}complete" class="element checkbox" type="checkbox" value="Complete" @if(isset($project['duedates']['scada']['Communication'][$comkeys[$comcounter]]['completed_at'])) checked @endif/>Completed
+            </label>
             <div id="communication{{$j}}row" style="margin-left: 80px" class="row">
                 <div class="form-group col-md-4">
                     <label for="communication{{$j}}person1">Engineer/Person 1</label>
@@ -1120,6 +1197,9 @@ h6 {
       <?php $totalstudies = 1; ?>
       <h6 id="study{{$totalstudies}}title" style="margin-left: 55px"><b>Reactive Study</b></h6>
       <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="study{{$totalstudies}}">Remove</button>
+      <label id="study{{$totalstudies}}completed" style="margin:10px;" class="checkbox-inline" for="study{{$totalstudies}}complete">
+        <input id="study{{$totalstudies}}complete" name="study{{$totalstudies}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+      </label>
       <div id="study{{$totalstudies}}row" style="margin-left: 40px" class="row">
           <div class="form-group col-md-4">
               <label for="study{{$totalstudies}}person1">Engineer/Person 1</label>
@@ -1139,6 +1219,9 @@ h6 {
           <?php $totalstudies++ ?>
       <h6 id="study{{$totalstudies}}title" style="margin-left: 55px"><b>Ampacity Study</b></h6>
       <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="study{{$totalstudies}}">Remove</button>
+      <label id="study{{$totalstudies}}completed" style="margin:10px;" class="checkbox-inline" for="study{{$totalstudies}}complete">
+        <input id="study{{$totalstudies}}complete" name="study{{$totalstudies}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+      </label>
       <div id="study{{$totalstudies}}row" style="margin-left: 40px" class="row">
           <div class="form-group col-md-4">
               <label for="study{{$totalstudies}}person1">Engineer/Person 1</label>
@@ -1158,6 +1241,9 @@ h6 {
           <?php $totalstudies++ ?>
       <h6 id="study{{$totalstudies}}title" style="margin-left: 55px"><b>Load Flow Study</b></h6>
       <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="study{{$totalstudies}}">Remove</button>
+      <label id="study{{$totalstudies}}completed" style="margin:10px;" class="checkbox-inline" for="study{{$totalstudies}}complete">
+        <input id="study{{$totalstudies}}complete" name="study{{$totalstudies}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+      </label>
       <div id="study{{$totalstudies}}row" style="margin-left: 40px" class="row">
           <div class="form-group col-md-4">
               <label for="study{{$totalstudies}}person1">Engineer/Person 1</label>
@@ -1177,6 +1263,9 @@ h6 {
           <?php $totalstudies++ ?>
       <h6 id="study{{$totalstudies}}title" style="margin-left: 55px"><b>Relay and Coordination Study</b></h6>
       <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="study{{$totalstudies}}">Remove</button>
+      <label id="study{{$totalstudies}}completed" style="margin:10px;" class="checkbox-inline" for="study{{$totalstudies}}complete">
+        <input id="study{{$totalstudies}}complete" name="study{{$totalstudies}}complete" class="element checkbox" type="checkbox" value="Complete"/>Completed
+      </label>
       <div id="study{{$totalstudies}}row" style="margin-left: 40px" class="row">
           <div class="form-group col-md-4">
               <label for="study{{$totalstudies}}person1">Engineer/Person 1</label>
@@ -1201,7 +1290,10 @@ h6 {
       <?php for($i = 1; $i <= $totalstudies; $i++){?>
         <?php $keys = array_keys($project['duedates']['studies']);?>
         <h6 id="study{{$i}}title" style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
-        <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="study{{$i}}">Remove Study</button>
+        <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="study{{$i}}">Remove</button>
+        <label id="study{{$i}}completed" style="margin:10px;" class="checkbox-inline" for="study{{$i}}complete">
+          <input id="study{{$i}}complete" name="study{{$i}}complete" class="element checkbox" type="checkbox" value="Complete" @if(isset($project['duedates']['study'][$keys[$keycounter]]['completed_at'])) checked @endif/>Completed
+        </label>
         <div id="study{{$i}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
                 <label for="study{{$i}}person1">Engineer/Person 1</label>
@@ -1521,6 +1613,9 @@ $("#addphysical").on('click', function() {
                   physicalfields ++;
                   var field = '<h6 style="margin-left: 55px" id="physical' +physicalfields+ 'title" ><b>' + name + '</b></h6>' +
                       '<button style="margin-left: 10px" type="button" class="btn btn-primary" id="physical'+physicalfields+'">Remove</button>'+
+                      '<label id="physical' +physicalfields+ 'completed" style="margin:10px;" class="checkbox-inline" for="physical' +physicalfields+ 'complete">' +
+                        '<input id="physical' +physicalfields+ 'complete" name="physical' +physicalfields+ 'complete" class="element checkbox" type="checkbox" value="Complete"/>Completed' +
+                      '</label>' +
                       '<div style="margin-left: 40px" class="row" id = "physical'+physicalfields+'row">' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="physical'+physicalfields+'person1">Engineer/Person 1</label>' + 
@@ -1536,7 +1631,7 @@ $("#addphysical").on('click', function() {
                                 employees +
                               '</select>' +
                           '</div>' + 
-                          '<div class="form-group col-md-4">' + 
+                          '<div class="form-group col-md-3">' + 
                               '<label for="physical'+ physicalfields+'due">Due Date</label>' + 
                               '<input type="date" class="form-control" id="physical'+ physicalfields+'due" name="physical'+ physicalfields+'due">' + 
                           '</div>' + 
@@ -1552,6 +1647,7 @@ $("#addphysical").on('click', function() {
     $("#physical" + i).on('click', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
+      $('#'+button_id+'completed').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
@@ -1562,6 +1658,7 @@ $("#addphysical").on('click', function() {
   $("#addedphysical").on('click', '.btn-primary', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
+      $('#'+button_id+'completed').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
@@ -1574,6 +1671,9 @@ $("#addcontrol").on('click', function() {
                   controlfields ++;
                   var field = '<h6  style="margin-left: 55px" id= "control' + controlfields+ 'title" ><b>' + name + '</b></h6>' +
                       '<button style="margin-left: 10px" class="btn btn-primary" id="control'+controlfields+'">Remove</button>'+
+                      '<label id="control' +controlfields+ 'completed" style="margin:10px;" class="checkbox-inline" for="control' +controlfields+ 'complete">' +
+                        '<input id="control' +controlfields+ 'complete" name="control' +controlfields+ 'complete" class="element checkbox" type="checkbox" value="Complete"/>Completed' +
+                      '</label>' +
                       '<div style="margin-left: 40px" class="row" id = "control'+controlfields+'row" >' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="control'+controlfields+'person1">Engineer/Person 1</label>' + 
@@ -1605,6 +1705,7 @@ for(i = 1; i <= controlfields; i++){
     $("#control" + i).on('click', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
+      $('#'+button_id+'completed').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
@@ -1615,6 +1716,7 @@ for(i = 1; i <= controlfields; i++){
   $("#addedcontrol").on('click', '.btn-primary', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
+      $('#'+button_id+'completed').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
@@ -1627,6 +1729,9 @@ $("#addcollection").on('click', function() {
                   collectionfields ++;
                   var field = '<h6 style="margin-left: 55px" id= "collection' + collectionfields+ 'title" ><b>' + name + '</b></h6>' +
                       '<button style="margin-left: 10px" type="button" class="btn btn-primary" id="collection'+collectionfields+'">Remove</button>'+
+                      '<label id="collection' +collectionfields+ 'completed" style="margin:10px;" class="checkbox-inline" for="collection' +collectionfields+ 'complete">' +
+                        '<input id="collection' +collectionfields+ 'complete" name="collection' +collectionfields+ 'complete" class="element checkbox" type="checkbox" value="Complete"/>Completed' +
+                      '</label>' +
                       '<div style="margin-left: 40px" class="row" id = "collection'+collectionfields+'row">' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="collection'+collectionfields+'person1">Engineer/Person 1</label>' + 
@@ -1658,6 +1763,7 @@ for(i = 1; i <= collectionfields; i++){
     $("#collection" + i).on('click', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
+      $('#'+button_id+'completed').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
@@ -1668,6 +1774,7 @@ for(i = 1; i <= collectionfields; i++){
   $("#addedcollection").on('click', '.btn-primary', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
+      $('#'+button_id+'completed').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
@@ -1679,7 +1786,10 @@ $("#addtransmission").on('click', function() {
                 if (name != null && name != ""){
                   transmissionfields ++;
                   var field = '<h6 style="margin-left: 55px" id= "transmission' + transmissionfields+ 'title" ><b>' + name + '</b></h6>' +
-                      '<button style="margin-left: 10px" type="button" class="btn btn-primary" id="transmission'+transmissionfields+'">Remove Fields</button>'+
+                      '<button style="margin-left: 10px" type="button" class="btn btn-primary" id="transmission'+transmissionfields+'">Remove</button>'+
+                      '<label id="transmission' +transmissionfields+ 'completed" style="margin:10px;" class="checkbox-inline" for="transmission' +transmissionfields+ 'complete">' +
+                        '<input id="transmission' +transmissionfields+ 'complete" name="transmission' +transmissionfields+ 'complete" class="element checkbox" type="checkbox" value="Complete"/>Completed' +
+                      '</label>' +
                       '<div style="margin-left: 40px" class="row" id = "transmission'+transmissionfields+'row" >' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="transmission'+transmissionfields+'person1">Engineer/Person 1</label>' + 
@@ -1711,6 +1821,7 @@ for(i = 1; i <= transmissionfields; i++){
     $("#transmission" + i).on('click', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
+      $('#'+button_id+'completed').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
@@ -1721,6 +1832,7 @@ for(i = 1; i <= transmissionfields; i++){
   $("#addedtransmission").on('click', '.btn-primary', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
+      $('#'+button_id+'completed').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
@@ -1733,6 +1845,9 @@ $("#addscada").on('click', function() {
                   scadafields ++;
                   var field = '<h6 style="margin-left: 55px" id= "scada' + scadafields+ 'title" ><b>' + name + '</b></h6>' +
                       '<button style="margin-left: 10px" type="button" class="btn btn-primary" id="scada'+scadafields+'">Remove</button>'+
+                      '<label id="scada' +scadafields+ 'completed" style="margin:10px;" class="checkbox-inline" for="scada' +scadafields+ 'complete">' +
+                        '<input id="scada' +scadafields+ 'complete" name="scada' +scadafields+ 'complete" class="element checkbox" type="checkbox" value="Complete"/>Completed' +
+                      '</label>' +
                       '<div style="margin-left: 40px" class="row" id = "scada'+scadafields+'row">' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="scada'+scadafields+'person1">Engineer/Person 1</label>' + 
@@ -1764,6 +1879,7 @@ for(i = 1; i <= scadafields; i++){
     $("#scada" + i).on('click', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
+      $('#'+button_id+'completed').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
@@ -1775,6 +1891,7 @@ for(i = 1; i <= scadafields; i++){
     $("#communication" + i).on('click', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
+      $('#'+button_id+'completed').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
@@ -1785,6 +1902,7 @@ for(i = 1; i <= scadafields; i++){
   $("#addedscada").on('click', '.btn-primary', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
+      $('#'+button_id+'completed').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
@@ -1796,7 +1914,10 @@ $("#addstudy").on('click', function() {
                 if (name != null && name != ""){
                   totalstudies ++;
                   var field = '<h6  style="margin-left: 55px" id= "study' + totalstudies+ 'title" ><b>' + name + '</b></h6>' +
-                      '<button style="margin-left: 10px" type="button" class="btn btn-primary" id="study'+totalstudies+'">Remove Fields</button>'+
+                      '<button style="margin-left: 10px" type="button" class="btn btn-primary" id="study'+totalstudies+'">Remove</button>'+
+                      '<label id="study' +totalstudies+ 'completed" style="margin:10px;" class="checkbox-inline" for="study' +totalstudies+ 'complete">' +
+                        '<input id="study' +totalstudies+ 'complete" name="study' +totalstudies+ 'complete" class="element checkbox" type="checkbox" value="Complete"/>Completed' +
+                      '</label>' +
                       '<div style="margin-left: 40px" class="row" id = "study'+totalstudies+'row" >' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="study'+totalstudies+'person1">Engineer/Person 1</label>' + 
@@ -1821,6 +1942,7 @@ for(i = 1; i <= totalstudies; i++){
     $("#study" + i).on('click', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
+      $('#'+button_id+'completed').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
@@ -1830,6 +1952,7 @@ for(i = 1; i <= totalstudies; i++){
   $("#addedstudy").on('click', '.btn-primary', function() {
       var button_id = $(this).attr("id");
       $('#'+button_id+'title').remove();
+      $('#'+button_id+'completed').remove();
       $('#'+button_id+'name').remove();
       $('#'+button_id+'row').remove();
       $('#'+button_id+'').remove();
