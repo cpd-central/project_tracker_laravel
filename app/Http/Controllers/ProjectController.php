@@ -362,11 +362,23 @@ class ProjectController extends Controller
     else{
       $projects=Project::all();
     }
+    $codes = [];
     foreach($projects as $project)
     {
       $project = $this->displayFormat($project);
-    } 
-    return view('pages.projectindex', compact('projects', 'term', 'search', 'invert'));
+      if($project['projectcode'] != null){
+        $codes[$project['projectcode']] = $project['projectname'];
+      }
+    }
+    $ref_list = Timesheet::where('name', 'reference_list')->get();
+    $ref_list = $ref_list[0]['codes'];
+    $missing_projects = [];
+    foreach(array_keys($ref_list) as $ref){
+      if(!array_key_exists($ref, $codes)){
+        $missing_projects[$ref] = $ref_list[$ref];
+      }
+    }
+    return view('pages.projectindex', compact('projects', 'term', 'search', 'invert', 'missing_projects'));
   }
 
   /**
@@ -1251,6 +1263,7 @@ class ProjectController extends Controller
     $non_zero_projects = Project::whereRaw([
       '$and' => array([
         'hours_data' => ['$exists' => 'true'],
+        'projectstatus' => ['$eq' => 'Won'],
         '$and' => array([
           "hours_data.{$previous_year}.{$previous_month}.Total"=> ['$exists' => true],  
           "hours_data.{$previous_year}.{$previous_month}.Total" =>['$ne'=>0]
@@ -1955,64 +1968,134 @@ class ProjectController extends Controller
     $json = [];
     $counter = 0;
     $term = $request['employeesearch'];
-    //if the drop-down filter is equal to one of the following categories, it filters out any projects that don't involve employees with that job class
-    if($term == 'SCADA' || $term == 'drafting' || $term == 'senior' || $term == 'project' || $term == 'interns-admin'){
-      $filteredemployees = User::all()->where('jobclass', $term);
-      foreach($projects as $project){
-        if ($this->project_to_json($project) != null){
-          $convertedproject = $this->project_to_json($project);
-          for($i = 1; $i < sizeof($convertedproject); $i++){
-            //decodes back out of a JSON format just to check if the name variables are equal to one of the employees with the particular job class
-            $decode = json_decode($convertedproject[$i], true);
-            foreach($filteredemployees as $emp){
-              if($project['projectmanager'][0] == $emp){
-                $json[$counter] = $this->project_to_json($project);
-                $counter++;
-                continue;
-              } 
-              //this if statement is here because studies don't involve two names, and it will throw an error otherwise
-              if(array_key_exists('name_2', $decode)){
-                if ($decode['name_1'] == $emp['name'] || $decode['name_2'] == $emp['name']){
-                  $json[$counter] = $this->project_to_json($project);
-                  $counter++;
+    $major = $request['secondlevelfilter'];
+    $minor = $request['thirdlevelfilter'];
+    if($term != null && $term != 'No Filter' || $major != null && $major != 'No Filter' || $minor != null && $minor != 'No Filter'){
+      if($major != null && $major != 'No Filter'){
+        foreach($projects as $project){
+          if ($this->project_to_json($project) != null){
+            $duedates = $project['duedates'];
+            $majorkeys = array_keys($duedates);
+            if(array_key_exists($major, $duedates)){
+              foreach($majorkeys as $key){
+                //If the major deliverable is not matching the filter category remove it so it won't appear in the gantt chart
+                if($key != $major){
+                  //dd($duedates);
+                  unset($duedates[$key]);
                 }
               }
-              else{
-                if ($decode['name_1'] == $emp['name']){
-                  $json[$counter] = $this->project_to_json($project);
-                  $counter++;
-                }
-              }
+              $project['duedates'] = $duedates;
+              $json[$counter] = $this->project_to_json($project);
+              $counter++;
             }
           }
         }
       }
-    }
-    //If the drop-down filter is set to a particular employee, it goes through every project and only filters in the ones that the employee is a part of
-    elseif($term != null && $term != 'No Filter'){
-      foreach($projects as $project){
-        if ($this->project_to_json($project) != null){
-          if($project['projectmanager'][0] == $term){
+      if($minor != null && $minor != 'No Filter'){
+        foreach($projects as $project){
+          if ($this->project_to_json($project) != null){
+            $duedates = $project['duedates'];
+            $majorkeys = array_keys($duedates);
+            $majorcount = 0;
+            foreach($duedates as $duedate){
+              if(array_key_exists($minor, $duedate)){
+                $minorkeys = array_keys($duedate);
+                foreach($minorkeys as $key){
+                  if ($key != $minor && $key != 'person1' && $key != 'person2' && $key != 'due'){
+                    unset($duedate[$key]);
+                    $duedates[$majorkeys[$majorcount]] = $duedate;
+                  }
+                }
+              }
+              else{
+                unset($duedates[$majorkeys[$majorcount]]);
+              }
+              $majorcount++;
+            }
+            $project['duedates'] = $duedates;
             $json[$counter] = $this->project_to_json($project);
             $counter++;
-            continue;
-          } 
-          $convertedproject = $this->project_to_json($project);
-          for($i = 1; $i < sizeof($convertedproject); $i++){
-            $decode = json_decode($convertedproject[$i], true);
-            if(array_key_exists('name_2', $decode)){
-              if ($decode['name_1'] == $term || $decode['name_2'] == $term){
+          }
+        }
+      }
+      //if the drop-down filter is equal to one of the following categories, it filters out any projects that don't involve employees with that job class
+      if($term == 'SCADA' || $term == 'drafting' || $term == 'senior' || $term == 'project' || $term == 'interns-admin'){
+        $filteredemployees = User::all()->where('jobclass', $term);
+        foreach($projects as $project){
+          if ($this->project_to_json($project) != null){
+            foreach($filteredemployees as $emp){
+              if($project['projectmanager'][0] == $emp){
                 $json[$counter] = $this->project_to_json($project);
                 $counter++;
+                break;
               }
             }
-            else{
-              if ($decode['name_1'] == $term){
-                $json[$counter] = $this->project_to_json($project);
-                $counter++;
+            $convertedproject = $this->project_to_json($project);
+            $size = sizeof($convertedproject);
+            for($i = 1; $i < $size; $i++){
+              //counts the number of times an employees name isn't found in a particular task
+              $nonamecount = 0;
+              //decodes back out of a JSON format just to check if the name variables are equal to one of the employees with the particular job class
+              $decode = json_decode($convertedproject[$i], true); 
+                //this if statement is here because studies don't involve two names, and it will throw an error otherwise
+              if(array_key_exists('name_2', $decode)){
+                foreach($filteredemployees as $emp){
+                  if ($decode['name_1'] != $emp['name'] && $decode['name_2'] != $emp['name']){
+                    $nonamecount++;
+                  }
+                }
               }
+              else{
+                foreach($filteredemployees as $emp){
+                  if ($decode['name_1'] != $emp['name']){
+                    $nonamecount++;
+                  }
+                }
+              }
+              if(sizeof($filteredemployees) == $nonamecount){
+                unset($convertedproject[$i]);
+              }
+            }
+            $convertedproject = array_values($convertedproject);
+            if(isset($convertedproject[1])){
+              $json[$counter] = $convertedproject;
+              $counter++;
             }
           }
+            
+        }
+      }
+      //If the drop-down filter is set to a particular employee, it goes through every project and only filters in the ones that the employee is a part of
+      elseif($term != null && $term != 'No Filter'){
+        foreach($projects as $project){
+          if ($this->project_to_json($project) != null){
+            if($project['projectmanager'][0] == $term){
+              $json[$counter] = $this->project_to_json($project);
+              $counter++;
+              continue;
+            } 
+            $convertedproject = $this->project_to_json($project);
+            $size = sizeof($convertedproject);
+            for($i = 1; $i < $size; $i++){
+              $decode = json_decode($convertedproject[$i], true);
+              if(array_key_exists('name_2', $decode)){
+                if ($decode['name_1'] != $term && $decode['name_2'] != $term){
+                  unset($convertedproject[$i]);
+                }
+              }
+              else{
+                if ($decode['name_1'] != $term){
+                  unset($convertedproject[$i]);
+                }
+              }
+            }
+            $convertedproject = array_values($convertedproject);
+            if(isset($convertedproject[1])){
+              $json[$counter] = $convertedproject;
+              $counter++;
+            }
+          }
+          
         }
       }
     }
@@ -2027,7 +2110,7 @@ class ProjectController extends Controller
       }
     }
     $filtered = false;
-    return view('pages.sticky_note', compact('json', 'filtered', 'term'));
+    return view('pages.sticky_note', compact('json', 'filtered', 'term', 'major', 'minor'));
   }
 
       /**
