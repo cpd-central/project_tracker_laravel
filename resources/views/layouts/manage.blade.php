@@ -4,6 +4,20 @@
 <?php
 use App\User; 
 $employees = User::all(); 
+$employeesort = [];
+foreach($employees as $employee){
+  array_push($employeesort, $employee->name);
+}
+sort($employeesort);
+$hold = [];
+for($i = 0; $i < sizeof($employeesort); $i++){
+  foreach($employees as $employee){
+    if($employee->name == $employeesort[$i]){
+      array_push($hold, $employee);
+    }
+  }
+}
+$employees = $hold;
 ?>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
