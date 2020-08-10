@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<?php 
+<?php
 use App\User; 
 $employees = User::all();
 $employeesort = [];
