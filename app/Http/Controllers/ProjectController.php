@@ -1263,6 +1263,7 @@ class ProjectController extends Controller
     $non_zero_projects = Project::whereRaw([
       '$and' => array([
         'hours_data' => ['$exists' => 'true'],
+        'projectstatus' => ['$eq' => 'Won'],
         '$and' => array([
           "hours_data.{$previous_year}.{$previous_month}.Total"=> ['$exists' => true],  
           "hours_data.{$previous_year}.{$previous_month}.Total" =>['$ne'=>0]
@@ -1967,68 +1968,252 @@ class ProjectController extends Controller
     $json = [];
     $counter = 0;
     $term = $request['employeesearch'];
-    //if the drop-down filter is equal to one of the following categories, it filters out any projects that don't involve employees with that job class
-    if($term == 'SCADA' || $term == 'drafting' || $term == 'senior' || $term == 'project' || $term == 'interns-admin'){
-      $filteredemployees = User::all()->where('jobclass', $term);
-      foreach($projects as $project){
-        if ($this->project_to_json($project) != null){
-          $convertedproject = $this->project_to_json($project);
-          for($i = 1; $i < sizeof($convertedproject); $i++){
-            //decodes back out of a JSON format just to check if the name variables are equal to one of the employees with the particular job class
-            $decode = json_decode($convertedproject[$i], true);
-            foreach($filteredemployees as $emp){
-              if($project['projectmanager'][0] == $emp){
+    $major = $request['secondlevelfilter'];
+    $minor = $request['thirdlevelfilter'];
+    //if any filter has been selected then filter by that category, employee, or deliverable
+    if($term != null && $term != 'No Filter' || $major != null && $major != 'No Filter' || $minor != null && $minor != 'No Filter'){
+      $today = date("Y-m-d");
+      //filters by major deliverables
+      if($major != null && $major != 'No Filter'){
+        foreach($projects as $project){
+          $show = false;
+          if ($this->project_to_json($project) != null){
+            $duedates = $project['duedates'];
+            $majorkeys = array_keys($duedates);
+            if(array_key_exists($major, $duedates)){
+              foreach($majorkeys as $key){
+                //If the major deliverable is not matching the filter category remove it so it won't appear in the gantt chart
+                if($key != $major){
+                  unset($duedates[$key]);
+                }
+                else{
+                  if($this->dateToStr($duedates[$major]['due']) >= $today && $this->dateToStr($duedates[$major]['due']) != "None"){
+                    $show = true;
+                  }
+                }
+              }
+              if($show == true){
+                $project['duedates'] = $duedates;
                 $json[$counter] = $this->project_to_json($project);
                 $counter++;
-                continue;
-              } 
-              //this if statement is here because studies don't involve two names, and it will throw an error otherwise
-              if(array_key_exists('name_2', $decode)){
-                if ($decode['name_1'] == $emp['name'] || $decode['name_2'] == $emp['name']){
-                  $json[$counter] = $this->project_to_json($project);
-                  $counter++;
+              }
+            }
+          }
+        }
+      }
+      //filters by minor deliverables
+      if($minor != null && $minor != 'No Filter'){
+        foreach($projects as $project){
+          $show = false;
+          if ($this->project_to_json($project) != null){
+            $duedates = $project['duedates'];
+            $majorkeys = array_keys($duedates);
+            $majorcount = 0;
+            foreach($duedates as $duedate){
+              if(array_key_exists($minor, $duedate)){
+                $minorkeys = array_keys($duedate);
+                foreach($minorkeys as $key){
+                  if ($key != $minor && $key != 'person1' && $key != 'person2' && $key != 'due'){
+                    unset($duedate[$key]);
+                    $duedates[$majorkeys[$majorcount]] = $duedate;
+                  }
+                  else{
+                    if($this->dateToStr($duedates[$majorkeys[$majorcount]][$minor]['due']) >= $today && $this->dateToStr($duedates[$majorkeys[$majorcount]][$minor]['due']) != "None"){
+                      $show = true;
+                    }
+                  }
                 }
               }
               else{
-                if ($decode['name_1'] == $emp['name']){
-                  $json[$counter] = $this->project_to_json($project);
-                  $counter++;
+                unset($duedates[$majorkeys[$majorcount]]);
+              }
+              $majorcount++;
+            }
+            if($show == true){
+              $project['duedates'] = $duedates;
+              $convertedproject = $this->project_to_json($project);
+              $json[$counter] = $convertedproject;
+              $counter++;
+            }
+          }
+        }
+      }
+
+      //if the employee/category filter is equal to one of the following categories, it filters out any projects that don't involve employees with that job class
+      if($term == 'SCADA' || $term == 'drafting' || $term == 'senior' || $term == 'project' || $term == 'interns-admin'){
+        $filteredemployees = User::all()->where('jobclass', $term);
+        $filterednames = [];
+        foreach($filteredemployees as $filteredemployee){
+          array_push($filterednames, $filteredemployee['name']);
+        }
+        foreach($projects as $project){
+          $show = false;
+          if ($this->project_to_json($project) != null){
+            if(in_array($project['projectmanager'][0], $filterednames)){
+              $json[$counter] = $this->project_to_json($project);
+              $counter++;
+              continue;
+            }
+            $duedates = $project['duedates'];
+            $majorkeys = array_keys($duedates);
+            $majorcount = 0;
+            foreach($duedates as $duedate){
+              if(array_key_exists('person2', $duedate)){
+                if(!in_array($duedate['person1'], $filterednames) && !in_array($duedate['person2'], $filterednames)){
+                  $minorkeys = array_keys($duedate);
+                  $minorcount = 0;
+                  $nonamecount = 0;
+                  foreach($duedate as $task){
+                    if($minorkeys[$minorcount] != 'person1' && $minorkeys[$minorcount] != 'person2' && $minorkeys[$minorcount] != 'due'){
+                      if(in_array($task['person1'], $filterednames) || in_array($task['person2'], $filterednames)){
+                        if($this->dateToStr($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]['due']) >= $today && $this->dateToStr($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]['due']) != "None"){
+                          $show = true;
+                        }
+                      }
+                      else{
+                        unset($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]);
+                        $nonamecount++;
+                      }
+                    }
+                    $minorcount++;
+                  }
+                  if($minorcount - 3 == $nonamecount){
+                    unset($duedates[$majorkeys[$majorcount]]);
+                  }
+                }
+                else{
+                  if($this->dateToStr($duedates[$majorkeys[$majorcount]]['due']) >= $today && $this->dateToStr($duedates[$majorkeys[$majorcount]]['due']) != "None"){
+                    $show = true;
+                  }
                 }
               }
+              elseif($majorkeys[$majorcount] != "additionalfields"){
+                if(!in_array($duedate['person1'], $filterednames)){
+                    $minorkeys = array_keys($duedate);
+                    $minorcount = 0;
+                    $nonamecount = 0;
+                    foreach($duedate as $task){
+                      if($minorkeys[$minorcount] != 'person1' && $minorkeys[$minorcount] != 'due'){
+                        if(in_array($task['person1'], $filterednames)){
+                          if($this->dateToStr($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]['due']) >= $today && $this->dateToStr($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]['due']) != "None"){
+                            $show = true;
+                          }
+                        }
+                        else{
+                          unset($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]);
+                          $nonamecount++;
+                        }
+                      }
+                      $minorcount++;
+                    }
+                    if($minorcount - 2 == $nonamecount){
+                      unset($duedates[$majorkeys[$majorcount]]);
+                    }
+                }
+                else{
+                  if($this->dateToStr($duedates[$majorkeys[$majorcount]]['due']) >= $today && $this->dateToStr($duedates[$majorkeys[$majorcount]]['due']) != "None"){
+                    $show = true;
+                  }
+                }
+              }
+              $majorcount++;
+            }
+            if($show == true){
+              $project['duedates'] = $duedates;
+              $convertedproject = $this->project_to_json($project);
+              $json[$counter] = $convertedproject;
+              $counter++;
             }
           }
         }
+
       }
-    }
-    //If the drop-down filter is set to a particular employee, it goes through every project and only filters in the ones that the employee is a part of
-    elseif($term != null && $term != 'No Filter'){
-      foreach($projects as $project){
-        if ($this->project_to_json($project) != null){
-          if($project['projectmanager'][0] == $term){
-            $json[$counter] = $this->project_to_json($project);
-            $counter++;
-            continue;
-          } 
-          $convertedproject = $this->project_to_json($project);
-          for($i = 1; $i < sizeof($convertedproject); $i++){
-            $decode = json_decode($convertedproject[$i], true);
-            if(array_key_exists('name_2', $decode)){
-              if ($decode['name_1'] == $term || $decode['name_2'] == $term){
-                $json[$counter] = $this->project_to_json($project);
-                $counter++;
-              }
+      //If the employee/category filter is set to a particular employee, it goes through every project and only filters in the ones that the employee is a part of
+      elseif($term != null && $term != 'No Filter'){
+        foreach($projects as $project){
+          $show = false;
+          if ($this->project_to_json($project) != null){
+            if($project['projectmanager'][0] == $term){
+              $json[$counter] = $this->project_to_json($project);
+              $counter++;
+              continue;
             }
-            else{
-              if ($decode['name_1'] == $term){
-                $json[$counter] = $this->project_to_json($project);
-                $counter++;
+            $duedates = $project['duedates'];
+            $majorkeys = array_keys($duedates);
+            $majorcount = 0;
+            foreach($duedates as $duedate){
+              if(array_key_exists('person2', $duedate)){
+                if($duedate['person1'] != $term && $duedate['person2'] != $term){
+                  $minorkeys = array_keys($duedate);
+                  $minorcount = 0;
+                  $nonamecount = 0;
+                  foreach($duedate as $task){
+                    if($minorkeys[$minorcount] != 'person1' && $minorkeys[$minorcount] != 'person2' && $minorkeys[$minorcount] != 'due'){
+                      if($task['person1'] == $term || $task['person2'] == $term){
+                        if($this->dateToStr($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]['due']) >= $today && $this->dateToStr($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]['due']) != "None"){
+                          $show = true;
+                        }
+                      }
+                      else{
+                        unset($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]);
+                        $nonamecount++;
+                      }
+                    }
+                    $minorcount++;
+                  }
+                  if($minorcount - 3 == $nonamecount){
+                    unset($duedates[$majorkeys[$majorcount]]);
+                  }
+                }
+                else{
+                  if($this->dateToStr($duedates[$majorkeys[$majorcount]]['due']) >= $today && $this->dateToStr($duedates[$majorkeys[$majorcount]]['due']) != "None"){
+                    $show = true;
+                  }
+                }
               }
+              elseif($majorkeys[$majorcount] != "additionalfields"){
+                if($duedate['person1'] != $term){
+                    $minorkeys = array_keys($duedate);
+                    $minorcount = 0;
+                    $nonamecount = 0;
+                    foreach($duedate as $task){
+                      if($minorkeys[$minorcount] != 'person1' && $minorkeys[$minorcount] != 'due'){
+                        if($task['person1'] == $term){
+                          if($this->dateToStr($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]['due']) >= $today && $this->dateToStr($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]['due']) != "None"){
+                            $show = true;
+                          }
+                        }
+                        else{
+                          unset($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]);
+                          $nonamecount++;
+                        }
+                      }
+                      $minorcount++;
+                    }
+                    if($minorcount - 2 == $nonamecount){
+                      unset($duedates[$majorkeys[$majorcount]]);
+                    }
+                }
+                else{
+                  if($this->dateToStr($duedates[$majorkeys[$majorcount]]['due']) >= $today && $this->dateToStr($duedates[$majorkeys[$majorcount]]['due']) != "None"){
+                    $show = true;
+                  }
+                }
+              }
+              $majorcount++;
+            }
+            if($show == true){
+              $project['duedates'] = $duedates;
+              $convertedproject = $this->project_to_json($project);
+              $json[$counter] = $convertedproject;
+              $counter++;
             }
           }
         }
+
       }
     }
-    //if the drop-down filter isn't used, it calls the project_to_json helper method on every project and displays it if it doesn't return null
+    //if no filter is used, it calls the project_to_json helper method on every project and displays it if it doesn't return null
     else{
       //calls the project_to_json method for each project that has due dates saved
       foreach($projects as $project){
@@ -2039,7 +2224,7 @@ class ProjectController extends Controller
       }
     }
     $filtered = false;
-    return view('pages.sticky_note', compact('json', 'filtered', 'term'));
+    return view('pages.sticky_note', compact('json', 'filtered', 'term', 'major', 'minor'));
   }
 
       /**
