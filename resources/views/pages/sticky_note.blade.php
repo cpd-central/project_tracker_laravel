@@ -36,28 +36,38 @@ $employees = $hold;
             overflow: hidden;
         }
 
+        h5{
+            margin:0;
+            padding:0;
+        }
+
+        button{
+            margin:5px;
+            padding:0;
+        }
+
     </style>
 </head>
 <body>
-<div id="gantt_here" style='width:100%; height:70%;'></div>
+<div id="gantt_here" style='width:100%; height:68%;'></div>
 <br>
 <form method="post">
 @csrf
-<button style="margin:10px;" type="button" class="btn btn-primary" id="thirdlevel">Expand All</button>
+<button type="button" class="btn btn-primary" id="thirdlevel">Expand All</button>
 <button type="button" class="btn btn-primary" id="secondlevel">Expand One Level</button>
-<button style="margin:10px;" type="button" class="btn btn-primary" id="firstlevel">Contract All</button>
-<button style="margin:10px;" type="button" class="btn btn-secondary" id="zoomout">Zoom Out</button>
-<button style="margin:10px;" type="button" class="btn btn-secondary" id="zoomin">Zoom In</button>
+<button type="button" class="btn btn-primary" id="firstlevel">Contract All</button>
+<button type="button" class="btn btn-secondary" id="zoomout">Zoom Out</button>
+<button type="button" class="btn btn-secondary" id="zoomin">Zoom In</button>
 @if($filtered == false)
-<button style="margin:10px;" type="submit" class="btn btn-warning" id="loadyourprojects">Load Your Projects</button>
+<button type="submit" class="btn btn-warning" id="loadyourprojects">Load Your Projects</button>
 <input type="hidden" id="loaded" name="loaded" value="all" readonly />
 @else
-<button style="margin:10px;" type="submit" class="btn btn-warning" id="loadallprojects">Load All Projects</button>
+<button type="submit" class="btn btn-warning" id="loadallprojects">Load All Projects</button>
 <input type="hidden" id="loaded" name="loaded" value="your" readonly />
 @endif
-<button style="margin:10px;" type="button" class="btn btn-success" id="export">Export To Excel</button>
+<button type="button" class="btn btn-success" id="export">Export To Excel</button>
 </form>
-<h5>Filter By One Category at a Time!<h5>
+<h5>Please filter by one category at a time<h5>
 <form class="form-inline md-form mr-auto mb-4" method="get" action="{{ route('pages.sticky_note') }}"> 
     @csrf
     <h5>Employee/Category:&nbsp;&nbsp;</h5>
