@@ -35,7 +35,9 @@ foreach($projects as $project){
 						}
 						else{
 							$due = $duedate['due']->toDateTime();
-							$daystodue = $due->diff($today)->format("%d");
+							//$daystodue = $due->diff($today)->format("%d");
+							$daystodue = date_diff($today, $due)->format("%a");
+							//dd($daystodue);
 						}
 						array_push($userduedates, $daystodue);
 						array_push($usertasknames, $keys[$count]);
@@ -50,7 +52,7 @@ foreach($projects as $project){
 						}
 						else{
 							$due = $duedate['due']->toDateTime();
-							$daystodue = $due->diff($today)->format("%d");
+							$daystodue = date_diff($today, $due)->format("%a");
 						}
 						array_push($userduedates, $daystodue);
 						array_push($usertasknames, $keys[$count]);
@@ -70,7 +72,7 @@ foreach($projects as $project){
 								}
 								else{
 									$due = $task['due']->toDateTime();
-									$daystodue = $due->diff($today)->format("%d");
+									$daystodue = date_diff($today, $due)->format("%a");
 								}
 								array_push($userduedates, $daystodue);
 								array_push($usertasknames, $keys[$count]);
@@ -85,7 +87,7 @@ foreach($projects as $project){
 								}
 								else{
 									$due = $task['due']->toDateTime();
-									$daystodue = $due->diff($today)->format("%d");
+									$daystodue = date_diff($today, $due)->format("%a");
 								}
 								array_push($userduedates, $daystodue);
 								array_push($usertasknames, $keys[$count]);
@@ -106,7 +108,7 @@ foreach($projects as $project){
 									}
 									else{
 										$due = $communicationtask['due']->toDateTime();
-										$daystodue = $due->diff($today)->format("%d");
+										$daystodue = date_diff($today, $due)->format("%a");
 									}
 									array_push($userduedates, $daystodue);
 									array_push($usertasknames, $keys[$count]);
@@ -131,7 +133,7 @@ foreach($projects as $project){
 						}
 						else{
 							$due = $additionalfield['due']->toDateTime();
-							$daystodue = $due->diff($today)->format("%d");
+							$daystodue = date_diff($today, $due)->format("%a");
 						}
 						array_push($userduedates, $daystodue);
 						array_push($usertasknames, $addedkeys[$addedcount]);
@@ -149,7 +151,7 @@ foreach($projects as $project){
 								}
 								else{
 									$due = $task['due']->toDateTime();
-									$daystodue = $due->diff($today)->format("%d");
+									$daystodue = date_diff($today, $due)->format("%a");
 								}
 								array_push($userduedates, $daystodue);
 								array_push($usertasknames, $addedkeys[$addedcount]);

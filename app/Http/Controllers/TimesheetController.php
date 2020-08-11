@@ -238,7 +238,7 @@ class TimesheetController extends Controller
             $collection = Timesheet::where('user', auth()->user()->email)->get(); 
 
             if(!$collection->isEmpty()){
-                $timesheet = $collection[0]; 
+                $timesheet = $collection[0];
                 $this->store($timesheet, $request, $og_date_range);
             }
             else{
