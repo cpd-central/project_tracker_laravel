@@ -98,8 +98,7 @@ class TimesheetController extends Controller
             }
             $i++;
         }
-        $users = User::all()->where('active', true);
-
+        $users = User::all()->where('active', true)->sortBy('name');
         //$users = User::all();
 		return view('pages.timesheetsentstatus', compact('timesheets','users'));
 	}
@@ -238,7 +237,7 @@ class TimesheetController extends Controller
             $collection = Timesheet::where('user', auth()->user()->email)->get(); 
 
             if(!$collection->isEmpty()){
-                $timesheet = $collection[0]; 
+                $timesheet = $collection[0];
                 $this->store($timesheet, $request, $og_date_range);
             }
             else{

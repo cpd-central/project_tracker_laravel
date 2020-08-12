@@ -1,7 +1,24 @@
 <!doctype html>
 
 <!-- This page creates the entire field layout of the manage_project page, as well as the javascrpit for all the buttons -->
-
+<?php
+use App\User; 
+$employees = User::all(); 
+$employeesort = [];
+foreach($employees as $employee){
+  array_push($employeesort, $employee->name);
+}
+sort($employeesort);
+$hold = [];
+for($i = 0; $i < sizeof($employeesort); $i++){
+  foreach($employees as $employee){
+    if($employee->name == $employeesort[$i]){
+      array_push($hold, $employee);
+    }
+  }
+}
+$employees = $hold;
+?>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <style>
@@ -55,6 +72,7 @@ h6 {
                 <input type="date" class="form-control" id="dateenergization" name="dateenergization" readonly value="@if(old('dateenergization'))<?= old('dateenergization') ?>@else<?= $__env->yieldContent('dateenergization')?>@endif">
               </div>
          </div>
+         <!-- Hyperlink that brings you to the edit project page for the current project being managed -->
         <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit Details</a></td>
         <br>
         <br>
@@ -70,15 +88,52 @@ h6 {
               <button style="margin:10px;" type="button" class="btn btn-warning" id="addphysical">Add New Physical Field</button> 
             </div>
           </div>
+          <!-- Row containing 3 fields, 2 dropdowns to select employees and one to enter in the due date -->
           <div class="row">
               <div class="form-group col-md-4">
                   <label for="physicalperson1">Engineer/Person 1</label>
-                  <input type="text" class="form-control" name="physicalperson1" value="@if(old('physicalperson1')){{ old('physicalperson1') }} @else<?= $__env->yieldContent('physicalperson1')?>@endif">
+                    @if($__env->yieldContent('physicalperson1') == "" || $__env->yieldContent('physicalperson1') == null)
+                      <select class="form-control" id="physicalperson1" name='physicalperson1'>
+                        <option></option>
+                          @foreach($employees as $employee)
+                              <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                          @endforeach
+                      </select>
+                    @else
+                      <select class="form-control" id="physicalperson1" name='physicalperson1'>
+                        <option></option>
+                          @foreach($employees as $employee)
+                            @if($__env->yieldContent('physicalperson1') == $employee->name)
+                              <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                            @else
+                              <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                            @endif
+                          @endforeach
+                      </select>
+                    @endif
               </div>
               <div class="form-group col-md-4">
-                  <label for="physicalperson2">Drafter/Person 2</label>
-                  <input type="text" class="form-control" id="physicalperson2" name="physicalperson2" value="@if(old('physicalperson2'))<?= old('physicalperson2') ?>@else<?= $__env->yieldContent('physicalperson2')?>@endif">
-              </div>
+                <label for="physicalperson2">Drafter/Person 2</label>
+                  @if($__env->yieldContent('physicalperson2') == "" || $__env->yieldContent('physicalperson2') == null)
+                    <select class="form-control" id="physicalperson2" name='physicalperson2'>
+                      <option></option>
+                        @foreach($employees as $employee)
+                            <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                        @endforeach
+                    </select>
+                  @else
+                    <select class="form-control" id="physicalperson2" name='physicalperson2'>
+                      <option></option>
+                        @foreach($employees as $employee)
+                          @if($__env->yieldContent('physicalperson2') == $employee->name)
+                            <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                          @else
+                            <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                          @endif
+                        @endforeach
+                    </select>
+                  @endif
+            </div>
               <div class="form-group col-md-4">
                   <label for="physicaldue">Due Date</label>
                   <input type="date" class="form-control" id="physicaldue" name="physicaldue" value="@if(old('physicaldue'))<?= old('physicaldue') ?>@else<?= $__env->yieldContent('physicaldue')?>@endif">
@@ -92,14 +147,25 @@ h6 {
           <?php $physicalfields = 1; ?>
           <h6 id="physical{{$physicalfields}}title" style="margin-left: 55px"><b>90</b></h6>
           <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="physical{{$physicalfields}}">Remove</button>
+              <!-- Row containing 3 fields, 2 dropdowns to select employees and one to enter in the due date -->
               <div id="physical{{$physicalfields}}row" style="margin-left: 40px" class="row">
-                  <div class="form-group col-md-4">
+                <div class="form-group col-md-4">
                   <label for="physical{{$physicalfields}}person1">Engineer/Person 1</label>
-                      <input type="text" class="form-control" name="physical{{$physicalfields}}person1" value="@if(old('physical{{$physicalfields}}person1'))<?= old('physical{{$physicalfields}}person1') ?>@else<?= $__env->yieldContent('physical{{$physicalfields}}person1')?>@endif">
-                  </div>
+                  <select class="form-control" id="physical{{$physicalfields}}person1" name='physical{{$physicalfields}}person1'>
+                    <option></option>
+                      @foreach($employees as $employee)
+                          <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                      @endforeach
+                  </select>                  
+                </div>
                   <div class="form-group col-md-4">
                       <label for="physical{{$physicalfields}}person2">Drafter/Person 2</label>
-                      <input type="text" class="form-control" id="physical{{$physicalfields}}person2" name="physical{{$physicalfields}}person2" value="@if(old('physical{{$physicalfields}}person2'))<?= old('physical{{$physicalfields}}person2') ?>@else<?= $__env->yieldContent('physical{{$physicalfields}}person2')?>@endif">
+                      <select class="form-control" id="physical{{$physicalfields}}person2" name='physical{{$physicalfields}}person2'>
+                        <option></option>
+                          @foreach($employees as $employee)
+                              <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                          @endforeach
+                      </select>                     
                   </div>
                   <div class="form-group col-md-4">
                       <label for="physical{{$physicalfields}}due">Due Date</label>
@@ -110,14 +176,25 @@ h6 {
                 <?php $physicalfields++; ?>
           <h6 id="physical{{$physicalfields}}title" style="margin-left: 55px"><b>IFC</b></h6>
           <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="physical{{$physicalfields}}">Remove</button>
+            <!-- Row containing 3 fields, 2 dropdowns to select employees and one to enter in the due date -->
             <div id="physical{{$physicalfields}}row" style="margin-left: 40px" class="row">
                 <div class="form-group col-md-4">
                     <label for="physical{{$physicalfields}}person1">Engineer/Person 1</label>
-                  <input type="text" class="form-control" name="physical{{$physicalfields}}person1" value="@if(old('physical{{$physicalfields}}person1'))<?= old('physical{{$physicalfields}}person1') ?> @else<?= $__env->yieldContent('physical{{$physicalfields}}person1')?>@endif">
+                    <select class="form-control" id="physical{{$physicalfields}}person1" name='physical{{$physicalfields}}person1'>
+                      <option></option>
+                        @foreach($employees as $employee)
+                            <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                        @endforeach
+                    </select>                  
                 </div>
                 <div class="form-group col-md-4">
-                <label for="physical{{$physicalfields}}person2">Drafter/Person 2</label>
-                    <input type="text" class="form-control" id="physical{{$physicalfields}}person2" name="physical{{$physicalfields}}person2" value="@if(old('physical{{$physicalfields}}person2'))<?= old('physical{{$physicalfields}}person2') ?>@else<?= $__env->yieldContent('physical{{$physicalfields}}person2')?>@endif">
+                  <label for="physical{{$physicalfields}}person2">Drafter/Person 2</label>
+                  <select class="form-control" id="physical{{$physicalfields}}person2" name='physical{{$physicalfields}}person2'>
+                    <option></option>
+                      @foreach($employees as $employee)
+                          <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                      @endforeach
+                  </select>   
                 </div>
                 <div class="form-group col-md-4">
                     <label for="physical{{$physicalfields}}due">Due Date</label>
@@ -134,28 +211,51 @@ h6 {
             <?php $keys = array_keys($project['duedates']['physical']);?>
             <h6 id="physical{{$i}}title" style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
             <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="physical{{$i}}">Remove</button>
+            <!-- Row containing 3 fields, 2 dropdowns to select employees and one to enter in the due date -->
             <div id="physical{{$i}}row" style="margin-left: 40px" class="row">
                 <div class="form-group col-md-4">
                     <label for="physical{{$i}}person1">Engineer/Person 1</label>
-                    <input type="text" class="form-control" id="physical{{$i}}person1" name="physical{{$i}}person1" value="@if(old('physical{{$i}}person1'))<?= old('physical{{$i}}person1') ?>@else<?= $project['duedates']['physical'][$keys[$keycounter]]['person1'] ?>@endif">
+                    <select class="form-control" id="physical{{$i}}person1" name='physical{{$i}}person1'>
+                      <option></option>
+                        @foreach($employees as $employee)
+                          @if($project['duedates']['physical'][$keys[$keycounter]]['person1'] == $employee->name)
+                            <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                          @else
+                            <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                          @endif
+                        @endforeach
+                    </select>                
                 </div>
                 <div class="form-group col-md-4">
                   <label for="physical{{$i}}person2">Drafter/Person 2</label>
-                  <input type="text" class="form-control" id="physical{{$i}}person2" name="physical{{$i}}person2" value="@if(old('physical{{$i}}person2'))<?= old('physical{{$i}}person2') ?>@else<?= $project['duedates']['physical'][$keys[$keycounter]]['person2'] ?>@endif">
+                  <select class="form-control" id="physical{{$i}}person2" name='physical{{$i}}person2'>
+                    <option></option>
+                      @foreach($employees as $employee)
+                        @if($project['duedates']['physical'][$keys[$keycounter]]['person2'] == $employee->name)
+                          <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                        @else
+                          <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                        @endif
+                      @endforeach
+                  </select>                    
                 </div>
                 <div class="form-group col-md-4">
                     <label for="physical{{$i}}due">Due Date</label>
                     <input type="date" class="form-control" id="physical{{$i}}due" name="physical{{$i}}due" value="@if(old('physical{{$i}}due'))<?= old('physical{{$i}}due') ?>@else<?= $project['duedates']['physical'][$keys[$keycounter]]['due'] ?>@endif">
                 </div>
+                <!-- Hidden input to pass on the name of the current row of fields -->
                 <input type="hidden" id="physical{{$i}}name" name="physical{{$i}}name" value="{{$keys[$keycounter]}}" readonly />
                 <?php $keycounter++; ?>
             </div>
           <?php } ?>
         </div>
       @endif
+      <!-- Hidden input to pass on the numbdr of third-level rows or subcategories for the Physical Drawing Package -->
       <input type="hidden" id="physicalfields" name="physicalfields" value="{{$physicalfields}}" readonly />
       <div id = "addedphysical">
       </div>
+
+  <!-- The following sections of code have the same layout as the Physical Drawing Package, but with different variable names -->
 
   <!-- Wiring and Controls Drawing Package -->
   
@@ -170,14 +270,50 @@ h6 {
         </div>
       </div>
       <div class="row">
-          <div class="form-group col-md-4">
-              <label for="controlperson1">Engineer/Person 1</label>
-              <input type="text" class="form-control" name="controlperson1" value="@if(old('controlperson1')){{ old('controlperson1') }} @else<?= $__env->yieldContent('controlperson1')?>@endif">
-          </div>
-          <div class="form-group col-md-4">
-              <label for="controlperson2">Drafter/Person 2</label>
-              <input type="text" class="form-control" id="controlperson2" name="controlperson2" value="@if(old('controlperson2'))<?= old('controlperson2') ?>@else<?= $__env->yieldContent('controlperson2')?>@endif">
-          </div>
+        <div class="form-group col-md-4">
+          <label for="controlperson1">Engineer/Person 1</label>
+            @if($__env->yieldContent('controlperson1') == "" || $__env->yieldContent('controlperson1') == null)
+              <select class="form-control" id="controlperson1" name='controlperson1'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
+            @else
+              <select class="form-control" id="controlperson1" name='controlperson1'>
+                <option></option>
+                  @foreach($employees as $employee)
+                    @if($__env->yieldContent('controlperson1') == $employee->name)
+                      <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                    @else
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endif
+                  @endforeach
+              </select>
+            @endif
+        </div>
+        <div class="form-group col-md-4">
+          <label for="controlperson2">Drafter/Person 2</label>
+            @if($__env->yieldContent('controlperson2') == "" || $__env->yieldContent('controlperson2') == null)
+              <select class="form-control" id="controlperson2" name='controlperson2'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
+            @else
+              <select class="form-control" id="controlperson2" name='controlperson2'>
+                <option></option>
+                  @foreach($employees as $employee)
+                    @if($__env->yieldContent('controlperson2') == $employee->name)
+                      <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                    @else
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endif
+                  @endforeach
+              </select>
+            @endif
+        </div>
           <div class="form-group col-md-4">
               <label for="controldue">Due Date</label>
               <input type="date" class="form-control" id="controldue" name="controldue" value="@if(old('controldue'))<?= old('controldue') ?>@else<?= $__env->yieldContent('controldue')?>@endif">
@@ -194,11 +330,21 @@ h6 {
           <div id="control{{$controlfields}}row" style="margin-left: 40px" class="row">
               <div class="form-group col-md-4">
               <label for="control{{$controlfields}}person1">Engineer/Person 1</label>
-                  <input type="text" class="form-control" name="control{{$controlfields}}person1" value="@if(old('control{{$controlfields}}person1'))<?= old('control{{$controlfields}}person1') ?>@else<?= $__env->yieldContent('control{{$controlfields}}person1')?>@endif">
+              <select class="form-control" id="control{{$controlfields}}person1" name='control{{$controlfields}}person1'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>  
               </div>
               <div class="form-group col-md-4">
                   <label for="control{{$controlfields}}person2">Drafter/Person 2</label>
-                  <input type="text" class="form-control" id="control{{$controlfields}}person2" name="control{{$controlfields}}person2" value="@if(old('control{{$controlfields}}person2'))<?= old('control{{$controlfields}}person2') ?>@else<?= $__env->yieldContent('control{{$controlfields}}person2')?>@endif">
+                  <select class="form-control" id="control{{$controlfields}}person2" name='control{{$controlfields}}person2'>
+                    <option></option>
+                      @foreach($employees as $employee)
+                          <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                      @endforeach
+                  </select>
               </div>
               <div class="form-group col-md-4">
                   <label for="control{{$controlfields}}due">Due Date</label>
@@ -212,11 +358,21 @@ h6 {
         <div id="control{{$controlfields}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
                 <label for="control{{$controlfields}}person1">Engineer/Person 1</label>
-              <input type="text" class="form-control" name="control{{$controlfields}}person1" value="@if(old('control{{$controlfields}}person1'))<?= old('control{{$controlfields}}person1') ?> @else<?= $__env->yieldContent('control{{$controlfields}}person1')?>@endif">
+                <select class="form-control" id="control{{$controlfields}}person1" name='control{{$controlfields}}person1'>
+                  <option></option>
+                    @foreach($employees as $employee)
+                        <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-group col-md-4">
             <label for="control{{$controlfields}}person2">Drafter/Person 2</label>
-                <input type="text" class="form-control" id="control{{$controlfields}}person2" name="control{{$controlfields}}person2" value="@if(old('control{{$controlfields}}person2'))<?= old('control{{$controlfields}}person2') ?>@else<?= $__env->yieldContent('control{{$controlfields}}person2')?>@endif">
+              <select class="form-control" id="control{{$controlfields}}person2" name='control{{$controlfields}}person2'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
             </div>
             <div class="form-group col-md-4">
                 <label for="control{{$controlfields}}due">Due Date</label>
@@ -236,11 +392,29 @@ h6 {
         <div id="control{{$i}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
                 <label for="control{{$i}}person1">Engineer/Person 1</label>
-                <input type="text" class="form-control" id="control{{$i}}person1" name="control{{$i}}person1" value="@if(old('control{{$i}}person1'))<?= old('control{{$i}}person1') ?>@else<?= $project['duedates']['control'][$keys[$keycounter]]['person1'] ?>@endif">
+                <select class="form-control" id="control{{$i}}person1" name='control{{$i}}person1'>
+                  <option></option>
+                    @foreach($employees as $employee)
+                      @if($project['duedates']['control'][$keys[$keycounter]]['person1'] == $employee->name)
+                        <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                      @else
+                        <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                      @endif
+                    @endforeach
+                </select>   
             </div>
             <div class="form-group col-md-4">
               <label for="control{{$i}}person2">Drafter/Person 2</label>
-              <input type="text" class="form-control" id="control{{$i}}person2" name="control{{$i}}person2" value="@if(old('control{{$i}}person2'))<?= old('control{{$i}}person2') ?>@else<?= $project['duedates']['control'][$keys[$keycounter]]['person2'] ?>@endif">
+              <select class="form-control" id="control{{$i}}person2" name='control{{$i}}person2'>
+                <option></option>
+                  @foreach($employees as $employee)
+                    @if($project['duedates']['control'][$keys[$keycounter]]['person2'] == $employee->name)
+                      <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                    @else
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endif
+                  @endforeach
+              </select> 
             </div>
             <div class="form-group col-md-4">
                 <label for="control{{$i}}due">Due Date</label>
@@ -274,13 +448,49 @@ h6 {
           </div>
         </div>
         <div class="row">
+          <div class="form-group col-md-4">
+            <label for="collectionperson1">Engineer/Person 1</label>
+              @if($__env->yieldContent('collectionperson1') == "" || $__env->yieldContent('collectionperson1') == null)
+                <select class="form-control" id="collectionperson1" name='collectionperson1'>
+                  <option></option>
+                    @foreach($employees as $employee)
+                        <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endforeach
+                </select>
+              @else
+                <select class="form-control" id="collectionperson1" name='collectionperson1'>
+                  <option></option>
+                    @foreach($employees as $employee)
+                      @if($__env->yieldContent('collectionperson1') == $employee->name)
+                        <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                      @else
+                        <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                      @endif
+                    @endforeach
+                </select>
+              @endif
+          </div>
             <div class="form-group col-md-4">
-                <label for="collectionperson1">Engineer/Person 1</label>
-                <input type="text" class="form-control" name="collectionperson1" value="@if(old('collectionperson1')){{ old('collectionperson1') }} @else<?= $__env->yieldContent('collectionperson1')?>@endif">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="collectionperson2">Drafter/Person 2</label>
-                <input type="text" class="form-control" id="collectionperson2" name="collectionperson2" value="@if(old('collectionperson2'))<?= old('collectionperson2') ?>@else<?= $__env->yieldContent('collectionperson2')?>@endif">
+              <label for="collectionperson2">Drafter/Person 2</label>
+                @if($__env->yieldContent('collectionperson2') == "" || $__env->yieldContent('collectionperson2') == null)
+                  <select class="form-control" id="collectionperson2" name='collectionperson2'>
+                    <option></option>
+                      @foreach($employees as $employee)
+                          <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                      @endforeach
+                  </select>
+                @else
+                  <select class="form-control" id="collectionperson2" name='collectionperson2'>
+                    <option></option>
+                      @foreach($employees as $employee)
+                        @if($__env->yieldContent('collectionperson2') == $employee->name)
+                          <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                        @else
+                          <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                        @endif
+                      @endforeach
+                  </select>
+                @endif
             </div>
             <div class="form-group col-md-4">
                 <label for="collectiondue">Due Date</label>
@@ -298,11 +508,21 @@ h6 {
             <div id="collection{{$collectionfields}}row" style="margin-left: 40px" class="row">
                 <div class="form-group col-md-4">
                 <label for="collection{{$collectionfields}}person1">Engineer/Person 1</label>
-                    <input type="text" class="form-control" name="collection{{$collectionfields}}person1" value="@if(old('collection{{$collectionfields}}person1'))<?= old('collection{{$collectionfields}}person1') ?>@else<?= $__env->yieldContent('collection{{$collectionfields}}person1')?>@endif">
+                <select class="form-control" id="collection{{$collectionfields}}person1" name='collection{{$collectionfields}}person1'>
+                  <option></option>
+                    @foreach($employees as $employee)
+                        <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endforeach
+                </select>
                 </div>
                 <div class="form-group col-md-4">
                     <label for="collection{{$collectionfields}}person2">Drafter/Person 2</label>
-                    <input type="text" class="form-control" id="collection{{$collectionfields}}person2" name="collection{{$collectionfields}}person2" value="@if(old('collection{{$collectionfields}}person2'))<?= old('collection{{$collectionfields}}person2') ?>@else<?= $__env->yieldContent('collection{{$collectionfields}}person2')?>@endif">
+                    <select class="form-control" id="collection{{$collectionfields}}person2" name='collection{{$collectionfields}}person2'>
+                      <option></option>
+                        @foreach($employees as $employee)
+                            <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="form-group col-md-4">
                     <label for="collection{{$collectionfields}}due">Due Date</label>
@@ -316,11 +536,21 @@ h6 {
           <div id="collection{{$collectionfields}}row" style="margin-left: 40px" class="row">
               <div class="form-group col-md-4">
                   <label for="collection{{$collectionfields}}person1">Engineer/Person 1</label>
-                <input type="text" class="form-control" name="collection{{$collectionfields}}person1" value="@if(old('collection{{$collectionfields}}person1'))<?= old('collection{{$collectionfields}}person1') ?> @else<?= $__env->yieldContent('collection{{$collectionfields}}person1')?>@endif">
+                  <select class="form-control" id="collection{{$collectionfields}}person1" name='collection{{$collectionfields}}person1'>
+                    <option></option>
+                      @foreach($employees as $employee)
+                          <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                      @endforeach
+                  </select>
               </div>
               <div class="form-group col-md-4">
-              <label for="collection{{$collectionfields}}person2">Drafter/Person 2</label>
-                  <input type="text" class="form-control" id="collection{{$collectionfields}}person2" name="collection{{$collectionfields}}person2" value="@if(old('collection{{$collectionfields}}person2'))<?= old('collection{{$collectionfields}}person2') ?>@else<?= $__env->yieldContent('collection{{$collectionfields}}person2')?>@endif">
+                <label for="collection{{$collectionfields}}person2">Drafter/Person 2</label>
+                <select class="form-control" id="collection{{$collectionfields}}person1" name='collection{{$collectionfields}}person1'>
+                  <option></option>
+                    @foreach($employees as $employee)
+                        <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endforeach
+                </select>
               </div>
               <div class="form-group col-md-4">
                   <label for="collection{{$collectionfields}}due">Due Date</label>
@@ -340,11 +570,29 @@ h6 {
           <div id="collection{{$i}}row" style="margin-left: 40px" class="row">
               <div class="form-group col-md-4">
                   <label for="collection{{$i}}person1">Engineer/Person 1</label>
-                  <input type="text" class="form-control" id="collection{{$i}}person1" name="collection{{$i}}person1" value="@if(old('collection{{$i}}person1'))<?= old('collection{{$i}}person1') ?>@else<?= $project['duedates']['collection'][$keys[$keycounter]]['person1'] ?>@endif">
+                  <select class="form-control" id="collection{{$i}}person1" name='collection{{$i}}person1'>
+                    <option></option>
+                      @foreach($employees as $employee)
+                        @if($project['duedates']['collection'][$keys[$keycounter]]['person1'] == $employee->name)
+                          <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                        @else
+                          <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                        @endif
+                      @endforeach
+                  </select>  
               </div>
               <div class="form-group col-md-4">
                 <label for="collection{{$i}}person2">Drafter/Person 2</label>
-                <input type="text" class="form-control" id="collection{{$i}}person2" name="collection{{$i}}person2" value="@if(old('collection{{$i}}person2'))<?= old('collection{{$i}}person2') ?>@else<?= $project['duedates']['collection'][$keys[$keycounter]]['person2'] ?>@endif">
+                <select class="form-control" id="collection{{$i}}person2" name='collection{{$i}}person2'>
+                  <option></option>
+                    @foreach($employees as $employee)
+                      @if($project['duedates']['collection'][$keys[$keycounter]]['person2'] == $employee->name)
+                        <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                      @else
+                        <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                      @endif
+                    @endforeach
+                </select>
               </div>
               <div class="form-group col-md-4">
                   <label for="collection{{$i}}due">Due Date</label>
@@ -373,14 +621,50 @@ h6 {
         </div>
       </div>
       <div class="row">
-          <div class="form-group col-md-4">
-              <label for="transmissionperson1">Engineer/Person 1</label>
-              <input type="text" class="form-control" name="transmissionperson1" value="@if(old('transmissionperson1')){{ old('transmissionperson1') }} @else<?= $__env->yieldContent('transmissionperson1')?>@endif">
-          </div>
-          <div class="form-group col-md-4">
-              <label for="transmissionperson2">Drafter/Person 2</label>
-              <input type="text" class="form-control" id="transmissionperson2" name="transmissionperson2" value="@if(old('transmissionperson2'))<?= old('transmissionperson2') ?>@else<?= $__env->yieldContent('transmissionperson2')?>@endif">
-          </div>
+        <div class="form-group col-md-4">
+          <label for="transmissionperson1">Engineer/Person 1</label>
+            @if($__env->yieldContent('transmissionperson1') == "" || $__env->yieldContent('transmissionperson1') == null)
+              <select class="form-control" id="transmissionperson1" name='transmissionperson1'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
+            @else
+              <select class="form-control" id="transmissionperson1" name='transmissionperson1'>
+                <option></option>
+                  @foreach($employees as $employee)
+                    @if($__env->yieldContent('transmissionperson1') == $employee->name)
+                      <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                    @else
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endif
+                  @endforeach
+              </select>
+            @endif
+        </div>
+        <div class="form-group col-md-4">
+          <label for="transmissionperson2">Drafter/Person 2</label>
+            @if($__env->yieldContent('transmissionperson2') == "" || $__env->yieldContent('transmissionperson2') == null)
+              <select class="form-control" id="transmissionperson2" name='transmissionperson2'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
+            @else
+              <select class="form-control" id="transmissionperson2" name='transmissionperson2'>
+                <option></option>
+                  @foreach($employees as $employee)
+                    @if($__env->yieldContent('transmissionperson2') == $employee->name)
+                      <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                    @else
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endif
+                  @endforeach
+              </select>
+            @endif
+        </div>
           <div class="form-group col-md-4">
               <label for="transmissiondue">Due Date</label>
               <input type="date" class="form-control" id="transmissiondue" name="transmissiondue" value="@if(old('transmissiondue'))<?= old('transmissiondue') ?>@else<?= $__env->yieldContent('transmissiondue')?>@endif">
@@ -397,11 +681,21 @@ h6 {
           <div id="transmission{{$transmissionfields}}row" style="margin-left: 40px" class="row">
               <div class="form-group col-md-4">
               <label for="transmission{{$transmissionfields}}person1">Engineer/Person 1</label>
-                  <input type="text" class="form-control" name="transmission{{$transmissionfields}}person1" value="@if(old('transmission{{$transmissionfields}}person1'))<?= old('transmission{{$transmissionfields}}person1') ?>@else<?= $__env->yieldContent('transmission{{$transmissionfields}}person1')?>@endif">
+              <select class="form-control" id="transmission{{$transmissionfields}}person1" name='transmission{{$transmissionfields}}person1'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
               </div>
               <div class="form-group col-md-4">
                   <label for="transmission{{$transmissionfields}}person2">Drafter/Person 2</label>
-                  <input type="text" class="form-control" id="transmission{{$transmissionfields}}person2" name="transmission{{$transmissionfields}}person2" value="@if(old('transmission{{$transmissionfields}}person2'))<?= old('transmission{{$transmissionfields}}person2') ?>@else<?= $__env->yieldContent('transmission{{$transmissionfields}}person2')?>@endif">
+                  <select class="form-control" id="transmission{{$transmissionfields}}person2" name='transmission{{$transmissionfields}}person2'>
+                    <option></option>
+                      @foreach($employees as $employee)
+                          <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                      @endforeach
+                  </select>
               </div>
               <div class="form-group col-md-4">
                   <label for="transmission{{$transmissionfields}}due">Due Date</label>
@@ -415,11 +709,21 @@ h6 {
         <div id="transmission{{$transmissionfields}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
                 <label for="transmission{{$transmissionfields}}person1">Engineer/Person 1</label>
-              <input type="text" class="form-control" name="transmission{{$transmissionfields}}person1" value="@if(old('transmission{{$transmissionfields}}person1'))<?= old('transmission{{$transmissionfields}}person1') ?> @else<?= $__env->yieldContent('transmission{{$transmissionfields}}person1')?>@endif">
+                <select class="form-control" id="transmission{{$transmissionfields}}person1" name='transmission{{$transmissionfields}}person1'>
+                  <option></option>
+                    @foreach($employees as $employee)
+                        <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-group col-md-4">
-            <label for="transmission{{$transmissionfields}}person2">Drafter/Person 2</label>
-                <input type="text" class="form-control" id="transmission{{$transmissionfields}}person2" name="transmission{{$transmissionfields}}person2" value="@if(old('transmission{{$transmissionfields}}person2'))<?= old('transmission{{$transmissionfields}}person2') ?>@else<?= $__env->yieldContent('transmission{{$transmissionfields}}person2')?>@endif">
+              <label for="transmission{{$transmissionfields}}person2">Drafter/Person 2</label>
+              <select class="form-control" id="transmission{{$transmissionfields}}person2" name='transmission{{$transmissionfields}}person2'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
             </div>
             <div class="form-group col-md-4">
                 <label for="transmission{{$transmissionfields}}due">Due Date</label>
@@ -439,11 +743,29 @@ h6 {
         <div id="transmission{{$i}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
                 <label for="transmission{{$i}}person1">Engineer/Person 1</label>
-                <input type="text" class="form-control" id="transmission{{$i}}person1" name="transmission{{$i}}person1" value="@if(old('transmission{{$i}}person1'))<?= old('transmission{{$i}}person1') ?>@else<?= $project['duedates']['transmission'][$keys[$keycounter]]['person1'] ?>@endif">
+                <select class="form-control" id="transmission{{$i}}person1" name='transmission{{$i}}person1'>
+                  <option></option>
+                    @foreach($employees as $employee)
+                      @if($project['duedates']['transmission'][$keys[$keycounter]]['person1'] == $employee->name)
+                        <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                      @else
+                        <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                      @endif
+                    @endforeach
+                </select>  
             </div>
             <div class="form-group col-md-4">
               <label for="transmission{{$i}}person2">Drafter/Person 2</label>
-              <input type="text" class="form-control" id="transmission{{$i}}person2" name="transmission{{$i}}person2" value="@if(old('transmission{{$i}}person2'))<?= old('transmission{{$i}}person2') ?>@else<?= $project['duedates']['transmission'][$keys[$keycounter]]['person2'] ?>@endif">
+              <select class="form-control" id="transmission{{$i}}person2" name='transmission{{$i}}person2'>
+                <option></option>
+                  @foreach($employees as $employee)
+                    @if($project['duedates']['transmission'][$keys[$keycounter]]['person2'] == $employee->name)
+                      <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                    @else
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endif
+                  @endforeach
+              </select> 
             </div>
             <div class="form-group col-md-4">
                 <label for="transmission{{$i}}due">Due Date</label>
@@ -459,7 +781,9 @@ h6 {
   <div id="addedtransmission">
   </div>
 
-  <!-- SCADA -->
+  <!-- SCADA section has  -->
+
+  <!-- SCADA has the same code as the previous sections, but with different variables and more sections under the default body section-->
 
   @if(!is_null($scadafields) || !isset($project['duedates']))
   <!-- Heading for SCADA, displays the title and second-level fields -->
@@ -472,14 +796,50 @@ h6 {
         </div>
       </div>
       <div class="row">
-          <div class="form-group col-md-4">
-              <label for="scadaperson1">Engineer/Person 1</label>
-              <input type="text" class="form-control" name="scadaperson1" value="@if(old('scadaperson1')){{ old('scadaperson1') }} @else<?= $__env->yieldContent('scadaperson1')?>@endif">
-          </div>
-          <div class="form-group col-md-4">
-              <label for="scadaperson2">Drafter/Person 2</label>
-              <input type="text" class="form-control" id="scadaperson2" name="scadaperson2" value="@if(old('scadaperson2'))<?= old('scadaperson2') ?>@else<?= $__env->yieldContent('scadaperson2')?>@endif">
-          </div>
+        <div class="form-group col-md-4">
+          <label for="scadaperson1">Engineer/Person 1</label>
+            @if($__env->yieldContent('scadaperson1') == "" || $__env->yieldContent('scadaperson1') == null)
+              <select class="form-control" id="scadaperson1" name='scadaperson1'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
+            @else
+              <select class="form-control" id="scadaperson1" name='scadaperson1'>
+                <option></option>
+                  @foreach($employees as $employee)
+                    @if($__env->yieldContent('scadaperson1') == $employee->name)
+                      <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                    @else
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endif
+                  @endforeach
+              </select>
+            @endif
+        </div>
+        <div class="form-group col-md-4">
+          <label for="scadaperson2">Drafter/Person 2</label>
+            @if($__env->yieldContent('scadaperson2') == "" || $__env->yieldContent('scadaperson2') == null)
+              <select class="form-control" id="scadaperson2" name='scadaperson2'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
+            @else
+              <select class="form-control" id="scadaperson2" name='scadaperson2'>
+                <option></option>
+                  @foreach($employees as $employee)
+                    @if($__env->yieldContent('scadaperson2') == $employee->name)
+                      <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                    @else
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endif
+                  @endforeach
+              </select>
+            @endif
+        </div>
           <div class="form-group col-md-4">
               <label for="scadadue">Due Date</label>
               <input type="date" class="form-control" id="scadadue" name="scadadue" value="@if(old('scadadue'))<?= old('scadadue') ?>@else<?= $__env->yieldContent('scadadue')?>@endif">
@@ -496,11 +856,21 @@ h6 {
           <div id="scada{{$scadafields}}row" style="margin-left: 40px" class="row">
               <div class="form-group col-md-4">
               <label for="scada{{$scadafields}}person1">Engineer/Person 1</label>
-                  <input type="text" class="form-control" name="scada{{$scadafields}}person1" value="@if(old('scada{{$scadafields}}person1'))<?= old('scada{{$scadafields}}person1') ?>@else<?= $__env->yieldContent('scada{{$scadafields}}person1')?>@endif">
+                <select class="form-control" id="scada{{$scadafields}}person1" name='scada{{$scadafields}}person1'>
+                  <option></option>
+                    @foreach($employees as $employee)
+                        <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endforeach
+                </select>
               </div>
               <div class="form-group col-md-4">
                   <label for="scada{{$scadafields}}person2">Drafter/Person 2</label>
-                  <input type="text" class="form-control" id="scada{{$scadafields}}person2" name="scada{{$scadafields}}person2" value="@if(old('scada{{$scadafields}}person2'))<?= old('scada{{$scadafields}}person2') ?>@else<?= $__env->yieldContent('scada{{$scadafields}}person2')?>@endif">
+                  <select class="form-control" id="scada{{$scadafields}}person2" name='scada{{$scadafields}}person2'>
+                    <option></option>
+                      @foreach($employees as $employee)
+                          <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                      @endforeach
+                  </select>
               </div>
               <div class="form-group col-md-4">
                   <label for="scada{{$scadafields}}due">Due Date</label>
@@ -514,11 +884,21 @@ h6 {
         <div id="scada{{$scadafields}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
                 <label for="scada{{$scadafields}}person1">Engineer/Person 1</label>
-              <input type="text" class="form-control" name="scada{{$scadafields}}person1" value="@if(old('scada{{$scadafields}}person1'))<?= old('scada{{$scadafields}}person1') ?> @else<?= $__env->yieldContent('scada{{$scadafields}}person1')?>@endif">
+                <select class="form-control" id="scada{{$scadafields}}person1" name='scada{{$scadafields}}person1'>
+                  <option></option>
+                    @foreach($employees as $employee)
+                        <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-group col-md-4">
             <label for="scada{{$scadafields}}person2">Drafter/Person 2</label>
-                <input type="text" class="form-control" id="scada{{$scadafields}}person2" name="scada{{$scadafields}}person2" value="@if(old('scada{{$scadafields}}person2'))<?= old('scada{{$scadafields}}person2') ?>@else<?= $__env->yieldContent('scada{{$scadafields}}person2')?>@endif">
+              <select class="form-control" id="scada{{$scadafields}}person2" name='scada{{$scadafields}}person2'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
             </div>
             <div class="form-group col-md-4">
                 <label for="scada{{$scadafields}}due">Due Date</label>
@@ -532,11 +912,21 @@ h6 {
         <div id="scada{{$scadafields}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
             <label for="scada{{$scadafields}}person1">Engineer/Person 1</label>
-                <input type="text" class="form-control" name="scada{{$scadafields}}person1" value="@if(old('scada{{$scadafields}}person1'))<?= old('scada{{$scadafields}}person1') ?>@else<?= $__env->yieldContent('scada{{$scadafields}}person1')?>@endif">
+            <select class="form-control" id="scada{{$scadafields}}person1" name='scada{{$scadafields}}person1'>
+              <option></option>
+                @foreach($employees as $employee)
+                    <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                @endforeach
+            </select>
             </div>
             <div class="form-group col-md-4">
                 <label for="scada{{$scadafields}}person2">Drafter/Person 2</label>
-                <input type="text" class="form-control" id="scada{{$scadafields}}person2" name="scada{{$scadafields}}person2" value="@if(old('scada{{$scadafields}}person2'))<?= old('scada{{$scadafields}}person2') ?>@else<?= $__env->yieldContent('scada{{$scadafields}}person2')?>@endif">
+                <select class="form-control" id="scada{{$scadafields}}person2" name='scada{{$scadafields}}person2'>
+                  <option></option>
+                    @foreach($employees as $employee)
+                        <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-group col-md-4">
                 <label for="scada{{$scadafields}}due">Due Date</label>
@@ -550,11 +940,21 @@ h6 {
       <div id="communication{{$communicationfields}}row" style="margin-left: 80px" class="row">
           <div class="form-group col-md-4">
           <label for="communication{{$communicationfields}}person1">Engineer/Person 1</label>
-              <input type="text" class="form-control" name="communication{{$communicationfields}}person1" value="@if(old('communication{{$communicationfields}}person1'))<?= old('communication{{$communicationfields}}person1') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}person1')?>@endif">
+          <select class="form-control" id="communication{{$communicationfields}}person1" name='communication{{$communicationfields}}person1'>
+            <option></option>
+              @foreach($employees as $employee)
+                  <option value="<?=$employee->name?>"><?=$employee->name?></option>
+              @endforeach
+          </select>
           </div>
           <div class="form-group col-md-4">
               <label for="communication{{$communicationfields}}person2">Drafter/Person 2</label>
-              <input type="text" class="form-control" id="communication{{$communicationfields}}person2" name="communication{{$communicationfields}}person2" value="@if(old('communication{{$communicationfields}}person2'))<?= old('communication{{$communicationfields}}person2') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}person2')?>@endif">
+              <select class="form-control" id="communication{{$communicationfields}}person2" name='communication{{$communicationfields}}person2'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
           </div>
           <div class="form-group col-md-4">
               <label for="communication{{$communicationfields}}due">Due Date</label>
@@ -567,12 +967,22 @@ h6 {
       <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="communication{{$communicationfields}}">Remove</button>
       <div id="communication{{$communicationfields}}row" style="margin-left: 80px" class="row">
           <div class="form-group col-md-4">
-          <label for="communication{{$communicationfields}}person1">Engineer/Person 1</label>
-              <input type="text" class="form-control" name="communication{{$communicationfields}}person1" value="@if(old('communication{{$communicationfields}}person1'))<?= old('communication{{$communicationfields}}person1') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}person1')?>@endif">
+            <label for="communication{{$communicationfields}}person1">Engineer/Person 1</label>
+            <select class="form-control" id="communication{{$communicationfields}}person1" name='communication{{$communicationfields}}person1'>
+              <option></option>
+                @foreach($employees as $employee)
+                    <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                @endforeach
+            </select>
           </div>
           <div class="form-group col-md-4">
               <label for="communication{{$communicationfields}}person2">Drafter/Person 2</label>
-              <input type="text" class="form-control" id="communication{{$communicationfields}}person2" name="communication{{$communicationfields}}person2" value="@if(old('communication{{$communicationfields}}person2'))<?= old('communication{{$communicationfields}}person2') ?>@else<?= $__env->yieldContent('communication{{$communicationfields}}person2')?>@endif">
+              <select class="form-control" id="communication{{$communicationfields}}person2" name='communication{{$communicationfields}}person2'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
           </div>
           <div class="form-group col-md-4">
               <label for="communication{{$communicationfields}}due">Due Date</label>
@@ -592,11 +1002,29 @@ h6 {
         <div id="scada{{$i}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
                 <label for="scada{{$i}}person1">Engineer/Person 1</label>
-                <input type="text" class="form-control" id="scada{{$i}}person1" name="scada{{$i}}person1" value="@if(old('scada{{$i}}person1'))<?= old('scada{{$i}}person1') ?>@else<?= $project['duedates']['scada'][$keys[$keycounter]]['person1'] ?>@endif">
+                <select class="form-control" id="scada{{$i}}person1" name='scada{{$i}}person1'>
+                  <option></option>
+                    @foreach($employees as $employee)
+                      @if($project['duedates']['scada'][$keys[$keycounter]]['person1'] == $employee->name)
+                        <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                      @else
+                        <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                      @endif
+                    @endforeach
+                </select> 
             </div>
             <div class="form-group col-md-4">
               <label for="scada{{$i}}person2">Drafter/Person 2</label>
-              <input type="text" class="form-control" id="scada{{$i}}person2" name="scada{{$i}}person2" value="@if(old('scada{{$i}}person2'))<?= old('scada{{$i}}person2') ?>@else<?= $project['duedates']['scada'][$keys[$keycounter]]['person2'] ?>@endif">
+              <select class="form-control" id="scada{{$i}}person2" name='scada{{$i}}person2'>
+                <option></option>
+                  @foreach($employees as $employee)
+                    @if($project['duedates']['scada'][$keys[$keycounter]]['person2'] == $employee->name)
+                      <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                    @else
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endif
+                  @endforeach
+              </select> 
             </div>
             <div class="form-group col-md-4">
                 <label for="scada{{$i}}due">Due Date</label>
@@ -613,11 +1041,29 @@ h6 {
             <div id="communication{{$j}}row" style="margin-left: 80px" class="row">
                 <div class="form-group col-md-4">
                     <label for="communication{{$j}}person1">Engineer/Person 1</label>
-                    <input type="text" class="form-control" id="communication{{$j}}person1" name="communication{{$j}}person1" value="@if(old('communication{{$j}}person1'))<?= old('communication{{$j}}person1') ?>@else<?= $project['duedates']['scada']['Communication'][$comkeys[$comcounter]]['person1'] ?>@endif">
+                    <select class="form-control" id="communication{{$j}}person1" name='communication{{$j}}person1'>
+                      <option></option>
+                        @foreach($employees as $employee)
+                          @if($project['duedates']['scada']['Communication'][$comkeys[$comcounter]]['person1'] == $employee->name)
+                            <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                          @else
+                            <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                          @endif
+                        @endforeach
+                    </select> 
                 </div>
                 <div class="form-group col-md-4">
                   <label for="communication{{$j}}person2">Drafter/Person 2</label>
-                  <input type="text" class="form-control" id="communication{{$j}}person2" name="communication{{$j}}person2" value="@if(old('communication{{$j}}person2'))<?= old('communication{{$j}}person2') ?>@else<?= $project['duedates']['scada']['Communication'][$comkeys[$comcounter]]['person2'] ?>@endif">
+                  <select class="form-control" id="communication{{$j}}person2" name='communication{{$j}}person2'>
+                    <option></option>
+                      @foreach($employees as $employee)
+                        @if($project['duedates']['scada']['Communication'][$comkeys[$comcounter]]['person2'] == $employee->name)
+                          <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                        @else
+                          <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                        @endif
+                      @endforeach
+                  </select> 
                 </div>
                 <div class="form-group col-md-4">
                     <label for="communication{{$j}}due">Due Date</label>
@@ -637,6 +1083,9 @@ h6 {
   <div id="addedscada">
   </div>
 
+  <!-- Studies section has the same code as the previous sections, but with different variables and more sections under the default body section-->
+  <!-- Studies only have one employee per category instead of two -->
+
   <!-- Studies -->
 
   @if(!is_null($totalstudies) || !isset($project['duedates']))
@@ -651,8 +1100,26 @@ h6 {
       </div>
       <div class="row">
         <div class="form-group col-md-4">
-            <label for="studiesperson1">Engineer/Person 1</label>
-            <input type="text" class="form-control" id="studiesperson1" name="studiesperson1" value="@if(old('studiesperson1'))<?= old('studiesperson1') ?>@else<?= $__env->yieldContent('studiesperson1')?>@endif">
+          <label for="studiesperson1">Engineer/Person 1</label>
+            @if($__env->yieldContent('studiesperson1') == "" || $__env->yieldContent('studiesperson1') == null)
+              <select class="form-control" id="studiesperson1" name='studiesperson1'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
+            @else
+              <select class="form-control" id="studiesperson1" name='studiesperson1'>
+                <option></option>
+                  @foreach($employees as $employee)
+                    @if($__env->yieldContent('studiesperson1') == $employee->name)
+                      <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                    @else
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                    @endif
+                  @endforeach
+              </select>
+            @endif
         </div>
         <div class="form-group col-md-4">
             <label for="studiesdue">Due Date</label>
@@ -670,7 +1137,12 @@ h6 {
       <div id="study{{$totalstudies}}row" style="margin-left: 40px" class="row">
           <div class="form-group col-md-4">
               <label for="study{{$totalstudies}}person1">Engineer/Person 1</label>
-              <input type="text" class="form-control" id="study{{$totalstudies}}person1" name="study{{$totalstudies}}person1" value="@if(old('study{{$totalstudies}}person1'))<?= old('study{{$totalstudies}}person1') ?>@else<?= $__env->yieldContent('study{{$totalstudies}}person1')?>@endif">
+              <select class="form-control" id="study{{$totalstudies}}person1" name='study{{$totalstudies}}person1'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
           </div>
           <div class="form-group col-md-4">
               <label for="study{{$totalstudies}}due">Due Date</label>
@@ -684,7 +1156,12 @@ h6 {
       <div id="study{{$totalstudies}}row" style="margin-left: 40px" class="row">
           <div class="form-group col-md-4">
               <label for="study{{$totalstudies}}person1">Engineer/Person 1</label>
-              <input type="text" class="form-control" id="study{{$totalstudies}}person1" name="study{{$totalstudies}}person1" value="@if(old('study{{$totalstudies}}person1'))<?= old('study{{$totalstudies}}person1') ?>@else<?= $__env->yieldContent('study{{$totalstudies}}person1')?>@endif">
+              <select class="form-control" id="study{{$totalstudies}}person1" name='study{{$totalstudies}}person1'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
           </div>
           <div class="form-group col-md-4">
               <label for="study{{$totalstudies}}due">Due Date</label>
@@ -698,7 +1175,12 @@ h6 {
       <div id="study{{$totalstudies}}row" style="margin-left: 40px" class="row">
           <div class="form-group col-md-4">
               <label for="study{{$totalstudies}}person1">Engineer/Person 1</label>
-              <input type="text" class="form-control" id="study{{$totalstudies}}person1" name="study{{$totalstudies}}person1" value="@if(old('study{{$totalstudies}}person1'))<?= old('study{{$totalstudies}}person1') ?>@else<?= $__env->yieldContent('study{{$totalstudies}}person1')?>@endif">
+              <select class="form-control" id="study{{$totalstudies}}person1" name='study{{$totalstudies}}person1'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
           </div>
           <div class="form-group col-md-4">
               <label for="study{{$totalstudies}}due">Due Date</label>
@@ -712,7 +1194,12 @@ h6 {
       <div id="study{{$totalstudies}}row" style="margin-left: 40px" class="row">
           <div class="form-group col-md-4">
               <label for="study{{$totalstudies}}person1">Engineer/Person 1</label>
-              <input type="text" class="form-control" id="study{{$totalstudies}}person1" name="study{{$totalstudies}}person1" value="@if(old('study{{$totalstudies}}person1'))<?= old('study{{$totalstudies}}person1') ?>@else<?= $__env->yieldContent('study{{$totalstudies}}person1')?>@endif">
+              <select class="form-control" id="study{{$totalstudies}}person1" name='study{{$totalstudies}}person1'>
+                <option></option>
+                  @foreach($employees as $employee)
+                      <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                  @endforeach
+              </select>
           </div>
           <div class="form-group col-md-4">
               <label for="study{{$totalstudies}}due">Due Date</label>
@@ -732,7 +1219,16 @@ h6 {
         <div id="study{{$i}}row" style="margin-left: 40px" class="row">
             <div class="form-group col-md-4">
                 <label for="study{{$i}}person1">Engineer/Person 1</label>
-                <input type="text" class="form-control" id="study{{$i}}person1" name="study{{$i}}person1" value="@if(old('study{{$i}}person1'))<?= old('study{{$i}}person1') ?>@else<?= $project['duedates']['studies'][$keys[$keycounter]]['person1'] ?>@endif">
+                <select class="form-control" id="study{{$i}}person1" name='study{{$i}}person1'>
+                  <option></option>
+                    @foreach($employees as $employee)
+                      @if($project['duedates']['studies'][$keys[$keycounter]]['person1'] == $employee->name)
+                        <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                      @else
+                        <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                      @endif
+                    @endforeach
+                </select> 
             </div>
             <div class="form-group col-md-4">
                 <label for="study{{$i}}due">Due Date</label>
@@ -771,12 +1267,48 @@ h6 {
                 </div> 
                 <div class="row" id= "row{{$c}}">
                     <div class="form-group col-md-4"> 
-                        <label for="row{{$c}}person1">Engineer/Person 1</label> 
-                        <input type="text" class="form-control" id="row{{$c}}person1" name= "row{{$c}}person1" value= "{{$additionalfields[$key]['person1']}}">
+                      <label for="row{{$c}}person1">Engineer/Person 1</label> 
+                      @if($additionalfields[$key]['person1'] == "" || $additionalfields[$key]['person1'] == null)
+                        <select class="form-control" id="row{{$c}}person1" name='row{{$c}}person1'>
+                          <option></option>
+                            @foreach($employees as $employee)
+                                <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                            @endforeach
+                        </select>
+                      @else
+                        <select class="form-control" id="row{{$c}}person1" name='row{{$c}}person1'>
+                          <option></option>
+                            @foreach($employees as $employee)
+                              @if($additionalfields[$key]['person1'] == $employee->name)
+                                <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                              @else
+                                <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                              @endif
+                            @endforeach
+                        </select>
+                      @endif
                     </div>
                     <div class="form-group col-md-4"> 
                         <label for="row{{$c}}person2">Drafter/Person 2</label> 
-                        <input type="text" class="form-control" id="row{{$c}}person2" name="row{{$c}}person2" value= "{{$additionalfields[$key]['person2']}}"> 
+                        @if($additionalfields[$key]['person2'] == "" || $additionalfields[$key]['person2'] == null)
+                        <select class="form-control" id="row{{$c}}person2" name='row{{$c}}person2'>
+                          <option></option>
+                            @foreach($employees as $employee)
+                                <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                            @endforeach
+                        </select>
+                      @else
+                        <select class="form-control" id="row{{$c}}person2" name='row{{$c}}person2'>
+                          <option></option>
+                            @foreach($employees as $employee)
+                              @if($additionalfields[$key]['person2'] == $employee->name)
+                                <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                              @else
+                                <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                              @endif
+                            @endforeach
+                        </select>
+                      @endif
                     </div> 
                     <div class="form-group col-md-4"> 
                         <label for="row{{$c}}due">Due Date</label> 
@@ -787,6 +1319,7 @@ h6 {
               </div>
               <div id="misc{{$c}}body">
                 <?php 
+                //Displays the subcategories for each miscellaneous field
                 $subkeys = array_keys($additionalfields[$key]);
                 foreach($subkeys as $subkey){
                   if ($subkey != "person1" && $subkey != "person2" && $subkey != "due"){
@@ -797,11 +1330,47 @@ h6 {
                 <div style="margin-left: 40px" class="row" id="{{$c}}misc{{$misccount}}row">
                     <div class="form-group col-md-4"> 
                         <label for="{{$c}}misc{{$misccount}}person1">Engineer/Person 1</label>
-                        <input type="text" class="form-control" id="{{$c}}misc{{$misccount}}person1" name="{{$c}}misc{{$misccount}}person1" value= "{{$additionalfields[$key][$subkey]['person1']}}">
+                        @if($additionalfields[$key][$subkey]['person1'] == "" || $additionalfields[$key][$subkey]['person1'] == null)
+                        <select class="form-control" id="{{$c}}misc{{$misccount}}person1" name='{{$c}}misc{{$misccount}}person1'>
+                          <option></option>
+                            @foreach($employees as $employee)
+                                <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                            @endforeach
+                        </select>
+                      @else
+                        <select class="form-control" id="{{$c}}misc{{$misccount}}person1" name='{{$c}}misc{{$misccount}}person1'>
+                          <option></option>
+                            @foreach($employees as $employee)
+                              @if($additionalfields[$key][$subkey]['person1'] == $employee->name)
+                                <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                              @else
+                                <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                              @endif
+                            @endforeach
+                        </select>
+                      @endif
                     </div>
                     <div class="form-group col-md-4"> 
                         <label for="{{$c}}misc{{$misccount}}person2">Drafter/Person 2</label> 
-                        <input type="text" class="form-control" id="{{$c}}misc{{$misccount}}person2" name="{{$c}}misc{{$misccount}}person2" value= "{{$additionalfields[$key][$subkey]['person2']}}"> 
+                        @if($additionalfields[$key][$subkey]['person2'] == "" || $additionalfields[$key][$subkey]['person2'] == null)
+                          <select class="form-control" id="{{$c}}misc{{$misccount}}person2" name='{{$c}}misc{{$misccount}}person2'>
+                            <option></option>
+                              @foreach($employees as $employee)
+                                  <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                              @endforeach
+                          </select>
+                        @else
+                          <select class="form-control" id="{{$c}}misc{{$misccount}}person2" name='{{$c}}misc{{$misccount}}person2'>
+                            <option></option>
+                              @foreach($employees as $employee)
+                                @if($additionalfields[$key][$subkey]['person2'] == $employee->name)
+                                  <option value="<?=$employee->name?>" selected><?=$employee->name?></option>
+                                @else
+                                  <option value="<?=$employee->name?>"><?=$employee->name?></option>
+                                @endif
+                              @endforeach
+                          </select>
+                        @endif
                     </div> 
                     <div class="form-group col-md-4"> 
                         <label for="{{$c}}misc{{$misccount}}due">Due Date</label>
@@ -841,7 +1410,6 @@ h6 {
 var row = "<?php echo $c ?>";
 var total = parseInt(row);
 var miscfields = parseInt("<?php echo $miscfields ?>");
-//var miscnames = [];
 var physicalfields = parseInt("<?php echo $physicalfields ?>");
 var controlfields = parseInt("<?php echo $controlfields ?>");
 var collectionfields = parseInt("<?php echo $collectionfields ?>");
@@ -849,6 +1417,14 @@ var transmissionfields = parseInt("<?php echo $transmissionfields ?>");
 var scadafields = parseInt("<?php echo $scadafields ?>");
 var communicationfields = parseInt("<?php echo $communicationfields ?>");
 var totalstudies = parseInt("<?php echo $totalstudies ?>");
+//initializes the list of employees for the drop-down menus
+var employees = [];
+var empname;
+<?php for ($i = 0; $i < count($employees); $i++) {?>
+  empname = "<?php echo $employees[$i]->name ?>"
+  employees.push('<option value="'+empname+'">'+empname+'</option>');
+<?php } ?>
+console.log(employees);
 //function that contains every JS function for the page. Says that the document is ready to take action on input
 $(document).ready(function() {
 
@@ -869,11 +1445,17 @@ $("#addform").on('click', function() {
                       '<div id="row'+total+'" class="row" >' + 
                         '<div class="form-group col-md-4">' + 
                             '<label for="row'+total+'person1">Engineer/Person 1</label>' + 
-                            '<input type="text" class="form-control" id="row'+ total+'person1" name="row'+ total+'person1">' +
+                            '<select class="form-control" id="row'+total+'person1" name="row'+total+'person1">' +
+                              '<option></option>' +
+                              employees +
+                            '</select>' +
                         '</div>' +
                         '<div class="form-group col-md-4">' + 
                             '<label for="row'+ total+'person2">Drafter/Person 2</label>' + 
-                            '<input type="text" class="form-control" id="row'+ total+'person2" name="row'+ total+'person2">' + 
+                            '<select class="form-control" id="row'+total+'person2" name="row'+total+'person2">' +
+                              '<option></option>' +
+                              employees +
+                            '</select>' +
                         '</div>' + 
                         '<div class="form-group col-md-4">' + 
                             '<label for="row'+ total+'due">Due Date</label>' + 
@@ -900,11 +1482,17 @@ $("#dynamic_field").on('click', '.btn-warning', function() {
                         '<div style="margin-left: 40px" class="row" id="'+button_id+'misc'+miscfields+'row">' + 
                             '<div class="form-group col-md-4">' + 
                                 '<label for="'+button_id+'misc'+miscfields+'person1">Engineer/Person 1</label>' + 
-                                '<input type="text" class="form-control" id="'+button_id+'misc'+miscfields+'person1" name="'+button_id+'misc'+miscfields+'person1">' +
+                                '<select class="form-control" id="'+button_id+'misc'+miscfields+'person1" name="'+button_id+'misc'+miscfields+'person1">' +
+                                  '<option></option>' +
+                                  employees +
+                                '</select>' +
                             '</div>' +
                             '<div class="form-group col-md-4">' + 
                                 '<label for="'+button_id+'misc'+miscfields+'person2">Drafter/Person 2</label>' + 
-                                '<input type="text" class="form-control" id="'+button_id+'misc'+miscfields+'person2" name="'+button_id+'misc'+miscfields+'person2">' + 
+                                '<select class="form-control" id="'+button_id+'misc'+miscfields+'person2" name="'+button_id+'misc'+miscfields+'person2">' +
+                                    '<option></option>' +
+                                    employees +
+                                '</select>' +
                             '</div>' + 
                             '<div class="form-group col-md-4">' + 
                                 '<label for="'+button_id+'misc'+miscfields+'due">Due Date</label>' + 
@@ -950,11 +1538,17 @@ $("#addphysical").on('click', function() {
                       '<div style="margin-left: 40px" class="row" id = "physical'+physicalfields+'row">' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="physical'+physicalfields+'person1">Engineer/Person 1</label>' + 
-                              '<input type="text" class="form-control" id="physical'+ physicalfields+'person1" name="physical'+ physicalfields+'person1">' +
+                              '<select class="form-control" id="physical'+physicalfields+'person1" name="physical'+physicalfields+'person1">' +
+                                '<option></option>' +
+                                employees +
+                              '</select>' +
                           '</div>' +
                           '<div class="form-group col-md-4">' + 
                               '<label for="physical'+ physicalfields+'person2">Drafter/Person 2</label>' + 
-                              '<input type="text" class="form-control" id="physical'+ physicalfields+'person2" name="physical'+ physicalfields+'person2">' + 
+                              '<select class="form-control" id="physical'+physicalfields+'person2" name="physical'+physicalfields+'person2">' +
+                                '<option></option>' +
+                                employees +
+                              '</select>' +
                           '</div>' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="physical'+ physicalfields+'due">Due Date</label>' + 
@@ -997,11 +1591,17 @@ $("#addcontrol").on('click', function() {
                       '<div style="margin-left: 40px" class="row" id = "control'+controlfields+'row" >' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="control'+controlfields+'person1">Engineer/Person 1</label>' + 
-                              '<input type="text" class="form-control" id="control'+ controlfields+'person1" name="control'+ controlfields+'person1">' +
+                              '<select class="form-control" id="control'+controlfields+'person1" name="control'+controlfields+'person1">' +
+                                '<option></option>' +
+                                employees +
+                              '</select>' +
                           '</div>' +
                           '<div class="form-group col-md-4">' + 
                               '<label for="control'+ controlfields+'person2">Drafter/Person 2</label>' + 
-                              '<input type="text" class="form-control" id="control'+ controlfields+'person2" name="control'+ controlfields+'person2">' + 
+                              '<select class="form-control" id="control'+controlfields+'person2" name="control'+controlfields+'person2">' +
+                                '<option></option>' +
+                                employees +
+                              '</select>' +
                           '</div>' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="control'+ controlfields+'due">Due Date</label>' + 
@@ -1044,11 +1644,17 @@ $("#addcollection").on('click', function() {
                       '<div style="margin-left: 40px" class="row" id = "collection'+collectionfields+'row">' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="collection'+collectionfields+'person1">Engineer/Person 1</label>' + 
-                              '<input type="text" class="form-control" id="collection'+ collectionfields+'person1" name="collection'+ collectionfields+'person1">' +
+                              '<select class="form-control" id="collection'+collectionfields+'person1" name="collection'+collectionfields+'person1">' +
+                                '<option></option>' +
+                                employees +
+                              '</select>' +
                           '</div>' +
                           '<div class="form-group col-md-4">' + 
                               '<label for="collection'+ collectionfields+'person2">Drafter/Person 2</label>' + 
-                              '<input type="text" class="form-control" id="collection'+ collectionfields+'person2" name="collection'+ collectionfields+'person2">' + 
+                              '<select class="form-control" id="collection'+collectionfields+'person2" name="collection'+collectionfields+'person2">' +
+                                '<option></option>' +
+                                employees +
+                              '</select>' + 
                           '</div>' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="collection'+ collectionfields+'due">Due Date</label>' + 
@@ -1091,11 +1697,17 @@ $("#addtransmission").on('click', function() {
                       '<div style="margin-left: 40px" class="row" id = "transmission'+transmissionfields+'row" >' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="transmission'+transmissionfields+'person1">Engineer/Person 1</label>' + 
-                              '<input type="text" class="form-control" id="transmission'+ transmissionfields+'person1" name="transmission'+ transmissionfields+'person1">' +
+                              '<select class="form-control" id="transmission'+transmissionfields+'person1" name="transmission'+transmissionfields+'person1">' +
+                                '<option></option>' +
+                                employees +
+                              '</select>' +
                           '</div>' +
                           '<div class="form-group col-md-4">' + 
                               '<label for="transmission'+ transmissionfields+'person2">Drafter/Person 2</label>' + 
-                              '<input type="text" class="form-control" id="transmission'+ transmissionfields+'person2" name="transmission'+ transmissionfields+'person2">' + 
+                              '<select class="form-control" id="transmission'+transmissionfields+'person2" name="transmission'+transmissionfields+'person2">' +
+                                '<option></option>' +
+                                employees +
+                              '</select>' +
                           '</div>' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="transmission'+ transmissionfields+'due">Due Date</label>' + 
@@ -1138,11 +1750,17 @@ $("#addscada").on('click', function() {
                       '<div style="margin-left: 40px" class="row" id = "scada'+scadafields+'row">' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="scada'+scadafields+'person1">Engineer/Person 1</label>' + 
-                              '<input type="text" class="form-control" id="scada'+ scadafields+'person1" name="scada'+ scadafields+'person1">' +
+                              '<select class="form-control" id="scada'+scadafields+'person1" name="scada'+scadafields+'person1">' +
+                                '<option></option>' +
+                                employees +
+                              '</select>' +
                           '</div>' +
                           '<div class="form-group col-md-4">' + 
                               '<label for="scada'+ scadafields+'person2">Drafter/Person 2</label>' + 
-                              '<input type="text" class="form-control" id="scada'+ scadafields+'person2" name="scada'+ scadafields+'person2">' + 
+                              '<select class="form-control" id="scada'+scadafields+'person2" name="scada'+scadafields+'person2">' +
+                                '<option></option>' +
+                                employees +
+                              '</select>' +
                           '</div>' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="scada'+ scadafields+'due">Due Date</label>' + 
@@ -1196,7 +1814,10 @@ $("#addstudy").on('click', function() {
                       '<div style="margin-left: 40px" class="row" id = "study'+totalstudies+'row" >' + 
                           '<div class="form-group col-md-4">' + 
                               '<label for="study'+totalstudies+'person1">Engineer/Person 1</label>' + 
-                              '<input type="text" class="form-control" id="study'+ totalstudies+'person1" name="study'+ totalstudies+'person1">' +
+                              '<select class="form-control" id="study'+totalstudies+'person1" name="study'+totalstudies+'person1">' +
+                                '<option></option>' +
+                                employees +
+                              '</select>' +
                           '</div>' +
                           '<div class="form-group col-md-4">' + 
                               '<label for="study'+ totalstudies+'due">Due Date</label>' + 
