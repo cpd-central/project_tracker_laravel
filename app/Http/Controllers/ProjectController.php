@@ -1263,7 +1263,8 @@ class ProjectController extends Controller
     $non_zero_projects = Project::whereRaw([
       '$and' => array([
         'hours_data' => ['$exists' => 'true'],
-        'projectstatus' => ['$eq' => 'Won'],
+        //'projectstatus' => ['$eq' => 'Won'],
+        'projectstatus' => ['$nin' => ["Done and Billing Complete", "Expired"]],
         '$and' => array([
           "hours_data.{$previous_year}.{$previous_month}.Total"=> ['$exists' => true],  
           "hours_data.{$previous_year}.{$previous_month}.Total" =>['$ne'=>0]

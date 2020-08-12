@@ -98,8 +98,7 @@ class TimesheetController extends Controller
             }
             $i++;
         }
-        $users = User::all()->where('active', true);
-
+        $users = User::all()->where('active', true)->sortBy('name');
         //$users = User::all();
 		return view('pages.timesheetsentstatus', compact('timesheets','users'));
 	}
