@@ -2,6 +2,7 @@
 use App\Timesheet;
 use App\Project;
 use App\User;
+//Gets the value for how many days it has been since the user has filled their timesheet
 $collection = Timesheet::where('user', auth()->user()->email)->get();
 if(!$collection->isEmpty()){
 	$timesheet = $collection[0];
@@ -13,6 +14,7 @@ else{
     $timesheet = null;
 }
 
+//gets the users upcoming due dates
 $username =  auth()->user()->name;
 $projects = Project::all()->where('projectstatus', 'Won');
 $today = new \DateTime("now", new \DateTimeZone("UTC"));
@@ -28,6 +30,7 @@ foreach($projects as $project){
 		foreach($duedates as $duedate){
 			if($keys[$count] != 'additionalfields'){
 				if (isset($duedate['person2'])){
+					//if the user is working on the current major deliverable, calculate the days until due
 					if($duedate['person1'] == $username || $duedate['person2'] == $username){
 						array_push($userprojects, $project);
 						if($duedate['due'] == "None" || $duedate['due']->toDateTime() < $today){
@@ -35,16 +38,16 @@ foreach($projects as $project){
 						}
 						else{
 							$due = $duedate['due']->toDateTime();
-							//$daystodue = $due->diff($today)->format("%d");
 							$daystodue = date_diff($today, $due)->format("%a");
-							//dd($daystodue);
 						}
+						//adds the days until the due date, the name of the task, and the description to their given arrays
 						array_push($userduedates, $daystodue);
 						array_push($usertasknames, $keys[$count]);
 						array_push($usertaskdesc, "");
 					}
 				}
 				else{
+					//if the user is working on the current major deliverable, calculate the days until due
 					if($duedate['person1'] == $username){
 						array_push($userprojects, $project);
 						if($duedate['due'] == "None" || $duedate['due']->toDateTime() < $today){
@@ -54,6 +57,7 @@ foreach($projects as $project){
 							$due = $duedate['due']->toDateTime();
 							$daystodue = date_diff($today, $due)->format("%a");
 						}
+						//adds the days until the due date, the name of the task, and the description to their given arrays
 						array_push($userduedates, $daystodue);
 						array_push($usertasknames, $keys[$count]);
 						array_push($usertaskdesc, "");
@@ -65,6 +69,7 @@ foreach($projects as $project){
 					$taskname = $subkeys[$subcount];
 					if($taskname != "person1" && $taskname != "person2" && $taskname != "due"){
 						if (isset($task['person2'])){
+							//if the user is involved in the current minor deliverable, calculate the days until it is due
 							if($task['person1'] == $username || $task['person2'] == $username){
 								array_push($userprojects, $project);
 								if($task['due'] == "None" || $task['due']->toDateTime() < $today){
@@ -74,12 +79,14 @@ foreach($projects as $project){
 									$due = $task['due']->toDateTime();
 									$daystodue = date_diff($today, $due)->format("%a");
 								}
+								//adds the days until the due date, the name of the task, and the description to their given arrays
 								array_push($userduedates, $daystodue);
 								array_push($usertasknames, $keys[$count]);
 								array_push($usertaskdesc, $taskname);
 							}
 						}
 						else{
+							//if the user is involved in the current minor deliverable, calculate the days until it is due
 							if($task['person1'] == $username){
 								array_push($userprojects, $project);
 								if($task['due'] == "None" || $task['due']->toDateTime() < $today){
@@ -89,18 +96,21 @@ foreach($projects as $project){
 									$due = $task['due']->toDateTime();
 									$daystodue = date_diff($today, $due)->format("%a");
 								}
+								//adds the days until the due date, the name of the task, and the description to their given arrays
 								array_push($userduedates, $daystodue);
 								array_push($usertasknames, $keys[$count]);
 								array_push($usertaskdesc, $taskname);
 							}
 						}
 					}
+					//exception for the communication minor deliverable in SCADA because it's the only minor deliverable with other minor deliverables
 					if($taskname == "Communication"){
 						$comkeys = array_keys($task);
 						$comcount = 0;
 						foreach($task as $communicationtask){
 							$comname = $comkeys[$comcount];
 							if($comname != "person1" && $comname != "person2" && $comname != "due"){
+								//if the user is involved in the current communication minor deliverable, calculate the days until it is due
 								if($communicationtask['person1'] == $username || $communicationtask['person2'] == $username){
 									array_push($userprojects, $project);
 									if($communicationtask['due'] == "None" || $communicationtask['due']->toDateTime() < $today){
@@ -110,6 +120,7 @@ foreach($projects as $project){
 										$due = $communicationtask['due']->toDateTime();
 										$daystodue = date_diff($today, $due)->format("%a");
 									}
+									//adds the days until the due date, the name of the task, and the description to their given arrays
 									array_push($userduedates, $daystodue);
 									array_push($usertasknames, $keys[$count]);
 									array_push($usertaskdesc, "".$subkeys[$subcount]." ".$comkeys[$comcount]);
@@ -122,6 +133,7 @@ foreach($projects as $project){
 				}
 			}
 			else{
+				//repeats steps above but for any additional fields that the user may be a part of
 				$addedkeys = array_keys($duedate);
 				$addedcount = 0;
 				foreach($duedate as $additionalfield){
@@ -167,7 +179,6 @@ foreach($projects as $project){
 		}
 	}
 }
-//dd($userprojects);
 ?>
 
 <!DOCTYPE html>
