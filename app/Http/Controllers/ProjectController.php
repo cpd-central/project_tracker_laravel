@@ -2559,6 +2559,99 @@ class ProjectController extends Controller
     $project->delete();
     return redirect('/projectindex')->with('success','Project has been deleted');
   }
+  
+/**************** Start of the Project Hour Tracker Application *********************/
+    /**
+   * Loads data for the Project Hour Tracker page.
+   * @return view 'pages.project_tracker'
+   */
+  public function project_tracker(Request $request){
+    // Declaration of Variables
+    $collection2 = Project::where('codes')->get();
+    $all_project_codes = array();
+    $all_project_desc = array();
+    for ($i = 0; $i < sizeof($collection2); $i++){
+      if (($collection2[$i]['projectstatus'] == 'Won') && ($collection2[$i]['projectcode'] != null)){
+        array_push($all_project_codes, $collection2[$i]['projectcode']);
+        array_push($all_project_desc, $collection2[$i]['projectname']);
+      }
+    } 
+    array_multisort($all_project_codes, $all_project_desc);
+    $collection = Timesheet::where('user', auth()->user()->email)->get();
+    $project_array = $collection[0]['Project_Hours'];
+    $CurrentProject = $request['CurrentProject'];
+    $CurrentProjectStartTime = Time();
+    // Page View
+    return view('pages.project_tracker', compact('CurrentProject', 'CurrentProjectStartTime', 'project_array', 'all_project_codes', 'all_project_desc'));
+  }
+    /**
+   * Saves inputed project + start time into database
+   * @return view 'pages.project_tracker'
+   */
+  public function tracker_save(Request $request){
+    // Declaration of Variables
+    $collection2 = Project::where('codes')->get();
+    $all_project_codes = array();
+    $all_project_desc = array();
+    for ($i = 0; $i < sizeof($collection2); $i++){
+      if (($collection2[$i]['projectstatus'] == 'Won') && ($collection2[$i]['projectcode'] != null)){
+        array_push($all_project_codes, $collection2[$i]['projectcode']);
+        array_push($all_project_desc, $collection2[$i]['projectname']);
+      }
+    } 
+    array_multisort($all_project_codes, $all_project_desc);
+    $collection1 = Timesheet::where('user', auth()->user()->email)->get();
+    $project_array = $collection1[0]['Project_Hours'];
+    $CurrentProject = $request['CurrentProject'];
+    $CurrentProjectStartTime = Time();
+    // Inserting Project Text Box Inputs Into Project Array
+    $project_array[$CurrentProject] = $CurrentProjectStartTime;
+
+    // Saves Project Hour Array to Database, or If Delete Button is Pressed, Calls the delete_project Function:
+    if(isset($_POST['Delete']))
+    {
+       $this -> delete_project($request);
+
+    }
+    else { 
+    $Timesheet = $collection1[0];
+    $Timesheet->Project_Hours=$project_array;
+    $Timesheet->save();
+    }
+    // Page View
+    return view('pages.project_tracker', compact('CurrentProject','CurrentProjectStartTime','project_array', 'all_project_codes','all_project_desc'));
+  }
+
+   /**
+   * Deletes Previous Project from Database.
+   * @return view 'pages.project_tracker'
+   */
+
+  public function delete_project(Request $request){
+    // Declaration of Variables
+    $collection2 = Project::where('codes')->get();
+    $all_project_codes = array();
+    $all_project_desc = array();
+    for ($i = 0; $i < sizeof($collection2); $i++){
+      if (($collection2[$i]['projectstatus'] == 'Won') && ($collection2[$i]['projectcode'] != null)){
+        array_push($all_project_codes, $collection2[$i]['projectcode']);
+        array_push($all_project_desc, $collection2[$i]['projectname']);
+      }
+    } 
+    array_multisort($all_project_codes, $all_project_desc);
+    $collection = Timesheet::where('user', auth()->user()->email)->get();
+    $project_array = $collection[0]['Project_Hours'];
+    $CurrentProject = $request['CurrentProject'];
+    $CurrentProjectStartTime = Time();
+    // Unsets last inputted project from project array, then resaves array to database
+    unset($project_array[array_keys($project_array)[sizeof($project_array)-1]]);
+    $Timesheet = $collection[0];
+    $Timesheet->Project_Hours=$project_array;
+    $Timesheet->save();
+    // Page view
+    return view('pages.project_tracker', compact('CurrentProject','CurrentProjectStartTime','project_array', 'all_project_codes','all_project_desc'));
+  }
+/**************** End of the Project Hour Tracker Application *********************/
 
 }
 

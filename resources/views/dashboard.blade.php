@@ -284,7 +284,6 @@ else{
 				<h3>Dashboard</h3>
 			</div>
 			<div class="card-body">
-				<?php if(auth()->user()->role != "user") {?>
 					<div class="form-group" style="{{$style_string}}">
                         <a href={{ route('pages.projectindex') }} class="btn login_btn">Project Index</a>
 					</div>
@@ -292,8 +291,6 @@ else{
 					<div class="form-group" style="{{$style_string}}">
                         <a href={{ route('pages.planner') }} class="btn login_btn">Project Planner</a>
 					</div>
-					
-					<?php } ?>
 					<div class="form-group" style="{{$style_string}}">
                         <a href={{ route('pages.timesheet') }} class="btn login_btn">Timesheet</a>
 					</div>
