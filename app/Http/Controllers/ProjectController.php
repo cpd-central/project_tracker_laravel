@@ -862,7 +862,6 @@ class ProjectController extends Controller
     $charts = array(); 
     $all_data_arr = array();
     foreach(array_keys($employee_emails) as $name) {
-       
       //make the chart and add the labels
       $chart = new HoursChart;
       $chart->title($name);
@@ -953,7 +952,7 @@ class ProjectController extends Controller
             }
             //////
             $project_count++;
-            $chart->dataset($projectName, 'bar', array_values($project_hours_in_date_range))->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'backgroundColor'=>$fill_colors[$c_color_loop], 'fill' => true, 'hidden' => false]); 
+            $chart->dataset($projectName, 'bar', array_values($project_hours_in_date_range))->options(['borderColor'=>$choosen_line_colors[$c_color_loop], 'backgroundColor'=>$fill_colors[$c_color_loop], 'fill' => true, 'hidden' => false]);
             $options['percent_billable'] = round((($total_hours_in_period - $non_billable_hours) / $total_hours_in_period) * 100);
             $options['projectcount'] = $project_count;
             $chart->options($options);
@@ -1376,6 +1375,7 @@ class ProjectController extends Controller
     $search = $request['search'];
     $term = $request['sort'];
     $invert = $request['invert'];
+    //$copy is set if the user had hit the copy button on the planner page
     $copy = $request['copyproject'];
     if(!is_null($copy)){
       $copy = Project::find($request['copyproject']);
@@ -1404,7 +1404,7 @@ class ProjectController extends Controller
       foreach($projects as $project){
         $name = $project['projectname'];
         $duedates = $project['duedates'];
-        //checks if any duedates are saved
+        //checks if any duedates are saved, and adds any second level due dates that were entered
         if(isset($duedates)){
           $dates = [$project['dateenergization']];
           if (isset($duedates['physical'])){
@@ -1959,7 +1959,8 @@ class ProjectController extends Controller
     return $project;
   }
     /**
-   * Loads data for the Sticky Note Gantt chart.
+   * Loads data for the Sticky Note Gantt chart. 
+   * If a filter is set, then it will only display projects that fit in that filter.
    * @return view 'pages.sticky_note'
    */
   public function sticky_note(Request $request){
@@ -1974,6 +1975,7 @@ class ProjectController extends Controller
     //if any filter has been selected then filter by that category, employee, or deliverable
     if($term != null && $term != 'No Filter' || $major != null && $major != 'No Filter' || $minor != null && $minor != 'No Filter'){
       $today = date("Y-m-d");
+
       //filters by major deliverables
       if($major != null && $major != 'No Filter'){
         foreach($projects as $project){
@@ -1988,6 +1990,7 @@ class ProjectController extends Controller
                   unset($duedates[$key]);
                 }
                 else{
+                  //show the project if it's major deliverable's due date isn't in the past
                   if($this->dateToStr($duedates[$major]['due']) >= $today && $this->dateToStr($duedates[$major]['due']) != "None"){
                     $show = true;
                   }
@@ -1995,6 +1998,7 @@ class ProjectController extends Controller
               }
               if($show == true){
                 $project['duedates'] = $duedates;
+                //adds the JSON converted project to the $json array
                 $json[$counter] = $this->project_to_json($project);
                 $counter++;
               }
@@ -2002,6 +2006,7 @@ class ProjectController extends Controller
           }
         }
       }
+
       //filters by minor deliverables
       if($minor != null && $minor != 'No Filter'){
         foreach($projects as $project){
@@ -2011,14 +2016,17 @@ class ProjectController extends Controller
             $majorkeys = array_keys($duedates);
             $majorcount = 0;
             foreach($duedates as $duedate){
+              //checks if the minor deliverable you're filtering by is in the current major deliverable
               if(array_key_exists($minor, $duedate)){
                 $minorkeys = array_keys($duedate);
                 foreach($minorkeys as $key){
+                  //if the current minor deliverable is not equal to the filtered deliverable, then unset it so it won't appear on the gantt chart
                   if ($key != $minor && $key != 'person1' && $key != 'person2' && $key != 'due'){
                     unset($duedate[$key]);
                     $duedates[$majorkeys[$majorcount]] = $duedate;
                   }
                   else{
+                    //if the due date for the minor deliverable isn't in the past, then display the project on the gantt chart
                     if($this->dateToStr($duedates[$majorkeys[$majorcount]][$minor]['due']) >= $today && $this->dateToStr($duedates[$majorkeys[$majorcount]][$minor]['due']) != "None"){
                       $show = true;
                     }
@@ -2026,6 +2034,7 @@ class ProjectController extends Controller
                 }
               }
               else{
+                //If the minor deliverable is not within the major deliverable, then unset the major deliverable
                 unset($duedates[$majorkeys[$majorcount]]);
               }
               $majorcount++;
@@ -2042,6 +2051,7 @@ class ProjectController extends Controller
 
       //if the employee/category filter is equal to one of the following categories, it filters out any projects that don't involve employees with that job class
       if($term == 'SCADA' || $term == 'drafting' || $term == 'senior' || $term == 'project' || $term == 'interns-admin'){
+        //gets a list of all the employee names that fit under the filtered category
         $filteredemployees = User::all()->where('jobclass', $term);
         $filterednames = [];
         foreach($filteredemployees as $filteredemployee){
@@ -2050,6 +2060,7 @@ class ProjectController extends Controller
         foreach($projects as $project){
           $show = false;
           if ($this->project_to_json($project) != null){
+            //If an employee in the filtered names is the project manager, then display the whole project
             if(in_array($project['projectmanager'][0], $filterednames)){
               $json[$counter] = $this->project_to_json($project);
               $counter++;
@@ -2060,34 +2071,40 @@ class ProjectController extends Controller
             $majorcount = 0;
             foreach($duedates as $duedate){
               if(array_key_exists('person2', $duedate)){
+                //if the major deliverable doesn't have any filtered employees
                 if(!in_array($duedate['person1'], $filterednames) && !in_array($duedate['person2'], $filterednames)){
                   $minorkeys = array_keys($duedate);
                   $minorcount = 0;
                   $nonamecount = 0;
                   foreach($duedate as $task){
                     if($minorkeys[$minorcount] != 'person1' && $minorkeys[$minorcount] != 'person2' && $minorkeys[$minorcount] != 'due'){
+                      //major deliverable doesn't involve any of the filtered employees, but a minor deliverable does, so show the project on the gantt chart
                       if(in_array($task['person1'], $filterednames) || in_array($task['person2'], $filterednames)){
                         if($this->dateToStr($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]['due']) >= $today && $this->dateToStr($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]['due']) != "None"){
                           $show = true;
                         }
                       }
                       else{
+                        //filter out the minor deliverable if it doesn't have the filtered employee in it
                         unset($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]);
                         $nonamecount++;
                       }
                     }
                     $minorcount++;
                   }
+                  //remove the major deliverable if all of its minor deliverables were removed
                   if($minorcount - 3 == $nonamecount){
                     unset($duedates[$majorkeys[$majorcount]]);
                   }
                 }
                 else{
+                  //show the major deliverable if one of the filtered employees is a part of it
                   if($this->dateToStr($duedates[$majorkeys[$majorcount]]['due']) >= $today && $this->dateToStr($duedates[$majorkeys[$majorcount]]['due']) != "None"){
                     $show = true;
                   }
                 }
               }
+              //Does the same thing as above for studies because they don't have a person 2
               elseif($majorkeys[$majorcount] != "additionalfields"){
                 if(!in_array($duedate['person1'], $filterednames)){
                     $minorkeys = array_keys($duedate);
@@ -2127,13 +2144,14 @@ class ProjectController extends Controller
             }
           }
         }
-
       }
+
       //If the employee/category filter is set to a particular employee, it goes through every project and only filters in the ones that the employee is a part of
       elseif($term != null && $term != 'No Filter'){
         foreach($projects as $project){
           $show = false;
           if ($this->project_to_json($project) != null){
+            //if the filtered employee is the project manager for the current project, then show the whole project
             if($project['projectmanager'][0] == $term){
               $json[$counter] = $this->project_to_json($project);
               $counter++;
@@ -2144,34 +2162,40 @@ class ProjectController extends Controller
             $majorcount = 0;
             foreach($duedates as $duedate){
               if(array_key_exists('person2', $duedate)){
+                //if the major deliverable doesn't have the employee involved
                 if($duedate['person1'] != $term && $duedate['person2'] != $term){
                   $minorkeys = array_keys($duedate);
                   $minorcount = 0;
                   $nonamecount = 0;
                   foreach($duedate as $task){
                     if($minorkeys[$minorcount] != 'person1' && $minorkeys[$minorcount] != 'person2' && $minorkeys[$minorcount] != 'due'){
+                      //if the minor deliverable has the filtered employee and isn't in the past, then show the project
                       if($task['person1'] == $term || $task['person2'] == $term){
                         if($this->dateToStr($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]['due']) >= $today && $this->dateToStr($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]['due']) != "None"){
                           $show = true;
                         }
                       }
                       else{
+                        //remove the minor deliverable so it won't be seen on the gantt chart
                         unset($duedates[$majorkeys[$majorcount]][$minorkeys[$minorcount]]);
                         $nonamecount++;
                       }
                     }
                     $minorcount++;
                   }
+                  //if all of the minor deliverables for a project were removed, then don't show the major deliverable
                   if($minorcount - 3 == $nonamecount){
                     unset($duedates[$majorkeys[$majorcount]]);
                   }
                 }
                 else{
+                  //show the project if the major deliverable has the filtered employee
                   if($this->dateToStr($duedates[$majorkeys[$majorcount]]['due']) >= $today && $this->dateToStr($duedates[$majorkeys[$majorcount]]['due']) != "None"){
                     $show = true;
                   }
                 }
               }
+              //repeats the same thing but for studies, since they don't have a second person saved
               elseif($majorkeys[$majorcount] != "additionalfields"){
                 if($duedate['person1'] != $term){
                     $minorkeys = array_keys($duedate);
@@ -2203,6 +2227,8 @@ class ProjectController extends Controller
               }
               $majorcount++;
             }
+            //if the project is to be shown, then set the duedates for that project to the filtered out version,
+            //convert the project to JSON format, and add it to the $json variable
             if($show == true){
               $project['duedates'] = $duedates;
               $convertedproject = $this->project_to_json($project);
@@ -2533,6 +2559,99 @@ class ProjectController extends Controller
     $project->delete();
     return redirect('/projectindex')->with('success','Project has been deleted');
   }
+  
+/**************** Start of the Project Hour Tracker Application *********************/
+    /**
+   * Loads data for the Project Hour Tracker page.
+   * @return view 'pages.project_tracker'
+   */
+  public function project_tracker(Request $request){
+    // Declaration of Variables
+    $collection2 = Project::where('codes')->get();
+    $all_project_codes = array();
+    $all_project_desc = array();
+    for ($i = 0; $i < sizeof($collection2); $i++){
+      if (($collection2[$i]['projectstatus'] == 'Won') && ($collection2[$i]['projectcode'] != null)){
+        array_push($all_project_codes, $collection2[$i]['projectcode']);
+        array_push($all_project_desc, $collection2[$i]['projectname']);
+      }
+    } 
+    array_multisort($all_project_codes, $all_project_desc);
+    $collection = Timesheet::where('user', auth()->user()->email)->get();
+    $project_array = $collection[0]['Project_Hours'];
+    $CurrentProject = $request['CurrentProject'];
+    $CurrentProjectStartTime = Time();
+    // Page View
+    return view('pages.project_tracker', compact('CurrentProject', 'CurrentProjectStartTime', 'project_array', 'all_project_codes', 'all_project_desc'));
+  }
+    /**
+   * Saves inputed project + start time into database
+   * @return view 'pages.project_tracker'
+   */
+  public function tracker_save(Request $request){
+    // Declaration of Variables
+    $collection2 = Project::where('codes')->get();
+    $all_project_codes = array();
+    $all_project_desc = array();
+    for ($i = 0; $i < sizeof($collection2); $i++){
+      if (($collection2[$i]['projectstatus'] == 'Won') && ($collection2[$i]['projectcode'] != null)){
+        array_push($all_project_codes, $collection2[$i]['projectcode']);
+        array_push($all_project_desc, $collection2[$i]['projectname']);
+      }
+    } 
+    array_multisort($all_project_codes, $all_project_desc);
+    $collection1 = Timesheet::where('user', auth()->user()->email)->get();
+    $project_array = $collection1[0]['Project_Hours'];
+    $CurrentProject = $request['CurrentProject'];
+    $CurrentProjectStartTime = Time();
+    // Inserting Project Text Box Inputs Into Project Array
+    $project_array[$CurrentProject] = $CurrentProjectStartTime;
+
+    // Saves Project Hour Array to Database, or If Delete Button is Pressed, Calls the delete_project Function:
+    if(isset($_POST['Delete']))
+    {
+       $this -> delete_project($request);
+
+    }
+    else { 
+    $Timesheet = $collection1[0];
+    $Timesheet->Project_Hours=$project_array;
+    $Timesheet->save();
+    }
+    // Page View
+    return view('pages.project_tracker', compact('CurrentProject','CurrentProjectStartTime','project_array', 'all_project_codes','all_project_desc'));
+  }
+
+   /**
+   * Deletes Previous Project from Database.
+   * @return view 'pages.project_tracker'
+   */
+
+  public function delete_project(Request $request){
+    // Declaration of Variables
+    $collection2 = Project::where('codes')->get();
+    $all_project_codes = array();
+    $all_project_desc = array();
+    for ($i = 0; $i < sizeof($collection2); $i++){
+      if (($collection2[$i]['projectstatus'] == 'Won') && ($collection2[$i]['projectcode'] != null)){
+        array_push($all_project_codes, $collection2[$i]['projectcode']);
+        array_push($all_project_desc, $collection2[$i]['projectname']);
+      }
+    } 
+    array_multisort($all_project_codes, $all_project_desc);
+    $collection = Timesheet::where('user', auth()->user()->email)->get();
+    $project_array = $collection[0]['Project_Hours'];
+    $CurrentProject = $request['CurrentProject'];
+    $CurrentProjectStartTime = Time();
+    // Unsets last inputted project from project array, then resaves array to database
+    unset($project_array[array_keys($project_array)[sizeof($project_array)-1]]);
+    $Timesheet = $collection[0];
+    $Timesheet->Project_Hours=$project_array;
+    $Timesheet->save();
+    // Page view
+    return view('pages.project_tracker', compact('CurrentProject','CurrentProjectStartTime','project_array', 'all_project_codes','all_project_desc'));
+  }
+/**************** End of the Project Hour Tracker Application *********************/
 
 }
 

@@ -60,8 +60,12 @@
           </li>
           @endif
           @else
-          
-          <?php if(auth()->user()->role != "user"){?>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('pages.newproject') }}">New Project</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('pages.projectindex') }}">Project Index</a>
+          </li>          
           <li class="nav-item">
             <a class="nav-link" href="{{ route('pages.planner') }}">Project Planner</a>
           </li>
@@ -69,20 +73,15 @@
             <a class="nav-link" href="{{ route('pages.sticky_note') }}">Sticky Note</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ route('pages.newproject') }}">New Project</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ route('pages.projectindex') }}">Project Index</a>
-          </li>
+            <a class="nav-link" href="{{ route('pages.hoursgraph') }}">Hours By Project Graph</a>
+          </li> 
+          <?php if(auth()->user()->role != "user"){?>
           <li class="nav-item">
             <a class="nav-link" href="{{ route('pages.wonprojectsummary') }}">Won Project Summary</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ route('pages.hoursgraph') }}">Hours By Project Graph</a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link" href="{{ route('pages.drafterhours') }}">Drafter Hours</a>
-          </li> 
+          </li>
            <?php } ?>         
           
           <?php 

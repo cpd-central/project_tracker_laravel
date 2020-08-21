@@ -16,15 +16,15 @@ class RoleMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $not_allowed_user_array = array('roles', 'projectindex', 'newproject', 'projectindex', 'wonprojectsummary', 'hoursgraph');
+        $not_allowed_user_array = array('accountdirectory', 'wonprojectsummary', 'drafterhours', 'editaccount');
         $uri = $request->path();
         $user = Auth::user();
 
-        if($user['role'] == 'sudo'){
+        if($user['role'] == 'sudo' || $user['role'] == 'admin'){
             return $next($request);
         }
-        elseif($user['role'] == 'proposer' || $user['role'] == 'admin'){
-            if($uri != "roles"){
+        elseif($user['role'] == 'proposer'){
+            if($uri != "accountdirectory"){
                 return $next($request);
             }
             else{
