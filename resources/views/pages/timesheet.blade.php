@@ -176,7 +176,7 @@ table.center {
                                       </td> 
                                     @endfor
                                     <td style="width: 8%">
-                                      <input type="text" class="form-control" id="row{{$row}}Day15" name="codeadd{{$row}}" value="<?=$code?>">
+                                      <input type="text" class="form-control" id="row{{$row}}Day15" name="codeadd{{$row}}" value="<?=strtoupper($code)?>">
                                     </td>
                                     <td>
                                       <button type="button" id="row{{$row}}" class="btn btn-danger btn_remove">-</button>
