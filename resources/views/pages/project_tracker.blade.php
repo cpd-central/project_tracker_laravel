@@ -105,7 +105,7 @@
             text-align: center;
             text-decoration: wavy;
             display: inline-block;
-            margin: 200px 75px;
+            margin: 200px 140px;
             cursor: pointer;
             border-radius: 50%;
             font: bold 17px arial, helvetica, sans-serif;
@@ -114,14 +114,24 @@
             } 
             </style>
         </form>
-        <form class="form2" method="post"> 
-            @csrf
-            <button style="width:135px;height:135px;" type= "submit" class ="button2" id = "TimesheetSubmit" onclick = "timesheetSubmit()"> Submit to Timesheet</button>
-            <script>
-            function timesheetSubmit(){
-                dd("Hey");
+        <style>
+        form {
+            width: 70%;
+            height: 30%;
+            margin-left: 0%;
+            margin-right: 0%;
+            position: relative;
             }
-            </script>
+        .form1{
+            margin-left: 0%;
+            margin-bottom: 0px;
+            width: 70%;
+            height: 500px;
+            position: relative;
+        }
+        </style>
+        <div class = row style= 'width: 100%; margin-left:0%; margin-right:0%;'>
+            <button style="width:135px;height:135px;" type= "submit" class ="button2" id = "press" onClick ="location.href='/timesheet'"> Submit to Timesheet</button>
             <style>
             .button2 {
             background-color: #ddd;
@@ -131,7 +141,7 @@
             text-align: center;
             text-decoration: wavy;
             display: inline-block;
-            margin: 0% 0%;
+            margin: 0% 5%;
             cursor: pointer;
             border-radius: 50%;
             font: bold 17px arial, helvetica, sans-serif;
@@ -139,39 +149,11 @@
             display: inline-block;
             }
             </style>
-        </form>
         
-        <style>
-        form {
-            width: 70%;
-            height: 50%;
-            margin-left: 0%;
-            margin-right: 0%;
-            position: relative;
-            }
-        .form1{
-            margin-left: 0%;
-            margin-bottom: 0px;
-            width: 40%;
-            height: 450px;
-            position: relative;
-        }
-        .form2{
-            float: left;
-            margin-left: 10%;
-            margin-right: 0%;
-            margin-bottom: 0%;
-            margin-top: 0%;
-            width: 20%;
-            height: 20%;
-            position: relative;
-        }
-        </style>
-        <div class = row style= 'width: 55%'>
             <style>
                 table {text-align: center;}
             </style>
-                <table style="width:70%; border: 1px solid black;">
+                <table style="width:47%; border: 1px solid black;">
                     <tr>
                     <th>Project</th>
                     <th>Hours : Minutes</th>
@@ -206,8 +188,8 @@
         </div>
         <form class="form1" method="post" action="{{ route('pages.project_tracker') }}">
             @csrf
-            <div class = row style= 'width: 600px'>
-            <div id="decoration3" style='width:200px; height:100px; "background-color:#cccccc;' ></div>
+            <div class = row style= 'width: 600px;'>
+            <div id="decoration3" style='width:425px; height:100px; "background-color:#cccccc;' ></div>
                 <style>
                 label {
                     text-align: right;
@@ -224,18 +206,12 @@
                     padding: 10px 25px;
                     text-align: justify;
                     display: inline-block;
-                    margin: 20px 0%;
+                    margin: 25px 1%;
                     cursor: pointer;
                     border-radius: 0%;
                     font: bold 12px arial, helvetica, sans-serif;
                     background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(225,200,200,1)), to(rgba(245,230,200,13)));
                     display: inline-block;
-                } 
-                .form1 {
-                    width: 50px;
-                    height: 200px;
-                    margin-left: 37%;
-                    position: relative;
                 }
                 .column {
                     width: 200px;
