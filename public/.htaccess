@@ -6,19 +6,13 @@
     RewriteEngine On
 
     ##Force SSL 
-
-    # If we receive a forwarded http request from a proxy...
-    RewriteCond %{HTTPS:X-Forwarded-Proto} =https [OR]
-
-    # ...or just a plain old http request directly from the client
-    RewriteCond %{HTTPS:X-Forwarded-Proto} =""
     RewriteCond %{HTTPS} !=on
 
     # Redirect to https version
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
     # Handle Authorization Header
-    RewriteCond %{HTTPS:Authorization} .
+    RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
     # Redirect Trailing Slashes If Not A Folder...
