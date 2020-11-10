@@ -8,7 +8,7 @@
     ##Force SSL 
 
     # If we receive a forwarded http request from a proxy...
-    RewriteCond %{HTTP:X-Forwarded-Proto} =http [OR]
+    RewriteCond %{HTTP:X-Forwarded-Proto} =https [OR]
 
     # ...or just a plain old http request directly from the client
     RewriteCond %{HTTP:X-Forwarded-Proto} =""
