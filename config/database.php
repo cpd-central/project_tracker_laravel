@@ -39,21 +39,17 @@ return [
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
-                'mongodb_conn' => [
-                    'driver' => 'mongodb',
-                    'dsn'=>'mongodb+srv://rclintsman@ceg-engineers.com:J@wtg679@cluster-0qcgxhh9.d4sg0.mongodb.net/heroku_0qcgxhh9?retryWrites=true&w=majority',
-                    'database' => 'heroku_0qcgxhh9',
-                ]
-				//'mongodb' => [
-				//	'driver'   => 'mongodb',
-				//	'host'     => env('DB_HOST', 'localhost'),
-				//	'port'     => env('DB_PORT', 27017),
-				//	'database' => env('DB_DATABASE'),
-				//	'username' => env('DB_USERNAME'),
-				//	'password' => env('DB_PASSWORD'),
-				//	'options'  => [
-        		//'database' => env('DB_DATABASE'), // sets the authentication database required by mongo 3
-                //'retryWrites' => false
+
+				'mongodb' => [
+					'driver'   => 'mongodb',
+					'host'     => env('DB_HOST', 'localhost'),
+					'port'     => env('DB_PORT', 27017),
+					'database' => env('DB_DATABASE'),
+					'username' => env('DB_USERNAME'),
+					'password' => env('DB_PASSWORD'),
+					'options'  => [
+        		'database' => env('DB_DATABASE'), // sets the authentication database required by mongo 3
+                'retryWrites' => false
                 ]
 				],
 
