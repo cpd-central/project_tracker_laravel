@@ -11,6 +11,9 @@
 |
 */
 
+if (env('APP_ENV') === 'production') {
+    URL::forceSchema('https');
+}
 
 Route::get('/', function () {
     return view('welcome');
