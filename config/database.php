@@ -55,7 +55,7 @@ return [
         		//'database' => env('DB_DATABASE'), // sets the authentication database required by mongo 3
                 //'retryWrites' => false
                 //]
-				],
+				//],
 
         'mysql' => [
             'driver' => 'mysql',
