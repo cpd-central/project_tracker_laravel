@@ -387,7 +387,7 @@ h6 {
       <?php $keycounter = 3; ?>
       <?php for($i = 1; $i <= $controlfields; $i++){?>
         <?php $keys = array_keys($project['duedates']['control']);?>
-        <?php dd($keys[$keycounter]); ?>
+        <?php //dd($keys[$keycounter]); ?>
         <h6 id="control{{$i}}title" style="margin-left: 55px"><b>{{$keys[$keycounter]}}</b></h6>
         <button style="margin:10px;" type="button" class="btn btn-danger btn_remove" id="control{{$i}}">Remove</button>
         <div id="control{{$i}}row" style="margin-left: 40px" class="row">
