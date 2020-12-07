@@ -1,6 +1,7 @@
 <?php
 echo env('APP_ENV');
 if(env('APP_ENV', 'local')) {
+    echo env('APP_ENV');
 return [
 
     /*
