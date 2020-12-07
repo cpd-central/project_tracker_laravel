@@ -151,7 +151,7 @@ return [
 
 ];
 }
-else if(config('APP_ENV') == 'production'){
+else if(env('APP_ENV') == 'production'){
     echo "production";
     return [
 
