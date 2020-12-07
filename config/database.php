@@ -1,7 +1,7 @@
 <?php
 echo env('APP_ENV');
 if(env('APP_ENV', 'local')) {
-    echo env('APP_ENV');
+    echo "local";
 return [
 
     /*
@@ -152,7 +152,7 @@ return [
 ];
 }
 else if(env('APP_ENV', 'production')){
-    echo env('APP_ENV');
+    echo "production";
     return [
 
         /*
