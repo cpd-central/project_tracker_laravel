@@ -1,7 +1,5 @@
 <?php
-echo env('APP_ENV');
-if(env('APP_ENV', 'local')) {
-    echo "local";
+if(config('APP_ENV', 'local')) {
 return [
 
     /*
@@ -151,8 +149,7 @@ return [
 
 ];
 }
-else if(env('APP_ENV', 'production')){
-    echo "production";
+else if(config('APP_ENV', 'production')){
     return [
 
         /*
