@@ -1,5 +1,5 @@
 <?php
-//dd(env('APP_ENV'));
+dd(env('APP_ENV'));
 if(env('APP_ENV', 'local')) {
 return [
 
