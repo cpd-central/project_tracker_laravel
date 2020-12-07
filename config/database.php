@@ -1,5 +1,5 @@
 <?php
-dd(env('APP_ENV'));
+echo env('APP_ENV');
 if(env('APP_ENV', 'local')) {
 return [
 
@@ -151,6 +151,7 @@ return [
 ];
 }
 else if(env('APP_ENV', 'production')){
+    echo env('APP_ENV');
     return [
 
         /*
