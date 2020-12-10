@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"heroku_0qcgxhh9.hours_by_project"}],"uuid":"8cf5d0aa444d446994f246601089a613"}

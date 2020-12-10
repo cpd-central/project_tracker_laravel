@@ -7,14 +7,22 @@
 <title>{{ config('app.name', 'Laravel') }}</title>
 
 <!-- Scripts -->
-<script src="{{ asset('js/app.js') }}" defer></script>
+<?php if(env('APP_ENV') == "local") { ?>
+<script src='js/app.js' defer></script>
+<?php } else { ?>
+<script src="{{ secure_asset('js/app.js') }}" defer></script>
+<?php } ?>
 
 <!-- Fonts -->
-<link rel="dns-prefetch" href="//fonts.gstatic.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
 
 <!-- Styles -->
-<link href="{{ asset('css/app.css') }}" rel="stylesheet">
+<?php if(env('APP_ENV') == "local") { ?>
+<link href="css/app.css" rel="stylesheet">
+<?php } else { ?>
+<link href="{{ secure_asset('css/app.css') }}" rel="stylesheet">
+<?php } ?>
 
 <style>
   .box { 
@@ -34,7 +42,7 @@
 <div id="app">
   <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
     <div class="container">
-      <a class="navbar-brand" href="{{ url('/') }}">
+      <a class="navbar-brand" href="{{ url('//') }}">
         {{ config('app.name', 'CEG Project Tracker') }}
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -60,8 +68,12 @@
           </li>
           @endif
           @else
-          
-          <?php if(auth()->user()->role != "user"){?>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('pages.newproject') }}">New Project</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('pages.projectindex') }}">Project Index</a>
+          </li>          
           <li class="nav-item">
             <a class="nav-link" href="{{ route('pages.planner') }}">Project Planner</a>
           </li>
@@ -69,20 +81,15 @@
             <a class="nav-link" href="{{ route('pages.sticky_note') }}">Sticky Note</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ route('pages.newproject') }}">New Project</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ route('pages.projectindex') }}">Project Index</a>
-          </li>
+            <a class="nav-link" href="{{ route('pages.hoursgraph') }}">Hours By Project Graph</a>
+          </li> 
+          <?php if(auth()->user()->role != "user"){?>
           <li class="nav-item">
             <a class="nav-link" href="{{ route('pages.wonprojectsummary') }}">Won Project Summary</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ route('pages.hoursgraph') }}">Hours By Project Graph</a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link" href="{{ route('pages.drafterhours') }}">Drafter Hours</a>
-          </li> 
+          </li>
            <?php } ?>         
           
           <?php 

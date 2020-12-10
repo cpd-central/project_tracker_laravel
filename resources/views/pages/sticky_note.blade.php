@@ -22,10 +22,10 @@ $employees = $hold;
     @include('includes.navbar')
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
-    <script src="http://export.dhtmlx.com/gantt/api.js"></script>
+    <script src="https://export.dhtmlx.com/gantt/api.js"></script>
     <link href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" rel="stylesheet">
  
     <style type="text/css">
