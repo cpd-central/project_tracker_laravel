@@ -64,8 +64,8 @@ table.center {
 }
 </style>
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
 <html>
   <title id="page-title">Timesheet</title>
@@ -176,7 +176,7 @@ table.center {
                                       </td> 
                                     @endfor
                                     <td style="width: 8%">
-                                      <input type="text" class="form-control" id="row{{$row}}Day15" name="codeadd{{$row}}" value="<?=$code?>">
+                                      <input type="text" class="form-control" id="row{{$row}}Day15" name="codeadd{{$row}}" value="<?=strtoupper($code)?>">
                                     </td>
                                     <td>
                                       <button type="button" id="row{{$row}}" class="btn btn-danger btn_remove">-</button>

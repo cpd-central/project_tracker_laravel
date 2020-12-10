@@ -11,14 +11,15 @@
 |
 */
 
+
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/newproject', 'ProjectController@new_project')->name('pages.newproject')->middleware('verified', 'role');
+Route::get('/newproject', 'ProjectController@new_project')->name('pages.newproject')->middleware('verified');
 Route::post('/newproject', 'ProjectController@create')->middleware('verified');
 
-Route::get('/copyproject/{id}', 'ProjectController@copy_project')->name('pages.copyproject')->middleware('verified', 'role');
+Route::get('/copyproject/{id}', 'ProjectController@copy_project')->name('pages.copyproject')->middleware('verified');
 Route::post('/copyproject/{id}', 'ProjectController@create')->middleware('verified');
 
 Route::get('/projectindex', 'ProjectController@index')->name('pages.projectindex')->middleware('verified', 'role');
@@ -31,10 +32,10 @@ Route::post('/wonprojectsummary', 'ProjectController@search')->middleware('verif
 Route::post('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummarySearch');
 
 
-Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified', 'role');
+Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified');
 Route::post('/hoursgraph','ProjectController@submit_billing')->middleware('verified');
 
-Route::get('/monthendbilling', 'ProjectController@billing')->name('pages.monthendbilling')->middleware('verified', 'role');
+Route::get('/monthendbilling', 'ProjectController@billing')->name('pages.monthendbilling')->middleware('verified');
 
 
 Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject')->middleware('verified');
@@ -70,4 +71,7 @@ Route::post('/manageproject/{id}', 'ProjectController@edit_due_dates')->middlewa
 
 Route::get('/stickynote', 'ProjectController@sticky_note')->name('pages.sticky_note')->middleware('verified');
 Route::post('/stickynote', 'ProjectController@employee_gantt')->middleware('verified');
+
+Route::get('/project_tracker', 'ProjectController@project_tracker')->name('pages.project_tracker')->middleware('verified');
+Route::post('/project_tracker', 'ProjectController@tracker_save')->middleware('verified');
 
