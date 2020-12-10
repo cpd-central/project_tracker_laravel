@@ -7,14 +7,22 @@
 <title>{{ config('app.name', 'Laravel') }}</title>
 
 <!-- Scripts -->
+<?php if(env('APP_ENV') == "local") { ?>
+<script src='js/app.js' defer></script>
+<?php } else { ?>
 <script src="{{ secure_asset('js/app.js') }}" defer></script>
+<?php } ?>
 
 <!-- Fonts -->
-<link rel="dns-prefetch" href="//fonts.gstatic.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
 
 <!-- Styles -->
+<?php if(env('APP_ENV') == "local") { ?>
+<link href="css/app.css" rel="stylesheet">
+<?php } else { ?>
 <link href="{{ secure_asset('css/app.css') }}" rel="stylesheet">
+<?php } ?>
 
 <style>
   .box { 
