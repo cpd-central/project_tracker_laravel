@@ -83,6 +83,9 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ route('pages.hoursgraph') }}">Hours By Project Graph</a>
           </li> 
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('pages.hourstable') }}">Hours By Project Table</a>
+          </li>
           <?php if(auth()->user()->role != "user"){?>
           <li class="nav-item">
             <a class="nav-link" href="{{ route('pages.wonprojectsummary') }}">Won Project Summary</a>

@@ -35,6 +35,9 @@ Route::post('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.won
 Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified');
 Route::post('/hoursgraph','ProjectController@submit_billing')->middleware('verified');
 
+Route::get('/hourstable', 'ProjectController@hours_table')->name('pages.hourstable')->middleware('verified');
+Route::post('/hourstable', 'ProjectController@code_search')->middleware('verified');
+
 Route::get('/monthendbilling', 'ProjectController@billing')->name('pages.monthendbilling')->middleware('verified');
 
 
