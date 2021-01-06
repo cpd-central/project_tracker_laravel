@@ -11,34 +11,38 @@
 </form> 
 </div>
 <?php 
-if(isset($code)){
-    echo $code;
-    if(isset($project[0])){
+if(isset($code)){ ?>
+    <h1 style="text-align: center;">{{$code}}</h1>
+<?php  if(isset($project[0])){
         $hours_data = $project[0]['hours_data'];
-        $year = array_keys($hours_data);
-        print " {$year[0]}";
-        $months_array = array_keys($hours_data[$year[0]]);
-        $employee_array = array_keys($hours_data[$year[0]][$months_array[0]]);
-        unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
-        $total_employee = [count($employee_array)];
-        for($j = 0; $j < count($employee_array); $j++){ 
-            $total_employee[$j] = 0;
-        }
-        for($i = 0; $i < count($months_array); $i++){
+        $years_array = array_keys($hours_data);
+        foreach($years_array as $year){
+            $months_array = array_keys($hours_data[$year]);
+            $employee_array = array_keys($hours_data[$year][$months_array[0]]);
+            unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
+            $total_employee = [count($employee_array)];
             for($j = 0; $j < count($employee_array); $j++){ 
-            $total_employee[$j] += $hours_data[$year[0]][$months_array[$i]][$employee_array[$j]];
+                $total_employee[$j] = 0;
             }
-        }
-        /////////////////////////////////////////////////////unset offsets the $j
-        $count_employees = count($employee_array);
-        for($j = 0; $j < $count_employees; $j++){ 
-            if($total_employee[$j] == 0){
-                unset($employee_array[$j]);
-                unset($total_employee[$j]);
+            for($i = 0; $i < count($months_array); $i++){
+                for($j = 0; $j < count($employee_array); $j++){ 
+                $total_employee[$j] += $hours_data[$year][$months_array[$i]][$employee_array[$j]];
+                }
             }
-        }
+            /////////////////////////////////////////////////////unset offsets the $j
+            $count_employees = count($employee_array);
+            for($j = 0; $j < $count_employees; $j++){ 
+                if($total_employee[$j] == 0){
+                    unset($employee_array[$j]);
+                    unset($total_employee[$j]);
+                }
+            }
+            if(count($employee_array) == 0){
+                continue;
+            }
 ?>
-
+<div>
+    <h4 style="text-align: center;">{{$year}}</h4>
 <table class="table table-striped">
 <th>
     <?php foreach($employee_array as $j){ ?>
@@ -49,7 +53,7 @@ if(isset($code)){
 <tr>
     <td>{{$months_array[$i]}}</td>
     <?php foreach($employee_array as $j){ ?>
-    <td>{{$hours_data[$year[0]][$months_array[$i]][$j]}}</td>
+    <td>{{$hours_data[$year][$months_array[$i]][$j]}}</td>
     <?php }?>
 </tr>
 
@@ -60,11 +64,12 @@ if(isset($code)){
     <td>{{$j}}</td>
     <?php }?>
 </tr>
-<?php    }
-
-    else{
-        print " has no project associated.";
-    } 
-} ?>
 </table>
+</div>
+<?php }
+    }
+    else{ ?>
+        <h4 style="text-align: center;">No projects associated with the provided Code.</h4>
+    <?php } 
+} ?>
 @endsection
