@@ -681,6 +681,13 @@ class ProjectController extends Controller
           foreach($hours_data as $year_key => $year){
             //checks if the project hours year is within the date range of the graph
             if ($year_key >= intval($start_year) && $year_key <= intval($end_year)){
+              if($num_years == 1){
+                $i = 0;
+                while($i <= 11){
+                  array_push($total_project_dollars, 0);
+                  $i++;
+                }
+              }
               $month_counter = 1;
               //loops through each month
               foreach($year as $month_key => $month){
@@ -724,14 +731,6 @@ class ProjectController extends Controller
               }
             }
           }
-          //$total_dollars[$project_key] = $dollars;
-
-          // $chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options(['backgroundColor' => $chart_colors[$color_counter]]);
-          // $color_counter++;
-          // if ($color_counter > $max_color_counter)
-          // {
-          //   $color_counter = 0;
-          // }
           $chart->dataset("{$project['projectname']}", 'bar', $total_project_dollars)->options(['backgroundColor' => $chart_colors[$color_counter]]);
           $color_counter++;
           if ($color_counter > $max_color_counter)
