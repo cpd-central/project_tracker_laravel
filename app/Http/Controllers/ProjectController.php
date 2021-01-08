@@ -1380,7 +1380,8 @@ class ProjectController extends Controller
   {
       $code = $request['projectcode'];
       $project = Project::where('projectcode', $code)->get();
-      return view('pages.hourstable',compact('code', 'project'));
+      $users = User::all();
+      return view('pages.hourstable',compact('code', 'project', 'users'));
   }
 
   /**************** End of Hours Table ~Randy *********************/

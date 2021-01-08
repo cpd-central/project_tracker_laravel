@@ -6,7 +6,6 @@
 
 
 @section('table-header')
-
     <table class="table table-striped">
     <thead style="text-align:center">
       <tr>

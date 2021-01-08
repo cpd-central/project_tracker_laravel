@@ -52,9 +52,13 @@ if(isset($code)){ ?>
 <?php for($i = 0; $i < count($months_array); $i++){ ?>
 <tr>
     <td>{{$months_array[$i]}}</td>
-    <?php foreach($employee_array as $j){ ?>
-    <td>{{$hours_data[$year][$months_array[$i]][$j]}}</td>
-    <?php }?>
+    <?php foreach($employee_array as $j){ 
+            foreach($users as $user){ 
+                if($user['nickname'] == $j){
+                    $calculation = $hours_data[$year][$months_array[$i]][$j] * $user['hour_rates'][$year]; 
+                    ?>
+    <td>${{$calculation}}</td>
+    <?php }}}?>
 </tr>
 
 <?php } ?>
