@@ -21,6 +21,7 @@ if(isset($code)){ ?>
             $employee_array = array_keys($hours_data[$year][$months_array[0]]);
             unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
             $total_employee = [count($employee_array)];
+            $rates_for_total = [count($employee_array)];
             for($j = 0; $j < count($employee_array); $j++){ 
                 $total_employee[$j] = 0;
             }
@@ -35,8 +36,19 @@ if(isset($code)){ ?>
                 if($total_employee[$j] == 0){
                     unset($employee_array[$j]);
                     unset($total_employee[$j]);
+                    unset($rates_for_total[$j]);
                 }
             }
+            /////////////////////////////////////////////////////user array_keys to account for skipping indexes of $j
+            $j_array = array_keys($total_employee);
+            foreach($j_array as $j){
+                foreach($users as $user){ 
+                    if($user['nickname'] == $employee_array[$j]){
+                        $rates_for_total[$j] = $user['hour_rates'][$year];
+                    }
+                }
+            }
+
             if(count($employee_array) == 0){
                 continue;
             }
@@ -46,9 +58,17 @@ if(isset($code)){ ?>
 <table class="table table-striped">
 <th>
     <?php foreach($employee_array as $j){ ?>
-    <td>{{$j}}</td>
+    <td><b>{{$j}}</b></td>
     <?php }?>
 </th>
+<tr>
+    <td><b>Rates:</b></td>
+    <?php 
+    $j_array = array_keys($rates_for_total);
+    foreach($j_array as $j){ ?>
+    <td>{{$rates_for_total[$j]}}</td>
+    <?php }?>
+</tr>
 <?php for($i = 0; $i < count($months_array); $i++){ ?>
 <tr>
     <td>{{$months_array[$i]}}</td>
@@ -63,9 +83,11 @@ if(isset($code)){ ?>
 
 <?php } ?>
 <tr>
-    <td>Total</td>
-    <?php foreach($total_employee as $j){ ?>
-    <td>{{$j}}</td>
+    <td><b>Total</b></td>
+    <?php 
+    $j_array = array_keys($total_employee);
+    foreach($j_array as $j){ ?>
+    <td><b>${{$total_employee[$j]*$rates_for_total[$j]}}</b></td>
     <?php }?>
 </tr>
 </table>
