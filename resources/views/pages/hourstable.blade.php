@@ -66,7 +66,7 @@ if(isset($code)){ ?>
     <?php 
     $j_array = array_keys($rates_for_total);
     foreach($j_array as $j){ ?>
-    <td>{{$rates_for_total[$j]}}</td>
+    <td>${{$rates_for_total[$j]}}</td>
     <?php }?>
 </tr>
 <?php for($i = 0; $i < count($months_array); $i++){ ?>
