@@ -20,6 +20,9 @@ if(isset($code)){ ?>
             $months_array = array_keys($hours_data[$year]);
             $employee_array = array_keys($hours_data[$year][$months_array[0]]);
             unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
+            if($year == 2016 || $year == 2017){
+                unset($employee_array[count($employee_array) - 1]); //unsets employee "Next"
+            }
             $total_employee = [count($employee_array)];
             $rates_for_total = [count($employee_array)];
             for($j = 0; $j < count($employee_array); $j++){ 
@@ -42,6 +45,9 @@ if(isset($code)){ ?>
             /////////////////////////////////////////////////////user array_keys to account for skipping indexes of $j
             $j_array = array_keys($total_employee);
             foreach($j_array as $j){
+                if($employee_array[$j] == "noname"){
+                    $rates_for_total[$j] = 160;
+                }
                 foreach($users as $user){ 
                     if($user['nickname'] == $employee_array[$j]){
                         $rates_for_total[$j] = $user['hour_rates'][$year];
@@ -73,10 +79,14 @@ if(isset($code)){ ?>
 <tr>
     <td>{{$months_array[$i]}}</td>
     <?php foreach($employee_array as $j){ 
-            foreach($users as $user){ 
+            if($j == "noname"){ //employee "noname" is from the Hours By Project 2017 file and has hours coded to it. 
+            $calculation = $hours_data[$year][$months_array[$i]][$j] * 160;
+           ?> <td>${{$calculation}}</td>
+            <?php }
+            foreach($users as $user){     
                 if($user['nickname'] == $j){
                     $calculation = $hours_data[$year][$months_array[$i]][$j] * $user['hour_rates'][$year]; 
-                    ?>
+                ?>
     <td>${{$calculation}}</td>
     <?php }}}?>
 </tr>
