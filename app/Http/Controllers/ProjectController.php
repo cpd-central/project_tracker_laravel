@@ -1368,7 +1368,10 @@ class ProjectController extends Controller
    * @return view 'pages.planner'
    */ 
   public function planner(Request $request){
-    $projects = Project::all()->where('projectstatus', 'Won');
+    /**************************** Randy Addition 1/12/2021 *****************************/
+    $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
+    //$projects = Project::all()->where('projectstatus', 'Won');
+    /**************************** Randy Addition 1/12/2021 *****************************/
     //sorts projects based on their closest due date to the current date
     $projects = $this->sort_by_closest_date($projects);
     //These variables are used for the searching and sorting tools on the planner page
