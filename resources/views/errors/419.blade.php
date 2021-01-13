@@ -13,7 +13,7 @@
         </br>
         To ensure your data is as you intend, please redirect to the <a href={{ route('home') }}>Dashboard</a>.
         </br>
-        If you believe you are seeing this page in error, please contact Jake Marsnik.
+        If you believe you are seeing this page in error, please contact Randall Clintsman or Stephen Peichel.
       </div>
     </div>
   </div>

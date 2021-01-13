@@ -1361,6 +1361,31 @@ class ProjectController extends Controller
     return view('pages.hoursgraph', compact('projects', 'chart', 'chart_variable','dollarvalueinhousearray','chart_units','filter_all'));
   }
 
+  /**************** Start of Hours Table ~Randy *********************/
+
+  /**
+   * Returns a view of the newproject blade page.
+   * @return view pages.newproject
+   */
+  public function hours_table()
+  {
+      return view('pages.hourstable');
+  }
+
+  /**
+   * Returns a view of the newproject blade page.
+   * @return view pages.newproject
+   */
+  public function code_search(Request $request)
+  {
+      $code = $request['projectcode'];
+      $projects = Project::where('projectcode', $code)->get();
+      $users = User::all();
+      return view('pages.hourstable',compact('code', 'projects', 'users'));
+  }
+
+  /**************** End of Hours Table ~Randy *********************/
+
 /**************** Start of the Project Planner or Sticky Note Application *********************/
 
    /**
