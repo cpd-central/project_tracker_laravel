@@ -85,8 +85,9 @@ class HomeController extends Controller
      */
     public function account_directory()
     {
-        $users = User::all();
-        return view('pages.accountdirectory', compact('users'));
+        $users_active = User::where('active', true)->get()->sortByDesc('jobclass');
+        $users_inactive = User::where('active', false)->get()->sortByDesc('jobclass');
+        return view('pages.accountdirectory', compact('users_active', 'users_inactive'));
     }
 
     /**
