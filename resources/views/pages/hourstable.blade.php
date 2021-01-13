@@ -10,54 +10,56 @@
           <button class="btn aqua-gradient btn-rounded btn-sm my-0" type="submit">Submit</button>           
 </form> 
 </div>
-<?php 
+<?php $has_projects = false;
 if(isset($code)){ ?>
     <h1 style="text-align: center;">{{$code}}</h1>
-<?php  if(isset($project[0])){
-        $hours_data = $project[0]['hours_data'];
-        $years_array = array_keys($hours_data);
-        foreach($years_array as $year){
-            $months_array = array_keys($hours_data[$year]);
-            $employee_array = array_keys($hours_data[$year][$months_array[0]]);
-            unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
-            if($year == 2016 || $year == 2017){
-                unset($employee_array[count($employee_array) - 1]); //unsets employee "Next"
-            }
-            $total_employee = [count($employee_array)];
-            $rates_for_total = [count($employee_array)];
-            for($j = 0; $j < count($employee_array); $j++){ 
-                $total_employee[$j] = 0;
-            }
-            for($i = 0; $i < count($months_array); $i++){
+<?php  if(isset($projects)){
+        foreach($projects as $project){
+            $has_projects = true;
+            $hours_data = $project['hours_data'];
+            $years_array = array_keys($hours_data);
+            ?><h2 style="text-align: center;">{{$project['projectname']}}</h2> <?php
+            foreach($years_array as $year){
+                $months_array = array_keys($hours_data[$year]);
+                $employee_array = array_keys($hours_data[$year][$months_array[0]]);
+                unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
+                if($year == 2016 || $year == 2017){
+                    unset($employee_array[count($employee_array) - 1]); //unsets employee "Next"
+                }
+                $total_employee = [count($employee_array)];
+                $rates_for_total = [count($employee_array)];
                 for($j = 0; $j < count($employee_array); $j++){ 
-                $total_employee[$j] += $hours_data[$year][$months_array[$i]][$employee_array[$j]];
+                    $total_employee[$j] = 0;
                 }
-            }
-            /////////////////////////////////////////////////////unset offsets the $j
-            $count_employees = count($employee_array);
-            for($j = 0; $j < $count_employees; $j++){ 
-                if($total_employee[$j] == 0){
-                    unset($employee_array[$j]);
-                    unset($total_employee[$j]);
-                    unset($rates_for_total[$j]);
-                }
-            }
-            /////////////////////////////////////////////////////user array_keys to account for skipping indexes of $j
-            $j_array = array_keys($total_employee);
-            foreach($j_array as $j){
-                if($employee_array[$j] == "noname"){
-                    $rates_for_total[$j] = 160;
-                }
-                foreach($users as $user){ 
-                    if($user['nickname'] == $employee_array[$j]){
-                        $rates_for_total[$j] = $user['hour_rates'][$year];
+                for($i = 0; $i < count($months_array); $i++){
+                    for($j = 0; $j < count($employee_array); $j++){ 
+                        $total_employee[$j] += $hours_data[$year][$months_array[$i]][$employee_array[$j]];
                     }
                 }
-            }
-
-            if(count($employee_array) == 0){
-                continue;
-            }
+                /////////////////////////////////////////////////////unset offsets the $j
+                $count_employees = count($employee_array);
+                for($j = 0; $j < $count_employees; $j++){ 
+                    if($total_employee[$j] == 0){
+                        unset($employee_array[$j]);
+                        unset($total_employee[$j]);
+                        unset($rates_for_total[$j]);
+                    }
+                }
+                /////////////////////////////////////////////////////user array_keys to account for skipping indexes of $j
+                $j_array = array_keys($total_employee);
+                foreach($j_array as $j){
+                    if($employee_array[$j] == "noname"){
+                        $rates_for_total[$j] = 160;
+                    }
+                    foreach($users as $user){ 
+                        if($user['nickname'] == $employee_array[$j]){
+                            $rates_for_total[$j] = $user['hour_rates'][$year];
+                        }
+                    }
+                }
+                if(count($employee_array) == 0){
+                    continue;
+                }
 ?>
 <div>
     <h4 style="text-align: center;">{{$year}}</h4>
@@ -103,8 +105,8 @@ if(isset($code)){ ?>
 </table>
 </div>
 <?php }
-    }
-    else{ ?>
+}}
+    if($has_projects != true){ ?>
         <h4 style="text-align: center;">No projects associated with the provided Code.</h4>
     <?php } 
 } ?>

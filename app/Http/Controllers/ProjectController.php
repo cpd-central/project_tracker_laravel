@@ -1379,9 +1379,9 @@ class ProjectController extends Controller
   public function code_search(Request $request)
   {
       $code = $request['projectcode'];
-      $project = Project::where('projectcode', $code)->get();
+      $projects = Project::where('projectcode', $code)->get();
       $users = User::all();
-      return view('pages.hourstable',compact('code', 'project', 'users'));
+      return view('pages.hourstable',compact('code', 'projects', 'users'));
   }
 
   /**************** End of Hours Table ~Randy *********************/
