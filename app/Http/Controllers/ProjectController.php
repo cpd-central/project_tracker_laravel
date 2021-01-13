@@ -1968,7 +1968,10 @@ class ProjectController extends Controller
    */
   public function sticky_note(Request $request){
     //Gets all won projects and sorts them in order based on its closest due date to the present day
-    $projects = Project::all()->where('projectstatus', 'Won');
+    /**************************** Randy Addition 1/12/2021 *****************************/
+    $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
+    //$projects = Project::all()->where('projectstatus', 'Won');
+    /**************************** Randy Addition 1/12/2021 *****************************/
     $projects = $this->sort_by_closest_date($projects);
     $json = [];
     $counter = 0;
