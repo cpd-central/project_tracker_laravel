@@ -101,7 +101,7 @@ class HomeController extends Controller
         $pages = Page::all();
         $logs = [];
         foreach($pages as $page){
-            array_push($logs, $page['visitors']);
+            array_push($logs, $page);
         }
         return view('pages.logs', compact('logs'));
     }
