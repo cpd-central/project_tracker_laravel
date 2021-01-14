@@ -1,4 +1,10 @@
 @extends('layouts.index')
+<style>
+  th {position: sticky;
+  top: 0;
+  background-color:lightgray;
+  }
+</style>
 @section('toptool')
 <h2><b>Total Project Dollars Per Month</b></h2>
 <div>

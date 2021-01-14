@@ -634,8 +634,12 @@ class ProjectController extends Controller
         $project_to_save->dateenergization = $this->strToDate($project['dateenergization'], null);
         $project_to_save->save();
       }
+      //Sam's fix for $total_dollars not adding $total_dollars_won and $total_dollars_probable together properly
+      $total_dollars = array_map(function () {
+        return array_sum(func_get_args());
+      }, $total_dollars_won, $total_dollars_probable);
 
-      $total_dollars = $total_dollars_won + $total_dollars_probable; 
+      //$total_dollars = $total_dollars_won + $total_dollars_probable;
       if ($chart_type == 'won_prob')
       {
         $dollar_values_won = array_values($total_dollars_won);
@@ -747,7 +751,6 @@ class ProjectController extends Controller
       $options['legend']['labels']['padding'] = 6;
       $chart->options($options);
       $chart->height(600);
-
       return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart', 'projectStatus', 'chart_type')); 
     }
     else 
