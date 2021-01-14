@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Project;
 use App\Timesheet;
+use App\Page;
 
 class HomeController extends Controller
 {
@@ -88,6 +89,21 @@ class HomeController extends Controller
         $users_active = User::where('active', true)->get()->sortByDesc('jobclass');
         $users_inactive = User::where('active', false)->get()->sortByDesc('jobclass');
         return view('pages.accountdirectory', compact('users_active', 'users_inactive'));
+    }
+
+    /**
+     * Pulls all page visit logs for the logs page.
+     *
+     * @return view - returns the logs page.
+     */
+    public function logs()
+    {
+        $pages = Page::all();
+        $logs = [];
+        foreach($pages as $page){
+            array_push($logs, $page['visitors']);
+        }
+        return view('pages.logs', compact('logs'));
     }
 
     /**

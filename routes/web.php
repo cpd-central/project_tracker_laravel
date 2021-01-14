@@ -22,7 +22,7 @@ Route::post('/newproject', 'ProjectController@create')->middleware('verified');
 Route::get('/copyproject/{id}', 'ProjectController@copy_project')->name('pages.copyproject')->middleware('verified');
 Route::post('/copyproject/{id}', 'ProjectController@create')->middleware('verified');
 
-Route::get('/projectindex', 'ProjectController@index')->name('pages.projectindex')->middleware('verified', 'role');
+Route::get('/projectindex', 'ProjectController@index')->name('pages.projectindex')->middleware('verified', 'role', 'pagevisits');
 Route::post('/projectindex', 'ProjectController@search');
 
 Route::get('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummary')->middleware('verified', 'role');
@@ -63,6 +63,8 @@ Route::get('/accountdirectory/{id}', 'HomeController@activation')->name('pages.a
 Route::get('/editaccount/{id}', 'HomeController@edit_account')->name('pages.editaccount')->middleware('verified', 'role');
 Route::post('/editaccount/{id}', 'HomeController@update_account')->middleware('verified');
 
+Route::get('/logs', 'HomeController@logs')->name('pages.logs')->middleware('verified', 'role');
+
 Route::get('/timesheetsentstatus', 'TimesheetController@get_user_timesheet_status')->name('pages.timesheetsentstatus')->middleware('verified');
 
 //Project Planner Routes
@@ -77,4 +79,3 @@ Route::post('/stickynote', 'ProjectController@employee_gantt')->middleware('veri
 
 Route::get('/project_tracker', 'ProjectController@project_tracker')->name('pages.project_tracker')->middleware('verified');
 Route::post('/project_tracker', 'ProjectController@tracker_save')->middleware('verified');
-
