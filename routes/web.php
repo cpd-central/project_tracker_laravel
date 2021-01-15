@@ -25,27 +25,27 @@ Route::post('/copyproject/{id}', 'ProjectController@create')->middleware('verifi
 Route::get('/projectindex', 'ProjectController@index')->name('pages.projectindex')->middleware('verified', 'role', 'pagevisits');
 Route::post('/projectindex', 'ProjectController@search');
 
-Route::get('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummary')->middleware('verified', 'role');
+Route::get('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummary')->middleware('verified', 'role', 'pagevisits');
 Route::post('/wonprojectsummary', 'ProjectController@search')->middleware('verified');
 
 //Select Menu Route
 Route::post('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummarySearch');
 
 
-Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified');
+Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified', 'pagevisits');
 Route::post('/hoursgraph','ProjectController@submit_billing')->middleware('verified');
 
-Route::get('/hourstable', 'ProjectController@hours_table')->name('pages.hourstable')->middleware('verified');
+Route::get('/hourstable', 'ProjectController@hours_table')->name('pages.hourstable')->middleware('verified', 'pagevisits');
 Route::post('/hourstable', 'ProjectController@code_search')->middleware('verified');
 
-Route::get('/monthendbilling', 'ProjectController@billing')->name('pages.monthendbilling')->middleware('verified');
+Route::get('/monthendbilling', 'ProjectController@billing')->name('pages.monthendbilling')->middleware('verified', 'pagevisits');
 
 
 Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject')->middleware('verified');
 Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verified');
 
 
-Route::get('/drafterhours', 'ProjectController@drafter_hours')->name('pages.drafterhours')->middleware('verified', 'role');
+Route::get('/drafterhours', 'ProjectController@drafter_hours')->name('pages.drafterhours')->middleware('verified', 'role', 'pagevisits');
 
 
 Route::delete('{id}', 'ProjectController@destroy')->middleware('verified');
@@ -54,7 +54,7 @@ Auth::routes(['verify' => true]);
 
 Route::get('/home', 'HomeController@index')->name('home')->middleware('verified');
 
-Route::get('/timesheet', 'TimesheetController@check')->name('pages.timesheet')->middleware('verified');
+Route::get('/timesheet', 'TimesheetController@check')->name('pages.timesheet')->middleware('verified', 'pagevisits');
 Route::post('/timesheet', 'TimesheetController@timesheetSave')->name('pages.timesheetSave')->middleware('verified');
 
 Route::get('/accountdirectory', 'HomeController@account_directory')->name('pages.accountdirectory')->middleware('verified', 'role', 'pagevisits');
@@ -65,17 +65,17 @@ Route::post('/editaccount/{id}', 'HomeController@update_account')->middleware('v
 
 Route::get('/logs', 'HomeController@logs')->name('pages.logs')->middleware('verified', 'role');
 
-Route::get('/timesheetsentstatus', 'TimesheetController@get_user_timesheet_status')->name('pages.timesheetsentstatus')->middleware('verified');
+Route::get('/timesheetsentstatus', 'TimesheetController@get_user_timesheet_status')->name('pages.timesheetsentstatus')->middleware('verified', 'pagevisits');
 
 //Project Planner Routes
-Route::get('/planner', 'ProjectController@planner')->name('pages.planner')->middleware('verified');
+Route::get('/planner', 'ProjectController@planner')->name('pages.planner')->middleware('verified', 'pagevisits');
 Route::post('/planner', 'ProjectController@paste_dates')->middleware('verified');
 
 Route::get('/manageproject/{id}', 'ProjectController@manage_project')->name('pages.manage_project')->middleware('verified');
 Route::post('/manageproject/{id}', 'ProjectController@edit_due_dates')->middleware('verified');
 
-Route::get('/stickynote', 'ProjectController@sticky_note')->name('pages.sticky_note')->middleware('verified');
+Route::get('/stickynote', 'ProjectController@sticky_note')->name('pages.sticky_note')->middleware('verified', 'pagevisits');
 Route::post('/stickynote', 'ProjectController@employee_gantt')->middleware('verified');
 
-Route::get('/project_tracker', 'ProjectController@project_tracker')->name('pages.project_tracker')->middleware('verified');
+Route::get('/project_tracker', 'ProjectController@project_tracker')->name('pages.project_tracker')->middleware('verified', 'pagevisits');
 Route::post('/project_tracker', 'ProjectController@tracker_save')->middleware('verified');

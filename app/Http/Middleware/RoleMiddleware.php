@@ -16,7 +16,7 @@ class RoleMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $not_allowed_user_array = array('accountdirectory', 'wonprojectsummary', 'drafterhours', 'editaccount');
+        $not_allowed_user_array = array('accountdirectory', 'wonprojectsummary', 'drafterhours', 'editaccount', 'logs');
         $uri = $request->path();
         $user = Auth::user();
 
@@ -24,7 +24,7 @@ class RoleMiddleware
             return $next($request);
         }
         elseif($user['role'] == 'proposer'){
-            if($uri != "accountdirectory"){
+            if($uri != "accountdirectory" && $uri != "logs"){
                 return $next($request);
             }
             else{
