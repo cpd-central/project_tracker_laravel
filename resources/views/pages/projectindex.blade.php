@@ -53,9 +53,6 @@
     </table>
   </div>   
   @stop
-  
-  @section('sort')
-  @stop
 
   @section('table-title', 'Project Index')
   @section('table-header')

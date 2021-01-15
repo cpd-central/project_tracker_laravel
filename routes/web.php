@@ -64,6 +64,7 @@ Route::get('/editaccount/{id}', 'HomeController@edit_account')->name('pages.edit
 Route::post('/editaccount/{id}', 'HomeController@update_account')->middleware('verified');
 
 Route::get('/logs', 'HomeController@logs')->name('pages.logs')->middleware('verified', 'role');
+Route::post('/logs', 'HomeController@logs')->middleware('verified');
 
 Route::get('/timesheetsentstatus', 'TimesheetController@get_user_timesheet_status')->name('pages.timesheetsentstatus')->middleware('verified', 'pagevisits');
 

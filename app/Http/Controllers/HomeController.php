@@ -96,15 +96,27 @@ class HomeController extends Controller
      *
      * @return view - returns the logs page.
      */
-    public function logs()
+    public function logs(Request $request)
     {
-        $pages = Page::all();
-        $logs = [];
-        foreach($pages as $page){
-            array_push($logs, $page);
+        $term = $request['sort'];
+        if(!isset($term) || $term == "-----Select-----"){   
+            $pages = Page::all();
+            $logs = [];
+            foreach($pages as $page){
+                array_push($logs, $page);
+            }
+            return view('pages.logs', compact('logs'));
         }
-        return view('pages.logs', compact('logs'));
+        else{
+            $pages = Page::Where('name', $term)->get();
+            $logs = [];
+            foreach($pages as $page){
+                array_push($logs, $page);
+            }
+            return view('pages.logs', compact('logs', 'term'));
+        }
     }
+    
 
     /**
      * Takes the $id of the user to be activated/deactivated.
