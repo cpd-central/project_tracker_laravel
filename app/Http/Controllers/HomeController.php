@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Project;
 use App\Timesheet;
+use App\Page;
 
 class HomeController extends Controller
 {
@@ -89,6 +90,33 @@ class HomeController extends Controller
         $users_inactive = User::where('active', false)->get()->sortByDesc('jobclass');
         return view('pages.accountdirectory', compact('users_active', 'users_inactive'));
     }
+
+    /**
+     * Pulls all page visit logs for the logs page.
+     *
+     * @return view - returns the logs page.
+     */
+    public function logs(Request $request)
+    {
+        $term = $request['sort'];
+        if(!isset($term) || $term == "-----Select-----"){   
+            $pages = Page::all();
+            $logs = [];
+            foreach($pages as $page){
+                array_push($logs, $page);
+            }
+            return view('pages.logs', compact('logs'));
+        }
+        else{
+            $pages = Page::Where('name', $term)->get();
+            $logs = [];
+            foreach($pages as $page){
+                array_push($logs, $page);
+            }
+            return view('pages.logs', compact('logs', 'term'));
+        }
+    }
+    
 
     /**
      * Takes the $id of the user to be activated/deactivated.
