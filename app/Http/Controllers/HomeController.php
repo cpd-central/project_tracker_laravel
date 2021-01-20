@@ -100,7 +100,7 @@ class HomeController extends Controller
     {
         $term = $request['sort'];
         if(!isset($term) || $term == "-----Select-----"){   
-            $pages = Page::all();
+            $pages = Page::Where('name', '!=', "history")->get();
             $logs = [];
             foreach($pages as $page){
                 array_push($logs, $page);
