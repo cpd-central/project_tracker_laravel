@@ -8,6 +8,7 @@ use App\Timesheet;
 use App\User;
 use MongoDB\BSON\UTCDateTime; 
 use App\Charts\HoursChart;
+use Session;
 
 use DateInterval;
 use DatePeriod;
@@ -289,7 +290,8 @@ class ProjectController extends Controller
     $this->validate_request($request, $id);  
     $project = Project::find($id);   
     $this->store($project, $request);
-    return redirect('/projectindex')->with('success', 'Success! Project has been successfully updated.');
+    return view('pages.editproject')->with('project', $project)->with('success', 'Project has been successfully updated.');
+    //return redirect('/projectindex')->with('success', 'Success! Project has been successfully updated.');
   }
 
   /**
@@ -1700,7 +1702,11 @@ class ProjectController extends Controller
     //finds individual project being edited and calls the store_dates helper method on it
     $project = Project::find($id);
     $this->store_dates($project, $request);
-    return redirect('/planner')->with('Success!', 'Project has been successfully updated');
+    //return redirect('/planner')->with('Success!', 'Project has been successfully updated');
+    $success = "Project has been successfully updated.";
+    return $this->manage_project($id)->with('success', $success);
+    //return view('pages.manage_project', compact('project', 'totalstudies', 'transmissionfields', 'collectionfields', 'controlfields', 'physicalfields', 'scadafields', 'communicationfields', 'miscfields'));
+
   }
 
     /**
