@@ -552,14 +552,23 @@ class ProjectController extends Controller
       $earliest_start = min($start_dates);
       $latest_end = max($end_dates);
       //create an array of months between these two dates 
-      $months = $this->get_date_interval_array($earliest_start, $latest_end, '1 month', 'M-y'); 
-
+      $months = $this->get_date_interval_array($earliest_start, $latest_end, '1 month', 'M-y');
       $today = date('M-y'); 
       //find today in the array of months and remove everything before it 
-      $search_index = array_search($today, $months); 
-      for ($i=0; $i<$search_index; $i++)
-      {
-        unset($months[$i]);
+      if ($chart_type == 'charted_hours'){
+        $six_months = date('M-y', strtotime('-6 months'));
+        $search_index = array_search($six_months, $months);
+        for ($i=0; $i<$search_index; $i++)
+        {
+          unset($months[$i]);
+        }
+      }
+      else{
+        $search_index = array_search($today, $months); 
+        for ($i=0; $i<$search_index; $i++)
+        {
+          unset($months[$i]);
+        }
       }
       //create chart and add the months as labels 
       $chart = new HoursChart; 
@@ -637,14 +646,116 @@ class ProjectController extends Controller
         $project_to_save->dateenergization = $this->strToDate($project['dateenergization'], null);
         $project_to_save->save();
       }
+      //Sam's fix for $total_dollars not adding $total_dollars_won and $total_dollars_probable together properly
+      $total_dollars = array_map(function () {
+        return array_sum(func_get_args());
+      }, $total_dollars_won, $total_dollars_probable);
 
-      $total_dollars = $total_dollars_won + $total_dollars_probable; 
+      //$total_dollars = $total_dollars_won + $total_dollars_probable;
       if ($chart_type == 'won_prob')
       {
-        $dollar_values_won = array_values($total_dollars_won); 
+        $dollar_values_won = array_values($total_dollars_won);
         $dollar_values_probable = array_values($total_dollars_probable);
         $chart->dataset("Won Project Dollars Per Month", 'bar', $dollar_values_won)->options(['backgroundColor' => $chart_colors[1]]);
         $chart->dataset("Probable Project Dollars Per Month", 'bar', $dollar_values_probable)->options(['backgroundColor' => $chart_colors[0]]);
+      }
+
+      //charted hours graph code begins
+      if ($chart_type == 'charted_hours')
+      {
+        //gets wage per hour of each employee
+        $employees = User::all();
+        $wages = array();
+        foreach($employees as $employee){
+          if($employee['nickname'] != ''){
+            $wages[$employee['nickname']] = $employee['perhourdollar'];
+          }
+        }
+        
+        //gets all projects that are won or probable that contain hours data
+        $projects_with_hours = $projects->where('hours_data', '>=', '0');
+
+        //sets the chart date range from -2 years from now to a year in the future
+        $current_date_add = ($this->strToDate(date('Y-m-d', strtotime('+1 year')), null))->toDateTime();
+        $current_date_sub = ($this->strToDate(date('Y-m-d', strtotime('-6 months')), null))->toDateTime();
+        $months = $this->get_date_interval_array($current_date_sub, $current_date_add, '1 month', 'M-y');
+        $month_values = array_values($months);
+        $chart->labels($month_values);
+
+        //establishes the range for the chart
+        $start_year = date('Y', strtotime('-6 months'));
+        $end_year = date('Y', strtotime('+1 year'));
+        $start_month = date('m', strtotime('-6 months'));
+        $end_month = date('m', strtotime('+1 year'));
+
+        //loops through each project with hours
+        //$total_dollars = array();
+        foreach($projects_with_hours as $project_key => $project){
+          $hours_data = (array) $project['hours_data'];
+          ksort($hours_data);
+          $num_years = sizeof($hours_data);
+          //holds total monthly hours for the current project
+          $total_project_dollars = array();
+          foreach($hours_data as $year_key => $year){
+            //checks if the project hours year is within the date range of the graph
+            if ($year_key >= intval($start_year) && $year_key <= intval($end_year)){
+              $month_counter = 1;
+              //loops through each month
+              foreach($year as $month_key => $month){
+                $total_month_dollars = 0;
+                //if the current year in the loop is the start year on the graph, then it will filter out the months before the start month
+                if($year_key == intval($start_year)){
+                  if ($month_counter >= $start_month){
+                    foreach($month as $emp_key => $emp){
+                      if(array_key_exists($emp_key, $wages)){
+                        $wage = $wages[$emp_key];
+                        $employee_dollars = $wage * $emp;
+                        $total_month_dollars = $total_month_dollars + $employee_dollars;
+                      }
+                    }
+                    array_push($total_project_dollars, $total_month_dollars);
+                  }
+                }
+                //if the current year in the loop is the end year on the graph, then it will filter out the months after the end month
+                elseif($year_key == intval($end_year)){
+                  if ($month_counter <= $end_month){
+                    foreach($month as $emp_key => $emp){
+                      if(array_key_exists($emp_key, $wages)){
+                        $wage = $wages[$emp_key];
+                        $employee_dollars = $wage * $emp;
+                        $total_month_dollars = $total_month_dollars + $employee_dollars;
+                      }
+                    }
+                    array_push($total_project_dollars, $total_month_dollars);
+                  }
+                }
+                //otherwise it will calculate for every month
+                else{
+                  foreach($month as $emp_key => $emp){
+                    if(array_key_exists($emp_key, $wages)){
+                      $wage = $wages[$emp_key];
+                      $employee_dollars = $wage * $emp;
+                      $total_month_dollars = $total_month_dollars + $employee_dollars;
+                    }
+                  }
+                  array_push($total_project_dollars, $total_month_dollars);
+                }
+                $month_counter++;
+              }
+            }
+          }
+          $chart->dataset("{$project['projectname']}", 'bar', $total_project_dollars)->options(['backgroundColor' => $chart_colors[$color_counter], 'stack' => 'Stack 0']);
+          
+          $color_counter++;
+          if ($color_counter > $max_color_counter)
+          {
+            $color_counter = 0;
+          }
+        }
+        $dollar_values_won = array_values($total_dollars_won);
+        $dollar_values_probable = array_values($total_dollars_probable);
+        $chart->dataset("Won Project Dollars Per Month", 'bar', $dollar_values_won)->options(['backgroundColor' => $chart_colors[1], 'stack' => 'Stack 1']);
+        $chart->dataset("Probable Project Dollars Per Month", 'bar', $dollar_values_probable)->options(['backgroundColor' => $chart_colors[0], 'stack' => 'Stack 1']);
       }
 
       $options = [];
@@ -654,7 +765,6 @@ class ProjectController extends Controller
       $options['legend']['labels']['padding'] = 6;
       $chart->options($options);
       $chart->height(600);
-
       return view('pages.wonprojectsummary', compact('months', 'projects', 'total_dollars', 'chart', 'projectStatus', 'chart_type')); 
     }
     else 
@@ -1274,7 +1384,6 @@ class ProjectController extends Controller
     ])->get()->sortByDesc("hours_data.{$previous_year}.{$previous_month}.Total");
     $i=0;
     $i_max = count($non_zero_projects) . "<br>";
-
     //go through each project resulting from the filter directly above
     foreach($non_zero_projects as $non_zero_project) {
       $a = $non_zero_project['projectname'];
