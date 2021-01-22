@@ -1,4 +1,10 @@
 @extends('layouts.index')
+<style>
+  th {position: sticky;
+  top: 0;
+  background-color:lightgray;
+  }
+</style>
 @section('toptool')
 <h2><b>Total Project Dollars Per Month</b></h2>
 <div>
@@ -11,13 +17,28 @@
 <form action="{{ route('pages.wonprojectsummary') }}" method="POST">
   @csrf
   @isset($chart_type) 
+  <select name='switch_chart_button' class="form-control" onchange="this.form.submit()">
     @if ($chart_type == 'projects')
-      <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="won_prob"><button class="btn btn-primary" name="button" type="submit" value="Won/Probable View">Won/Probable View</button>
+      <option value="won_prob">Won/Probable View</option>
+      <option value="projects" selected>Projects View</option>
+      <option value="charted_hours">Charted Hours View</option>
+     <!-- <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="won_prob"><button class="btn btn-primary" name="button" type="submit" value="Won/Probable View">Won/Probable View</button> -->
     @elseif ($chart_type == 'won_prob')
-      <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="projects"><button class="btn btn-primary" name="button" type="submit" value="Projects View">Projects View</button>
+      <option value="won_prob" selected>Won/Probable View</option>
+      <option value="projects">Projects View</option>
+      <option value="charted_hours">Charted Hours View</option>
+     <!-- <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="projects"><button class="btn btn-primary" name="button" type="submit" value="Projects View">Projects View</button> -->
+    @elseif ($chart_type == 'charted_hours')
+    <option value="won_prob">Won/Probable View</option>
+    <option value="projects">Projects View</option>
+    <option value="charted_hours" selected>Charted Hours View</option>
     @else
-      <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="projects"><button class="btn btn-primary" name="button" type="submit" value="Projects View">Projets View</button>
+      <option value="won_prob" selected>Won/Probable View</option>
+      <option value="projects">Projects View</option>
+      <option value="charted_hours">Charted Hours View</option>
+     <!-- <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="projects"><button class="btn btn-primary" name="button" type="submit" value="Projects View">Projets View</button> -->
     @endif
+  </select>
   @endisset
 </form>
 </br>

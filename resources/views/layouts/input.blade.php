@@ -57,6 +57,10 @@
       }
 ?>
 <!doctype html>
+<!-- Randy Fixes 1/21/2021 to get css and js to load on edit project -->
+<link href="{{ URL::asset('css/app.css') }}" rel="stylesheet" type="text/css" > 
+<script type="text/javascript" src="{{ URL::asset('js/app.js') }}"></script>
+<!-- Randy Fixes 1/21/2021 to get css and js to load on edit project -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <style>
@@ -84,6 +88,12 @@
         </div>
       </div>
       @endif
+      <?php if(!empty($success)){ ?>
+        <div class="alert alert-success">
+          <p>{{ $success }}</p>
+        </div>
+        <br>
+      <?php }?>
       <h2><b>@yield('title')</b></h2>    
       <h4>@yield('h4proposal')</h4>
       @if(Str::contains(url()->current(), 'editproject'))
@@ -93,6 +103,11 @@
       </div>
       <form method="post">
         @csrf
+        <div class="row">
+          <div class="form-group col-md-4">
+            <button type="submit" class="btn btn-success">Submit</button>
+          </div>
+        </div>
         <div class="row">
           <div class="form-group col-md-4">
             <label for="cegproposalauthor">CEG Proposal Author:</label>
@@ -366,12 +381,6 @@
         <div class="form-group">
           <label for="projectnotes">Project Notes:</label>
           <textarea class="form-control" name="projectnotes" id="projectnotes" rows="3">@if(old('projectnotes'))<?= old('projectnotes') ?>@else<?= $__env->yieldContent('projectnotes')?>@endif</textarea>
-        </div>
-
-        <div class="row">
-          <div class="form-group col-md-4">
-            <button type="submit" class="btn btn-success">Submit</button>
-          </div>
         </div>
 
         <div class="row">
