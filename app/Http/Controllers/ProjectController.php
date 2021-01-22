@@ -553,10 +553,20 @@ class ProjectController extends Controller
       $months = $this->get_date_interval_array($earliest_start, $latest_end, '1 month', 'M-y');
       $today = date('M-y'); 
       //find today in the array of months and remove everything before it 
-      $search_index = array_search($today, $months); 
-      for ($i=0; $i<$search_index; $i++)
-      {
-        unset($months[$i]);
+      if ($chart_type == 'charted_hours'){
+        $six_months = date('M-y', strtotime('-6 months'));
+        $search_index = array_search($six_months, $months);
+        for ($i=0; $i<$search_index; $i++)
+        {
+          unset($months[$i]);
+        }
+      }
+      else{
+        $search_index = array_search($today, $months); 
+        for ($i=0; $i<$search_index; $i++)
+        {
+          unset($months[$i]);
+        }
       }
       //create chart and add the months as labels 
       $chart = new HoursChart; 
@@ -664,34 +674,29 @@ class ProjectController extends Controller
         $projects_with_hours = $projects->where('hours_data', '>=', '0');
 
         //sets the chart date range from -2 years from now to a year in the future
-        $current_date_add_year = ($this->strToDate(date('Y-m-d', strtotime('+1 year')), null))->toDateTime();
-        $current_date_sub_years = ($this->strToDate(date('Y-m-d', strtotime('-2 years')), null))->toDateTime();
-        $months = $this->get_date_interval_array($current_date_sub_years, $current_date_add_year, '1 month', 'M-y');
+        $current_date_add = ($this->strToDate(date('Y-m-d', strtotime('+1 year')), null))->toDateTime();
+        $current_date_sub = ($this->strToDate(date('Y-m-d', strtotime('-6 months')), null))->toDateTime();
+        $months = $this->get_date_interval_array($current_date_sub, $current_date_add, '1 month', 'M-y');
         $month_values = array_values($months);
         $chart->labels($month_values);
 
-        $start_year = date('Y', strtotime('-2 years'));
+        //establishes the range for the chart
+        $start_year = date('Y', strtotime('-6 months'));
         $end_year = date('Y', strtotime('+1 year'));
-        $start_month = date('m', strtotime('-2 years'));
+        $start_month = date('m', strtotime('-6 months'));
         $end_month = date('m', strtotime('+1 year'));
 
         //loops through each project with hours
         //$total_dollars = array();
         foreach($projects_with_hours as $project_key => $project){
-          $hours_data = $project['hours_data'];
+          $hours_data = (array) $project['hours_data'];
+          ksort($hours_data);
           $num_years = sizeof($hours_data);
           //holds total monthly hours for the current project
           $total_project_dollars = array();
           foreach($hours_data as $year_key => $year){
             //checks if the project hours year is within the date range of the graph
             if ($year_key >= intval($start_year) && $year_key <= intval($end_year)){
-              if($num_years == 1){
-                $i = 0;
-                while($i <= 11){
-                  array_push($total_project_dollars, 0);
-                  $i++;
-                }
-              }
               $month_counter = 1;
               //loops through each month
               foreach($year as $month_key => $month){
@@ -706,6 +711,7 @@ class ProjectController extends Controller
                         $total_month_dollars = $total_month_dollars + $employee_dollars;
                       }
                     }
+                    array_push($total_project_dollars, $total_month_dollars);
                   }
                 }
                 //if the current year in the loop is the end year on the graph, then it will filter out the months after the end month
@@ -718,6 +724,7 @@ class ProjectController extends Controller
                         $total_month_dollars = $total_month_dollars + $employee_dollars;
                       }
                     }
+                    array_push($total_project_dollars, $total_month_dollars);
                   }
                 }
                 //otherwise it will calculate for every month
@@ -729,19 +736,24 @@ class ProjectController extends Controller
                       $total_month_dollars = $total_month_dollars + $employee_dollars;
                     }
                   }
+                  array_push($total_project_dollars, $total_month_dollars);
                 }
-                array_push($total_project_dollars, $total_month_dollars);
                 $month_counter++;
               }
             }
           }
-          $chart->dataset("{$project['projectname']}", 'bar', $total_project_dollars)->options(['backgroundColor' => $chart_colors[$color_counter]]);
+          $chart->dataset("{$project['projectname']}", 'bar', $total_project_dollars)->options(['backgroundColor' => $chart_colors[$color_counter], 'stack' => 'Stack 0']);
+          
           $color_counter++;
           if ($color_counter > $max_color_counter)
           {
             $color_counter = 0;
           }
-        } 
+        }
+        $dollar_values_won = array_values($total_dollars_won);
+        $dollar_values_probable = array_values($total_dollars_probable);
+        $chart->dataset("Won Project Dollars Per Month", 'bar', $dollar_values_won)->options(['backgroundColor' => $chart_colors[1], 'stack' => 'Stack 1']);
+        $chart->dataset("Probable Project Dollars Per Month", 'bar', $dollar_values_probable)->options(['backgroundColor' => $chart_colors[0], 'stack' => 'Stack 1']);
       }
 
       $options = [];
