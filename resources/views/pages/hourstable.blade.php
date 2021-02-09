@@ -68,6 +68,7 @@ if(isset($code)){ ?>
     <?php foreach($employee_array as $j){ ?>
     <td><b>{{$j}}</b></td>
     <?php }?>
+    <td><b>Grand Total</b></td>
 </th>
 <tr>
     <td><b>Rates:</b></td>
@@ -76,8 +77,12 @@ if(isset($code)){ ?>
     foreach($j_array as $j){ ?>
     <td>${{$rates_for_total[$j]}}</td>
     <?php }?>
+    <td></td>
 </tr>
-<?php for($i = 0; $i < count($months_array); $i++){ ?>
+<?php $grand_total = 0;
+    for($i = 0; $i < count($months_array); $i++){
+        $month_total = 0;
+         ?>
 <tr>
     <td>{{$months_array[$i]}}</td>
     <?php foreach($employee_array as $j){ 
@@ -88,9 +93,11 @@ if(isset($code)){ ?>
             foreach($users as $user){     
                 if($user['nickname'] == $j){
                     $calculation = $hours_data[$year][$months_array[$i]][$j] * $user['hour_rates'][$year]; 
+                    $month_total += $calculation;
                 ?>
     <td>${{$calculation}}</td>
     <?php }}}?>
+        <td>${{$month_total}}</td>
 </tr>
 
 <?php } ?>
@@ -100,7 +107,9 @@ if(isset($code)){ ?>
     $j_array = array_keys($total_employee);
     foreach($j_array as $j){ ?>
     <td><b>${{$total_employee[$j]*$rates_for_total[$j]}}</b></td>
-    <?php }?>
+    <?php $grand_total += $total_employee[$j]*$rates_for_total[$j];
+    }?>
+    <td><b>${{$grand_total}}</b></td>
 </tr>
 </table>
 </div>
