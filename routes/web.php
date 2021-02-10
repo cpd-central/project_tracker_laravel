@@ -40,6 +40,8 @@ Route::post('/hourstable', 'ProjectController@code_search')->middleware('verifie
 
 Route::get('/monthendbilling', 'ProjectController@billing')->name('pages.monthendbilling')->middleware('verified', 'pagevisits');
 
+Route::get('/billinghistory', 'ProjectController@bill_history')->name('pages.billinghistory')->middleware('verified', 'pagevisits');
+Route::post('/billinghistorysearch', 'ProjectController@bill_history_search')->middleware('verified');
 
 Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject')->middleware('verified');
 Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verified');
