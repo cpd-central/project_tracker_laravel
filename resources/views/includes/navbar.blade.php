@@ -93,6 +93,9 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ route('pages.drafterhours') }}">Drafter Hours</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('pages.project_tracker') }}">Realtime Projects</a>
+          </li>
            <?php } ?>         
           
           <?php 

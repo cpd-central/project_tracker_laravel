@@ -129,12 +129,46 @@ table.center {
                         </tr>
                       </thead>
                       <?php $nonbillable_descs = array('Holiday', 'PTO', 'General and Admin', 'Staff Meetings and HR', 'Research and Training', 'Formal EDU', 'General Marketing') ?>
-                      <?php $nonbillable_codes = array('CEG', 'CEG', 'CEG', 'CEG', 'CEGTRNG', 'CEGEDU', 'CEGMKTG') ?>
+                      <?php $nonbillable_codes = array('CEG', 'CEG', 'CEG', 'CEG', 'CEGTRNG', 'CEGEDU', 'CEGMKTG');
+                      // This is to create the Real Time Project Array:
+                      $realtime = $timesheet['Project_Hours'];
+                      $submitted = false;
+                      if (in_array('Submitted', $realtime)){
+                        unset($realtime['Submitted']);
+                        $submitted = true;
+                      }
+                      if (sizeof($realtime) == 0){
+                        $realtime['EMPTY'] = 0;
+                      }
+                      array_push($realtime,time());
+                      $prevProject = 'Start';
+                      foreach(array_keys($realtime) as $project){
+                        if ($prevProject != 'Start') { 
+                          $realtimeprojects[$prevProject] = round(($realtime[$project] - $realtime[$prevProject])*4/3600)/4;
+                        }
+                        $prevProject = $project;
+                      } 
+                      
+                      // End of Real Time Project Array Code
+                       ?>
                       @for($row = 0; $row < count($nonbillable_descs); $row++)  
                       @if(isset($timesheet))
                       <?php $codeOffset = $nonbillable_codes[$row];         
                             $descOffset = $nonbillable_descs[$row]; 
-                            $dayarray = $timesheet['Codes'][$codeOffset][$descOffset]?>
+                            $dayarray = $timesheet['Codes'][$codeOffset][$descOffset];
+                            // Adds Real Time Projects to Timesheet page
+                            foreach ($realtimeprojects as $project){
+                              if ($codeOffset == $project and $descOffset == 'General and Admin'){
+                                date_default_timezone_set('America/Chicago');
+                                try {$dayarray[date('d-M-y')] = $realtimeprojects[$codeOffset];
+                                } catch (Exception $e){
+                                  ;
+                                }
+
+                              }
+                            }
+                            // End of Real Time Projects addition
+                            ?>
                       @endif
                     <tr id="row{{$row}}">
                           <td style="width: 8%; min-width: 125px;">
@@ -155,24 +189,70 @@ table.center {
                       @endfor 
                       
                       @if(isset($timesheet))
-                        @foreach(array_keys($timesheet['Codes']) as $code)
-                          <?php $descs = $timesheet['Codes'][$code]; ?>
+                        <?php $timesheetCodes = array_keys($timesheet['Codes']);
+                        foreach(array_keys($realtimeprojects) as $proj) {
+                          if (!in_array($proj,$timesheetCodes)){
+                            array_push($timesheetCodes,$proj);
+                          }
+                        }
+                        ?>
+                        @foreach($timesheetCodes as $code)
+                          <?php if (isset($timesheet['Codes'][$code])){
+                              $descs = $timesheet['Codes'][$code];
+                            } else {
+                              $descs = array();
+                              $templateDesc = array();
+                              $templateDesc[date('d-M-y')] = $realtimeprojects[$code];
+                              $descs['Insert Description'] = $templateDesc;
+                            }
+                          ?>
                             @foreach(array_keys($descs) as $desc)
                               @if(in_array($code, $nonbillable_codes) && in_array($desc, $nonbillable_descs))
                                 @continue
                               @endif
-                              <?php $dates = array_keys($timesheet['Codes'][$code][$desc]); ?> 
-                              <?php $time = $timesheet['Codes'][$code][$desc]; ?> 
+                              <?php 
+                              if (isset($timesheet['Codes'][$code])){
+                                $dates = array_keys($timesheet['Codes'][$code][$desc]);
+                              } else {
+                                $dates = array(date('d-M-y'));
+                              }
+                              // Pushes current date to date array for real time project
+                              foreach(array_keys($realtimeprojects) as $proj){
+                                if ($proj == $code){
+                                  array_push($dates,date('d-M-y'));
+                                }
+                              }
+                              
+                              ?> 
                               <!-- check if we have any values in our dates for this code/description that exist in the $arr variable -->
-                              <?php $shared_values = array_intersect($dates, $arr); ?> 
-                              @if (!empty($shared_values))
+                              <?php $shared_values = array_intersect($dates, $arr);
+                               ?> 
+                              @if (!empty($shared_values) and $code != 'EMPTY')
                                   <tr id="row{{$row}}">
                                     <td style="width: 8%">
                                       <input type="text" class="form-control" id="row{{$row}}Day0" name = "Product Description row {{$row}}" value="<?=$desc?>">
                                     </td>
                                     @for($day = 1; $day <= count($arr); $day++)
+                                      <?php
+                                          // Checks if there is a code from Real Time Project Tracker, otherwise uses hour value from Timesheet Code database
+                                          
+                                          if (in_array($code,$realtimeprojects) and $day == (date('d')-14)){
+                                            try{$dayValue = $realtimeprojects[$code];}
+                                            catch(Exception $e){
+                                              $dayValue = $timesheet['Codes'][$code][$desc][$arr[$day - 1]];
+                                            }
+                                            
+                                          } else if (isset($timesheet['Codes'][$code][$desc][$arr[$day - 1]])){
+                                            
+                                            $dayValue = $timesheet['Codes'][$code][$desc][$arr[$day - 1]];
+                                          } else {
+                                            
+                                            $dayValue = NULL;
+                                          } 
+                                         
+                                      ?> 
                                       <td style="width: 3%">
-                                        <input type="number" step="0.25" min="0" class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="@if(isset($timesheet['Codes'][$code][$desc][$arr[$day - 1]])){{$timesheet['Codes'][$code][$desc][$arr[$day - 1]]}}@endif">
+                                        <input type="number" step="0.25" min="0" class="form-control" id="row{{$row}}Day{{$day}}" name="row{{$row}}[]" value="{{$dayValue}}">
                                       </td> 
                                     @endfor
                                     <td style="width: 8%">
@@ -192,7 +272,14 @@ table.center {
                       <?php
                       foreach($arr as $date) { ?>
                         <input type="hidden" name="daterange[]" value="<?=$date?>"/>
-                      <?php }?>
+                      <?php }
+                      // if the user used the submit button from the Real Time Project Tracker page, deletes all of the real time projects from the database
+                      if ($submitted == true){
+                        $freshProjectArray = array();
+                        $timesheet->Project_Hours=$freshProjectArray;
+                        $timesheet->save();
+                      }
+                      ?>
                   </table>
       </div>
       <div class="row">
