@@ -341,9 +341,38 @@ class ProjectController extends Controller
       $term = "projectmanager";
     }
     $previous_month = date('F', strtotime('-21 day'));
+    $two_months_ago = date('F', strtotime('-51 day'));
+    $three_months_ago = date('F', strtotime('-80 day'));
     $year_of_previous_month = date('Y', strtotime('-21 day'));
+    $two_months_year = date('Y', strtotime('-51 day'));
+    $three_months_year = date('Y', strtotime('-51 day'));
     $projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy($term);
+    //For loop to filter out projects that haven't been billed in the last 3 months
+    foreach($projects as $i => $project){
+      if(!isset($project['bill_amount'][$year_of_previous_month][$previous_month]) && !isset($project['bill_amount'][$two_months_year][$two_months_ago]) && !isset($project['bill_amount'][$three_months_year][$three_months_ago])){
+        unset($projects[$i]);
+      }
+    }
+    //dd($projects);
     return view('pages.monthendbilling', compact('projects', 'term', 'previous_month', 'year_of_previous_month'));
+  }
+
+  /**
+   * Method sets sort term and finds projects that have a bill_amount array.
+   * @param Request $request
+   * @return view 'monthendbilling' with 'projects' and 'term'
+   */
+  public function bill_history(){
+    return view('pages.billinghistory');
+  }
+
+  public function bill_history_search(Request $request){
+    $code = $request['code'];
+    $query = Project::where('projectcode', $code)->get();
+    if(isset($query[0])){
+      $project = $query[0];
+    }
+    return view('pages.billinghistory', compact('project', 'code'));
   }
 
   /**
