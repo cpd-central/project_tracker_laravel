@@ -39,7 +39,7 @@ if(isset($code)){ ?>
 
   <?php }
     if($has_projects != true){ ?>
-        <h4 style="text-align: center;">No projects associated with the provided Code.</h4>
+        <h4 style="text-align: center;">No projects associated with the provided Code or Project may not have Billing history.</h4>
     <?php } 
 } ?>
 @endsection
