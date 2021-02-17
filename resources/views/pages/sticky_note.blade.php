@@ -224,6 +224,7 @@ $employees = $hold;
 
     //initializes and displays the gantt chart with the data given
     gantt.init("gantt_here");
+    console.log(project);
     gantt.parse(project);
     
 
