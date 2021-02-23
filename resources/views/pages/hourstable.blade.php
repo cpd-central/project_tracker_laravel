@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<style>
+  #total {
+  background-color:lightblue;
+  }
+</style>
 @extends('layouts.default')
 @section('page-title', 'Hours By Project Table')
 @section('content')
@@ -68,7 +73,7 @@ if(isset($code)){ ?>
     <?php foreach($employee_array as $j){ ?>
     <td><b>{{$j}}</b></td>
     <?php }?>
-    <td><b>Grand Total</b></td>
+    <td id="total"><b>Grand Total</b></td>
 </th>
 <tr>
     <td><b>Rates:</b></td>
@@ -77,7 +82,7 @@ if(isset($code)){ ?>
     foreach($j_array as $j){ ?>
     <td>${{$rates_for_total[$j]}}</td>
     <?php }?>
-    <td></td>
+    <td id="total"></td>
 </tr>
 <?php $grand_total = 0;
     for($i = 0; $i < count($months_array); $i++){
@@ -97,7 +102,7 @@ if(isset($code)){ ?>
                 ?>
     <td>${{$calculation}}</td>
     <?php }}}?>
-        <td>${{$month_total}}</td>
+        <td id="total">${{$month_total}}</td>
 </tr>
 
 <?php } ?>
@@ -109,7 +114,7 @@ if(isset($code)){ ?>
     <td><b>${{$total_employee[$j]*$rates_for_total[$j]}}</b></td>
     <?php $grand_total += $total_employee[$j]*$rates_for_total[$j];
     }?>
-    <td><b>${{$grand_total}}</b></td>
+    <td id="total"><b>${{$grand_total}}</b></td>
 </tr>
 </table>
 </div>
