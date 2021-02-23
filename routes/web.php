@@ -46,6 +46,8 @@ Route::post('/billinghistorysearch', 'ProjectController@bill_history_search')->m
 Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject')->middleware('verified');
 Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verified');
 
+Route::get('/scripts', 'ScriptController@index')->name('pages.scripts')->middleware('verified', 'pagevisits');
+Route::post('/scriptexecute', 'ScriptController@execute')->middleware('verified');
 
 Route::get('/drafterhours', 'ProjectController@drafter_hours')->name('pages.drafterhours')->middleware('verified', 'role', 'pagevisits');
 
