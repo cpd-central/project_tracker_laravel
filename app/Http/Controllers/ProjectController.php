@@ -345,7 +345,7 @@ class ProjectController extends Controller
     $three_months_ago = date('F', strtotime('-80 day'));
     $year_of_previous_month = date('Y', strtotime('-21 day'));
     $two_months_year = date('Y', strtotime('-51 day'));
-    $three_months_year = date('Y', strtotime('-51 day'));
+    $three_months_year = date('Y', strtotime('-80 day'));
     $projects = Project::whereRaw(['$and' => array(['bill_amount' => ['$ne' => null]], ['bill_amount' => ['$exists' => 'true']])])->get()->sortBy($term);
     //For loop to filter out projects that haven't been billed in the last 3 months
     foreach($projects as $i => $project){
@@ -1400,7 +1400,7 @@ class ProjectController extends Controller
     $previous_year = date('Y', strtotime('-21 days'));
  
     //this filters out the projects we are going to actually make charts out of
-    $non_zero_projects = Project::whereRaw([
+    /*$non_zero_projects = Project::whereRaw([
       '$and' => array([
         'hours_data' => ['$exists' => 'true'],
         //'projectstatus' => ['$eq' => 'Won'],
@@ -1410,7 +1410,25 @@ class ProjectController extends Controller
           "hours_data.{$previous_year}.{$previous_month}.Total" =>['$ne'=>0]
         ])
       ])
-    ])->get()->sortByDesc("hours_data.{$previous_year}.{$previous_month}.Total");
+    ])->get()->sortByDesc("hours_data.{$previous_year}.{$previous_month}.Total"); */
+    $non_zero_projects = Project::whereRaw([
+      '$and' => array([
+        'hours_data' => ['$exists' => 'true'],
+        //'projectstatus' => ['$eq' => 'Won'],
+        'projectstatus' => ['$nin' => ["Done and Billing Complete", "Expired"]]
+      ])
+    ])->get()->sortByDesc("hours_data.{$previous_year}.{$previous_month}.Total"); 
+    $previous_month = date('F', strtotime('-21 day'));
+    $two_months_ago = date('F', strtotime('-51 day'));
+    $three_months_ago = date('F', strtotime('-80 day'));
+    $year_of_previous_month = date('Y', strtotime('-21 day'));
+    $two_months_year = date('Y', strtotime('-51 day'));
+    $three_months_year = date('Y', strtotime('-80 day'));
+    foreach($non_zero_projects as $i => $project){
+      if(!isset($project['bill_amount'][$year_of_previous_month][$previous_month]) && !isset($project['bill_amount'][$two_months_year][$two_months_ago]) && !isset($project['bill_amount'][$three_months_year][$three_months_ago])){
+        unset($non_zero_projects[$i]);
+      }
+    }
     $i=0;
     $i_max = count($non_zero_projects) . "<br>";
     //go through each project resulting from the filter directly above
