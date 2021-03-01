@@ -1,6 +1,10 @@
 @extends('layouts.default')
 
 @section('content')
+<!-- Randy Fixes 1/21/2021 to get css and js to load -->
+<link href="{{ URL::asset('css/app.css') }}" rel="stylesheet" type="text/css" > 
+<script type="text/javascript" src="{{ URL::asset('js/app.js') }}"></script>
+<!-- Randy Fixes 1/21/2021 to get css and js to load -->
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
