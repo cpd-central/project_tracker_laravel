@@ -200,7 +200,7 @@ table.center {
                 <button type="button" id="add" class="btn btn-primary float-right">Add Row</button>
               </div>
               <div class="form-group col-md-4">
-                  <button type="submit" name="action" class="btn btn-success float-right" onclick="deRequire(); return confirm('Make sure your descriptions and code is correct. Are you sure you want to submit?');" value="submit">Submit</button>
+                  <button type="submit" name="action" class="btn btn-success float-right" onclick="deRequire(); return confirm('Make sure your descriptions and code is correct. Are you sure you want to save?');" value="submit">Save</button>
                 </div>
             </div>
           </form>
