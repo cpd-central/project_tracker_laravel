@@ -164,14 +164,14 @@
                 <td colspan="1"><b>Previous Month:                                                 </b></td>
                 <td colspan="1"><?php echo $var->options["previous_month_project_hours"] . "-hr";  ?>  </td>
                 <td colspan="4"><?php echo "$" . $var->options["previous_month_project_monies"];  ?>   </td>
-                <td colspan="2"><b>BILL/HOLD? (Bill Amount if known) <?php echo date("F Y",strtotime("now")); ?> :</b></td>
+                <td colspan="2"><b>BILL/HOLD? (Bill Amount if known) <?php echo date("F Y",strtotime("-21 day")); ?> :</b></td>
                 <td colspan="4">          
                   <?php $id = $var->options['id']; ?> 
                   <input type="hidden" value="{{$var->options['id']}}" name="id_{{$x}}">
                   <input type="text" value="<?php if(isset($var->options["billing_data"][date("Y")])){ //CODE FOR MONTHS HERE
                     $keys = array_keys($var->options["billing_data"][date("Y")]);
                     foreach($keys as $key){
-                      if(date("F Y", strtotime($key)) == date("F Y",strtotime("now"))){ //If The month index exists and equals the month 3 months prior, display the value.
+                      if(date("F Y", strtotime($key)) == date("F Y",strtotime("-21 day"))){ //If The month index exists and equals the month 3 months prior, display the value.
                         echo ltrim($var->options["billing_data"][date("Y")][$key], "$");
                       }
                     }
@@ -259,14 +259,14 @@
                 <td colspan="1"><b>Previous Month:</b>                                                                                      </td>
                 <td colspan="1"><?php echo $var->options["previous_month_project_hours"] . "-hr";  ?>                                       </td>
                 <td colspan="4"><?php echo "$" . $var->options["previous_month_project_monies"];  ?>                                        </td>
-                <td colspan="2"><b>BILL/HOLD? (Bill Amount if known) <?php echo date("F Y",strtotime("now")); ?> :</b>                       </td>
+                <td colspan="2"><b>BILL/HOLD? (Bill Amount if known) <?php echo date("F Y",strtotime("-21 day")); ?> :</b>                       </td>
                 <td colspan="4">          
                   <?php $id = $var->options['id']; ?> 
                 <input type="hidden" value="{{$var->options['id']}}" name="id_{{$x}}">
                 <input type="text" value="<?php if(isset($var->options["billing_data"][date("Y")])){ //CODE FOR MONTHS HERE
                   $keys = array_keys($var->options["billing_data"][date("Y")]);
                   foreach($keys as $key){
-                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("now"))){ //If The month index exists and equals the month 3 months prior, display the value.
+                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("-21 day"))){ //If The month index exists and equals the month 3 months prior, display the value.
                       echo ltrim($var->options["billing_data"][date("Y")][$key], "$");
                     }
                   }
