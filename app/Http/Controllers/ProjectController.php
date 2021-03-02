@@ -1536,10 +1536,16 @@ class ProjectController extends Controller
    */
   public function code_search(Request $request)
   {
-      $code = $request['projectcode'];
+      $code = $request['code'];
+      if (!isset($request['toggle_hours'])) {//This is a button to toggle whether hours or dollars is displayed in the graph.  
+        $chart_units = 'dollars';
+      } 
+      else { 
+        $chart_units = 'hours';
+      }
       $projects = Project::where('projectcode', $code)->get();
       $users = User::all();
-      return view('pages.hourstable',compact('code', 'projects', 'users'));
+      return view('pages.hourstable',compact('code', 'projects', 'users', 'chart_units'));
   }
 
   /**************** End of Hours Table ~Randy *********************/
