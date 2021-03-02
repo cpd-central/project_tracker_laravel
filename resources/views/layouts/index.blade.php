@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+<link rel="stylesheet" type="text/css" href="/css/app.css">
 <style>
 .my-custom-scrollbar {
 display: block;
