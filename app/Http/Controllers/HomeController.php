@@ -199,6 +199,12 @@ class HomeController extends Controller
         return view('pages.devrequest');
     }
 
+    public function dev_view($id)
+    {
+        $request = DevRequest::find($id);
+        return view('pages.devview', compact('request'));
+    }
+
     public function dev_create(Request $request, $id = null)
     {
         //Make sure that Subject and Body were provided, and that image meets the requirements.

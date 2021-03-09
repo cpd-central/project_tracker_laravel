@@ -1,5 +1,9 @@
 <!doctype html>
 <html>
+    <!-- Randy Fixes 1/21/2021 to get css and js to load -->
+<link href="{{ URL::asset('css/app.css') }}" rel="stylesheet" type="text/css" > 
+<script type="text/javascript" src="{{ URL::asset('js/app.js') }}"></script>
+<!-- Randy Fixes 1/21/2021 to get css and js to load -->
   <title id="page-title">@yield('page-title')</title>
   <head>
     @include('includes.navbar')
@@ -34,7 +38,7 @@
         <div class="row">
           <div class="form-group col-md-4">
             <label for="request_type">Request Type:</label>
-            <select class="form-control" id="sel2" name="request_type">  
+            <select class="form-control" id="sel2" <?php echo empty($request) ? '' : 'readonly' ?> name="request_type">  
                 @yield('request_type')
             </select>
           </div>
@@ -42,7 +46,7 @@
         <div class="row">
           <div class="form-group col-md-4">
             <label for="subject">Subject:</label>
-            <input type="text" class="form-control" name="subject" value="@if(old('subject')){{ old('subject') }}@else<?= $__env->yieldContent('subject')?>@endif">
+            <input type="text" class="form-control" name="subject" <?php echo empty($request) ? '' : 'readonly' ?> value="@if(old('subject')){{ old('subject') }}@else<?= $__env->yieldContent('subject')?>@endif">
           </div>
           <div class="form-group col-md-4">
             <label for="proposer">Proposer:</label>
@@ -55,12 +59,9 @@
         </div>
         <div class="form-group">
           <label for="body">Body:</label>
-          <textarea style="resize:none" class="form-control" name="body" rows="5">@if(old('body')){{ old('body') }}@else<?= $__env->yieldContent('body')?>@endif</textarea>
+          <textarea style="resize:none" class="form-control" name="body" <?php echo empty($request) ? '' : 'readonly' ?> rows="5">@if(old('body')){{ old('body') }}@else<?= $__env->yieldContent('body')?>@endif</textarea>
         </div>
       </div>
-      <div class="form-group col-md-4">
-        <label for="image">Image upload(jpeg,png,jpg):</label>
-        <input type="file" name="image" class="form-control">
-      </div>
+      @yield('image')
   </body>
 </html>
