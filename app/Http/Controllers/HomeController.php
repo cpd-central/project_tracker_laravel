@@ -7,6 +7,8 @@ use App\User;
 use App\Project;
 use App\Timesheet;
 use App\Page;
+use App\DevRequest;
+use File;
 
 class HomeController extends Controller
 {
@@ -210,18 +212,19 @@ class HomeController extends Controller
             'body' => 'required',
         ], $messages);
 
-        $time = time();
-        $imageName = $time.'.'.$request->image->extension();
-
         $dev = new DevRequest();
         $dev->proposer = $request['proposer'];
         $dev->subject = $request['subject'];
         $dev->body = $request['body'];
         $dev->date = $request['date'];
-        $dev->image = $imageName;
+        $time = time();
+        if(!empty($request->image)){
+            $imageName = $time.'.'.$request->image->extension();
+            $dev->image = $imageName;
+            $request->image->move(public_path('img/dev'), $imageName);
+        }
         $dev->save();
 
-        $request->image->move(public_path('img/dev'), $imageName);
         return redirect('/devindex')->with('success','Request has been created.');
     }
 
@@ -230,11 +233,18 @@ class HomeController extends Controller
    * @param $id
    * @return redirect /projectindex
    */
-  public function dev_delete($id) {
+  public function dev_delete($id)
+  {
     $request = DevRequest::find($id);
-    $path = public_path("img/dev/{$request['image']}");
+    $imageSet = false;
+    if(!empty($request['image'])){
+        $imageSet = true;
+        $path = public_path("img/dev/{$request['image']}");
+    }
     $request->delete();
-    unlink($path);
+    if($imageSet) {
+        unlink($path);
+    }
     return redirect('/devindex')->with('success','Request has been deleted.');
   }
 
