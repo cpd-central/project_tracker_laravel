@@ -185,4 +185,57 @@ class HomeController extends Controller
         $user->save();
         return redirect()->route('pages.accountdirectory')->with('success', 'Success! User has been successfully updated.');
     }
+
+    public function dev_index()
+    {
+        $reqs = DevRequest::all()->sortByDesc('date');
+        return view('pages.devindex', compact('reqs'));
+    }
+
+    public function dev_request()
+    {
+        return view('pages.devrequest');
+    }
+
+    public function dev_create(Request $request, $id = null)
+    {
+        //Make sure that Subject and Body were provided, and that image meets the requirements.
+        $messages = array(
+            'subject.required' => 'A Subject is required.',
+            'body.required' => 'A Body description is required.'
+            );
+        $request->validate([
+            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'subject' => 'required',
+            'body' => 'required',
+        ], $messages);
+
+        $time = time();
+        $imageName = $time.'.'.$request->image->extension();
+
+        $dev = new DevRequest();
+        $dev->proposer = $request['proposer'];
+        $dev->subject = $request['subject'];
+        $dev->body = $request['body'];
+        $dev->date = $request['date'];
+        $dev->image = $imageName;
+        $dev->save();
+
+        $request->image->move(public_path('img/dev'), $imageName);
+        return redirect('/devindex')->with('success','Request has been created.');
+    }
+
+  /**
+   * Finds a project in the database by $id and deletes it from the database.
+   * @param $id
+   * @return redirect /projectindex
+   */
+  public function dev_delete($id) {
+    $request = DevRequest::find($id);
+    $path = public_path("img/dev/{$request['image']}");
+    $request->delete();
+    unlink($path);
+    return redirect('/devindex')->with('success','Request has been deleted.');
+  }
+
 }
