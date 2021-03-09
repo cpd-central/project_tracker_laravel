@@ -49,6 +49,7 @@ Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verifi
 Route::get('/devindex', 'HomeController@dev_index')->name('pages.devindex')->middleware('verified', 'pagevisits');
 
 Route::get('/devrequest', 'HomeController@dev_request')->name('pages.devrequest')->middleware('verified', 'pagevisits');
+Route::get('/devrequest/{id}', 'HomeController@dev_view')->name('pages.devview')->middleware('verified');
 Route::post('/devrequest', 'HomeController@dev_create')->middleware('verified');
 
 Route::delete('/devdelete/{id}', 'HomeController@dev_delete')->middleware('verified');

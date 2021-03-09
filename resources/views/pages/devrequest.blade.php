@@ -12,3 +12,10 @@
 @section('proposer', auth()->user()->name)
 @section('date', now())
 @section('body', '')
+
+@section('image')
+<div class="form-group col-md-4">
+    <label for="image">Image upload(jpeg,png,jpg):</label>
+    <input type="file" name="image" class="form-control">
+</div>
+@stop

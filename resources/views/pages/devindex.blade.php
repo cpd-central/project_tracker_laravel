@@ -22,7 +22,7 @@
 @section('table-content')
     @foreach($reqs as $request)
     <tr>
-      <td><button></button></td>
+      <td><a href="{{ url('/devrequest', $request['id'] )}}" class="btn btn-warning">View</a></td>
       <td>
         <form action="{{ url('/devdelete', $request['id']) }}" method="post">
           @csrf
