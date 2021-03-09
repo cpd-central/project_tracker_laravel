@@ -28,11 +28,16 @@
       <h4>@yield('subtitle')</h4>
       <div class="container">
       </div>
+      <?php if(!empty($request)){ ?>
+        <a href="{{ url('/devindex')}}" class="btn btn-warning">Return to Dev Index</a>
+      <?php }?>
       <form method="post" enctype="multipart/form-data">
         @csrf
         <div class="row">
           <div class="form-group col-md-4">
+            <?php if(empty($request)){ ?>
             <button type="submit" class="btn btn-success">Submit</button>
+            <?php }?>
           </div>
         </div>
         <div class="row">
