@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+  <title id="page-title">@yield('page-title')</title>
+  <head>
+    @include('includes.navbar')
+  </head>
+  <body>
+    <div class="container">
+      <div id="main">
+      </br>
+      </br> 
+      @if (count($errors)) 
+      <div class="form-group"> 
+        <div class="alert alert-danger">
+          <ul>
+          @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li> 
+          @endforeach
+          </ul>
+        </div>
+      </div>
+      @endif
+      <h2><b>@yield('title')</b></h2>    
+      <h4>@yield('subtitle')</h4>
+      <div class="container">
+      </div>
+      <form method="post" enctype="multipart/form-data">
+        @csrf
+        <div class="row">
+          <div class="form-group col-md-4">
+            <button type="submit" class="btn btn-success">Submit</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="request_type">Request Type:</label>
+            <select class="form-control" id="sel2" name="request_type">  
+                @yield('request_type')
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="subject">Subject:</label>
+            <input type="text" class="form-control" name="subject" value="@if(old('subject')){{ old('subject') }}@else<?= $__env->yieldContent('subject')?>@endif">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="proposer">Proposer:</label>
+            <input type="text" class="form-control" name="proposer" readonly value="<?= $__env->yieldContent('proposer')?>">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="date">Date:</label>
+            <input type="text" class="form-control" name="date" readonly value="<?= $__env->yieldContent('date')?>">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="body">Body:</label>
+          <textarea style="resize:none" class="form-control" name="body" rows="5">@if(old('body')){{ old('body') }}@else<?= $__env->yieldContent('body')?>@endif</textarea>
+        </div>
+      </div>
+      <div class="form-group col-md-4">
+        <label for="image">Image upload(jpeg,png,jpg):</label>
+        <input type="file" name="image" class="form-control">
+      </div>
+  </body>
+</html>
