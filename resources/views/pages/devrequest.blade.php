@@ -4,10 +4,11 @@
 @section('subtitle', 'Feature Requests, Bug Fixes, Error Reporting')
 
 @section('request_type')
-<option value="feature">Feature</option>
-<option value="bug/error">Bug/Error</option>
+<option value="Feature">Feature</option>
+<option value="Bug/Error">Bug/Error</option>
 @stop
 
+@section('status', 'Open')
 @section('subject', '')
 @section('proposer', auth()->user()->name)
 @section('date', now())

@@ -29,7 +29,9 @@
       <div class="container">
       </div>
       <?php if(!empty($request)){ ?>
-        <a href="{{ url('/devindex')}}" class="btn btn-warning">Return to Dev Index</a>
+        <div class="row">
+          <a href="{{ url('/devindex')}}" class="btn btn-warning">Return to Dev Index</a>
+        </div>
       <?php }?>
       <form method="post" enctype="multipart/form-data">
         @csrf
@@ -37,7 +39,10 @@
           <div class="form-group col-md-4">
             <?php if(empty($request)){ ?>
             <button type="submit" class="btn btn-success">Submit</button>
-            <?php }?>
+            <?php }elseif($request['status'] == "Open"){?>
+              <button type="submit" class="btn btn-success">Close</button>
+              <input type="hidden" value="close" name="close">
+              <?php } ?>
           </div>
         </div>
         <div class="row">
@@ -46,6 +51,10 @@
             <select class="form-control" id="sel2" <?php echo empty($request) ? '' : 'readonly' ?> name="request_type">  
                 @yield('request_type')
             </select>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="status">Status:</label>
+            <input type="text" class="form-control" name="status" readonly value="<?= $__env->yieldContent('status')?>">
           </div>
         </div>
         <div class="row">
