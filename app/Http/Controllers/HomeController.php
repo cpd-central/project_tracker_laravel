@@ -220,6 +220,8 @@ class HomeController extends Controller
 
         $dev = new DevRequest();
         $dev->proposer = $request['proposer'];
+        $dev->type = $request['request_type'];
+        $dev->status = $request['status'];
         $dev->subject = $request['subject'];
         $dev->body = $request['body'];
         $dev->date = $request['date'];
@@ -234,24 +236,32 @@ class HomeController extends Controller
         return redirect('/devindex')->with('success','Request has been created.');
     }
 
-  /**
-   * Finds a project in the database by $id and deletes it from the database.
-   * @param $id
-   * @return redirect /projectindex
-   */
-  public function dev_delete($id)
-  {
-    $request = DevRequest::find($id);
-    $imageSet = false;
-    if(!empty($request['image'])){
-        $imageSet = true;
-        $path = public_path("img/dev/{$request['image']}");
+    public function dev_close(Request $request, $id)
+    {
+        $dev = DevRequest::find($id);   
+        $dev->status = "Closed";
+        $dev->save();
+        return redirect('/devindex')->with('success','Request has been closed.');
     }
-    $request->delete();
-    if($imageSet) {
-        unlink($path);
+
+    /**
+    * Finds a project in the database by $id and deletes it from the database.
+    * @param $id
+    * @return redirect /projectindex
+    */
+    public function dev_delete($id)
+    {
+        $request = DevRequest::find($id);
+        $imageSet = false;
+        if(!empty($request['image'])){
+            $imageSet = true;
+            $path = public_path("img/dev/{$request['image']}");
+        }
+        $request->delete();
+        if($imageSet) {
+            unlink($path);
+        }
+        return redirect('/devindex')->with('success','Request has been deleted.');
     }
-    return redirect('/devindex')->with('success','Request has been deleted.');
-  }
 
 }

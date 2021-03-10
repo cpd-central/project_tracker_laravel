@@ -11,7 +11,9 @@
       <thead id='header'>
       <tr> 
         <th class="text-center" colspan="2">Action</th>
+        <th>Status</th>
         <th>CEG Proposal Author</th>
+        <th>Type</th>
         <th>Subject</th>
         <th>Date</th>
       </tr>
@@ -30,7 +32,9 @@
           <button class="btn btn-danger" type="submit" onclick="return confirm('This will delete the project from the database.  Are you sure you want to do this?')">Delete</button>
         </form>
       </td>
+      <td>{{$request['status']}}</td>
       <td>{{$request['proposer']}}</td>
+      <td>{{$request['type']}}</td>
       <td>{{$request['subject']}}</td>
       <td>{{$request['date']}}</td>
     </tr>

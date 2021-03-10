@@ -51,6 +51,7 @@ Route::get('/devindex', 'HomeController@dev_index')->name('pages.devindex')->mid
 Route::get('/devrequest', 'HomeController@dev_request')->name('pages.devrequest')->middleware('verified', 'pagevisits');
 Route::get('/devrequest/{id}', 'HomeController@dev_view')->name('pages.devview')->middleware('verified');
 Route::post('/devrequest', 'HomeController@dev_create')->middleware('verified');
+Route::post('/devrequest/{id}', 'HomeController@dev_close')->middleware('verified');
 
 Route::delete('/devdelete/{id}', 'HomeController@dev_delete')->middleware('verified');
 

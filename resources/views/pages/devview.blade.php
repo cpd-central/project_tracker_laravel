@@ -4,9 +4,10 @@
 @section('subtitle', 'Feature Requests, Bug Fixes, Error Reporting')
 
 @section('request_type')
-<option value="feature">Feature</option>
+<option value="<?=$request['type']?>">{{$request['type']}}</option>
 @stop
 
+@section('status', $request['status'])
 @section('subject', $request['subject'])
 @section('proposer', $request['proposer'])
 @section('date', $request['date'])
