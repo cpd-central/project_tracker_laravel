@@ -53,6 +53,12 @@
             </select>
           </div>
           <div class="form-group col-md-4">
+            <label for="priority">Priority:</label>
+              <select class="form-control" id="sel2" <?php echo empty($request) ? '' : 'readonly' ?> name="priority">  
+                @yield('priority')
+              </select>
+            </div>
+          <div class="form-group col-md-4">
             <label for="status">Status:</label>
             <input type="text" class="form-control" name="status" readonly value="<?= $__env->yieldContent('status')?>">
           </div>

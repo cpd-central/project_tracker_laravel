@@ -190,7 +190,7 @@ class HomeController extends Controller
 
     public function dev_index()
     {
-        $reqs = DevRequest::all()->sortByDesc('date');
+        $reqs = DevRequest::Where('status', 'Open')->get()->sortByDesc('priority');
         return view('pages.devindex', compact('reqs'));
     }
 
@@ -203,6 +203,17 @@ class HomeController extends Controller
     {
         $request = DevRequest::find($id);
         return view('pages.devview', compact('request'));
+    }
+
+    public function dev_filter(Request $request)
+    {
+        $toggle = $request['toggle_all'];
+        if(isset($toggle) && $toggle == "all"){
+            $reqs = DevRequest::all()->sortByDesc('date');
+        }else{
+            $reqs = DevRequest::Where('status', 'Open')->get()->sortByDesc('priority');
+        }
+        return view('pages.devindex', compact('reqs', 'toggle'));
     }
 
     public function dev_create(Request $request, $id = null)
@@ -221,6 +232,7 @@ class HomeController extends Controller
         $dev = new DevRequest();
         $dev->proposer = $request['proposer'];
         $dev->type = $request['request_type'];
+        $dev->priority = $request['priority'];
         $dev->status = $request['status'];
         $dev->subject = $request['subject'];
         $dev->body = $request['body'];
