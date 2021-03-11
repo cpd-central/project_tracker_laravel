@@ -8,6 +8,12 @@
 <option value="Bug/Error">Bug/Error</option>
 @stop
 
+@section('priority')
+<option value="1 - Low">Low - backlog</option>
+<option value="2 - Medium">Medium - look at when convenient</option>
+<option value="3 - High">High - needs attention</option>
+@stop
+
 @section('status', 'Open')
 @section('subject', '')
 @section('proposer', auth()->user()->name)
