@@ -7,6 +7,8 @@ use App\User;
 use App\Project;
 use App\Timesheet;
 use App\Page;
+use App\DevRequest;
+use File;
 
 class HomeController extends Controller
 {
@@ -185,4 +187,93 @@ class HomeController extends Controller
         $user->save();
         return redirect()->route('pages.accountdirectory')->with('success', 'Success! User has been successfully updated.');
     }
+
+    public function dev_index()
+    {
+        $reqs = DevRequest::Where('status', 'Open')->get()->sortByDesc('priority');
+        return view('pages.devindex', compact('reqs'));
+    }
+
+    public function dev_request()
+    {
+        return view('pages.devrequest');
+    }
+
+    public function dev_view($id)
+    {
+        $request = DevRequest::find($id);
+        return view('pages.devview', compact('request'));
+    }
+
+    public function dev_filter(Request $request)
+    {
+        $toggle = $request['toggle_all'];
+        if(isset($toggle) && $toggle == "all"){
+            $reqs = DevRequest::all()->sortByDesc('date');
+        }else{
+            $reqs = DevRequest::Where('status', 'Open')->get()->sortByDesc('priority');
+        }
+        return view('pages.devindex', compact('reqs', 'toggle'));
+    }
+
+    public function dev_create(Request $request, $id = null)
+    {
+        //Make sure that Subject and Body were provided, and that image meets the requirements.
+        $messages = array(
+            'subject.required' => 'A Subject is required.',
+            'body.required' => 'A Body description is required.'
+            );
+        $request->validate([
+            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'subject' => 'required',
+            'body' => 'required',
+        ], $messages);
+
+        $dev = new DevRequest();
+        $dev->proposer = $request['proposer'];
+        $dev->type = $request['request_type'];
+        $dev->priority = $request['priority'];
+        $dev->status = $request['status'];
+        $dev->subject = $request['subject'];
+        $dev->body = $request['body'];
+        $dev->date = $request['date'];
+        $time = time();
+        if(!empty($request->image)){
+            $imageName = $time.'.'.$request->image->extension();
+            $dev->image = $imageName;
+            $request->image->move(public_path('img/dev'), $imageName);
+        }
+        $dev->save();
+
+        return redirect('/devindex')->with('success','Request has been created.');
+    }
+
+    public function dev_close(Request $request, $id)
+    {
+        $dev = DevRequest::find($id);   
+        $dev->status = "Closed";
+        $dev->save();
+        return redirect('/devindex')->with('success','Request has been closed.');
+    }
+
+    /**
+    * Finds a project in the database by $id and deletes it from the database.
+    * @param $id
+    * @return redirect /projectindex
+    */
+    public function dev_delete($id)
+    {
+        $request = DevRequest::find($id);
+        $imageSet = false;
+        if(!empty($request['image'])){
+            $imageSet = true;
+            $path = public_path("img/dev/{$request['image']}");
+        }
+        $request->delete();
+        if($imageSet) {
+            unlink($path);
+        }
+        return redirect('/devindex')->with('success','Request has been deleted.');
+    }
+
 }
