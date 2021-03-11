@@ -46,6 +46,15 @@ Route::post('/billinghistorysearch', 'ProjectController@bill_history_search')->m
 Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject')->middleware('verified');
 Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verified');
 
+Route::get('/devindex', 'HomeController@dev_index')->name('pages.devindex')->middleware('verified', 'pagevisits');
+Route::post('/devindex', 'HomeController@dev_filter')->middleware('verified');
+
+Route::get('/devrequest', 'HomeController@dev_request')->name('pages.devrequest')->middleware('verified', 'pagevisits');
+Route::get('/devrequest/{id}', 'HomeController@dev_view')->name('pages.devview')->middleware('verified');
+Route::post('/devrequest', 'HomeController@dev_create')->middleware('verified');
+Route::post('/devrequest/{id}', 'HomeController@dev_close')->middleware('verified');
+
+Route::delete('/devdelete/{id}', 'HomeController@dev_delete')->middleware('verified');
 
 Route::get('/drafterhours', 'ProjectController@drafter_hours')->name('pages.drafterhours')->middleware('verified', 'role', 'pagevisits');
 
