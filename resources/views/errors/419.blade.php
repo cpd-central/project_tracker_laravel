@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <title>Error 419</title>
 @include('includes.navbar')
-<!-- Randy Fixes 1/21/2021 to get css and js to load -->
-<link href="{{ URL::asset('css/app.css') }}" rel="stylesheet" type="text/css" > 
-<script type="text/javascript" src="{{ URL::asset('js/app.js') }}"></script>
-<!-- Randy Fixes 1/21/2021 to get css and js to load -->
 <body>
   <div class="container"> 
     <div class="flex-center position-ref full-height"> 
