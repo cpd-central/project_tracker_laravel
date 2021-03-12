@@ -188,23 +188,42 @@ class HomeController extends Controller
         return redirect()->route('pages.accountdirectory')->with('success', 'Success! User has been successfully updated.');
     }
 
+    /**
+     * Retrieves all dev requests that are of status 'open' and sorts by priority.
+     * The function dev_filter is used for the toggle to retrieve all dev requests.
+     * @return view - view of the dev index page for all dev requests that are open.
+     */
     public function dev_index()
     {
         $reqs = DevRequest::Where('status', 'Open')->get()->sortByDesc('priority');
         return view('pages.devindex', compact('reqs'));
     }
 
+    /**
+     * Retrieves the dev request form for a new feature or bug request.
+     * @return view - a new dev request form.
+     */
     public function dev_request()
     {
         return view('pages.devrequest');
     }
 
+    /**
+     * Retrieves a dev request by id to be investigated.
+     * @return view - a dev request form by id.
+     */
     public function dev_view($id)
     {
         $request = DevRequest::find($id);
         return view('pages.devview', compact('request'));
     }
-
+    /**
+     * If the Toggle button is activated, the page is routed to this function.
+     * Checks to see if 'toggle_all' was activated. If so, retrieves all requests
+     * and sorts them by date. If it's null, then retrieves only forms that are open
+     * and sorts them by priority.
+     * @return view - dev index filtered by the toggle_all variable.
+     */
     public function dev_filter(Request $request)
     {
         $toggle = $request['toggle_all'];
@@ -216,6 +235,12 @@ class HomeController extends Controller
         return view('pages.devindex', compact('reqs', 'toggle'));
     }
 
+    /**
+     * Validates the provided data to make sure a subject and body where inputted.
+     * If an image was provided, it is checked to make sure it meets the requirements.
+     * Saves the dev request information and saves the image by timestamp.
+     * @return redirect - to dev index with a success message.
+     */
     public function dev_create(Request $request, $id = null)
     {
         //Make sure that Subject and Body were provided, and that image meets the requirements.
@@ -248,6 +273,10 @@ class HomeController extends Controller
         return redirect('/devindex')->with('success','Request has been created.');
     }
 
+    /**
+     * Finds the DevRequest by id, and marks it's status as close meaning complete.
+     * @return redirect - to dev index with a success message.
+     */
     public function dev_close(Request $request, $id)
     {
         $dev = DevRequest::find($id);   
@@ -257,9 +286,9 @@ class HomeController extends Controller
     }
 
     /**
-    * Finds a project in the database by $id and deletes it from the database.
+    * Finds a dev request in the database by $id and deletes it from the database.
     * @param $id
-    * @return redirect /projectindex
+    * @return redirect /devindex with a success message.
     */
     public function dev_delete($id)
     {

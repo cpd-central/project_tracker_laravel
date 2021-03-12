@@ -57,10 +57,6 @@
       }
 ?>
 <!doctype html>
-<!-- Randy Fixes 1/21/2021 to get css and js to load on edit project -->
-<link href="{{ URL::asset('css/app.css') }}" rel="stylesheet" type="text/css" > 
-<script type="text/javascript" src="{{ URL::asset('js/app.js') }}"></script>
-<!-- Randy Fixes 1/21/2021 to get css and js to load on edit project -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <style>
