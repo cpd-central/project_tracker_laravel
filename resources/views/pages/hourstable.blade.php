@@ -88,8 +88,22 @@ if(isset($code)){ ?>
             $has_projects = true;
             $hours_data = $project['hours_data'];
             $years_array = array_keys($hours_data);
+            arsort($years_array); //Sorts the $years array from latest year to earliest year
+            $totals_array = array(count($years_array));
+            $senior_array_total = array(count($years_array));
+            $project_array_total = array(count($years_array));
+            $drafting_array_total = array(count($years_array));
+            $interns_admin_array_total = array(count($years_array));
+            $scada_array_total = array(count($years_array));
             ?><h2 style="text-align: center;">{{$project['projectname']}}</h2> <?php
             foreach($years_array as $year){
+
+                $senior_array_total[$year] = 0;
+                $project_array_total[$year] = 0;
+                $drafting_array_total[$year] = 0;
+                $interns_admin_array_total[$year] = 0;
+                $scada_array_total[$year] = 0;
+
                 $months_array = array_keys($hours_data[$year]);
                 $employee_array = array_keys($hours_data[$year][$months_array[0]]);
                 unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
@@ -128,6 +142,10 @@ if(isset($code)){ ?>
                     }
                 }
                 if(count($employee_array) == 0){
+                    // Searches for the key that is set for a year that has 0 hours, then unsets it from the original array. See https://stackoverflow.com/questions/7225070/php-array-delete-by-value-not-key
+                    if (($key = array_search($year, $years_array)) !== false){
+                        unset($years_array[$key]);
+                    }
                     continue;
                 }
 ?>
@@ -168,7 +186,19 @@ if(isset($code)){ ?>
                     $month_total += $calculation;
                 ?>
     <td>${{$calculation}}</td>
-    <?php }}}?>
+    <?php 
+                    if($user['jobclass'] == 'senior'){
+                        $senior_array_total[$year] += $calculation;
+                    }elseif($user['jobclass'] == 'project'){
+                        $project_array_total[$year] += $calculation;
+                    }elseif($user['jobclass'] == 'drafting'){
+                        $drafting_array_total[$year] += $calculation;
+                    }elseif($user['jobclass'] == 'interns-admin'){
+                        $interns_admin_array_total[$year] += $calculation;
+                    }elseif($user['jobclass'] == 'SCADA'){
+                        $scada_array_total[$year] += $calculation;
+                    }
+}}}?>
         <td style="background-color:lightblue;">${{$month_total}}</td>
 </tr>
 
@@ -180,7 +210,8 @@ if(isset($code)){ ?>
     foreach($j_array as $j){ ?>
     <td><b>${{$total_employee[$j]*$rates_for_total[$j]}}</b></td>
     <?php $grand_total += $total_employee[$j]*$rates_for_total[$j];
-    }?>
+    } $totals_array[$year] = $grand_total;
+    ?>
     <td style="background-color:lightblue;"><b>${{$grand_total}}</b></td>
 </tr>
 </table>
@@ -204,7 +235,19 @@ else{ //if the chart units is set to hours, it won't calculate the total pay.
                     $month_total += $hours_data[$year][$months_array[$i]][$j];
                 ?>
     <td>{{$hours_data[$year][$months_array[$i]][$j]}}</td>
-    <?php }}}?>
+    <?php 
+                if($user['jobclass'] == 'senior'){
+                    $senior_array_total[$year] += $hours_data[$year][$months_array[$i]][$j];
+                }elseif($user['jobclass'] == 'project'){
+                    $project_array_total[$year] += $hours_data[$year][$months_array[$i]][$j];
+                }elseif($user['jobclass'] == 'drafting'){
+                    $drafting_array_total[$year] += $hours_data[$year][$months_array[$i]][$j];
+                }elseif($user['jobclass'] == 'interns-admin'){
+                    $interns_admin_array_total[$year] += $hours_data[$year][$months_array[$i]][$j];
+                }elseif($user['jobclass'] == 'SCADA'){
+                    $scada_array_total[$year] += $hours_data[$year][$months_array[$i]][$j];
+                }
+    }}}?>
         <td style="background-color:lightblue;">{{$month_total}}</td>
 </tr>
 <?php } ?>
@@ -215,14 +258,132 @@ else{ //if the chart units is set to hours, it won't calculate the total pay.
     foreach($j_array as $j){ ?>
     <td><b>{{$total_employee[$j]}}</b></td>
     <?php $grand_total += $total_employee[$j];
-    }?>
+    } $totals_array[$year] = $grand_total;
+    ?>
     <td style="background-color:lightblue;"><b>{{$grand_total}}</b></td>
 </tr>
 </table>
 </div>
 <?php } 
-}
-}}
+} // Project Summary Top
+$grand_total_project = 0;
+?>
+<div><br></div>
+<div>
+    <h4 style="text-align: center;">{{$project['projectname']}} Project Summary</h4>
+<table class="table table-striped">
+<tr style="background-color:lightblue;">
+    <td><b>Year</b></td>
+    <?php foreach($years_array as $year){ ?>
+        <td><b>{{$year}}</b></td>
+    <?php }?>
+    <td><b>Total</b></td>
+</tr>
+<?php //*******************DOLLARS*****************
+if(!isset($chart_units) || $chart_units == 'dollars'){?>
+<tr>
+    <td>Senior</td>
+    <?php $s_total = 0;  
+    foreach($years_array as $year){ ?>
+        <td>${{$senior_array_total[$year]}}</td>
+    <?php $s_total += $senior_array_total[$year];}?>
+    <td>${{$s_total}}</td>
+</tr>
+<tr>
+    <td>Project</td>
+    <?php $p_total = 0; 
+    foreach($years_array as $year){ ?>
+        <td>${{$project_array_total[$year]}}</td>
+    <?php $p_total += $project_array_total[$year];}?>
+    <td>${{$p_total}}</td>
+</tr>
+<tr>
+    <td>Drafting</td>
+    <?php $d_total = 0;
+    foreach($years_array as $year){ ?>
+        <td>${{$drafting_array_total[$year]}}</td>
+    <?php $d_total += $drafting_array_total[$year];}?>
+    <td>${{$d_total}}</td>
+</tr>
+<tr>
+    <td>SCADA</td>
+    <?php $scada_total = 0;
+    foreach($years_array as $year){ ?>
+        <td>${{$scada_array_total[$year]}}</td>
+    <?php $scada_total += $scada_array_total[$year];}?>
+    <td>${{$scada_total}}</td>
+</tr>
+<tr>
+    <td>Intern-Admin</td>
+    <?php $ia_total = 0;
+    foreach($years_array as $year){ ?>
+        <td>${{$interns_admin_array_total[$year]}}</td>
+    <?php $ia_total += $interns_admin_array_total[$year];}?>
+    <td>${{$ia_total}}</td>
+</tr>
+<?php } //*******************HOURS*****************
+    else{?>
+    <tr>
+    <td>Senior</td>
+    <?php $s_total = 0;  
+    foreach($years_array as $year){ ?>
+        <td>{{$senior_array_total[$year]}}</td>
+    <?php $s_total += $senior_array_total[$year];}?>
+    <td>{{$s_total}}</td>
+</tr>
+<tr>
+    <td>Project</td>
+    <?php $p_total = 0; 
+    foreach($years_array as $year){ ?>
+        <td>{{$project_array_total[$year]}}</td>
+    <?php $p_total += $project_array_total[$year];}?>
+    <td>{{$p_total}}</td>
+</tr>
+<tr>
+    <td>Drafting</td>
+    <?php $d_total = 0;
+    foreach($years_array as $year){ ?>
+        <td>{{$drafting_array_total[$year]}}</td>
+    <?php $d_total += $drafting_array_total[$year];}?>
+    <td>{{$d_total}}</td>
+</tr>
+<tr>
+    <td>SCADA</td>
+    <?php $scada_total = 0;
+    foreach($years_array as $year){ ?>
+        <td>{{$scada_array_total[$year]}}</td>
+    <?php $scada_total += $scada_array_total[$year];}?>
+    <td>{{$scada_total}}</td>
+</tr>
+<tr>
+    <td>Intern-Admin</td>
+    <?php $ia_total = 0;
+    foreach($years_array as $year){ ?>
+        <td>{{$interns_admin_array_total[$year]}}</td>
+    <?php $ia_total += $interns_admin_array_total[$year];}?>
+    <td>{{$ia_total}}</td>
+</tr>
+    <?php }?>
+<tr> <?php //If the chart unit is dollars, then we need to insert $ into the table. 
+    if(!isset($chart_units) || $chart_units == 'dollars'){?>
+    <td><b>Total</b></td>
+    <?php foreach($years_array as $year){ ?>
+        <td>${{$totals_array[$year]}}</td>
+    <?php $grand_total_project += $totals_array[$year];
+    }?>
+    <td><b>${{$grand_total_project}}</b></td>
+    <?php }else{?>
+        <td><b>Total</b></td>
+    <?php foreach($years_array as $year){ ?>
+        <td>{{$totals_array[$year]}}</td>
+    <?php $grand_total_project += $totals_array[$year];
+    }?>
+    <td><b>{{$grand_total_project}}</b></td>
+    <?php } ?>
+</tr>
+</table>
+</div>
+<?php }} // Project Summary Bottom
     if($has_projects != true){ ?>
         <h4 style="text-align: center;">No projects associated with the provided Code.</h4>
     <?php } 
