@@ -1536,7 +1536,7 @@ class ProjectController extends Controller
    */
   public function code_search(Request $request)
   {
-      $code = $request['code'];
+      $code = strtoupper($request['code']);
       if (!isset($request['toggle_hours'])) {//This is a button to toggle whether hours or dollars is displayed in the graph.  
         $chart_units = 'dollars';
       } 

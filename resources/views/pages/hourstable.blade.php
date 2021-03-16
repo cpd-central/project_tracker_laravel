@@ -88,6 +88,7 @@ if(isset($code)){ ?>
             $has_projects = true;
             $hours_data = $project['hours_data'];
             $years_array = array_keys($hours_data);
+            arsort($years_array); //Sorts the $years array from latest year to earliest year
             ?><h2 style="text-align: center;">{{$project['projectname']}}</h2> <?php
             foreach($years_array as $year){
                 $months_array = array_keys($hours_data[$year]);
