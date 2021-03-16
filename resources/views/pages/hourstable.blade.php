@@ -89,6 +89,7 @@ if(isset($code)){ ?>
             $hours_data = $project['hours_data'];
             $years_array = array_keys($hours_data);
             arsort($years_array); //Sorts the $years array from latest year to earliest year
+            $totals_array = array(count($years_array));
             ?><h2 style="text-align: center;">{{$project['projectname']}}</h2> <?php
             foreach($years_array as $year){
                 $months_array = array_keys($hours_data[$year]);
@@ -129,6 +130,10 @@ if(isset($code)){ ?>
                     }
                 }
                 if(count($employee_array) == 0){
+                    // Searches for the key that is set for a year that has 0 hours, then unsets it from the original array. See https://stackoverflow.com/questions/7225070/php-array-delete-by-value-not-key
+                    if (($key = array_search($year, $years_array)) !== false){
+                        unset($years_array[$key]);
+                    }
                     continue;
                 }
 ?>
@@ -181,7 +186,8 @@ if(isset($code)){ ?>
     foreach($j_array as $j){ ?>
     <td><b>${{$total_employee[$j]*$rates_for_total[$j]}}</b></td>
     <?php $grand_total += $total_employee[$j]*$rates_for_total[$j];
-    }?>
+    } $totals_array[$year] = $grand_total;
+    ?>
     <td style="background-color:lightblue;"><b>${{$grand_total}}</b></td>
 </tr>
 </table>
@@ -216,14 +222,46 @@ else{ //if the chart units is set to hours, it won't calculate the total pay.
     foreach($j_array as $j){ ?>
     <td><b>{{$total_employee[$j]}}</b></td>
     <?php $grand_total += $total_employee[$j];
-    }?>
+    } $totals_array[$year] = $grand_total;
+    ?>
     <td style="background-color:lightblue;"><b>{{$grand_total}}</b></td>
 </tr>
 </table>
 </div>
 <?php } 
-}
-}}
+} // Project Summary Top
+$grand_total_project = 0;
+?>
+<div><br></div>
+<div>
+    <h4 style="text-align: center;">{{$project['projectname']}} Project Summary</h4>
+<table class="table table-striped">
+<tr>
+    <td><b>Year</b></td>
+    <?php foreach($years_array as $year){ ?>
+        <td>{{$year}}</td>
+    <?php }?>
+    <td><b>Total</b></td>
+</tr>
+<tr> <?php //If the chart unit is dollars, then we need to insert $ into the table. ?>
+    <td><b><?php if(!isset($chart_units) || $chart_units == 'dollars'){?>Dollars
+    </b></td>
+    <?php foreach($years_array as $year){ ?>
+        <td>${{$totals_array[$year]}}</td>
+    <?php $grand_total_project += $totals_array[$year];
+    }?>
+    <td><b>${{$grand_total_project}}</b></td><?php }
+    else{?>Hours</b></td>
+    <?php foreach($years_array as $year){ ?>
+        <td>{{$totals_array[$year]}}</td>
+    <?php $grand_total_project += $totals_array[$year];
+    }?>
+    <td><b>{{$grand_total_project}}</b></td><?php
+    } ?>
+</tr>
+</table>
+</div>
+<?php }} // Project Summary Bottom
     if($has_projects != true){ ?>
         <h4 style="text-align: center;">No projects associated with the provided Code.</h4>
     <?php } 
