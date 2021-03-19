@@ -244,6 +244,23 @@
             </table>
           </div>
         </div>
+        <div class="row">
+          <div class="form-group col-md-4">
+          <input type="checkbox" id="autoadjustfuture" name="autoadjustfuture" @if(old('autoadjustfuture') == "on"){{"checked"}}@else @if(isset($project['autoadjustfuture']) && $project['autoadjustfuture'] == true){{"checked"}} @endif @endif><b>Auto Adjust Future</b>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="overunderbudget">Predicted Over/Under Planning Budget (%):</label>
+            @if(old('overunderbudget'))
+              <input type="number" class="form-control" step=1 name="overunderbudget" value="{{ old('overunderbudget') }}">
+            @else
+              @if($__env->yieldContent('overunderbudget') != null)
+              <input type="number" class="form-control" step=1 name="overunderbudget" value="<?= $__env->yieldContent('overunderbudget')?>">
+              @else
+              <input type="number" class="form-control" step=1 name="overunderbudget" value="100">
+              @endif
+            @endif 
+          </div>
+        </div>
 
         <div class="row">
           <div class="form-group col-md-2">

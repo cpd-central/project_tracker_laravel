@@ -288,6 +288,7 @@ class ProjectController extends Controller
   public function update(Request $request, $id)
   {
     $this->validate_request($request, $id);  
+    dd($request);
     $project = Project::find($id);   
     $this->store($project, $request);
     return view('pages.editproject')->with('project', $project)->with('success', 'Project has been successfully updated.');
