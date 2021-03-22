@@ -303,7 +303,10 @@ else{
 					<div class="form-group" style="{{$style_string}}">
 						<a href={{ route('pages.accountdirectory') }} class="btn login_btn">Account Directory</a>
 					</div>	
-					<?php } ?>               
+					<?php } ?>
+					<div class="form-group" style="{{$style_string}}">
+                        <a href={{ route('pages.bdb') }} class="btn login_btn">BDB</a>
+					</div>               
 					<div class="form-group" style="{{$style_string}}">
                         <a href={{ route('logout') }} class="btn login_btn" onclick="event.preventDefault();
 						document.getElementById('logout-form').submit();">Logout</a>

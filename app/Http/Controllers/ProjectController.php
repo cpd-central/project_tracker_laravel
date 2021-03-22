@@ -2863,5 +2863,11 @@ class ProjectController extends Controller
   }
 /**************** End of the Project Hour Tracker Application *********************/
 
+/***********************BDB **************************/
+  public function adjust()
+  {
+    $projects = Project::where('autoadjustfuture', true)->get();
+    dd($projects);
+  }
 }
 
