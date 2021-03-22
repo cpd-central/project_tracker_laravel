@@ -59,6 +59,12 @@ class ProjectController extends Controller
     $project->billingnotes = $req->get('billingnotes');
     $project->filelocationofproposal = $req->get('filelocationofproposal');
     $project->filelocationofproject = $req->get('filelocationofproject');
+    if($req->get('autoadjustfuture') == "on"){
+      $project->autoadjustfuture = true;
+    } else{
+      $project->autoadjustfuture = false;
+    }
+    $project->overunderbudget = $req->get('overunderbudget');
     $project->save();
   }
 
@@ -288,7 +294,6 @@ class ProjectController extends Controller
   public function update(Request $request, $id)
   {
     $this->validate_request($request, $id);  
-    dd($request);
     $project = Project::find($id);   
     $this->store($project, $request);
     return view('pages.editproject')->with('project', $project)->with('success', 'Project has been successfully updated.');
