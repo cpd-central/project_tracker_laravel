@@ -64,7 +64,7 @@ class ProjectController extends Controller
     } else{
       $project->autoadjustfuture = false;
     }
-    $project->overunderbudget = $req->get('overunderbudget');
+    $project->overunderbudget = ((int)$req->get('overunderbudget'));
     $project->save();
   }
 
@@ -2868,15 +2868,30 @@ class ProjectController extends Controller
   {
     $projects = Project::where('autoadjustfuture', true)->get();
     foreach($projects as $project){
+      $approximated_budget = ($project['overunderbudget']/100) * $project['dollarvalueinhouse'];
+      $monthly_percents = $project['monthlypercent'];
       $date_ntp = $project['datentp'];
       $start_month = date('F', substr($date_ntp, 0, 10));
+      $start_year = date('Y', substr($date_ntp, 0, 10));
       $hours_data = $project['hours_data'];
       $years_array = array_keys($hours_data);
-      foreach($years_array as $year){
-        $months_array = array_keys($hours_data[$year]);
-        $employee_array = array_keys($hours_data[$year][$months_array[0]]);
+      $months_count = count(array_keys($monthly_percents));
+      $total_count = 0;
+      while($total_count < $months_count){
+        foreach($years_array as $year){
+          $months_array = array_keys($hours_data[$year]);
+          $employee_array = array_keys($hours_data[$year][$months_array[0]]);
+          if($year = $start_year){
+            foreach($months_array as $month){
+              if()
+            }
+          }
+          else{
 
+          }
 
+          $total_count++;
+        }
       }
     }
   }
