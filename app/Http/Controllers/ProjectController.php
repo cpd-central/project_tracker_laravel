@@ -2867,7 +2867,18 @@ class ProjectController extends Controller
   public function adjust()
   {
     $projects = Project::where('autoadjustfuture', true)->get();
-    dd($projects);
+    foreach($projects as $project){
+      $date_ntp = $project['datentp'];
+      $start_month = date('F', substr($date_ntp, 0, 10));
+      $hours_data = $project['hours_data'];
+      $years_array = array_keys($hours_data);
+      foreach($years_array as $year){
+        $months_array = array_keys($hours_data[$year]);
+        $employee_array = array_keys($hours_data[$year][$months_array[0]]);
+
+
+      }
+    }
   }
 }
 
