@@ -2867,32 +2867,77 @@ class ProjectController extends Controller
   public function adjust()
   {
     $projects = Project::where('autoadjustfuture', true)->get();
+    $users = User::all();
     foreach($projects as $project){
       $approximated_budget = ($project['overunderbudget']/100) * $project['dollarvalueinhouse'];
       $monthly_percents = $project['monthlypercent'];
       $date_ntp = $project['datentp'];
+      $date_energization = $project['dateenergization'];
       $start_month = date('F', substr($date_ntp, 0, 10));
       $start_year = date('Y', substr($date_ntp, 0, 10));
+      $end_year = date('Y', substr($date_energization, 0, 10));
       $hours_data = $project['hours_data'];
-      $years_array = array_keys($hours_data);
+      $j = 0;
+      for($i = $start_year; $i <= $end_year; $i++){
+        $years_array[$j] = $i;
+        $j++;
+      }
+      arsort($years_array);
       $months_count = count(array_keys($monthly_percents));
-      $total_count = 0;
-      while($total_count < $months_count){
+      $months_total_array = array_fill(0, $months_count, 0);
+      $t = 0; //Total count of array
         foreach($years_array as $year){
+          if(((int)$year) < ((int)$start_year)){
+            continue;
+          }
+          if(!isset($hours_data[$year])){
+            continue;
+          }     
           $months_array = array_keys($hours_data[$year]);
-          $employee_array = array_keys($hours_data[$year][$months_array[0]]);
           if($year = $start_year){
+            $employee_array = array_keys($hours_data[$start_year][$months_array[0]]);
+            unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
+
+
+            $rates_for_total = [count($employee_array)];
+            for($j = 0; $j < count($employee_array); $j++){ 
+                if($employee_array[$j] == "noname"){
+                    $rates_for_total[$j] = 160;
+                }
+                foreach($users as $user){ 
+                    if($user['nickname'] == $employee_array[$j]){
+                        $rates_for_total[$j] = $user['hour_rates'][$year];
+                    }
+                }
+            }
+
             foreach($months_array as $month){
-              if()
+              if(date('n', strtotime($start_month)) <= date('n', strtotime($month))){    
+                for($j = 0; $j < count($employee_array); $j++){ 
+                  $months_total_array[$t] += $hours_data[$year][$month][$employee_array[$j]] * $rates_for_total[$j];
+                }
+              }
+            $t++;  
+            if($t >= $months_count){
+              break;
+            }
             }
           }
-          else{
-
+          else{    
+            $employee_array = array_keys($hours_data[$year][$months_array[0]]);
+            unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
+            foreach($months_array as $month){
+              for($j = 0; $j < count($employee_array); $j++){ 
+                $months_total_array[$t] += $project['hours_data'][$year][$month][$employee_array[$j]]  * $rates_for_total[$j];
+              }
+            $t++;
+            if($t >= $months_count){
+              break;
+            }
+            }
           }
-
-          $total_count++;
         }
-      }
+      dd($months_total_array);
     }
   }
 }
