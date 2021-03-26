@@ -2863,7 +2863,7 @@ class ProjectController extends Controller
   }
 /**************** End of the Project Hour Tracker Application *********************/
 
-/***********************BDB **************************/
+/***********************BDB**************************/
   public function adjust()
   {
     $projects = Project::where('autoadjustfuture', true)->get();
@@ -2873,6 +2873,13 @@ class ProjectController extends Controller
       $monthly_percents = $project['monthlypercent'];
       $date_ntp = $project['datentp'];
       $date_energization = $project['dateenergization'];
+      //Finding the time between dates
+      $start_date = date('Y-m-d', substr($date_ntp, 0, 10));
+      $today_date = date('Y-m-d');
+      $beginning = new \DateTime($start_date);
+      $current = new \DateTime($today_date);
+      $interval = $beginning->diff($current);
+      dd($interval);
       $start_month = date('F', substr($date_ntp, 0, 10));
       $start_year = date('Y', substr($date_ntp, 0, 10));
       $end_year = date('Y', substr($date_energization, 0, 10));
@@ -2937,8 +2944,17 @@ class ProjectController extends Controller
             }
           }
         }
-      dd($months_total_array);
+      $adjust_percents = $monthly_percents;
+      $leftover = $approximated_budget;
+      $total_percents_used = 0;
+      for($i = 0; $i < (count($monthly_percents)); $i++){
+        $adjust_percents[$i] = $months_total_array[$i] / $approximated_budget;
+        $total_percents_used += $adjust_percents[$i];
+        $leftover = $leftover - $months_total_array[$i];
+      }
+      dd($leftover);
     }
   }
+  /*******************BDB**********************/
 }
 
