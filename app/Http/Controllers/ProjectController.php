@@ -2871,6 +2871,17 @@ class ProjectController extends Controller
     foreach($projects as $project){
       $approximated_budget = ($project['overunderbudget']/100) * $project['dollarvalueinhouse'];
       $monthly_percents = $project['monthlypercent'];
+      $distribute_even = true;
+      //check if monthly_percents is all 0, then distribute evenly.
+      for($i = 0; $i < count($monthly_percents); $i++){
+        if($monthly_percents[$i] != 0){
+          $distribute_even = false;
+          break;
+        }
+        else{
+          continue;
+        }
+      }
       $date_ntp = $project['datentp'];
       $date_energization = $project['dateenergization'];
       //Finding the time between dates
@@ -2879,7 +2890,6 @@ class ProjectController extends Controller
       $beginning = new \DateTime($start_date);
       $current = new \DateTime($today_date);
       $interval = $beginning->diff($current);
-      dd($interval);
       $start_month = date('F', substr($date_ntp, 0, 10));
       $start_year = date('Y', substr($date_ntp, 0, 10));
       $end_year = date('Y', substr($date_energization, 0, 10));
@@ -2952,7 +2962,7 @@ class ProjectController extends Controller
         $total_percents_used += $adjust_percents[$i];
         $leftover = $leftover - $months_total_array[$i];
       }
-      dd($leftover);
+      dd($adjust_percents);
     }
   }
   /*******************BDB**********************/
