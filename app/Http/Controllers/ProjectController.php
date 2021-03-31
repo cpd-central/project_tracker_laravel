@@ -1430,11 +1430,11 @@ class ProjectController extends Controller
     $year_of_previous_month = date('Y', strtotime('-21 day'));
     $two_months_year = date('Y', strtotime('-51 day'));
     $three_months_year = date('Y', strtotime('-80 day'));
-    foreach($non_zero_projects as $i => $project){
-      if(!isset($project['bill_amount'][$year_of_previous_month][$previous_month]) && !isset($project['bill_amount'][$two_months_year][$two_months_ago]) && !isset($project['bill_amount'][$three_months_year][$three_months_ago])){
-        unset($non_zero_projects[$i]);
-      }
-    }
+    //foreach($non_zero_projects as $i => $project){
+      //if(!isset($project['bill_amount'][$year_of_previous_month][$previous_month]) && !isset($project['bill_amount'][$two_months_year][$two_months_ago]) && !isset($project['bill_amount'][$three_months_year][$three_months_ago])){
+        //unset($non_zero_projects[$i]);
+      //}
+    //}
     $i=0;
     $i_max = count($non_zero_projects) . "<br>";
     //go through each project resulting from the filter directly above
