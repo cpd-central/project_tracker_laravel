@@ -31,6 +31,8 @@ Route::post('/wonprojectsummary', 'ProjectController@search')->middleware('verif
 //Select Menu Route
 Route::post('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummarySearch');
 
+Route::get('/bdb', 'ProjectController@adjust')->name('pages.bdb');
+
 
 Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified', 'pagevisits');
 Route::post('/hoursgraph','ProjectController@submit_billing')->middleware('verified');

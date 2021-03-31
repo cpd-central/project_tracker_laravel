@@ -59,6 +59,8 @@
 @section('datentp', $project['datentp'])
 @section('dateenergization', $project['dateenergization'])
 
+@section('overunderbudget', $project['overunderbudget'])
+
 <!-- Project Type Sections -->
 @section('projecttypewind')
 <?php

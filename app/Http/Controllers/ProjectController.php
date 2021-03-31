@@ -59,6 +59,12 @@ class ProjectController extends Controller
     $project->billingnotes = $req->get('billingnotes');
     $project->filelocationofproposal = $req->get('filelocationofproposal');
     $project->filelocationofproject = $req->get('filelocationofproject');
+    if($req->get('autoadjustfuture') == "on"){
+      $project->autoadjustfuture = true;
+    } else{
+      $project->autoadjustfuture = false;
+    }
+    $project->overunderbudget = ((int)$req->get('overunderbudget'));
     $project->save();
   }
 
@@ -1424,11 +1430,11 @@ class ProjectController extends Controller
     $year_of_previous_month = date('Y', strtotime('-21 day'));
     $two_months_year = date('Y', strtotime('-51 day'));
     $three_months_year = date('Y', strtotime('-80 day'));
-    foreach($non_zero_projects as $i => $project){
-      if(!isset($project['bill_amount'][$year_of_previous_month][$previous_month]) && !isset($project['bill_amount'][$two_months_year][$two_months_ago]) && !isset($project['bill_amount'][$three_months_year][$three_months_ago])){
-        unset($non_zero_projects[$i]);
-      }
-    }
+    //foreach($non_zero_projects as $i => $project){
+      //if(!isset($project['bill_amount'][$year_of_previous_month][$previous_month]) && !isset($project['bill_amount'][$two_months_year][$two_months_ago]) && !isset($project['bill_amount'][$three_months_year][$three_months_ago])){
+        //unset($non_zero_projects[$i]);
+      //}
+    //}
     $i=0;
     $i_max = count($non_zero_projects) . "<br>";
     //go through each project resulting from the filter directly above
@@ -2857,5 +2863,108 @@ class ProjectController extends Controller
   }
 /**************** End of the Project Hour Tracker Application *********************/
 
+/***********************BDB**************************/
+  public function adjust()
+  {
+    $projects = Project::where('autoadjustfuture', true)->get();
+    $users = User::all();
+    foreach($projects as $project){
+      $approximated_budget = ($project['overunderbudget']/100) * $project['dollarvalueinhouse'];
+      $monthly_percents = $project['monthlypercent'];
+      $distribute_even = true;
+      //check if monthly_percents is all 0, then distribute evenly.
+      for($i = 0; $i < count($monthly_percents); $i++){
+        if($monthly_percents[$i] != 0){
+          $distribute_even = false;
+          break;
+        }
+        else{
+          continue;
+        }
+      }
+      $date_ntp = $project['datentp'];
+      $date_energization = $project['dateenergization'];
+      //Finding the time between dates
+      $start_date = date('Y-m-d', substr($date_ntp, 0, 10));
+      $today_date = date('Y-m-d');
+      $beginning = new \DateTime($start_date);
+      $current = new \DateTime($today_date);
+      $interval = $beginning->diff($current);
+      $start_month = date('F', substr($date_ntp, 0, 10));
+      $start_year = date('Y', substr($date_ntp, 0, 10));
+      $end_year = date('Y', substr($date_energization, 0, 10));
+      $hours_data = $project['hours_data'];
+      $j = 0;
+      for($i = $start_year; $i <= $end_year; $i++){
+        $years_array[$j] = $i;
+        $j++;
+      }
+      arsort($years_array);
+      $months_count = count(array_keys($monthly_percents));
+      $months_total_array = array_fill(0, $months_count, 0);
+      $t = 0; //Total count of array
+        foreach($years_array as $year){
+          if(((int)$year) < ((int)$start_year)){
+            continue;
+          }
+          if(!isset($hours_data[$year])){
+            continue;
+          }     
+          $months_array = array_keys($hours_data[$year]);
+          if($year = $start_year){
+            $employee_array = array_keys($hours_data[$start_year][$months_array[0]]);
+            unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
+
+
+            $rates_for_total = [count($employee_array)];
+            for($j = 0; $j < count($employee_array); $j++){ 
+                if($employee_array[$j] == "noname"){
+                    $rates_for_total[$j] = 160;
+                }
+                foreach($users as $user){ 
+                    if($user['nickname'] == $employee_array[$j]){
+                        $rates_for_total[$j] = $user['hour_rates'][$year];
+                    }
+                }
+            }
+
+            foreach($months_array as $month){
+              if(date('n', strtotime($start_month)) <= date('n', strtotime($month))){    
+                for($j = 0; $j < count($employee_array); $j++){ 
+                  $months_total_array[$t] += $hours_data[$year][$month][$employee_array[$j]] * $rates_for_total[$j];
+                }
+              }
+            $t++;  
+            if($t >= $months_count){
+              break;
+            }
+            }
+          }
+          else{    
+            $employee_array = array_keys($hours_data[$year][$months_array[0]]);
+            unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
+            foreach($months_array as $month){
+              for($j = 0; $j < count($employee_array); $j++){ 
+                $months_total_array[$t] += $project['hours_data'][$year][$month][$employee_array[$j]]  * $rates_for_total[$j];
+              }
+            $t++;
+            if($t >= $months_count){
+              break;
+            }
+            }
+          }
+        }
+      $adjust_percents = $monthly_percents;
+      $leftover = $approximated_budget;
+      $total_percents_used = 0;
+      for($i = 0; $i < (count($monthly_percents)); $i++){
+        $adjust_percents[$i] = $months_total_array[$i] / $approximated_budget;
+        $total_percents_used += $adjust_percents[$i];
+        $leftover = $leftover - $months_total_array[$i];
+      }
+      dd($adjust_percents);
+    }
+  }
+  /*******************BDB**********************/
 }
 
