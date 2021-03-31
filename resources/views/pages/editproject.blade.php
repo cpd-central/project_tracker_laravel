@@ -59,6 +59,7 @@
 @section('datentp', $project['datentp'])
 @section('dateenergization', $project['dateenergization'])
 
+
 <!-- Project Type Sections -->
 @section('projecttypewind')
 <?php
