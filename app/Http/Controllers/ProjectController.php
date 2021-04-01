@@ -1430,11 +1430,11 @@ class ProjectController extends Controller
     $year_of_previous_month = date('Y', strtotime('-21 day'));
     $two_months_year = date('Y', strtotime('-51 day'));
     $three_months_year = date('Y', strtotime('-80 day'));
-    foreach($non_zero_projects as $i => $project){
-      if(!isset($project['bill_amount'][$year_of_previous_month][$previous_month]) && !isset($project['bill_amount'][$two_months_year][$two_months_ago]) && !isset($project['bill_amount'][$three_months_year][$three_months_ago])){
-        unset($non_zero_projects[$i]);
-      }
-    }
+    //foreach($non_zero_projects as $i => $project){
+    //  if(!isset($project['bill_amount'][$year_of_previous_month][$previous_month]) && !isset($project['bill_amount'][$two_months_year][$two_months_ago]) && !isset($project['bill_amount'][$three_months_year][$three_months_ago])){
+    //    unset($non_zero_projects[$i]);
+    //  }
+    //}
     $i=0;
     $i_max = count($non_zero_projects) . "<br>";
     //go through each project resulting from the filter directly above
@@ -2962,7 +2962,32 @@ class ProjectController extends Controller
         $total_percents_used += $adjust_percents[$i];
         $leftover = $leftover - $months_total_array[$i];
       }
-      dd($adjust_percents);
+      $month_counter = 0;
+      foreach($adjust_percents as $ap){
+        if($ap != 0){
+          $month_counter++;
+        }
+        else{
+          break;
+        }
+      }
+      $months_left = count($adjust_percents) - $month_counter;
+      //math begins for splitting up the remaining amount on the months
+      if($distribute_even == true){ //THIS IF STATEMENT NEEDS TO BE TESTED!!!!!!!!
+         dd("not finished even distribute");
+      }
+      else{
+        $percent_left = (1 - $total_percents_used);
+        for($i = $month_counter; $i < count($adjust_percents); $i++){
+          $adjust_percents[$i] = $monthly_percents[$i] / $percent_left;
+        }
+        dd($adjust_percents);
+        $total = 0;
+        for($i = 0; $i < count($adjust_percents); $i++){
+          $total += $adjust_percents[$i];
+        }
+        dd($total);
+      }
     }
   }
   /*******************BDB**********************/
