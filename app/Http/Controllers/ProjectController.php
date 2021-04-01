@@ -2977,16 +2977,18 @@ class ProjectController extends Controller
          dd("not finished even distribute");
       }
       else{
-        $percent_left = (1 - $total_percents_used);
-        for($i = $month_counter; $i < count($adjust_percents); $i++){
-          $adjust_percents[$i] = $monthly_percents[$i] / $percent_left;
+        $expected = 0;
+        for($i = 0; $i < $month_counter; $i++){
+          $expected += $monthly_percents[$i];
         }
-        dd($adjust_percents);
+        $percent_left = (1 - $expected);
+        for($i = $month_counter; $i < count($adjust_percents); $i++){
+          $adjust_percents[$i] = (($monthly_percents[$i] / $percent_left) * ($expected - $total_percents_used) + $monthly_percents[$i]);
+        }
         $total = 0;
         for($i = 0; $i < count($adjust_percents); $i++){
           $total += $adjust_percents[$i];
         }
-        dd($total);
       }
     }
   }
