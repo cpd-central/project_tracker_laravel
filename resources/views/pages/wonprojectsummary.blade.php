@@ -22,20 +22,29 @@
       <option value="won_prob">Won/Probable View</option>
       <option value="projects" selected>Projects View</option>
       <option value="charted_hours">Charted Hours View</option>
+      <option value="bdb">Budget Distribution Buster</option>
      <!-- <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="won_prob"><button class="btn btn-primary" name="button" type="submit" value="Won/Probable View">Won/Probable View</button> -->
     @elseif ($chart_type == 'won_prob')
       <option value="won_prob" selected>Won/Probable View</option>
       <option value="projects">Projects View</option>
       <option value="charted_hours">Charted Hours View</option>
+      <option value="bdb">Budget Distribution Buster</option>
      <!-- <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="projects"><button class="btn btn-primary" name="button" type="submit" value="Projects View">Projects View</button> -->
     @elseif ($chart_type == 'charted_hours')
-    <option value="won_prob">Won/Probable View</option>
-    <option value="projects">Projects View</option>
-    <option value="charted_hours" selected>Charted Hours View</option>
+      <option value="won_prob">Won/Probable View</option>
+      <option value="projects">Projects View</option>
+      <option value="charted_hours" selected>Charted Hours View</option>
+      <option value="bdb">Budget Distribution Buster</option>
+    @elseif ($chart_type == 'bdb')   
+      <option value="won_prob">Won/Probable View</option>
+      <option value="projects">Projects View</option>
+      <option value="charted_hours">Charted Hours View</option>
+      <option value="bdb" selected>Budget Distribution Buster</option>
     @else
       <option value="won_prob" selected>Won/Probable View</option>
       <option value="projects">Projects View</option>
       <option value="charted_hours">Charted Hours View</option>
+      <option value="bdb">Budget Distribution Buster</option>
      <!-- <input class="btn btn-primary" name="switch_chart_button" type="hidden" value="projects"><button class="btn btn-primary" name="button" type="submit" value="Projects View">Projets View</button> -->
     @endif
   </select>

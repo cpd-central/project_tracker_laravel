@@ -488,6 +488,10 @@ class ProjectController extends Controller
       $projects=Project::all()->where('projectstatus','Probable');
       $projectStatus = "Probable";
     }
+    else if(isset($request['switch_chart_button']) && $request['switch_chart_button'] == 'bdb'){
+      $projects=Project::whereNotNull('adjusted_percents')->get();
+      $projectStatus = "All";
+    }
     else{
       $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
       $projectStatus = "All";
@@ -538,7 +542,19 @@ class ProjectController extends Controller
         }
         else
         {
-          if (isset($project['monthlypercent']))
+          //bdb*******************
+          if(isset($request['switch_chart_button']) && $request['switch_chart_button'] == 'bdb'){
+            $project_per_month_dollars = array();
+            $i = 0;
+            foreach($project_months as $month)
+            {
+              $per_month_dollars = ($project_dollars * ($project['overunderbudget'] / 100) ) * $project['adjusted_percents'][$i];
+              $project_per_month_dollars[$month] = $per_month_dollars;
+              $i++;
+            }
+          }
+          //bdb******************
+          else if (isset($project['monthlypercent']))
           {
             //check if all values in the monthly percent array are 0 or if there are non zero elements
             $temp = array_filter($project['monthlypercent']);
@@ -590,7 +606,7 @@ class ProjectController extends Controller
       $months = $this->get_date_interval_array($earliest_start, $latest_end, '1 month', 'M-y');
       $today = date('M-y'); 
       //find today in the array of months and remove everything before it 
-      if ($chart_type == 'charted_hours'){
+      if ($chart_type == 'charted_hours' || $chart_type == 'bdb'){
         $six_months = date('M-y', strtotime('-6 months'));
         $search_index = array_search($six_months, $months);
         for ($i=0; $i<$search_index; $i++)
@@ -654,7 +670,7 @@ class ProjectController extends Controller
         {
           $total_dollars_probable = $this->add_dollars($project, $total_dollars_probable, $months);
         }
-        if ($chart_type == 'projects')
+        if ($chart_type == 'projects' || $chart_type == 'bdb')
         {
           //add the project hours to the chart as a dataset 
           $dollar_values = array_values($project['per_month_dollars']);
@@ -2990,7 +3006,10 @@ class ProjectController extends Controller
           $total += $adjust_percents[$i];
         }
       }
+      $project->adjusted_percents = $adjust_percents;
+      $project->save();
     }
+    return redirect('/projectindex');
   }
   /*******************BDB**********************/
 }
