@@ -2912,10 +2912,10 @@ class ProjectController extends Controller
       $hours_data = $project['hours_data'];
       $j = 0;
       for($i = $start_year; $i <= $end_year; $i++){
-        $years_array[$j] = $i;
+        $years_array[$j] = strval($i);
         $j++;
       }
-      arsort($years_array);
+      sort($years_array);
       $months_count = count(array_keys($monthly_percents));
       $months_total_array = array_fill(0, $months_count, 0);
       $t = 0; //Total count of array
@@ -2927,7 +2927,7 @@ class ProjectController extends Controller
             continue;
           }     
           $months_array = array_keys($hours_data[$year]);
-          if($year = $start_year){
+          if($year == $start_year){
             $employee_array = array_keys($hours_data[$start_year][$months_array[0]]);
             unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
 
@@ -2945,12 +2945,12 @@ class ProjectController extends Controller
             }
 
             foreach($months_array as $month){
-              if(date('n', strtotime($start_month)) <= date('n', strtotime($month))){    
+              if(date('n', strtotime($start_month)) <= date('n', strtotime($month))){   
                 for($j = 0; $j < count($employee_array); $j++){ 
                   $months_total_array[$t] += $hours_data[$year][$month][$employee_array[$j]] * $rates_for_total[$j];
                 }
+              $t++;  
               }
-            $t++;  
             if($t >= $months_count){
               break;
             }
@@ -2959,6 +2959,17 @@ class ProjectController extends Controller
           else{    
             $employee_array = array_keys($hours_data[$year][$months_array[0]]);
             unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
+            $rates_for_total = [count($employee_array)];
+            for($j = 0; $j < count($employee_array); $j++){ 
+                if($employee_array[$j] == "noname"){
+                    $rates_for_total[$j] = 160;
+                }
+                foreach($users as $user){ 
+                    if($user['nickname'] == $employee_array[$j]){
+                        $rates_for_total[$j] = $user['hour_rates'][$year];
+                    }
+                }
+            }
             foreach($months_array as $month){
               for($j = 0; $j < count($employee_array); $j++){ 
                 $months_total_array[$t] += $project['hours_data'][$year][$month][$employee_array[$j]]  * $rates_for_total[$j];
@@ -2989,8 +3000,16 @@ class ProjectController extends Controller
       }
       $months_left = count($adjust_percents) - $month_counter;
       //math begins for splitting up the remaining amount on the months
-      if($distribute_even == true){ //THIS IF STATEMENT NEEDS TO BE TESTED!!!!!!!!
-         dd("not finished even distribute");
+      if($distribute_even == true){ 
+        $percent_left = 1 - $total_percents_used;
+        $ap = $percent_left / $months_left;
+        for($i = $month_counter; $i < count($adjust_percents); $i++){
+          $adjust_percents[$i] = $ap;
+        }
+        $total = 0;
+        for($i = 0; $i < count($adjust_percents); $i++){
+          $total += $adjust_percents[$i];
+        }
       }
       else{
         $expected = 0;
@@ -3000,10 +3019,6 @@ class ProjectController extends Controller
         $percent_left = (1 - $expected);
         for($i = $month_counter; $i < count($adjust_percents); $i++){
           $adjust_percents[$i] = (($monthly_percents[$i] / $percent_left) * ($expected - $total_percents_used) + $monthly_percents[$i]);
-        }
-        $total = 0;
-        for($i = 0; $i < count($adjust_percents); $i++){
-          $total += $adjust_percents[$i];
         }
       }
       $project->adjusted_percents = $adjust_percents;
