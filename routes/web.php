@@ -31,8 +31,6 @@ Route::post('/wonprojectsummary', 'ProjectController@search')->middleware('verif
 //Select Menu Route
 Route::post('/wonprojectsummary', 'ProjectController@indexwon')->name('pages.wonprojectsummarySearch');
 
-Route::get('/bdb', 'ProjectController@adjust')->name('pages.bdb');
-
 
 Route::get('/hoursgraph', 'ProjectController@hours_graph')->name('pages.hoursgraph')->middleware('verified', 'pagevisits');
 Route::post('/hoursgraph','ProjectController@submit_billing')->middleware('verified');
@@ -44,6 +42,8 @@ Route::get('/monthendbilling', 'ProjectController@billing')->name('pages.monthen
 
 Route::get('/billinghistory', 'ProjectController@bill_history')->name('pages.billinghistory')->middleware('verified', 'pagevisits');
 Route::post('/billinghistorysearch', 'ProjectController@bill_history_search')->middleware('verified');
+
+Route::get('/billinghistorysearch/{projectcode}', 'ProjectController@bill_history_search')->middleware('verified');
 
 Route::get('/editproject/{id}', 'ProjectController@edit_project')->name('pages.editproject')->middleware('verified');
 Route::post('/editproject/{id}', 'ProjectController@update')->middleware('verified');
