@@ -359,7 +359,6 @@ class ProjectController extends Controller
         unset($projects[$i]);
       }
     }
-    //dd($projects);
     return view('pages.monthendbilling', compact('projects', 'term', 'previous_month', 'year_of_previous_month'));
   }
 
@@ -372,8 +371,12 @@ class ProjectController extends Controller
     return view('pages.billinghistory');
   }
 
-  public function bill_history_search(Request $request){
-    $code = $request['code'];
+  public function bill_history_search(Request $request, $projectcode = null){
+    if(isset($projectcode)){
+      $code = $projectcode;
+    }else{
+      $code = $request['code'];
+    }
     $query = Project::where('projectcode', $code)->get();
     if(isset($query[0])){
       $project = $query[0];
@@ -1430,11 +1433,14 @@ class ProjectController extends Controller
     $year_of_previous_month = date('Y', strtotime('-21 day'));
     $two_months_year = date('Y', strtotime('-51 day'));
     $three_months_year = date('Y', strtotime('-80 day'));
-    //foreach($non_zero_projects as $i => $project){
-      //if(!isset($project['bill_amount'][$year_of_previous_month][$previous_month]) && !isset($project['bill_amount'][$two_months_year][$two_months_ago]) && !isset($project['bill_amount'][$three_months_year][$three_months_ago])){
-        //unset($non_zero_projects[$i]);
-      //}
-    //}
+    /*These dates and Foreach loops are used to see if there were any coded hours in the last 3 months using the 'total' employee.
+     *If there are no hours coded to the project in the last 3 months, it is unset and won't be shown on the hours graph page.
+     */
+    foreach($non_zero_projects as $i => $project){
+      if((isset($project['hours_data'][$year_of_previous_month][$previous_month]) && $project['hours_data'][$year_of_previous_month][$previous_month]['Total'] <= 0) && (isset($project['hours_data'][$two_months_year][$two_months_ago]) && $project['hours_data'][$two_months_year][$two_months_ago]['Total'] <= 0) && (isset($project['hours_data'][$three_months_year][$three_months_ago]) && $project['hours_data'][$three_months_year][$three_months_ago]['Total'] <= 0)){
+        unset($non_zero_projects[$i]);
+      }
+    }
     $i=0;
     $i_max = count($non_zero_projects) . "<br>";
     //go through each project resulting from the filter directly above

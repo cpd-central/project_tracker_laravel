@@ -5,7 +5,7 @@
 <form class="form-inline md-form mr-auto mb-4" method="post" action='/billinghistorysearch'> 
           @csrf
           <label for="code">Project Code For Billing History:</label>
-          <input type="text" class="form-control" name="code" style="text-transform:uppercase" value="@if(old('code')){{ old('code') }}@else<?= $__env->yieldContent('code')?>@endif">
+          <input type="text" class="form-control" name="code" style="text-transform:uppercase" value="@if(old('code')){{ old('code') }}@elseif(isset($code))<?= $code?>@endif">
           <button class="btn aqua-gradient btn-rounded btn-sm my-0" type="submit">Submit</button>           
 </form> 
 </div>
