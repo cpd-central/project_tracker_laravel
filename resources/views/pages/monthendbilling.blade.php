@@ -39,7 +39,7 @@ $month = date('F', strtotime('-21 day'));
           <div id='divhead'>
             <thead id='header'>
               <tr> 
-                <th>Edit Project</th>
+                <th class="text-center" colspan="2">Action</th>
                 <th>Project Name</th>
                 <th>Project Code</th>
                 <th style="min-width: 150px">HOLD or BILL this month?</th>
@@ -55,6 +55,7 @@ $month = date('F', strtotime('-21 day'));
         @foreach ($projects as $project)
           <tr>
             <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit</a></td>
+            <td><a href="{{action('ProjectController@bill_history_search', $project['projectcode'])}}" class="btn btn-success">History</a></td>
             <td>{{$project['projectname']}}</td>
             <td>{{$project['projectcode']}}</td>
             <td><?php if(isset($project['bill_amount'][$year])){

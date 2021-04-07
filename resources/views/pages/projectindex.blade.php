@@ -84,7 +84,7 @@
     @foreach($projects as $project)
     <tr>
       <td><a href="{{action('ProjectController@copy_project', $project['_id'])}}" class="btn btn-success">Copy</a></td>
-      <td><a href="{{action('ProjectController@edit_project', $project['_id'])}}" class="btn btn-warning">Edit</a></td>
+      <td><a href="{{action('/billinghistorysearch', $project['projectcode'])}}" class="btn btn-warning">Edit</a></td>
       <td>
         <form action="{{action('ProjectController@destroy', $project['id'])}}" method="post">
           @csrf

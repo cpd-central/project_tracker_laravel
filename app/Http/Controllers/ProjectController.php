@@ -359,7 +359,6 @@ class ProjectController extends Controller
         unset($projects[$i]);
       }
     }
-    //dd($projects);
     return view('pages.monthendbilling', compact('projects', 'term', 'previous_month', 'year_of_previous_month'));
   }
 
@@ -372,8 +371,12 @@ class ProjectController extends Controller
     return view('pages.billinghistory');
   }
 
-  public function bill_history_search(Request $request){
-    $code = $request['code'];
+  public function bill_history_search(Request $request, $projectcode = null){
+    if(isset($projectcode)){
+      $code = $projectcode;
+    }else{
+      $code = $request['code'];
+    }
     $query = Project::where('projectcode', $code)->get();
     if(isset($query[0])){
       $project = $query[0];
