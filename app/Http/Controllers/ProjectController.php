@@ -2890,7 +2890,7 @@ class ProjectController extends Controller
   {
     $projects = Project::where('autoadjustfuture', true)->get();
     $users = User::all();
-    foreach($projects as $project){
+    foreach($projects as $project){ 
       $approximated_budget = ($project['overunderbudget']/100) * $project['dollarvalueinhouse'];
       $monthly_percents = $project['monthlypercent'];
       $distribute_even = true;
@@ -2904,6 +2904,15 @@ class ProjectController extends Controller
           continue;
         }
       }
+
+      //if the project doesn't have the adjusted_percents array, we're going to filter the data to find
+      //when the project has it's first recorded hours and adjust the date_ntp
+      if(!isset($project['adjusted_percents'])){
+
+
+
+      }
+
       $date_ntp = $project['datentp'];
       $date_energization = $project['dateenergization'];
       //Finding the time between dates
