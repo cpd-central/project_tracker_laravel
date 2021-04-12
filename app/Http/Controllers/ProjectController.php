@@ -2891,6 +2891,9 @@ class ProjectController extends Controller
     $projects = Project::where('autoadjustfuture', true)->get();
     $users = User::all();
     foreach($projects as $project){ 
+      if(!isset($project['hours_data'])){
+        continue;
+      }
       $approximated_budget = ($project['overunderbudget']/100) * $project['dollarvalueinhouse'];
       $monthly_percents = $project['monthlypercent'];
       $distribute_even = true;
@@ -2905,15 +2908,52 @@ class ProjectController extends Controller
         }
       }
 
+      $date_ntp = $project['datentp'];
       //if the project doesn't have the adjusted_percents array, we're going to filter the data to find
       //when the project has it's first recorded hours and adjust the date_ntp
       if(!isset($project['adjusted_percents'])){
-
-
-
+        $years = array_keys($project['hours_data']);
+        $earliest_year = $years[0];
+        foreach($years as $year){
+          if($earliest_year > $year){ //grabs the earliest year in hours_data in order to find
+            $earliest_year = $year;   //earliest coded hour to project to adjust date_ntp.
+          }
+        }
+        $hrs_data = $project['hours_data'][$earliest_year];
+        $month_keys = array_keys($hrs_data);
+        foreach($month_keys as $month){
+          if($hrs_data[$month]['Total'] > 0){
+            $start_month = date('F', substr($date_ntp, 0, 10));
+            if($month != $start_month){
+              $num_early = (int) date('m', strtotime($month));
+              $num_ntp = (int) date('m', strtotime($start_month));
+              $difference = $num_ntp - $num_early;
+              if($difference < 0){ //if the earliest coded hour is after the date_ntp, we don't want to change it.
+                break;
+              }
+              $months_count = count(array_keys($monthly_percents));
+              $new_months_array = array();
+              for($i = 0; $i < $difference; $i++){
+                $new_months_array[$i] = 0;
+              }
+              for($i = $difference; $i < ($months_count + $difference); $i++){
+                $new_months_array[$i] = $monthly_percents[$i - $difference];
+              }
+              $date_string = date('Y-m-d', strtotime("1 ".$month." ".$earliest_year.""));
+              $php_date = new \DateTime($date_string, new \DateTimeZone('America/Chicago'));
+              //note this is a mongodb UTCDateTime 
+              $date = new UTCDateTime($php_date->getTimestamp() * 1000);
+              $project->datentp = $date;
+              $date_ntp = $date;
+              $project->monthlypercent = $new_months_array;
+              $monthly_percents = $new_months_array;
+              break;
+              //dd($new_months_array);
+            }
+          }
+        }
       }
 
-      $date_ntp = $project['datentp'];
       $date_energization = $project['dateenergization'];
       //Finding the time between dates
       $start_date = date('Y-m-d', substr($date_ntp, 0, 10));
@@ -3021,10 +3061,10 @@ class ProjectController extends Controller
         for($i = $month_counter; $i < count($adjust_percents); $i++){
           $adjust_percents[$i] = $ap;
         }
-        $total = 0;
-        for($i = 0; $i < count($adjust_percents); $i++){
-          $total += $adjust_percents[$i];
-        }
+        //$total = 0;
+        //for($i = 0; $i < count($adjust_percents); $i++){
+        //  $total += $adjust_percents[$i];
+        //}
       }
       else{
         $expected = 0;
