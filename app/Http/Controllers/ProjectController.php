@@ -2984,8 +2984,8 @@ class ProjectController extends Controller
           if(!isset($hours_data[$year]) && ((int)$year) < ((int)$end_year) ){
             foreach($months_array as $month){
               if(date('n', strtotime($start_month)) <= date('n', strtotime($month))){   
-                $months_total_array[$t] = 0;
-                $t++;  
+                $months_total_array[$t] = -1;
+                $t++;
               }
               if($t >= $months_count){
                 break;
@@ -2993,6 +2993,9 @@ class ProjectController extends Controller
             }
             continue;
           }     
+          if(!isset($hours_data[$year]) && ((int)$year) == ((int)$end_year) ){
+            continue;
+          }    
           if($year == $start_year){
             $employee_array = array_keys($hours_data[$start_year][$months_array[0]]);
             unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
@@ -3051,40 +3054,51 @@ class ProjectController extends Controller
       $leftover = $approximated_budget;
       $total_percents_used = 0;
       for($i = 0; $i < (count($monthly_percents)); $i++){
+        if($months_total_array[$i] == -1){
+          $adjust_percents[$i] = -1;
+          continue;
+        }
         $adjust_percents[$i] = $months_total_array[$i] / $approximated_budget;
         $total_percents_used += $adjust_percents[$i];
         $leftover = $leftover - $months_total_array[$i];
       }
       $month_counter = 0;
+      $i = 0;
+
       foreach($adjust_percents as $ap){
-        if($ap != 0){
-          $month_counter++;
-        }
-        else{
+        if($ap == 0){
           break;
         }
+        if($ap == -1){
+          $month_counter++;
+          $adjust_percents[$i] = 0;
+        }
+        else{
+          $month_counter++;
+        }
+        $i++;
       }
       $months_left = count($adjust_percents) - $month_counter;
-      //math begins for splitting up the remaining amount on the months
-      if($distribute_even == true){ 
-        $percent_left = 1 - $total_percents_used;
-        $ap = $percent_left / $months_left;
-        for($i = $month_counter; $i < count($adjust_percents); $i++){
-          $adjust_percents[$i] = $ap;
+      if($months_left > 0){
+        //math begins for splitting up the remaining amount on the months
+        if($distribute_even == true){ 
+          $percent_left = 1 - $total_percents_used;
+          $ap = $percent_left / $months_left;
+          for($i = $month_counter; $i < count($adjust_percents); $i++){
+            $adjust_percents[$i] = $ap;
+          }
+        }
+        else{
+          $expected = 0;
+          for($i = 0; $i < $month_counter; $i++){
+            $expected += $monthly_percents[$i];
+          }
+          $percent_left = (1 - $expected);
+          for($i = $month_counter; $i < count($adjust_percents); $i++){
+            $adjust_percents[$i] = (($monthly_percents[$i] / $percent_left) * ($expected - $total_percents_used) + $monthly_percents[$i]);
+          }
         }
       }
-      else{
-        $expected = 0;
-        for($i = 0; $i < $month_counter; $i++){
-          $expected += $monthly_percents[$i];
-        }
-        $percent_left = (1 - $expected);
-        for($i = $month_counter; $i < count($adjust_percents); $i++){
-          $adjust_percents[$i] = (($monthly_percents[$i] / $percent_left) * ($expected - $total_percents_used) + $monthly_percents[$i]);
-        }
-      }
-      if($project['projectcode'] == "CEGMORT28")
-        dd($adjust_percents);
       $project->adjusted_percents = $adjust_percents;
       $project->save();
     }
