@@ -6,6 +6,8 @@ use App\Timesheet;
 use App\User;
 use Illuminate\Http\Request;
 
+use MongoDB\BSON\UTCDateTime; 
+
 use DateInterval;
 use DatePeriod;
 
@@ -98,8 +100,19 @@ class TimesheetController extends Controller
             }
             $i++;
         }
+        foreach($timesheets as $timesheet){
+            if(isset($timesheet['last_edit'])){
+                $mongo_date = $timesheet['last_edit'];
+                $php_datetime = $mongo_date->toDateTime();
+                //Note, this is the format needed to display in Chrome.  If Someone uses a different browser, 
+                //we will need to think through further. 
+                $date_string = $php_datetime->format("Y-m-d H:i:s");
+                $timesheet['last_edit'] = $date_string;
+            }else{
+                $timesheet['last_edit'] = "No data.";
+            }
+        }
         $users = User::all()->where('active', true)->sortBy('name');
-        //$users = User::all();
 		return view('pages.timesheetsentstatus', compact('timesheets','users'));
 	}
 
@@ -236,13 +249,19 @@ class TimesheetController extends Controller
             
             $collection = Timesheet::where('user', auth()->user()->email)->get(); 
 
+            $php_date = new \DateTime(date("Y-m-d H:i:s"), new \DateTimeZone('America/Chicago'));
+            //note this is a mongodb UTCDateTime 
+            $date = new UTCDateTime($php_date->getTimestamp() * 1000);
+
             if(!$collection->isEmpty()){
                 $timesheet = $collection[0];
+                $timesheet->last_edit = $date;
                 $this->store($timesheet, $request, $og_date_range);
             }
             else{
                 $timesheet = new Timesheet();
                 $timesheet->user = auth()->user()->email;
+                $timesheet->last_edit = $date;
                 $timesheet->pay_period_sent = True; 
                 $this->store($timesheet, $request, $og_date_range);
             }
