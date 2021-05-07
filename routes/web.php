@@ -90,6 +90,3 @@ Route::post('/manageproject/{id}', 'ProjectController@edit_due_dates')->middlewa
 
 Route::get('/stickynote', 'ProjectController@sticky_note')->name('pages.sticky_note')->middleware('verified', 'pagevisits');
 Route::post('/stickynote', 'ProjectController@employee_gantt')->middleware('verified');
-
-Route::get('/project_tracker', 'ProjectController@project_tracker')->name('pages.project_tracker')->middleware('verified', 'pagevisits');
-Route::post('/project_tracker', 'ProjectController@tracker_save')->middleware('verified');
