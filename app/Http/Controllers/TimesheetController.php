@@ -106,6 +106,7 @@ class TimesheetController extends Controller
                 $php_datetime = $mongo_date->toDateTime();
                 //Note, this is the format needed to display in Chrome.  If Someone uses a different browser, 
                 //we will need to think through further. 
+                $php_datetime->setTimeZone(new \DateTimeZone('America/Chicago'));
                 $date_string = $php_datetime->format("Y-m-d H:i:s");
                 $timesheet['last_edit'] = $date_string;
             }else{
