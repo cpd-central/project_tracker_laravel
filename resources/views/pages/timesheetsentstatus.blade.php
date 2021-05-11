@@ -33,7 +33,7 @@
 	<?php } else { ?>
 		<td style="background-color:#f00;" align="center"><h5><?php echo $timesheet['pay_period_total']?> hrs</h5></td>
 	<?php } ?>
-		<td align="center"><h5><?php echo $timesheet['updated_at']?></h5></td>	
+		<td align="center"><h5><?php echo $timesheet['last_edit']?></h5></td>	
 	<?php } ?>
 	@endforeach
 	</tr>

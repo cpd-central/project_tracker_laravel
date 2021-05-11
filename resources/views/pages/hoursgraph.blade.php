@@ -126,33 +126,46 @@
                 </td>
               </tr>
               <tr>
+                <?php
+                //Because of a known bug with -1 month where a 31 day month doesn't offset the month on the last day of billing, we check to see if this occurs
+                //and add 3 more days
+                $three_month = strtotime("-3 month");
+                $two_month = strtotime("-2 month");
+                $one_month = strtotime("-1 month");
+                if(date('m',$one_month) == date('m', $two_month)){
+                  $two_month = strtotime("-2 month -3 days");
+                }
+                if(date('m',$two_month) == date('m', $three_month)){
+                  $three_month = strtotime("-3 month -3 days");
+                }
+                ?>
                 <td colspan="1"></td>
                 <td colspan="1"><b>Billing History:</b></td>
-                <td colspam="2"><?php echo date("F Y",strtotime("-3 month"))?></td>
+                <td colspam="2"><?php echo date("F Y",$three_month)?></td>
               <td colspam="1"><?php if(isset($var->options["billing_data"][date("Y")])){ //CODE FOR MONTHS HERE
                 $keys = array_keys($var->options["billing_data"][date("Y")]);
                 foreach($keys as $key){
-                  if(date("F Y", strtotime($key)) == date("F Y",strtotime("-3 month"))){ //If The month index exists and equals the month 3 months prior, display the value.
+                  if(date("F Y", strtotime($key)) == date("F Y",$three_month)){ //If The month index exists and equals the month 3 months prior, display the value.
                     echo ltrim($var->options["billing_data"][date("Y")][$key], "$");
                   }
                 }
               }
               ?></td>
-                <td colspan="3"><?php echo date("F Y",strtotime("-2 month"))?></td>
+                <td colspan="3"><?php echo date("F Y",$two_month)?></td>
                 <td colspam="3"><?php if(isset($var->options["billing_data"][date("Y")])){ //CODE FOR MONTHS HERE
                   $keys = array_keys($var->options["billing_data"][date("Y")]);
                   foreach($keys as $key){
-                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("-2 month"))){ //If The month index exists and equals the month 2 months prior, display the value.
+                    if(date("F Y", strtotime($key)) == date("F Y",$two_month)){ //If The month index exists and equals the month 2 months prior, display the value.
                       echo ltrim($var->options["billing_data"][date("Y")][$key], "$");
                     }
                   }
                 }
                 ?></td>
-                <td colspan="1"><?php echo date("F Y",strtotime("-1 month"))?></td>
+                <td colspan="1"><?php echo date("F Y",$one_month)?></td>
                 <td colspam="3"><?php if(isset($var->options["billing_data"][date("Y")])){ //CODE FOR MONTHS HERE
                   $keys = array_keys($var->options["billing_data"][date("Y")]);
                   foreach($keys as $key){
-                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("-1 month"))){ //If The month index exists and equals the month 1 months prior, display the value.
+                    if(date("F Y", strtotime($key)) == date("F Y",$one_month)){ //If The month index exists and equals the month 1 months prior, display the value.
                       echo ltrim($var->options["billing_data"][date("Y")][$key], "$");
                     }
                   }
@@ -221,33 +234,46 @@
                 </td>
               </tr>
               <tr>
+              <?php
+                //Because of a known bug with -1 month where a 31 day month doesn't offset the month on the last day of billing, we check to see if this occurs
+                //and add 3 more days
+                $three_month = strtotime("-3 month");
+                $two_month = strtotime("-2 month");
+                $one_month = strtotime("-1 month");
+                if(date('m',$one_month) == date('m', $two_month)){
+                  $two_month = strtotime("-2 month -3 days");
+                }
+                if(date('m',$two_month) == date('m', $three_month)){
+                  $three_month = strtotime("-3 month -3 days");
+                }
+                ?>
                 <td colspan="1"></td>
                 <td colspan="1"><b>Billing History:</b></td>
-                <td colspam="2"><?php echo date("F Y",strtotime("-3 month"))?></td>
+                <td colspam="2"><?php echo date("F Y",$three_month)?></td>
               <td colspam="1"><?php if(isset($var->options["billing_data"][date("Y")])){ //CODE FOR MONTHS HERE
                 $keys = array_keys($var->options["billing_data"][date("Y")]);
                 foreach($keys as $key){
-                  if(date("F Y", strtotime($key)) == date("F Y",strtotime("-3 month"))){ //If The month index exists and equals the month 3 months prior, display the value.
+                  if(date("F Y", strtotime($key)) == date("F Y",$three_month)){ //If The month index exists and equals the month 3 months prior, display the value.
                     echo ltrim($var->options["billing_data"][date("Y")][$key], "$");
                   }
                 }
               }
               ?></td>
-                <td colspan="3"><?php echo date("F Y",strtotime("-2 month"))?></td>
+                <td colspan="3"><?php echo date("F Y",$two_month)?></td>
                 <td colspam="3"><?php if(isset($var->options["billing_data"][date("Y")])){ //CODE FOR MONTHS HERE
                   $keys = array_keys($var->options["billing_data"][date("Y")]);
                   foreach($keys as $key){
-                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("-2 month"))){ //If The month index exists and equals the month 2 months prior, display the value.
+                    if(date("F Y", strtotime($key)) == date("F Y",$two_month)){ //If The month index exists and equals the month 2 months prior, display the value.
                       echo ltrim($var->options["billing_data"][date("Y")][$key], "$");
                     }
                   }
                 }
                 ?></td>
-                <td colspan="1"><?php echo date("F Y",strtotime("-1 month"))?></td>
+                <td colspan="1"><?php echo date("F Y",$one_month)?></td>
                 <td colspam="3"><?php if(isset($var->options["billing_data"][date("Y")])){ //CODE FOR MONTHS HERE
                   $keys = array_keys($var->options["billing_data"][date("Y")]);
                   foreach($keys as $key){
-                    if(date("F Y", strtotime($key)) == date("F Y",strtotime("-1 month"))){ //If The month index exists and equals the month 1 months prior, display the value.
+                    if(date("F Y", strtotime($key)) == date("F Y",$one_month)){ //If The month index exists and equals the month 1 months prior, display the value.
                       echo ltrim($var->options["billing_data"][date("Y")][$key], "$");
                     }
                   }

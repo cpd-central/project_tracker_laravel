@@ -296,6 +296,7 @@ class ProjectController extends Controller
     $this->validate_request($request, $id);  
     $project = Project::find($id);   
     $this->store($project, $request);
+    $project = $this->displayFormat($project);
     return view('pages.editproject')->with('project', $project)->with('success', 'Project has been successfully updated.');
     //return redirect('/projectindex')->with('success', 'Success! Project has been successfully updated.');
   }
@@ -911,50 +912,6 @@ class ProjectController extends Controller
       array_push($employee_list, $user_array);
     }
     return $employee_list;
-    /*$employee_list = array( array("Vince"       ,"senior project manager"  ,170,"senior"         , "vince@ceg.mn"                  ),
-                           array("Max"         ,"senior engineer"         ,160,"senior"         , "mbartholomay@ceg-engineers.com"),
-                           array("Pete"        ,"senior project manager"  ,160,"senior"         , "pmalamen@ceg-engineers.com"    ),
-                           array("Jim"         ,"senior project manager"  ,160,"senior"         , ""                              ),
-                           array("Darko"       ,"project engineer - a"    ,120,"senior"         , "dborkovic@ceg-engineers.com"   ),
-                           array("Rob"         ,"senior project engineer" ,130,"senior"         , "rduncan@ceg-engineers.com"     ),
-                           array("Steve P."    ,"senior project engineer" ,130,"senior"         , "speichel@ceg-engineers.com"    ),
-                           array("Shafqat"     ,"project engineer b"      ,110,"project"        , "siqbal@ceg-engineers.com"      ),
-                           array("Nick"        ,"SCADA Engineer"          ,125,"SCADA"          , "ntmoe@ceg.mn"                  ),
-                           array("Erin"        ,"project engineer - a"    ,120,"project"        , "ebryden@ceg-engineers.com"     ),
-                           array("Yang"        ,"project engineer - a"    ,120,"project"        , "yzhang@ceg-engineers.com"      ),
-                           array("Stephen K."  ,"project engineer - b"    ,110,"project"        , "skatz@ceg-engineers.com"       ),
-                           array("Naga"        ,"project engineer - c"    ,95 ,"project"        , "nguddeti@ceg-engineers.com"    ),
-                           array("Corey"       ,"project engineer - c"    ,95 ,"SCADA"          , "cdolan@ceg.mn"                 ),
-                           array("Abdi"        ,"project engineer - b"    ,110,"project"        , "ajama@ceg-engineers.com"       ),
-                           array("Sumitra"     ,"intern"                  ,60 ,"interns-admin"  , "schowdhary@ceg-engineers.com"  ),
-                           array("Jacob R."    ,"project engineer - c"    ,95 ,"project"        , "jromero@ceg.mn"                ),
-                           array("Brian"       ,"SCADA Engineers"         ,125,"SCADA"          , "bahlsten@ceg-engineers.com"    ),
-                           array("Tom U."      ,"Project Managers"        ,125,"project"        , "turban@ceg-engineers.com"      ),
-                           array("Jake C."     ,"Project Managers"        ,95 ,"project"        , "jcarlson@ceg-engineers.com"    ),
-                           array("Jake M."     ,"project engineer - c"    ,95 ,"SCADA"          , "jmarsnik@ceg-engineers.com"    ),
-                           array("Donna"       ,"admin"                   ,85 ,"interns-admin"  , "dsindelar@ceg-engineers.com"   ),
-                           array("Letysha"     ,"cad technician drafter"  ,85 ,"drafting"       , "lbergstad@ceg-engineers.com"   ),
-                           array("Kathy"       ,"electrical designer"     ,105,"drafting"       , "kburk@ceg-engineers.com"       ),
-                           array("Tom M."      ,"cad technician drafter"  ,85 ,"drafting"       , ""                              ),
-                           array("Julie"       ,"cad technician drafter"  ,85 ,"drafting"       , "jcasanova@ceg-engineers.com"   ),
-                           array("Marilee"     ,"cad technician drafter"  ,85 ,"drafting"       , "mkaas@ceg-engineers.com"       ),
-                           array("Joe M."      ,"cad technician drafter"  ,85 ,"drafting"       , "jmitchell@ceg-engineers.com"   ),
-                           array("Bob B."      ,"cad technician drafter"  ,85 ,"drafting"       , "rbuckingham@ceg-engineers.com" ),
-                           array("Mike"        ,"cad technician drafter"  ,85 ,"drafting"       , "mtuma@ceg-engineers.com"       ),
-                           array("Bob S."      ,"cad technician drafter"  ,85 ,"drafting"       , ""                              ),
-                           array("Karen"       ,"cad technician drafter"  ,85 ,"drafting"       , ""                              ),
-                           array("Randy"       ,"intern"                  ,60 ,"interns-admin"  , ""                              ),
-                           array("Josh"        ,"intern"                  ,60 ,"interns-admin"  , ""                              ),
-                           array("Sam"         ,"intern"                  ,60 ,"interns-admin"  , ""                              ),
-                           array("Nolan"       ,"intern"                  ,60 ,"interns-admin"  , ""                              ),
-                           array("Graham"      ,"intern"                  ,60 ,"interns-admin"  , ""                              ),
-                           array("Trevor"      ,"intern"                  ,60 ,"interns-admin"  , ""                              ),
-                           array("Bjorn"       ,"intern"                  ,60 ,"interns-admin"  , ""                              ),
-                           array("Keerti"      ,"intern"                  ,60 ,"interns-admin"  , ""                              ),
-                           array("Tim"         ,"intern"                  ,60 ,"interns-admin"  , ""                              ),
-                           array("noname"      ,""                        ,60 ,"interns-admin"  , ""                              ));
-
-    return $employee_list;*/
   }
 
   public function drafter_hours(Request $request)
@@ -2791,100 +2748,6 @@ class ProjectController extends Controller
     $project->delete();
     return redirect('/projectindex')->with('success','Project has been deleted');
   }
-  
-/**************** Start of the Project Hour Tracker Application *********************/
-    /**
-   * Loads data for the Project Hour Tracker page.
-   * @return view 'pages.project_tracker'
-   */
-  public function project_tracker(Request $request){
-    // Declaration of Variables
-    $collection2 = Project::where('codes')->get();
-    $all_project_codes = array();
-    $all_project_desc = array();
-    for ($i = 0; $i < sizeof($collection2); $i++){
-      if (($collection2[$i]['projectstatus'] == 'Won') && ($collection2[$i]['projectcode'] != null)){
-        array_push($all_project_codes, $collection2[$i]['projectcode']);
-        array_push($all_project_desc, $collection2[$i]['projectname']);
-      }
-    } 
-    array_multisort($all_project_codes, $all_project_desc);
-    $collection = Timesheet::where('user', auth()->user()->email)->get();
-    $project_array = $collection[0]['Project_Hours'];
-    $CurrentProject = $request['CurrentProject'];
-    $CurrentProjectStartTime = Time();
-    // Page View
-    return view('pages.project_tracker', compact('CurrentProject', 'CurrentProjectStartTime', 'project_array', 'all_project_codes', 'all_project_desc'));
-  }
-    /**
-   * Saves inputed project + start time into database
-   * @return view 'pages.project_tracker'
-   */
-  public function tracker_save(Request $request){
-    // Declaration of Variables
-    $collection2 = Project::where('codes')->get();
-    $all_project_codes = array();
-    $all_project_desc = array();
-    for ($i = 0; $i < sizeof($collection2); $i++){
-      if (($collection2[$i]['projectstatus'] == 'Won') && ($collection2[$i]['projectcode'] != null)){
-        array_push($all_project_codes, $collection2[$i]['projectcode']);
-        array_push($all_project_desc, $collection2[$i]['projectname']);
-      }
-    } 
-    array_multisort($all_project_codes, $all_project_desc);
-    $collection1 = Timesheet::where('user', auth()->user()->email)->get();
-    $project_array = $collection1[0]['Project_Hours'];
-    $CurrentProject = $request['CurrentProject'];
-    $CurrentProjectStartTime = Time();
-    // Inserting Project Text Box Inputs Into Project Array
-    $project_array[$CurrentProject] = $CurrentProjectStartTime;
-
-    // Saves Project Hour Array to Database, or If Delete Button is Pressed, Calls the delete_project Function:
-    if(isset($_POST['Delete']))
-    {
-       $this -> delete_project($request);
-
-    }
-    else { 
-    $Timesheet = $collection1[0];
-    $Timesheet->Project_Hours=$project_array;
-    $Timesheet->save();
-    }
-    // Page View
-    return view('pages.project_tracker', compact('CurrentProject','CurrentProjectStartTime','project_array', 'all_project_codes','all_project_desc'));
-  }
-
-   /**
-   * Deletes Previous Project from Database.
-   * @return view 'pages.project_tracker'
-   */
-
-  public function delete_project(Request $request){
-    // Declaration of Variables
-    $collection2 = Project::where('codes')->get();
-    $all_project_codes = array();
-    $all_project_desc = array();
-    for ($i = 0; $i < sizeof($collection2); $i++){
-      if (($collection2[$i]['projectstatus'] == 'Won') && ($collection2[$i]['projectcode'] != null)){
-        array_push($all_project_codes, $collection2[$i]['projectcode']);
-        array_push($all_project_desc, $collection2[$i]['projectname']);
-      }
-    } 
-    array_multisort($all_project_codes, $all_project_desc);
-    $collection = Timesheet::where('user', auth()->user()->email)->get();
-    $project_array = $collection[0]['Project_Hours'];
-    $CurrentProject = $request['CurrentProject'];
-    $CurrentProjectStartTime = Time();
-    // Unsets last inputted project from project array, then resaves array to database
-    unset($project_array[array_keys($project_array)[sizeof($project_array)-1]]);
-    $Timesheet = $collection[0];
-    $Timesheet->Project_Hours=$project_array;
-    $Timesheet->save();
-    // Page view
-    return view('pages.project_tracker', compact('CurrentProject','CurrentProjectStartTime','project_array', 'all_project_codes','all_project_desc'));
-  }
-/**************** End of the Project Hour Tracker Application *********************/
-
 /***********************BDB**************************/
   public function adjust()
   {
