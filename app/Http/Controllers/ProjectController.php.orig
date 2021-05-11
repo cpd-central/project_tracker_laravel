@@ -2915,26 +2915,15 @@ class ProjectController extends Controller
         }
       $adjust_percents = $monthly_percents;
       $leftover = $approximated_budget;
-      $first_negative = true; //if its the fisrt month negative
       $total_percents_used = 0;
       for($i = 0; $i < (count($monthly_percents)); $i++){
         if($months_total_array[$i] == -1){
           $adjust_percents[$i] = -1;
           continue;
-        }       
+        }
+        $adjust_percents[$i] = $months_total_array[$i] / $approximated_budget;
+        $total_percents_used += $adjust_percents[$i];
         $leftover = $leftover - $months_total_array[$i];
-        if($leftover > 0){
-          $adjust_percents[$i] = $months_total_array[$i] / $approximated_budget;
-          $total_percents_used += $adjust_percents[$i];
-        }
-        elseif($leftover < 0 && $first_negative == true){
-          $adjust_percents[$i] = $leftover / $approximated_budget;
-          $first_negative = false;
-          $total_percents_used = 1;
-        }
-        else{
-          $adjust_percents[$i] = (-1 * $months_total_array[$i]) / $approximated_budget;
-        }
       }
       $month_counter = 0;
       $i = 0;
