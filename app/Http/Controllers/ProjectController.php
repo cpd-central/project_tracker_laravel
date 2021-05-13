@@ -2761,6 +2761,9 @@ class ProjectController extends Controller
       $monthly_percents = $project['monthlypercent'];
       $distribute_even = true;
       //check if monthly_percents is all 0, then distribute evenly.
+      if($monthly_percents == null){
+        continue;
+      }
       for($i = 0; $i < count($monthly_percents); $i++){
         if($monthly_percents[$i] != 0){
           $distribute_even = false;
@@ -2823,6 +2826,7 @@ class ProjectController extends Controller
       $start_month = date('F', substr($date_ntp, 0, 10));
       $start_year = date('Y', substr($date_ntp, 0, 10));
       $end_year = date('Y', substr($date_energization, 0, 10));
+      $years_array = array();
       $hours_data = $project['hours_data'];
       $j = 0;
       for($i = $start_year; $i <= $end_year; $i++){
@@ -2831,7 +2835,7 @@ class ProjectController extends Controller
       }
       sort($years_array);
       $months_count = count(array_keys($monthly_percents));
-      $months_total_array = array_fill(0, $months_count, 0);
+      $months_total_array = array_fill(0, $months_count, 0);      
       $t = 0; //Total count of array
       $offset = 0;
       foreach($years_array as $year){
@@ -2883,9 +2887,9 @@ class ProjectController extends Controller
                 }
               $t++;  
               }
-            if($t >= $months_count){
-              break;
-            }
+              if($t >= $months_count){
+                break;
+              }
             }
           }
           else{    
@@ -2936,21 +2940,46 @@ class ProjectController extends Controller
           $adjust_percents[$i] = (-1 * $months_total_array[$i]) / $approximated_budget;
         }
       }
-      $month_counter = 0;
-      $i = 0;
 
-      foreach($adjust_percents as $ap){
-        if($ap == 0){
+      //What this loop does is handle the first month being 0, so it checks the whole array to see if 
+      //there are more indexes that aren't 0. That means its not the last month and the project started
+      //late, so we offset it and keep going.
+      $zero_months = 0;
+      for($i = 0; $i < count($adjust_percents); $i++){
+        if($adjust_percents[$i] != 0){
           break;
         }
-        if($ap == -1){
+        else{
+          $zero_months++;
+        }
+      }
+        
+      //This loops through and figures out how many months we have left. If it hits a 0, we have to make
+      //sure that it wasn't just a delayed month, we have to keep going and check if there's more
+      //months with time coded.
+      $month_counter = $zero_months;
+      for($i = $zero_months; $i < count($adjust_percents); $i++){
+        if($adjust_percents[$i] == 0){
+          $last_month = true;
+          for($z = $i + 1; $z < count($adjust_percents); $z++){
+            if($adjust_percents[$z] != 0){
+              $last_month = false;
+            }
+          }
+          if($last_month == false){
+            $month_counter++;
+            continue;
+          }else{
+            break;
+          }
+        }
+        if($adjust_percents[$i] == -1){
           $month_counter++;
           $adjust_percents[$i] = 0;
         }
         else{
           $month_counter++;
         }
-        $i++;
       }
       $months_left = count($adjust_percents) - $month_counter;
       if($months_left > 0){
@@ -2968,9 +2997,11 @@ class ProjectController extends Controller
             $expected += $monthly_percents[$i];
           }
           $percent_left = (1 - $expected);
-          for($i = $month_counter; $i < count($adjust_percents); $i++){
-            $adjust_percents[$i] = (($monthly_percents[$i] / $percent_left) * ($expected - $total_percents_used) + $monthly_percents[$i]);
-          }
+          if($percent_left != 0){
+            for($i = $month_counter; $i < count($adjust_percents); $i++){
+              $adjust_percents[$i] = (($monthly_percents[$i] / $percent_left) * ($expected - $total_percents_used) + $monthly_percents[$i]);
+            }
+          } 
         }
       }
       $project->adjusted_percents = $adjust_percents;
