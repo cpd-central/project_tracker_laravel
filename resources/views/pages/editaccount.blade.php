@@ -77,7 +77,7 @@
             </div>
               <div class="row">
                 <div class="form-group col-md-4">
-                <label for="perhourdollar">Per hour dollar value:</label>
+                <label for="perhourdollar">Per hour dollar value for <?php echo date("Y"); ?>:</label>
                 <input type="text" class="form-control" name="perhourdollar" value="@if(old('perhourdollar')){{old('perhourdollar')}} @else<?= $user['perhourdollar']?>@endif">
                 </div>
               <div class="form-group col-md-4">
