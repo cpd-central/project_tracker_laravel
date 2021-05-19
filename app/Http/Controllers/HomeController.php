@@ -50,10 +50,19 @@ class HomeController extends Controller
         $timesheets = Timesheet::whereRaw(['$and' => array(['pay_period_sent' => ['$ne' => null]], ['pay_period_sent' => false])])->get();
         $today = new \DateTime("now", new \DateTimeZone("UTC"));
         foreach($timesheets as $timesheet){
-            $diff = $today->diff($timesheet['updated_at']);
-            if($diff->d < 3){
-                $timesheet['pay_period_sent'] = true;
-                $timesheet->save();
+            if(isset($timesheet['last_edit'])){
+                $diff = $today->diff($timesheet['last_edit']);
+                if($diff->d < 3){
+                    $timesheet['pay_period_sent'] = true;
+                    $timesheet->save();
+                }
+            }
+            else{
+                $diff = $today->diff($timesheet['updated_at']);
+                if($diff->d < 3){
+                    $timesheet['pay_period_sent'] = true;
+                    $timesheet->save();
+                }
             }
         }
     }
