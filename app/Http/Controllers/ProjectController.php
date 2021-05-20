@@ -633,10 +633,14 @@ class ProjectController extends Controller
       $chart_colors = [
         'rgb(255, 99, 132, 0.4)',
         'rgb(75, 192, 192, 0.4)',
-        'rgb(255, 159, 64, 0.4)',
+        'rgb(255, 140, 0, 0.4)',
         'rgb(54, 162, 235, 0.4)',
-        'rgb(255, 205, 86, 0.4)',
-        'rgb(153, 102, 255, 0.4)'];
+        'rgb(255, 225, 36, 0.4)',
+        'rgb(153, 102, 255, 0.4)',
+        'rgb(128, 128, 0, 0.4)',
+        'rgb(0, 100, 255, 0.4)',
+        'rgb(255, 0, 0, 0.4)',
+        'rgb(128, 0, 0, 0.4)'];
       $max_color_counter = count($chart_colors) - 1;
       $color_counter = 0; 
       //now loop through the projects again and update the array to have the months we are displaying, and fill with zeros for the rest
