@@ -294,14 +294,9 @@ else{
 					<div class="form-group" style="{{$style_string}}">
                         <a href={{ route('pages.timesheet') }} class="btn login_btn">Timesheet</a>
 					</div>
-					<!--Corey adding link for timesheet sent status page-->
 					<div class="form-group" style="{{$style_string}}">
                         <a href={{ route('pages.timesheetsentstatus') }} class="btn login_btn">Timesheet Sent Status</a>
                     </div>
-					<div class="form-group" style="{{$style_string}}">
-                        <a href={{ route('pages.bdb') }} class="btn login_btn">BDB</a>
-					</div>
-					<!--End Corey new code-->
 					<?php if (auth()->user()->role == "sudo" || auth()->user()->role == "admin") { ?>
 					<div class="form-group" style="{{$style_string}}">
 						<a href={{ route('pages.accountdirectory') }} class="btn login_btn">Account Directory</a>

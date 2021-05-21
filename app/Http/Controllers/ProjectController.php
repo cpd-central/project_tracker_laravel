@@ -495,6 +495,7 @@ class ProjectController extends Controller
     else if(isset($request['switch_chart_button']) && $request['switch_chart_button'] == 'bdb'){
       $projects=Project::whereNotNull('adjusted_percents')->get();
       $projectStatus = "All";
+      $this->adjust();
     }
     else{
       $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
@@ -556,6 +557,7 @@ class ProjectController extends Controller
               $project_per_month_dollars[$month] = $per_month_dollars;
               $i++;
             }
+            $project['per_month_dollars'] = $project_per_month_dollars;
           }
           //bdb******************
           else if (isset($project['monthlypercent']))
@@ -2757,6 +2759,8 @@ class ProjectController extends Controller
   {
     $projects = Project::where('autoadjustfuture', true)->get();
     $users = User::all();
+    $today_year = date("Y");
+    $today_month = date("M");
     foreach($projects as $project){ 
       if(!isset($project['hours_data'])){
         continue;
@@ -2855,8 +2859,13 @@ class ProjectController extends Controller
           if(!isset($hours_data[$year]) && ((int)$year) < ((int)$end_year) ){
             foreach($months_array as $month){
               if(date('n', strtotime($start_month)) <= date('n', strtotime($month))){   
+                if((date('y', strtotime($year)) >= date('y', strtotime($today_year)) ) && ( date('n', strtotime($month)) >= date('n', strtotime($today_month)))){  
+                  $months_total_array[$t] = -4;
+                  continue;
+                }else{
                 $months_total_array[$t] = -1;
                 $t++;
+                }
               }
               if($t >= $months_count){
                 break;
@@ -2886,8 +2895,13 @@ class ProjectController extends Controller
 
             foreach($months_array as $month){
               if(date('n', strtotime($start_month)) <= date('n', strtotime($month))){   
+                if((date('y', strtotime($year)) == date('y', strtotime($today_year)) ) && ( date('n', strtotime($month)) == date('n', strtotime($today_month)))){  
+                  $months_total_array[$t] = 0;
+                  continue;
+                }else{
                 for($j = 0; $j < count($employee_array); $j++){ 
                   $months_total_array[$t] += $hours_data[$year][$month][$employee_array[$j]] * $rates_for_total[$j];
+                }
                 }
               $t++;  
               }
@@ -2895,6 +2909,7 @@ class ProjectController extends Controller
                 break;
               }
             }
+            
           }
           else{    
             $employee_array = array_keys($hours_data[$year][$months_array[0]]);
@@ -2911,9 +2926,14 @@ class ProjectController extends Controller
                 }
             }
             foreach($months_array as $month){
+              if((date('y', strtotime($year)) == date('y', strtotime($today_year)) ) && ( date('n', strtotime($month)) == date('n', strtotime($today_month)))){  
+                $months_total_array[$t] = 0;
+                continue;
+              }else{
               for($j = 0; $j < count($employee_array); $j++){ 
                 $months_total_array[$t] += $project['hours_data'][$year][$month][$employee_array[$j]]  * $rates_for_total[$j];
               }
+            }
             $t++;
             if($t >= $months_count){
               break;
@@ -2921,6 +2941,7 @@ class ProjectController extends Controller
             }
           }
         }
+      //dd($months_total_array);
       $adjust_percents = $monthly_percents;
       $leftover = $approximated_budget;
       $first_negative = true; //if its the fisrt month negative
@@ -3011,7 +3032,7 @@ class ProjectController extends Controller
       $project->adjusted_percents = $adjust_percents;
       $project->save();
     }
-    return redirect('/projectindex');
+    return;
   }
   /*******************BDB**********************/
 }
