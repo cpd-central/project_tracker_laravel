@@ -493,9 +493,9 @@ class ProjectController extends Controller
       $projectStatus = "Probable";
     }
     else if(isset($request['switch_chart_button']) && $request['switch_chart_button'] == 'bdb'){
+      $this->adjust();
       $projects=Project::whereNotNull('adjusted_percents')->get();
       $projectStatus = "All";
-      $this->adjust();
     }
     else{
       $projects=Project::where('projectstatus','Won')->orWhere('projectstatus','Probable')->get();
@@ -547,20 +547,7 @@ class ProjectController extends Controller
         }
         else
         {
-          //bdb*******************
-          if(isset($request['switch_chart_button']) && $request['switch_chart_button'] == 'bdb'){
-            $project_per_month_dollars = array();
-            $i = 0;
-            foreach($project_months as $month)
-            {
-              $per_month_dollars = ($project_dollars * ($project['overunderbudget'] / 100) ) * $project['adjusted_percents'][$i];
-              $project_per_month_dollars[$month] = $per_month_dollars;
-              $i++;
-            }
-            $project['per_month_dollars'] = $project_per_month_dollars;
-          }
-          //bdb******************
-          else if (isset($project['monthlypercent']))
+          if (isset($project['monthlypercent']))
           {
             //check if all values in the monthly percent array are 0 or if there are non zero elements
             $temp = array_filter($project['monthlypercent']);
@@ -680,10 +667,37 @@ class ProjectController extends Controller
         {
           $total_dollars_probable = $this->add_dollars($project, $total_dollars_probable, $months);
         }
-        if ($chart_type == 'projects' || $chart_type == 'bdb')
+        if ($chart_type == 'projects')
         {
           //add the project hours to the chart as a dataset 
           $dollar_values = array_values($project['per_month_dollars']);
+          $chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options(['backgroundColor' => $chart_colors[$color_counter]]);
+          $color_counter++;
+          if ($color_counter > $max_color_counter)
+          {
+            $color_counter = 0;
+          }
+        }
+        if ($chart_type == 'bdb')
+        {
+          $project_dollars = $project['dollarvalueinhouse'];
+          $project_per_month_dollars = array();
+          $i = 0;
+          foreach($project_months as $month)
+          {
+            if($i < count($project['adjusted_percents'])){
+              $per_month_dollars = ($project_dollars * ($project['overunderbudget'] / 100) ) * $project['adjusted_percents'][$i];
+              $project_per_month_dollars[$month] = $per_month_dollars;
+            }
+            else{
+              $project_per_month_dollars[$month] = 0;
+            }
+            $i++;
+          }
+          if($project['projectcode'] == "CEGDESH22")
+            dd($project_per_month_dollars);
+          //add the project hours to the chart as a dataset 
+          $dollar_values = array_values($project_per_month_dollars);
           $chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options(['backgroundColor' => $chart_colors[$color_counter]]);
           $color_counter++;
           if ($color_counter > $max_color_counter)
@@ -2859,13 +2873,13 @@ class ProjectController extends Controller
           if(!isset($hours_data[$year]) && ((int)$year) < ((int)$end_year) ){
             foreach($months_array as $month){
               if(date('n', strtotime($start_month)) <= date('n', strtotime($month))){   
-                if((date('y', strtotime($year)) >= date('y', strtotime($today_year)) ) && ( date('n', strtotime($month)) >= date('n', strtotime($today_month)))){  
-                  $months_total_array[$t] = -4;
-                  continue;
-                }else{
+             //   if((date('y', strtotime($year)) >= date('y', strtotime($today_year)) ) && ( date('n', strtotime($month)) >= date('n', strtotime($today_month)))){  
+             //     $months_total_array[$t] = -4;
+             //     continue;
+              //  }else{
                 $months_total_array[$t] = -1;
                 $t++;
-                }
+                //}
               }
               if($t >= $months_count){
                 break;
@@ -2897,7 +2911,7 @@ class ProjectController extends Controller
               if(date('n', strtotime($start_month)) <= date('n', strtotime($month))){   
                 if((date('y', strtotime($year)) == date('y', strtotime($today_year)) ) && ( date('n', strtotime($month)) == date('n', strtotime($today_month)))){  
                   $months_total_array[$t] = 0;
-                  continue;
+                  break;
                 }else{
                 for($j = 0; $j < count($employee_array); $j++){ 
                   $months_total_array[$t] += $hours_data[$year][$month][$employee_array[$j]] * $rates_for_total[$j];
@@ -2926,9 +2940,11 @@ class ProjectController extends Controller
                 }
             }
             foreach($months_array as $month){
-              if((date('y', strtotime($year)) == date('y', strtotime($today_year)) ) && ( date('n', strtotime($month)) == date('n', strtotime($today_month)))){  
+              if(($year == $today_year)  && ( date('n', strtotime($month)) == date('n', strtotime($today_month)))){  
+                if($project['projectcode'] == "CEGMORT28")
+                  dd(strtotime($year));
                 $months_total_array[$t] = 0;
-                continue;
+                break;
               }else{
               for($j = 0; $j < count($employee_array); $j++){ 
                 $months_total_array[$t] += $project['hours_data'][$year][$month][$employee_array[$j]]  * $rates_for_total[$j];
@@ -2941,7 +2957,6 @@ class ProjectController extends Controller
             }
           }
         }
-      //dd($months_total_array);
       $adjust_percents = $monthly_percents;
       $leftover = $approximated_budget;
       $first_negative = true; //if its the fisrt month negative
