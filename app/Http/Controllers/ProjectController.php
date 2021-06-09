@@ -2738,122 +2738,131 @@ public function billable_breakdown(Request $request)
     }
     $i++;
   }
-  dd($employee_emails);
-    
-  $today = app('App\Http\Controllers\TimesheetController')->getDate();
-  $end_date = clone $today;
-  //date range of 14 days 
-  $start_date = $today->sub(new DateInterval('P14D'));
-  //now, we want access to some of the functions in our Timesheetcontroller, since the collecting of the 
-  //drafters' hours is very similar to what we do in the timesheet app
-  $date_arr = app('App\Http\Controllers\TimesheetController')->get_dates($start_date, $end_date)[0];
-    
-  $current_month = date('F');
-  $previous_month = date('F', strtotime('-14 days'));
-  $current_year = date('Y');
-  $previous_year = date('Y', strtotime('-14 days')); //Not meant to be previous year other than January
-    
-  $non_zero_projects = Project::whereRaw([
-    '$and' => array([
-      'hours_data' => ['$exists' => 'true'],
-      '$and' => array([
-        "hours_data.{$previous_year}.{$previous_month}.Total"=> ['$exists' => true],  
-        "hours_data.{$previous_year}.{$previous_month}.Total" =>['$ne'=>0]
-      ])
-    ])
-  ])->get()->sortByDesc("hours_data.{$previous_year}.{$previous_month}.Total"); 
-  //we really just need the codes from this, since that's what we will use to look up the hours in the timesheet
-  $codes_arr = array();
-  foreach($non_zero_projects as $project) {
-    if(!in_array($project['projectcode'], $codes_arr)){
-      array_push($codes_arr, $project['projectcode']);
-    }
-  }
-/*
-  foreach(array_keys($employee_emails) as $name) {
 
-    $employee_arr = array(); 
+  $emp_hours_array = array();
+
+  //foreach(array_keys($employee_emails) as $name) {
+    $name = "Steve P.";
+    $jan = array("b" => 0, "n" => 0);
+    $feb = array("b" => 0, "n" => 0);
+    $mar = array("b" => 0, "n" => 0);
+    $apr = array("b" => 0, "n" => 0);
+    $may = array("b" => 0, "n" => 0);
+    $jun = array("b" => 0, "n" => 0);
+    $jul = array("b" => 0, "n" => 0);
+    $aug = array("b" => 0, "n" => 0);
+    $sep = array("b" => 0, "n" => 0);
+    $oct = array("b" => 0, "n" => 0);
+    $nov = array("b" => 0, "n" => 0);
+    $dec = array("b" => 0, "n" => 0);
+    $months_arr = array();
     $email = $employee_emails[$name]; 
     $timesheet = Timesheet::where('user', $email)->get()[0];
-    foreach($codes_arr as $code) {
-      if (in_array($code, array_keys($timesheet_codes))) {
-
-        $index = array_search($code,array_keys($timesheet_codes));
-        $projectNames = array_values($timesheet_codes)[$index];
-        $i = 0;
-        foreach($projectNames as $project_hours){
-          $names = array_keys($projectNames);
-          $projectName = $names[$i];
-            $i++;
-           if($projectName == "Holiday" || $projectName == "PTO"){
+    $timesheet_codes = array_keys($timesheet['Codes']);
+    foreach($timesheet_codes as $code) {
+      if($code == "Additional_Codes"){
+        continue;
+      }
+      $descriptions = array_keys($timesheet['Codes'][$code]);
+      foreach($descriptions as $desc){
+        $dates = array_keys($timesheet['Codes'][$code][$desc]);
+        foreach($dates as $dt){
+          $date = (explode('-', $dt));
+          if($date[2] != "21"){
             continue;
           }
-          //this will store the time from this date range as a kvp ('date' => 'hours') 
-          $project_hours_in_date_range = array();
-          foreach($date_arr as $day) {
-            if (in_array($day, array_keys($project_hours))) {
-              $hours = $project_hours[$day];
+          $month = $date[1];
+          if($month == "Jan"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $jan['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $jan['b'] += $timesheet['Codes'][$code][$desc][$dt];
             }
-            else {
-              $hours = 0;
+          }elseif($month == "Feb"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $feb['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $feb['b'] += $timesheet['Codes'][$code][$desc][$dt];
             }
-            $project_hours_in_date_range[$day] = $hours;
-          }
-          //If a project has no hours in the period, then don't add it to the chart.
-          $code_total = 0;
-          if($filter_all == true){
-            foreach($project_hours_in_date_range as $date){
-              $code_total = $code_total + $date;
+          }elseif($month == "Mar"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $mar['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $mar['b'] += $timesheet['Codes'][$code][$desc][$dt];
             }
-            $total_hours_in_period = $total_hours_in_period + $code_total;
-            if($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU"){
-              $non_billable_hours = $non_billable_hours + $code_total;
-              if(isset($options[$code])){
-                $options[$code] = $options[$code] + $code_total;
-              }
-              else{
-                $options[$code] = $code_total;
-              }
+          }elseif($month == "Apr"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $apr['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $apr['b'] += $timesheet['Codes'][$code][$desc][$dt];
             }
-            if($code_total <= 0){
-              continue;
+          }elseif($month == "May"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $may['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $may['b'] += $timesheet['Codes'][$code][$desc][$dt];
             }
-          }
-          else{
-            foreach($project_hours_in_date_range as $date){
-              $code_total = $code_total + $date;
+          }elseif($month == "Jun"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $jun['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $jun['b'] += $timesheet['Codes'][$code][$desc][$dt];
             }
-            $total_hours_in_period = $total_hours_in_period + $code_total;
-            if($code =="CEG" or $code =="CEGTRNG" or $code =="CEGMKTG" or $code =="CEGEDU"){
-              $non_billable_hours = $non_billable_hours + $code_total;
-              if(isset($options[$code])){
-                $options[$code] = $options[$code] + $code_total;
-              }
-              else{
-                $options[$code] = $code_total;
-              }
-              continue;
+          }elseif($month == "Jul"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $jul['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $jul['b'] += $timesheet['Codes'][$code][$desc][$dt];
             }
-            if($code_total <= 0){
-              continue;
+          }elseif($month == "Aug"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $aug['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $aug['b'] += $timesheet['Codes'][$code][$desc][$dt];
             }
-          }
-          
-          //now, set the project hours in the date range as the value for this employee's name
-          $employee_arr[$name] = $project_hours_in_date_range;
-          $c_color_loop++;
-          if($c_color_loop > $color_max){
-            $c_color_loop = 0;
+          }elseif($month == "Sep"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $sep['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $sep['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }elseif($month == "Oct"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $oct['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $oct['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }elseif($month == "Nov"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $nov['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $nov['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }else{
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $dec['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $dec['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
           }
         }
       }
-      else {
-        continue;
-      }
     }
-    //now, set the employee array for the code
-    $all_data_arr[$code] = $employee_arr;
-  }      */
+    array_push($months_arr, $jan);
+    array_push($months_arr, $feb);
+    array_push($months_arr, $mar);
+    array_push($months_arr, $apr);
+    array_push($months_arr, $may);
+    array_push($months_arr, $jun);
+    array_push($months_arr, $jul);
+    array_push($months_arr, $aug);
+    array_push($months_arr, $sep);
+    array_push($months_arr, $oct);
+    array_push($months_arr, $nov);
+    array_push($months_arr, $dec);
+    array_push($emp_hours_array, $months_arr);
+  //} 
+  dd($emp_hours_array);
   return view('pages.billablebreakdown');     
 }
 /********************************************************************************************/
