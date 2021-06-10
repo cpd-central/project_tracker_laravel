@@ -2732,17 +2732,18 @@ public function billable_breakdown(Request $request)
     if($emp[4] == false){
       unset($employeeLIST[$i]);
     }else{
-      if($emp[3]){
+      if($emp[3] && $emp[0] != ""){
         $employee_emails[$emp[0]] = $emp[3];
       }
     }
     $i++;
   }
 
-  $emp_hours_array = array();
 
-  //foreach(array_keys($employee_emails) as $name) {
-    $name = "Steve P.";
+  $emp_hours_array = array();
+  $users_array = array();
+
+  foreach(array_keys($employee_emails) as $name) {
     $jan = array("b" => 0, "n" => 0);
     $feb = array("b" => 0, "n" => 0);
     $mar = array("b" => 0, "n" => 0);
@@ -2758,6 +2759,8 @@ public function billable_breakdown(Request $request)
     $months_arr = array();
     $email = $employee_emails[$name]; 
     $timesheet = Timesheet::where('user', $email)->get()[0];
+    $user = User::where('email', $email)->get()[0];
+    array_push($users_array, $user);
     $timesheet_codes = array_keys($timesheet['Codes']);
     foreach($timesheet_codes as $code) {
       if($code == "Additional_Codes"){
@@ -2848,22 +2851,22 @@ public function billable_breakdown(Request $request)
         }
       }
     }
-    array_push($months_arr, $jan);
-    array_push($months_arr, $feb);
-    array_push($months_arr, $mar);
-    array_push($months_arr, $apr);
-    array_push($months_arr, $may);
-    array_push($months_arr, $jun);
-    array_push($months_arr, $jul);
-    array_push($months_arr, $aug);
-    array_push($months_arr, $sep);
-    array_push($months_arr, $oct);
-    array_push($months_arr, $nov);
-    array_push($months_arr, $dec);
+    array_push($months_arr, ($jan['n'] + $jan['b']) > 0 ? $jan['b'] / ($jan['n'] + $jan['b']) : 0);
+    array_push($months_arr, ($feb['n'] + $feb['b']) > 0 ? $feb['b'] / ($feb['n'] + $feb['b']) : 0);
+    array_push($months_arr, ($mar['n'] + $mar['b']) > 0 ? $mar['b'] / ($mar['n'] + $mar['b']) : 0);
+    array_push($months_arr, ($apr['n'] + $apr['b']) > 0 ? $apr['b'] / ($apr['n'] + $apr['b']) : 0);
+    array_push($months_arr, ($may['n'] + $may['b']) > 0 ? $may['b'] / ($may['n'] + $may['b']) : 0);
+    array_push($months_arr, ($jun['n'] + $jun['b']) > 0 ? $jun['b'] / ($jun['n'] + $jun['b']) : 0);
+    array_push($months_arr, ($jul['n'] + $jul['b']) > 0 ? $jul['b'] / ($jul['n'] + $jul['b']) : 0);
+    array_push($months_arr, ($aug['n'] + $aug['b']) > 0 ? $aug['b'] / ($aug['n'] + $aug['b']) : 0);
+    array_push($months_arr, ($sep['n'] + $sep['b']) > 0 ? $sep['b'] / ($sep['n'] + $sep['b']) : 0);
+    array_push($months_arr, ($oct['n'] + $oct['b']) > 0 ? $oct['b'] / ($oct['n'] + $oct['b']) : 0);
+    array_push($months_arr, ($nov['n'] + $nov['b']) > 0 ? $nov['b'] / ($nov['n'] + $nov['b']) : 0);
+    array_push($months_arr, ($dec['n'] + $dec['b']) > 0 ? $dec['b'] / ($dec['n'] + $dec['b']) : 0);
     array_push($emp_hours_array, $months_arr);
-  //} 
-  dd($emp_hours_array);
-  return view('pages.billablebreakdown');     
+  } 
+  //dd($emp_hours_array);
+  return view('pages.billablebreakdown', compact('emp_hours_array', 'users_array'));     
 }
 /********************************************************************************************/
 
