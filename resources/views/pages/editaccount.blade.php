@@ -87,6 +87,13 @@
                 Admin <input type="radio" name="role" value="admin" @if(isset($user['role']) && $user['role'] == 'admin'){{'checked=checked'}}@endif/>
               </div>
             </div>
+            <div class="row">
+            <div class="form-group col-md-4">
+              <label class="checkbox-inline" for="owner">
+                <input id="owner" name="owner" class="element checkbox" type="checkbox" @if($user['owner'] == true) checked @endif>Owner
+              </label>
+            </div>
+            </div>
           </div>
         <div class="row">
             <div class="form-group col-md-4">

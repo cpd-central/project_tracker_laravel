@@ -142,6 +142,10 @@
               </a>
               <a class="dropdown-item" href="{{ route('pages.devindex') }}"> Dev Index
               </a>
+              <?php if(isset(Auth::user()['owner']) && Auth::user()['owner'] == true){ ?>
+              <a class="dropdown-item" href="{{ route('pages.billablebreakdown') }}"> Billable Breakdown
+              </a>
+              <?php } ?>
               <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                        document.getElementById('logout-form').submit();">

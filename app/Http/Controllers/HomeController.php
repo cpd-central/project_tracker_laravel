@@ -184,6 +184,7 @@ class HomeController extends Controller
         $user->jobclass = $request->get('jobclass');
         $user->perhourdollar = $this->intCheck($request->get('perhourdollar'));
         $user->role = $request->get('role');
+        $user->owner = ($request->get('owner') == "on" ? true : false);
         if(isset($user['hour_rates'])){
             $year = date("Y");
             $rates = $user['hour_rates'];
