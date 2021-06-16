@@ -892,7 +892,7 @@ class ProjectController extends Controller
     $employee_list = array();
     $users = User::all();
     foreach($users as $user){
-      $user_array = array($user->nickname, $user->perhourdollar, $user->jobclass, $user->email);
+      $user_array = array($user->nickname, $user->perhourdollar, $user->jobclass, $user->email, $user->active);
       array_push($employee_list, $user_array);
     }
     return $employee_list;
@@ -2721,6 +2721,163 @@ class ProjectController extends Controller
   
 
 /**************** End of the Project Planner or Sticky Note Application *********************/
+
+/**************** Start of Billable Breakdown ***********************/
+public function billable_breakdown(Request $request)
+{
+  $employeeLIST = $this->get_employee_list(null);
+  $employee_emails = array(); 
+  $i = 0;
+  foreach ($employeeLIST as $emp) {
+    if($emp[4] == false){
+      unset($employeeLIST[$i]);
+    }else{
+      if($emp[3] && $emp[0] != ""){
+        $employee_emails[$emp[0]] = $emp[3];
+      }
+    }
+    $i++;
+  }
+
+
+  $emp_hours_array = array();
+  $users_array = array();
+
+  foreach(array_keys($employee_emails) as $name) {
+    $jan = array("b" => 0, "n" => 0);
+    $feb = array("b" => 0, "n" => 0);
+    $mar = array("b" => 0, "n" => 0);
+    $apr = array("b" => 0, "n" => 0);
+    $may = array("b" => 0, "n" => 0);
+    $jun = array("b" => 0, "n" => 0);
+    $jul = array("b" => 0, "n" => 0);
+    $aug = array("b" => 0, "n" => 0);
+    $sep = array("b" => 0, "n" => 0);
+    $oct = array("b" => 0, "n" => 0);
+    $nov = array("b" => 0, "n" => 0);
+    $dec = array("b" => 0, "n" => 0);
+    $months_arr = array();
+    $email = $employee_emails[$name]; 
+    $timesheet = Timesheet::where('user', $email)->get()[0];
+    $user = User::where('email', $email)->get()[0];
+    array_push($users_array, $user);
+    $timesheet_codes = array_keys($timesheet['Codes']);
+    foreach($timesheet_codes as $code) {
+      if($code == "Additional_Codes"){
+        continue;
+      }
+      $descriptions = array_keys($timesheet['Codes'][$code]);
+      foreach($descriptions as $desc){
+        $dates = array_keys($timesheet['Codes'][$code][$desc]);
+        foreach($dates as $dt){
+          $date = (explode('-', $dt));
+          if($date[2] != "21"){ ////////////////////////////////////////////////////////////////////////////
+            continue;
+          }
+          $month = $date[1];
+          if($month == "Jan"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $jan['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $jan['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }elseif($month == "Feb"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $feb['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $feb['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }elseif($month == "Mar"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $mar['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $mar['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }elseif($month == "Apr"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $apr['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $apr['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }elseif($month == "May"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $may['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $may['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }elseif($month == "Jun"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $jun['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $jun['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }elseif($month == "Jul"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $jul['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $jul['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }elseif($month == "Aug"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $aug['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $aug['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }elseif($month == "Sep"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $sep['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $sep['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }elseif($month == "Oct"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $oct['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $oct['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }elseif($month == "Nov"){
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $nov['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $nov['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }else{
+            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
+              $dec['n'] += $timesheet['Codes'][$code][$desc][$dt];
+            }else{
+              $dec['b'] += $timesheet['Codes'][$code][$desc][$dt];
+            }
+          }
+        }
+      }
+    }
+    array_push($months_arr, ($jan['n'] + $jan['b']) > 0 ? round(($jan['b'] / ($jan['n'] + $jan['b'])) * 100, 1) : 0);
+    array_push($months_arr, ($feb['n'] + $feb['b']) > 0 ? round(($feb['b'] / ($feb['n'] + $feb['b'])) * 100, 1) : 0);
+    array_push($months_arr, ($mar['n'] + $mar['b']) > 0 ? round(($mar['b'] / ($mar['n'] + $mar['b'])) * 100, 1) : 0);
+    array_push($months_arr, ($apr['n'] + $apr['b']) > 0 ? round(($apr['b'] / ($apr['n'] + $apr['b'])) * 100, 1) : 0);
+    array_push($months_arr, ($may['n'] + $may['b']) > 0 ? round(($may['b'] / ($may['n'] + $may['b'])) * 100, 1) : 0);
+    array_push($months_arr, ($jun['n'] + $jun['b']) > 0 ? round(($jun['b'] / ($jun['n'] + $jun['b'])) * 100, 1) : 0);
+    array_push($months_arr, ($jul['n'] + $jul['b']) > 0 ? round(($jul['b'] / ($jul['n'] + $jul['b'])) * 100, 1) : 0);
+    array_push($months_arr, ($aug['n'] + $aug['b']) > 0 ? round(($aug['b'] / ($aug['n'] + $aug['b'])) * 100, 1) : 0);
+    array_push($months_arr, ($sep['n'] + $sep['b']) > 0 ? round(($sep['b'] / ($sep['n'] + $sep['b'])) * 100, 1) : 0);
+    array_push($months_arr, ($oct['n'] + $oct['b']) > 0 ? round(($oct['b'] / ($oct['n'] + $oct['b'])) * 100, 1) : 0);
+    array_push($months_arr, ($nov['n'] + $nov['b']) > 0 ? round(($nov['b'] / ($nov['n'] + $nov['b'])) * 100, 1) : 0);
+    array_push($months_arr, ($dec['n'] + $dec['b']) > 0 ? round(($dec['b'] / ($dec['n'] + $dec['b'])) * 100, 1) : 0);
+
+    //Calculate Average of months that we've gone through so far, discard months we're not in yet.
+    $months = (int)date("n");
+    $total = 0;
+    $avg = 0;
+    for($i = 0; $i < $months; $i++){
+      $total += $months_arr[$i];
+    }
+    $avg = round($total / $months, 1);
+    array_push($months_arr, $avg);
+    $emp_hours_array[$user['nickname']] = $months_arr;
+  } 
+  return view('pages.billablebreakdown', compact('emp_hours_array', 'users_array'));     
+}
+/********************************************************************************************/
 
   /**
    * Finds a project in the database by $id and deletes it from the database.
