@@ -8,11 +8,11 @@ $months_array = array("January", "February", "March", "April", "May", "June", "J
 <br>
 <h2><b>Senior</b></h2> 
 <table class="table table-striped">
-<th>
+<th style="background-color:lightblue;">
     <?php foreach($months_array as $m){ ?>
-    <td><b>{{$m}}</b></td>
+    <td style="background-color:lightblue;"><b>{{$m}}</b></td>
     <?php }?>
-    <td><b>Average</b></td>
+    <td style="background-color:lightblue;"><b>Average</b></td>
 </th>
 <?php 
 foreach($users_array as $u){ 
@@ -20,7 +20,7 @@ foreach($users_array as $u){
 <tr>
     <td>{{$u['nickname']}}</td>
     <?php 
-    for($x = 0; $x < 12; $x++){ ?>
+    for($x = 0; $x < 13; $x++){ ?>
     <td> {{$emp_hours_array[$u['nickname']][$x]}}%</td>
     <?php
     } ?>
@@ -31,11 +31,11 @@ foreach($users_array as $u){
 
 <h2><b>Project</b></h2> 
 <table class="table table-striped">
-<th>
+<th style="background-color:lightblue;">
     <?php foreach($months_array as $m){ ?>
-    <td><b>{{$m}}</b></td>
+    <td style="background-color:lightblue;"><b>{{$m}}</b></td>
     <?php }?>
-    <td><b>Average</b></td>
+    <td style="background-color:lightblue;"><b>Average</b></td>
 </th>
 <?php 
 foreach($users_array as $u){ 
@@ -43,7 +43,7 @@ foreach($users_array as $u){
 <tr>
     <td>{{$u['nickname']}}</td>
     <?php 
-    for($x = 0; $x < 12; $x++){ ?>
+    for($x = 0; $x < 13; $x++){ ?>
     <td> {{$emp_hours_array[$u['nickname']][$x]}}%</td>
     <?php
     } ?>
@@ -54,11 +54,11 @@ foreach($users_array as $u){
 
 <h2><b>SCADA</b></h2> 
 <table class="table table-striped">
-<th>
+<th style="background-color:lightblue;">
     <?php foreach($months_array as $m){ ?>
-    <td><b>{{$m}}</b></td>
+    <td style="background-color:lightblue;"><b>{{$m}}</b></td>
     <?php }?>
-    <td><b>Average</b></td>
+    <td style="background-color:lightblue;"><b>Average</b></td>
 </th>
 <?php 
 foreach($users_array as $u){ 
@@ -66,7 +66,7 @@ foreach($users_array as $u){
 <tr>
     <td>{{$u['nickname']}}</td>
     <?php 
-    for($x = 0; $x < 12; $x++){ ?>
+    for($x = 0; $x < 13; $x++){ ?>
     <td> {{$emp_hours_array[$u['nickname']][$x]}}%</td>
     <?php
     } ?>
@@ -77,11 +77,11 @@ foreach($users_array as $u){
 
 <h2><b>Drafting</b></h2> 
 <table class="table table-striped">
-<th>
+<th style="background-color:lightblue;">
     <?php foreach($months_array as $m){ ?>
-    <td><b>{{$m}}</b></td>
+    <td style="background-color:lightblue;"><b>{{$m}}</b></td>
     <?php }?>
-    <td><b>Average</b></td>
+    <td style="background-color:lightblue;"><b>Average</b></td>
 </th>
 <?php 
 foreach($users_array as $u){ 
@@ -89,7 +89,7 @@ foreach($users_array as $u){
 <tr>
     <td>{{$u['nickname']}}</td>
     <?php 
-    for($x = 0; $x < 12; $x++){ ?>
+    for($x = 0; $x < 13; $x++){ ?>
     <td> {{$emp_hours_array[$u['nickname']][$x]}}%</td>
     <?php
     } ?>
@@ -98,13 +98,13 @@ foreach($users_array as $u){
 } ?>
 </table>
 
-<h2><b>interns-admin</b></h2> 
+<h2><b>Interns-Admin</b></h2> 
 <table class="table table-striped">
-<th>
+<th style="background-color:lightblue;">
     <?php foreach($months_array as $m){ ?>
-    <td><b>{{$m}}</b></td>
+    <td style="background-color:lightblue;"><b>{{$m}}</b></td>
     <?php }?>
-    <td><b>Average</b></td>
+    <td style="background-color:lightblue;"><b>Average</b></td>
 </th>
 <?php 
 foreach($users_array as $u){ 
@@ -112,7 +112,7 @@ foreach($users_array as $u){
 <tr>
     <td>{{$u['nickname']}}</td>
     <?php 
-    for($x = 0; $x < 12; $x++){ ?>
+    for($x = 0; $x < 13; $x++){ ?>
     <td> {{$emp_hours_array[$u['nickname']][$x]}}%</td>
     <?php
     } ?>

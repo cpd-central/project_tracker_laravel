@@ -2863,6 +2863,16 @@ public function billable_breakdown(Request $request)
     array_push($months_arr, ($oct['n'] + $oct['b']) > 0 ? round(($oct['b'] / ($oct['n'] + $oct['b'])) * 100, 1) : 0);
     array_push($months_arr, ($nov['n'] + $nov['b']) > 0 ? round(($nov['b'] / ($nov['n'] + $nov['b'])) * 100, 1) : 0);
     array_push($months_arr, ($dec['n'] + $dec['b']) > 0 ? round(($dec['b'] / ($dec['n'] + $dec['b'])) * 100, 1) : 0);
+
+    //Calculate Average of months that we've gone through so far, discard months we're not in yet.
+    $months = (int)date("n");
+    $total = 0;
+    $avg = 0;
+    for($i = 0; $i < $months; $i++){
+      $total += $months_arr[$i];
+    }
+    $avg = round($total / $months, 1);
+    array_push($months_arr, $avg);
     $emp_hours_array[$user['nickname']] = $months_arr;
   } 
   return view('pages.billablebreakdown', compact('emp_hours_array', 'users_array'));     
