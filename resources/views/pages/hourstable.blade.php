@@ -95,6 +95,7 @@ if(isset($code)){ ?>
             $drafting_array_total = array(count($years_array));
             $interns_admin_array_total = array(count($years_array));
             $scada_array_total = array(count($years_array));
+            $testing_total = array(count($years_array));
             ?><h2 style="text-align: center;">{{$project['projectname']}}</h2> <?php
             foreach($years_array as $year){
 
@@ -103,6 +104,7 @@ if(isset($code)){ ?>
                 $drafting_array_total[$year] = 0;
                 $interns_admin_array_total[$year] = 0;
                 $scada_array_total[$year] = 0;
+                $testing_total[$year] = 0;
 
                 $months_array = array_keys($hours_data[$year]);
                 $employee_array = array_keys($hours_data[$year][$months_array[0]]);
@@ -246,6 +248,8 @@ else{ //if the chart units is set to hours, it won't calculate the total pay.
                     $interns_admin_array_total[$year] += $hours_data[$year][$months_array[$i]][$j];
                 }elseif($user['jobclass'] == 'SCADA'){
                     $scada_array_total[$year] += $hours_data[$year][$months_array[$i]][$j];
+                }elseif($user['jobclass'] == 'testing'){
+                    $testing_total[$year] += $hours_data[$year][$months_array[$i]][$j];
                 }
     }}}?>
         <td style="background-color:lightblue;">{{$month_total}}</td>
@@ -314,6 +318,14 @@ if(!isset($chart_units) || $chart_units == 'dollars'){?>
     <td>${{$scada_total}}</td>
 </tr>
 <tr>
+    <td>Testing</td>
+    <?php $t_total = 0;
+    foreach($years_array as $year){ ?>
+        <td>${{$testing_total[$year]}}</td>
+    <?php $t_total += $testing_total[$year];}?>
+    <td>${{$t_total}}</td>
+</tr>
+<tr>
     <td>Intern-Admin</td>
     <?php $ia_total = 0;
     foreach($years_array as $year){ ?>
@@ -354,6 +366,14 @@ if(!isset($chart_units) || $chart_units == 'dollars'){?>
         <td>{{$scada_array_total[$year]}}</td>
     <?php $scada_total += $scada_array_total[$year];}?>
     <td>{{$scada_total}}</td>
+</tr>
+<tr>
+    <td>Testing</td>
+    <?php $t_total = 0;
+    foreach($years_array as $year){ ?>
+        <td>{{$testing_total[$year]}}</td>
+    <?php $t_total += $testing_total[$year];}?>
+    <td>{{$t_total}}</td>
 </tr>
 <tr>
     <td>Intern-Admin</td>

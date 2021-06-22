@@ -1117,12 +1117,12 @@ class ProjectController extends Controller
 
     $project_grand_total = 0;
     $employeeLIST = $this->get_employee_list(null);
-    $groupLIST = array("senior","project","SCADA","drafter","interns-admin","blank");
+    $groupLIST = array("senior","project","SCADA","drafter","testing","interns-admin","blank");
 
     $choosen_line_colors = array('#396AB1','#DA7C30','#3E9651','#CC2529','#535154','#6B4C9A','#922428','#948B3D','#488f31','#58508d','#bc5090','ff6361','#ffa600','#7BEEA5','#127135','#008080','#1AE6E6');
     $c_color_loop = 0;
 
-    $group_colors = array('#4d2f14','#8D5524','#C68642','#F1C27D','#ffe9cc');
+    $group_colors = array('#4d2f14','#8D5524','#C68642','#F1C27D','#ffe9cc', '#fff4e6');
     $c_group_colors = 0;
     $projects = Project::whereRaw(['$and' => array(['projectcode' => ['$ne' => null]], ['hours_data' => ['$exists' => 'true']])])->get()->sortBy('projectname');
 
@@ -1142,7 +1142,8 @@ class ProjectController extends Controller
         $group_project_hours_arr[2]=array();
         $group_project_hours_arr[3]=array();
         $group_project_hours_arr[4]=array();
-        $group_project_hours_arr[5]=array(0); //PLEASE NOTE, A ZERO IS NEEDED AT THE END OF ARRAY THAT IS UNUSED, OTHERWISE A GET AN OFFSET ERROR, NOT SURE WHY
+        $group_project_hours_arr[5]=array();
+        $group_project_hours_arr[6]=array(0); //PLEASE NOTE, A ZERO IS NEEDED AT THE END OF ARRAY THAT IS UNUSED, OTHERWISE A GET AN OFFSET ERROR, NOT SURE WHY
         $total_project_hours_per_month_arr=array();
 
         $group_project_monies_arr[0]=array();
@@ -1150,7 +1151,8 @@ class ProjectController extends Controller
         $group_project_monies_arr[2]=array();
         $group_project_monies_arr[3]=array();
         $group_project_monies_arr[4]=array();
-        $group_project_monies_arr[5]=array(0); //PLEASE NOTE, A ZERO IS NEEDED AT THE END OF ARRAY THAT IS UNUSED, OTHERWISE A GET AN OFFSET ERROR, NOT SURE WHY
+        $group_project_monies_arr[5]=array();
+        $group_project_monies_arr[6]=array(0); //PLEASE NOTE, A ZERO IS NEEDED AT THE END OF ARRAY THAT IS UNUSED, OTHERWISE A GET AN OFFSET ERROR, NOT SURE WHY
         $total_project_monies_per_month_arr=array();
 
         $previous_month_project_hours=0;
@@ -1177,12 +1179,14 @@ class ProjectController extends Controller
             $total_individual_hours[2]=0;
             $total_individual_hours[3]=0;
             $total_individual_hours[4]=0; 
+            $total_individual_hours[5]=0; 
 
             $total_individual_monies[0]=0;
             $total_individual_monies[1]=0;
             $total_individual_monies[2]=0;
             $total_individual_monies[3]=0;
-            $total_individual_monies[4]=0; 
+            $total_individual_monies[4]=0;
+            $total_individual_monies[5]=0; 
 
             for ($emp_count=0; $emp_count<count($employeeLIST); $emp_count++) {
               if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours))) {
@@ -1249,13 +1253,22 @@ class ProjectController extends Controller
                     $total_individual_monies[3]=$total_individual_monies[3]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][1];
                   }
                   break;
-                case "interns-admin":
+                case "testing":
                   if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours))) {
                     $total_individual_hours[4]=$total_individual_hours[4]+0;
                     $total_individual_monies[4]=$total_individual_monies[4]+0;
                   } else {
                     $total_individual_hours[4]=$total_individual_hours[4]+$people_hours[$employeeLIST[$emp_count][0]];
                     $total_individual_monies[4]=$total_individual_monies[4]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][1];
+                  }
+                  break;
+                case "interns-admin":
+                  if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours))) {
+                    $total_individual_hours[5]=$total_individual_hours[5]+0;
+                    $total_individual_monies[5]=$total_individual_monies[5]+0;
+                  } else {
+                    $total_individual_hours[5]=$total_individual_hours[5]+$people_hours[$employeeLIST[$emp_count][0]];
+                    $total_individual_monies[5]=$total_individual_monies[5]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][1];
                   }
                   break;
                 default:
@@ -1266,25 +1279,27 @@ class ProjectController extends Controller
             array_push($group_project_hours_arr[1], $total_individual_hours[1]);
             array_push($group_project_hours_arr[2], $total_individual_hours[2]);
             array_push($group_project_hours_arr[3], $total_individual_hours[3]);
-            array_push($group_project_hours_arr[4], $total_individual_hours[4]);
+            array_push($group_project_hours_arr[4], $total_individual_hours[4]);   
+            array_push($group_project_hours_arr[5], $total_individual_hours[5]);
 
             array_push($group_project_monies_arr[0], $total_individual_monies[0]);
             array_push($group_project_monies_arr[1], $total_individual_monies[1]);
             array_push($group_project_monies_arr[2], $total_individual_monies[2]);
             array_push($group_project_monies_arr[3], $total_individual_monies[3]);
             array_push($group_project_monies_arr[4], $total_individual_monies[4]);
+            array_push($group_project_monies_arr[5], $total_individual_monies[5]);
 
-            $total_project_monies_per_month = $total_individual_monies[0] + $total_individual_monies[1] + $total_individual_monies[2] + $total_individual_monies[3] + $total_individual_monies[4];
+            $total_project_monies_per_month = $total_individual_monies[0] + $total_individual_monies[1] + $total_individual_monies[2] + $total_individual_monies[3] + $total_individual_monies[4] + $total_individual_monies[5];
             array_push($total_project_monies_per_month_arr, $total_project_monies_per_month);  
 
-            $total_project_hours_per_month = $total_individual_hours[0] + $total_individual_hours[1] + $total_individual_hours[2] + $total_individual_hours[3] + $total_individual_hours[4];
+            $total_project_hours_per_month = $total_individual_hours[0] + $total_individual_hours[1] + $total_individual_hours[2] + $total_individual_hours[3] + $total_individual_hours[4] + $total_individual_hours[5];
             array_push($total_project_hours_per_month_arr, $total_project_hours_per_month);  
             //$hours_arr=$total_project_monies_per_month_arr; //may want to delete later
           } //end of the forach loop for months
         } //end of the foreach loop for years
 
 
-        $total_project_dollars = array_sum($group_project_monies_arr[0]) + array_sum($group_project_monies_arr[1]) + array_sum($group_project_monies_arr[2]) + array_sum($group_project_monies_arr[3]) + array_sum($group_project_monies_arr[4]);
+        $total_project_dollars = array_sum($group_project_monies_arr[0]) + array_sum($group_project_monies_arr[1]) + array_sum($group_project_monies_arr[2]) + array_sum($group_project_monies_arr[3]) + array_sum($group_project_monies_arr[4]) + array_sum($group_project_monies_arr[5]);
 
         $project_grand_total  =  (array_sum($hours_arr));
         $dollarvalueinhouse = $selected_project['dollarvalueinhouse'];
