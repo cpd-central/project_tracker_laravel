@@ -199,6 +199,8 @@ if(isset($code)){ ?>
                         $interns_admin_array_total[$year] += $calculation;
                     }elseif($user['jobclass'] == 'SCADA'){
                         $scada_array_total[$year] += $calculation;
+                    }elseif($user['jobclass'] == 'testing'){
+                        $testing_total[$year] += $calculation;
                     }
 }}}?>
         <td style="background-color:lightblue;">${{$month_total}}</td>
