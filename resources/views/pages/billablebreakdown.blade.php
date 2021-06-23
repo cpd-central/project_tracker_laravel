@@ -98,6 +98,29 @@ foreach($users_array as $u){
 } ?>
 </table>
 
+<h2><b>Testing</b></h2> 
+<table class="table table-striped">
+<th style="background-color:lightblue;">
+    <?php foreach($months_array as $m){ ?>
+    <td style="background-color:lightblue;"><b>{{$m}}</b></td>
+    <?php }?>
+    <td style="background-color:lightblue;"><b>Average</b></td>
+</th>
+<?php 
+foreach($users_array as $u){ 
+    if($u['jobclass'] == "testing"){?>
+<tr>
+    <td>{{$u['nickname']}}</td>
+    <?php 
+    for($x = 0; $x < 13; $x++){ ?>
+    <td> {{$emp_hours_array[$u['nickname']][$x]}}%</td>
+    <?php
+    } ?>
+</tr>
+<?php }
+} ?>
+</table>
+
 <h2><b>Interns-Admin</b></h2> 
 <table class="table table-striped">
 <th style="background-color:lightblue;">

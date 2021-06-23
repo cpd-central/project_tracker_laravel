@@ -36,6 +36,7 @@
                     <option value="SCADA">SCADA</option>
                     <option value="drafting">Drafting</option>
                     <option value="interns-admin">Interns-Admin</option>
+                    <option value="testing">Testing</option>
                   @elseif($user['jobclass'] == "project")
                     <option value="">--SELECT--</option>
                     <option value="senior">Senior</option>
@@ -43,6 +44,7 @@
                     <option value="SCADA">SCADA</option>
                     <option value="drafting">Drafting</option>
                     <option value="interns-admin">Interns-Admin</option>
+                    <option value="testing">Testing</option>
                   @elseif($user['jobclass'] == "SCADA")
                     <option value="">--SELECT--</option>
                     <option value="senior">Senior</option>
@@ -50,6 +52,7 @@
                     <option value="SCADA" selected>SCADA</option>
                     <option value="drafting">Drafting</option>
                     <option value="interns-admin">Interns-Admin</option>
+                    <option value="testing">Testing</option>
                   @elseif($user['jobclass'] == "drafting")
                     <option value="">--SELECT--</option>
                     <option value="senior">Senior</option>
@@ -57,6 +60,7 @@
                     <option value="SCADA">SCADA</option>
                     <option value="drafting" selected>Drafting</option>
                     <option value="interns-admin">Interns-Admin</option>
+                    <option value="testing">Testing</option>
                   @elseif($user['jobclass'] == "interns-admin")
                     <option value="">--SELECT--</option>
                     <option value="senior">Senior</option>
@@ -64,6 +68,15 @@
                     <option value="SCADA">SCADA</option>
                     <option value="drafting">Drafting</option>
                     <option value="interns-admin" selected>Interns-Admin</option>
+                    <option value="testing">Testing</option>
+                  @elseif($user['jobclass'] == "testing")
+                    <option value="">--SELECT--</option>
+                    <option value="senior">Senior</option>
+                    <option value="project">Project</option>
+                    <option value="SCADA">SCADA</option>
+                    <option value="drafting">Drafting</option>
+                    <option value="interns-admin">Interns-Admin</option>
+                    <option value="testing" selected>Testing</option>
                   @else
                     <option value="" selected>--SELECT--</option>
                     <option value="senior">Senior</option>
@@ -71,6 +84,7 @@
                     <option value="SCADA">SCADA</option>
                     <option value="drafting">Drafting</option>
                     <option value="interns-admin">Interns-Admin</option>
+                    <option value="testing">Testing</option>
                   @endif
                 </select>
               </div>
