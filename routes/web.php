@@ -61,6 +61,7 @@ Route::delete('/devdelete/{id}', 'HomeController@dev_delete')->middleware('verif
 
 Route::get('/drafterhours', 'ProjectController@drafter_hours')->name('pages.drafterhours')->middleware('verified', 'role', 'pagevisits');
 
+Route::get('/billablebreakdown', 'ProjectController@billable_breakdown')->name('pages.billablebreakdown')->middleware('verified', 'role', 'pagevisits');
 
 Route::delete('{id}', 'ProjectController@destroy')->middleware('verified');
 

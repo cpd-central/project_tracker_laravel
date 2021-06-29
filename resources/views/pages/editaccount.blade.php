@@ -36,6 +36,7 @@
                     <option value="SCADA">SCADA</option>
                     <option value="drafting">Drafting</option>
                     <option value="interns-admin">Interns-Admin</option>
+                    <option value="testing">Testing</option>
                   @elseif($user['jobclass'] == "project")
                     <option value="">--SELECT--</option>
                     <option value="senior">Senior</option>
@@ -43,6 +44,7 @@
                     <option value="SCADA">SCADA</option>
                     <option value="drafting">Drafting</option>
                     <option value="interns-admin">Interns-Admin</option>
+                    <option value="testing">Testing</option>
                   @elseif($user['jobclass'] == "SCADA")
                     <option value="">--SELECT--</option>
                     <option value="senior">Senior</option>
@@ -50,6 +52,7 @@
                     <option value="SCADA" selected>SCADA</option>
                     <option value="drafting">Drafting</option>
                     <option value="interns-admin">Interns-Admin</option>
+                    <option value="testing">Testing</option>
                   @elseif($user['jobclass'] == "drafting")
                     <option value="">--SELECT--</option>
                     <option value="senior">Senior</option>
@@ -57,6 +60,7 @@
                     <option value="SCADA">SCADA</option>
                     <option value="drafting" selected>Drafting</option>
                     <option value="interns-admin">Interns-Admin</option>
+                    <option value="testing">Testing</option>
                   @elseif($user['jobclass'] == "interns-admin")
                     <option value="">--SELECT--</option>
                     <option value="senior">Senior</option>
@@ -64,6 +68,15 @@
                     <option value="SCADA">SCADA</option>
                     <option value="drafting">Drafting</option>
                     <option value="interns-admin" selected>Interns-Admin</option>
+                    <option value="testing">Testing</option>
+                  @elseif($user['jobclass'] == "testing")
+                    <option value="">--SELECT--</option>
+                    <option value="senior">Senior</option>
+                    <option value="project">Project</option>
+                    <option value="SCADA">SCADA</option>
+                    <option value="drafting">Drafting</option>
+                    <option value="interns-admin">Interns-Admin</option>
+                    <option value="testing" selected>Testing</option>
                   @else
                     <option value="" selected>--SELECT--</option>
                     <option value="senior">Senior</option>
@@ -71,13 +84,14 @@
                     <option value="SCADA">SCADA</option>
                     <option value="drafting">Drafting</option>
                     <option value="interns-admin">Interns-Admin</option>
+                    <option value="testing">Testing</option>
                   @endif
                 </select>
               </div>
             </div>
               <div class="row">
                 <div class="form-group col-md-4">
-                <label for="perhourdollar">Per hour dollar value:</label>
+                <label for="perhourdollar">Per hour dollar value for <?php echo date("Y"); ?>:</label>
                 <input type="text" class="form-control" name="perhourdollar" value="@if(old('perhourdollar')){{old('perhourdollar')}} @else<?= $user['perhourdollar']?>@endif">
                 </div>
               <div class="form-group col-md-4">
@@ -86,6 +100,13 @@
                 Proposer <input type="radio" name="role" value="proposer" @if(isset($user['role']) && $user['role'] == 'proposer'){{'checked=checked'}}@endif/>
                 Admin <input type="radio" name="role" value="admin" @if(isset($user['role']) && $user['role'] == 'admin'){{'checked=checked'}}@endif/>
               </div>
+            </div>
+            <div class="row">
+            <div class="form-group col-md-4">
+              <label class="checkbox-inline" for="owner">
+                <input id="owner" name="owner" class="element checkbox" type="checkbox" @if($user['owner'] == true) checked @endif>Owner
+              </label>
+            </div>
             </div>
           </div>
         <div class="row">
