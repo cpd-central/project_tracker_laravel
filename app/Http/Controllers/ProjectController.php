@@ -11,6 +11,7 @@ use App\Charts\HoursChart;
 use Session;
 
 use DateInterval;
+use DateTime;
 use DatePeriod;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Support\Facades\Date;
@@ -639,6 +640,17 @@ class ProjectController extends Controller
 
       foreach($projects as $project)
       {
+        $start_end = $this->get_project_start_end($project);
+        $start_date = $start_end['start'];
+        $end_date = $start_end['end']; 
+        //put these in the arrays of all start and end dates
+        array_push($start_dates, $start_date);
+        array_push($end_dates, $end_date);
+        //get the total dollars and divide by number of months.  create an array of that for this specific project 
+        $project_dollars = $project['dollarvalueinhouse'];
+        //need to use the specific start and end for this project 
+        $project_months = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');
+
         //find first key of month array
         $first_month = array_key_first($months);
         $new_project_per_month_dollars = array(); 
@@ -683,19 +695,24 @@ class ProjectController extends Controller
           $project_dollars = $project['dollarvalueinhouse'];
           $project_per_month_dollars = array();
           $i = 0;
+
           foreach($project_months as $month)
           {
-            if($i < count($project['adjusted_percents'])){
-              $per_month_dollars = ($project_dollars * ($project['overunderbudget'] / 100) ) * $project['adjusted_percents'][$i];
-              $project_per_month_dollars[$month] = $per_month_dollars;
-            }
-            else{
-              $project_per_month_dollars[$month] = 0;
+            if(in_array($month, $months)){
+              if($i < count($project['adjusted_percents'])){
+                $per_month_dollars = ($project_dollars * ($project['overunderbudget'] / 100) ) * $project['adjusted_percents'][$i];
+                $project_per_month_dollars[$month] = $per_month_dollars;
+              }
+              else{
+                $project_per_month_dollars[$month] = 0;
+              }
             }
             $i++;
           }
-          if($project['projectcode'] == "CEGDESH22")
-            dd($project_per_month_dollars);
+          //if($project['projectcode'] == "CEGMORT28"){
+          //  dd($project_months);
+          //}
+          
           //add the project hours to the chart as a dataset 
           $dollar_values = array_values($project_per_month_dollars);
           $chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options(['backgroundColor' => $chart_colors[$color_counter]]);
@@ -2952,6 +2969,9 @@ public function billable_breakdown(Request $request)
         continue;
       }
       $approximated_budget = ($project['overunderbudget']/100) * $project['dollarvalueinhouse'];
+      if($approximated_budget == 0){
+        continue;
+      }
       $monthly_percents = $project['monthlypercent'];
       $distribute_even = true;
       //check if monthly_percents is all 0, then distribute evenly.
@@ -3078,10 +3098,9 @@ public function billable_breakdown(Request $request)
                     }
                 }
             }
-
             foreach($months_array as $month){
               if(date('n', strtotime($start_month)) <= date('n', strtotime($month))){   
-                if((date('y', strtotime($year)) == date('y', strtotime($today_year)) ) && ( date('n', strtotime($month)) == date('n', strtotime($today_month)))){  
+                if( ($year == $today_year)  && ( date('n', strtotime($month)) == date('n', strtotime($today_month)))){ 
                   $months_total_array[$t] = 0;
                   break;
                 }else{
@@ -3097,7 +3116,7 @@ public function billable_breakdown(Request $request)
             }
             
           }
-          else{    
+          else{   
             $employee_array = array_keys($hours_data[$year][$months_array[0]]);
             unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
             $rates_for_total = [count($employee_array)];
@@ -3131,7 +3150,7 @@ public function billable_breakdown(Request $request)
         }
       $adjust_percents = $monthly_percents;
       $leftover = $approximated_budget;
-      $first_negative = true; //if its the fisrt month negative
+      $first_negative = true; //if its the first month negative
       $total_percents_used = 0;
       for($i = 0; $i < (count($monthly_percents)); $i++){
         if($months_total_array[$i] == -1){
