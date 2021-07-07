@@ -54,6 +54,10 @@
 </br>
 @stop 
 
+
+@if($chart_type == 'bdb')
+@section('page-title', 'Budget Distribution Buster')
+@else
 @section('page-title', 'Won Project Summary')
 @section('table-title', 'Monthly Breakdown By Project')
 @section('table-header')
@@ -136,6 +140,7 @@
     </tr>
   @endforeach 
 @stop
+@endif
 
 
 
