@@ -11,7 +11,6 @@ use App\Charts\HoursChart;
 use Session;
 
 use DateInterval;
-use DateTime;
 use DatePeriod;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Support\Facades\Date;
@@ -494,7 +493,6 @@ class ProjectController extends Controller
       $projectStatus = "Probable";
     }
     else if(isset($request['switch_chart_button']) && $request['switch_chart_button'] == 'bdb'){
-      $this->adjust();
       $projects=Project::whereNotNull('adjusted_percents')->get();
       $projectStatus = "All";
     }
@@ -548,7 +546,19 @@ class ProjectController extends Controller
         }
         else
         {
-          if (isset($project['monthlypercent']))
+          //bdb*******************
+          if(isset($request['switch_chart_button']) && $request['switch_chart_button'] == 'bdb'){
+            $project_per_month_dollars = array();
+            $i = 0;
+            foreach($project_months as $month)
+            {
+              $per_month_dollars = ($project_dollars * ($project['overunderbudget'] / 100) ) * $project['adjusted_percents'][$i];
+              $project_per_month_dollars[$month] = $per_month_dollars;
+              $i++;
+            }
+          }
+          //bdb******************
+          else if (isset($project['monthlypercent']))
           {
             //check if all values in the monthly percent array are 0 or if there are non zero elements
             $temp = array_filter($project['monthlypercent']);
@@ -623,14 +633,10 @@ class ProjectController extends Controller
       $chart_colors = [
         'rgb(255, 99, 132, 0.4)',
         'rgb(75, 192, 192, 0.4)',
-        'rgb(255, 140, 0, 0.4)',
+        'rgb(255, 159, 64, 0.4)',
         'rgb(54, 162, 235, 0.4)',
-        'rgb(255, 225, 36, 0.4)',
-        'rgb(153, 102, 255, 0.4)',
-        'rgb(128, 128, 0, 0.4)',
-        'rgb(0, 100, 255, 0.4)',
-        'rgb(255, 0, 0, 0.4)',
-        'rgb(128, 0, 0, 0.4)'];
+        'rgb(255, 205, 86, 0.4)',
+        'rgb(153, 102, 255, 0.4)'];
       $max_color_counter = count($chart_colors) - 1;
       $color_counter = 0; 
       //now loop through the projects again and update the array to have the months we are displaying, and fill with zeros for the rest
@@ -640,17 +646,6 @@ class ProjectController extends Controller
 
       foreach($projects as $project)
       {
-        $start_end = $this->get_project_start_end($project);
-        $start_date = $start_end['start'];
-        $end_date = $start_end['end']; 
-        //put these in the arrays of all start and end dates
-        array_push($start_dates, $start_date);
-        array_push($end_dates, $end_date);
-        //get the total dollars and divide by number of months.  create an array of that for this specific project 
-        $project_dollars = $project['dollarvalueinhouse'];
-        //need to use the specific start and end for this project 
-        $project_months = $this->get_date_interval_array($start_date, $end_date, '1 month', 'M-y');
-
         //find first key of month array
         $first_month = array_key_first($months);
         $new_project_per_month_dollars = array(); 
@@ -679,42 +674,10 @@ class ProjectController extends Controller
         {
           $total_dollars_probable = $this->add_dollars($project, $total_dollars_probable, $months);
         }
-        if ($chart_type == 'projects')
+        if ($chart_type == 'projects' || $chart_type == 'bdb')
         {
           //add the project hours to the chart as a dataset 
           $dollar_values = array_values($project['per_month_dollars']);
-          $chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options(['backgroundColor' => $chart_colors[$color_counter]]);
-          $color_counter++;
-          if ($color_counter > $max_color_counter)
-          {
-            $color_counter = 0;
-          }
-        }
-        if ($chart_type == 'bdb')
-        {
-          $project_dollars = $project['dollarvalueinhouse'];
-          $project_per_month_dollars = array();
-          $i = 0;
-
-          foreach($project_months as $month)
-          {
-            if(in_array($month, $months)){
-              if($i < count($project['adjusted_percents'])){
-                $per_month_dollars = ($project_dollars * ($project['overunderbudget'] / 100) ) * $project['adjusted_percents'][$i];
-                $project_per_month_dollars[$month] = $per_month_dollars;
-              }
-              else{
-                $project_per_month_dollars[$month] = 0;
-              }
-            }
-            $i++;
-          }
-          //if($project['projectcode'] == "CEGMORT28"){
-          //  dd($project_months);
-          //}
-          
-          //add the project hours to the chart as a dataset 
-          $dollar_values = array_values($project_per_month_dollars);
           $chart->dataset("{$project['projectname']}", 'bar', $dollar_values)->options(['backgroundColor' => $chart_colors[$color_counter]]);
           $color_counter++;
           if ($color_counter > $max_color_counter)
@@ -945,7 +908,7 @@ class ProjectController extends Controller
     $employee_list = array();
     $users = User::all();
     foreach($users as $user){
-      $user_array = array($user->nickname, $user->perhourdollar, $user->jobclass, $user->email, $user->active);
+      $user_array = array($user->nickname, $user->perhourdollar, $user->jobclass, $user->email);
       array_push($employee_list, $user_array);
     }
     return $employee_list;
@@ -1170,12 +1133,12 @@ class ProjectController extends Controller
 
     $project_grand_total = 0;
     $employeeLIST = $this->get_employee_list(null);
-    $groupLIST = array("senior","project","SCADA","drafter","testing","interns-admin","blank");
+    $groupLIST = array("senior","project","SCADA","drafter","interns-admin","blank");
 
     $choosen_line_colors = array('#396AB1','#DA7C30','#3E9651','#CC2529','#535154','#6B4C9A','#922428','#948B3D','#488f31','#58508d','#bc5090','ff6361','#ffa600','#7BEEA5','#127135','#008080','#1AE6E6');
     $c_color_loop = 0;
 
-    $group_colors = array('#4d2f14','#8D5524','#C68642','#F1C27D','#ffe9cc', '#fff4e6');
+    $group_colors = array('#4d2f14','#8D5524','#C68642','#F1C27D','#ffe9cc');
     $c_group_colors = 0;
     $projects = Project::whereRaw(['$and' => array(['projectcode' => ['$ne' => null]], ['hours_data' => ['$exists' => 'true']])])->get()->sortBy('projectname');
 
@@ -1195,8 +1158,7 @@ class ProjectController extends Controller
         $group_project_hours_arr[2]=array();
         $group_project_hours_arr[3]=array();
         $group_project_hours_arr[4]=array();
-        $group_project_hours_arr[5]=array();
-        $group_project_hours_arr[6]=array(0); //PLEASE NOTE, A ZERO IS NEEDED AT THE END OF ARRAY THAT IS UNUSED, OTHERWISE A GET AN OFFSET ERROR, NOT SURE WHY
+        $group_project_hours_arr[5]=array(0); //PLEASE NOTE, A ZERO IS NEEDED AT THE END OF ARRAY THAT IS UNUSED, OTHERWISE A GET AN OFFSET ERROR, NOT SURE WHY
         $total_project_hours_per_month_arr=array();
 
         $group_project_monies_arr[0]=array();
@@ -1204,8 +1166,7 @@ class ProjectController extends Controller
         $group_project_monies_arr[2]=array();
         $group_project_monies_arr[3]=array();
         $group_project_monies_arr[4]=array();
-        $group_project_monies_arr[5]=array();
-        $group_project_monies_arr[6]=array(0); //PLEASE NOTE, A ZERO IS NEEDED AT THE END OF ARRAY THAT IS UNUSED, OTHERWISE A GET AN OFFSET ERROR, NOT SURE WHY
+        $group_project_monies_arr[5]=array(0); //PLEASE NOTE, A ZERO IS NEEDED AT THE END OF ARRAY THAT IS UNUSED, OTHERWISE A GET AN OFFSET ERROR, NOT SURE WHY
         $total_project_monies_per_month_arr=array();
 
         $previous_month_project_hours=0;
@@ -1232,14 +1193,12 @@ class ProjectController extends Controller
             $total_individual_hours[2]=0;
             $total_individual_hours[3]=0;
             $total_individual_hours[4]=0; 
-            $total_individual_hours[5]=0; 
 
             $total_individual_monies[0]=0;
             $total_individual_monies[1]=0;
             $total_individual_monies[2]=0;
             $total_individual_monies[3]=0;
-            $total_individual_monies[4]=0;
-            $total_individual_monies[5]=0; 
+            $total_individual_monies[4]=0; 
 
             for ($emp_count=0; $emp_count<count($employeeLIST); $emp_count++) {
               if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours))) {
@@ -1306,22 +1265,13 @@ class ProjectController extends Controller
                     $total_individual_monies[3]=$total_individual_monies[3]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][1];
                   }
                   break;
-                case "testing":
+                case "interns-admin":
                   if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours))) {
                     $total_individual_hours[4]=$total_individual_hours[4]+0;
                     $total_individual_monies[4]=$total_individual_monies[4]+0;
                   } else {
                     $total_individual_hours[4]=$total_individual_hours[4]+$people_hours[$employeeLIST[$emp_count][0]];
                     $total_individual_monies[4]=$total_individual_monies[4]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][1];
-                  }
-                  break;
-                case "interns-admin":
-                  if (!in_array($employeeLIST[$emp_count][0],array_keys($people_hours))) {
-                    $total_individual_hours[5]=$total_individual_hours[5]+0;
-                    $total_individual_monies[5]=$total_individual_monies[5]+0;
-                  } else {
-                    $total_individual_hours[5]=$total_individual_hours[5]+$people_hours[$employeeLIST[$emp_count][0]];
-                    $total_individual_monies[5]=$total_individual_monies[5]+$people_hours[$employeeLIST[$emp_count][0]]*$employeeLIST[$emp_count][1];
                   }
                   break;
                 default:
@@ -1332,27 +1282,25 @@ class ProjectController extends Controller
             array_push($group_project_hours_arr[1], $total_individual_hours[1]);
             array_push($group_project_hours_arr[2], $total_individual_hours[2]);
             array_push($group_project_hours_arr[3], $total_individual_hours[3]);
-            array_push($group_project_hours_arr[4], $total_individual_hours[4]);   
-            array_push($group_project_hours_arr[5], $total_individual_hours[5]);
+            array_push($group_project_hours_arr[4], $total_individual_hours[4]);
 
             array_push($group_project_monies_arr[0], $total_individual_monies[0]);
             array_push($group_project_monies_arr[1], $total_individual_monies[1]);
             array_push($group_project_monies_arr[2], $total_individual_monies[2]);
             array_push($group_project_monies_arr[3], $total_individual_monies[3]);
             array_push($group_project_monies_arr[4], $total_individual_monies[4]);
-            array_push($group_project_monies_arr[5], $total_individual_monies[5]);
 
-            $total_project_monies_per_month = $total_individual_monies[0] + $total_individual_monies[1] + $total_individual_monies[2] + $total_individual_monies[3] + $total_individual_monies[4] + $total_individual_monies[5];
+            $total_project_monies_per_month = $total_individual_monies[0] + $total_individual_monies[1] + $total_individual_monies[2] + $total_individual_monies[3] + $total_individual_monies[4];
             array_push($total_project_monies_per_month_arr, $total_project_monies_per_month);  
 
-            $total_project_hours_per_month = $total_individual_hours[0] + $total_individual_hours[1] + $total_individual_hours[2] + $total_individual_hours[3] + $total_individual_hours[4] + $total_individual_hours[5];
+            $total_project_hours_per_month = $total_individual_hours[0] + $total_individual_hours[1] + $total_individual_hours[2] + $total_individual_hours[3] + $total_individual_hours[4];
             array_push($total_project_hours_per_month_arr, $total_project_hours_per_month);  
             //$hours_arr=$total_project_monies_per_month_arr; //may want to delete later
           } //end of the forach loop for months
         } //end of the foreach loop for years
 
 
-        $total_project_dollars = array_sum($group_project_monies_arr[0]) + array_sum($group_project_monies_arr[1]) + array_sum($group_project_monies_arr[2]) + array_sum($group_project_monies_arr[3]) + array_sum($group_project_monies_arr[4]) + array_sum($group_project_monies_arr[5]);
+        $total_project_dollars = array_sum($group_project_monies_arr[0]) + array_sum($group_project_monies_arr[1]) + array_sum($group_project_monies_arr[2]) + array_sum($group_project_monies_arr[3]) + array_sum($group_project_monies_arr[4]);
 
         $project_grand_total  =  (array_sum($hours_arr));
         $dollarvalueinhouse = $selected_project['dollarvalueinhouse'];
@@ -2790,163 +2738,6 @@ class ProjectController extends Controller
 
 /**************** End of the Project Planner or Sticky Note Application *********************/
 
-/**************** Start of Billable Breakdown ***********************/
-public function billable_breakdown(Request $request)
-{
-  $employeeLIST = $this->get_employee_list(null);
-  $employee_emails = array(); 
-  $i = 0;
-  foreach ($employeeLIST as $emp) {
-    if($emp[4] == false){
-      unset($employeeLIST[$i]);
-    }else{
-      if($emp[3] && $emp[0] != ""){
-        $employee_emails[$emp[0]] = $emp[3];
-      }
-    }
-    $i++;
-  }
-
-
-  $emp_hours_array = array();
-  $users_array = array();
-
-  foreach(array_keys($employee_emails) as $name) {
-    $jan = array("b" => 0, "n" => 0);
-    $feb = array("b" => 0, "n" => 0);
-    $mar = array("b" => 0, "n" => 0);
-    $apr = array("b" => 0, "n" => 0);
-    $may = array("b" => 0, "n" => 0);
-    $jun = array("b" => 0, "n" => 0);
-    $jul = array("b" => 0, "n" => 0);
-    $aug = array("b" => 0, "n" => 0);
-    $sep = array("b" => 0, "n" => 0);
-    $oct = array("b" => 0, "n" => 0);
-    $nov = array("b" => 0, "n" => 0);
-    $dec = array("b" => 0, "n" => 0);
-    $months_arr = array();
-    $email = $employee_emails[$name]; 
-    $timesheet = Timesheet::where('user', $email)->get()[0];
-    $user = User::where('email', $email)->get()[0];
-    array_push($users_array, $user);
-    $timesheet_codes = array_keys($timesheet['Codes']);
-    foreach($timesheet_codes as $code) {
-      if($code == "Additional_Codes"){
-        continue;
-      }
-      $descriptions = array_keys($timesheet['Codes'][$code]);
-      foreach($descriptions as $desc){
-        $dates = array_keys($timesheet['Codes'][$code][$desc]);
-        foreach($dates as $dt){
-          $date = (explode('-', $dt));
-          if($date[2] != "21"){ ////////////////////////////////////////////////////////////////////////////
-            continue;
-          }
-          $month = $date[1];
-          if($month == "Jan"){
-            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
-              $jan['n'] += $timesheet['Codes'][$code][$desc][$dt];
-            }else{
-              $jan['b'] += $timesheet['Codes'][$code][$desc][$dt];
-            }
-          }elseif($month == "Feb"){
-            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
-              $feb['n'] += $timesheet['Codes'][$code][$desc][$dt];
-            }else{
-              $feb['b'] += $timesheet['Codes'][$code][$desc][$dt];
-            }
-          }elseif($month == "Mar"){
-            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
-              $mar['n'] += $timesheet['Codes'][$code][$desc][$dt];
-            }else{
-              $mar['b'] += $timesheet['Codes'][$code][$desc][$dt];
-            }
-          }elseif($month == "Apr"){
-            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
-              $apr['n'] += $timesheet['Codes'][$code][$desc][$dt];
-            }else{
-              $apr['b'] += $timesheet['Codes'][$code][$desc][$dt];
-            }
-          }elseif($month == "May"){
-            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
-              $may['n'] += $timesheet['Codes'][$code][$desc][$dt];
-            }else{
-              $may['b'] += $timesheet['Codes'][$code][$desc][$dt];
-            }
-          }elseif($month == "Jun"){
-            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
-              $jun['n'] += $timesheet['Codes'][$code][$desc][$dt];
-            }else{
-              $jun['b'] += $timesheet['Codes'][$code][$desc][$dt];
-            }
-          }elseif($month == "Jul"){
-            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
-              $jul['n'] += $timesheet['Codes'][$code][$desc][$dt];
-            }else{
-              $jul['b'] += $timesheet['Codes'][$code][$desc][$dt];
-            }
-          }elseif($month == "Aug"){
-            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
-              $aug['n'] += $timesheet['Codes'][$code][$desc][$dt];
-            }else{
-              $aug['b'] += $timesheet['Codes'][$code][$desc][$dt];
-            }
-          }elseif($month == "Sep"){
-            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
-              $sep['n'] += $timesheet['Codes'][$code][$desc][$dt];
-            }else{
-              $sep['b'] += $timesheet['Codes'][$code][$desc][$dt];
-            }
-          }elseif($month == "Oct"){
-            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
-              $oct['n'] += $timesheet['Codes'][$code][$desc][$dt];
-            }else{
-              $oct['b'] += $timesheet['Codes'][$code][$desc][$dt];
-            }
-          }elseif($month == "Nov"){
-            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
-              $nov['n'] += $timesheet['Codes'][$code][$desc][$dt];
-            }else{
-              $nov['b'] += $timesheet['Codes'][$code][$desc][$dt];
-            }
-          }else{
-            if($code == "CEG" || $code == "CEGTRNG" || $code == "CEGEDU" || $code == "CEGMKTG"){
-              $dec['n'] += $timesheet['Codes'][$code][$desc][$dt];
-            }else{
-              $dec['b'] += $timesheet['Codes'][$code][$desc][$dt];
-            }
-          }
-        }
-      }
-    }
-    array_push($months_arr, ($jan['n'] + $jan['b']) > 0 ? round(($jan['b'] / ($jan['n'] + $jan['b'])) * 100, 1) : 0);
-    array_push($months_arr, ($feb['n'] + $feb['b']) > 0 ? round(($feb['b'] / ($feb['n'] + $feb['b'])) * 100, 1) : 0);
-    array_push($months_arr, ($mar['n'] + $mar['b']) > 0 ? round(($mar['b'] / ($mar['n'] + $mar['b'])) * 100, 1) : 0);
-    array_push($months_arr, ($apr['n'] + $apr['b']) > 0 ? round(($apr['b'] / ($apr['n'] + $apr['b'])) * 100, 1) : 0);
-    array_push($months_arr, ($may['n'] + $may['b']) > 0 ? round(($may['b'] / ($may['n'] + $may['b'])) * 100, 1) : 0);
-    array_push($months_arr, ($jun['n'] + $jun['b']) > 0 ? round(($jun['b'] / ($jun['n'] + $jun['b'])) * 100, 1) : 0);
-    array_push($months_arr, ($jul['n'] + $jul['b']) > 0 ? round(($jul['b'] / ($jul['n'] + $jul['b'])) * 100, 1) : 0);
-    array_push($months_arr, ($aug['n'] + $aug['b']) > 0 ? round(($aug['b'] / ($aug['n'] + $aug['b'])) * 100, 1) : 0);
-    array_push($months_arr, ($sep['n'] + $sep['b']) > 0 ? round(($sep['b'] / ($sep['n'] + $sep['b'])) * 100, 1) : 0);
-    array_push($months_arr, ($oct['n'] + $oct['b']) > 0 ? round(($oct['b'] / ($oct['n'] + $oct['b'])) * 100, 1) : 0);
-    array_push($months_arr, ($nov['n'] + $nov['b']) > 0 ? round(($nov['b'] / ($nov['n'] + $nov['b'])) * 100, 1) : 0);
-    array_push($months_arr, ($dec['n'] + $dec['b']) > 0 ? round(($dec['b'] / ($dec['n'] + $dec['b'])) * 100, 1) : 0);
-
-    //Calculate Average of months that we've gone through so far, discard months we're not in yet.
-    $months = (int)date("n");
-    $total = 0;
-    $avg = 0;
-    for($i = 0; $i < $months; $i++){
-      $total += $months_arr[$i];
-    }
-    $avg = round($total / $months, 1);
-    array_push($months_arr, $avg);
-    $emp_hours_array[$user['nickname']] = $months_arr;
-  } 
-  return view('pages.billablebreakdown', compact('emp_hours_array', 'users_array'));     
-}
-/********************************************************************************************/
-
   /**
    * Finds a project in the database by $id and deletes it from the database.
    * @param $id
@@ -2962,22 +2753,14 @@ public function billable_breakdown(Request $request)
   {
     $projects = Project::where('autoadjustfuture', true)->get();
     $users = User::all();
-    $today_year = date("Y");
-    $today_month = date("M");
     foreach($projects as $project){ 
       if(!isset($project['hours_data'])){
         continue;
       }
       $approximated_budget = ($project['overunderbudget']/100) * $project['dollarvalueinhouse'];
-      if($approximated_budget == 0){
-        continue;
-      }
       $monthly_percents = $project['monthlypercent'];
       $distribute_even = true;
       //check if monthly_percents is all 0, then distribute evenly.
-      if($monthly_percents == null){
-        continue;
-      }
       for($i = 0; $i < count($monthly_percents); $i++){
         if($monthly_percents[$i] != 0){
           $distribute_even = false;
@@ -3040,7 +2823,6 @@ public function billable_breakdown(Request $request)
       $start_month = date('F', substr($date_ntp, 0, 10));
       $start_year = date('Y', substr($date_ntp, 0, 10));
       $end_year = date('Y', substr($date_energization, 0, 10));
-      $years_array = array();
       $hours_data = $project['hours_data'];
       $j = 0;
       for($i = $start_year; $i <= $end_year; $i++){
@@ -3049,7 +2831,7 @@ public function billable_breakdown(Request $request)
       }
       sort($years_array);
       $months_count = count(array_keys($monthly_percents));
-      $months_total_array = array_fill(0, $months_count, 0);      
+      $months_total_array = array_fill(0, $months_count, 0);
       $t = 0; //Total count of array
       $offset = 0;
       foreach($years_array as $year){
@@ -3065,13 +2847,8 @@ public function billable_breakdown(Request $request)
           if(!isset($hours_data[$year]) && ((int)$year) < ((int)$end_year) ){
             foreach($months_array as $month){
               if(date('n', strtotime($start_month)) <= date('n', strtotime($month))){   
-             //   if((date('y', strtotime($year)) >= date('y', strtotime($today_year)) ) && ( date('n', strtotime($month)) >= date('n', strtotime($today_month)))){  
-             //     $months_total_array[$t] = -4;
-             //     continue;
-              //  }else{
                 $months_total_array[$t] = -1;
                 $t++;
-                //}
               }
               if($t >= $months_count){
                 break;
@@ -3098,25 +2875,20 @@ public function billable_breakdown(Request $request)
                     }
                 }
             }
+
             foreach($months_array as $month){
               if(date('n', strtotime($start_month)) <= date('n', strtotime($month))){   
-                if( ($year == $today_year)  && ( date('n', strtotime($month)) == date('n', strtotime($today_month)))){ 
-                  $months_total_array[$t] = 0;
-                  break;
-                }else{
                 for($j = 0; $j < count($employee_array); $j++){ 
                   $months_total_array[$t] += $hours_data[$year][$month][$employee_array[$j]] * $rates_for_total[$j];
                 }
-                }
               $t++;  
               }
-              if($t >= $months_count){
-                break;
-              }
+            if($t >= $months_count){
+              break;
             }
-            
+            }
           }
-          else{   
+          else{    
             $employee_array = array_keys($hours_data[$year][$months_array[0]]);
             unset($employee_array[count($employee_array) - 1]); //removes "Total" employee
             $rates_for_total = [count($employee_array)];
@@ -3131,16 +2903,9 @@ public function billable_breakdown(Request $request)
                 }
             }
             foreach($months_array as $month){
-              if(($year == $today_year)  && ( date('n', strtotime($month)) == date('n', strtotime($today_month)))){  
-                if($project['projectcode'] == "CEGMORT28")
-                  dd(strtotime($year));
-                $months_total_array[$t] = 0;
-                break;
-              }else{
               for($j = 0; $j < count($employee_array); $j++){ 
                 $months_total_array[$t] += $project['hours_data'][$year][$month][$employee_array[$j]]  * $rates_for_total[$j];
               }
-            }
             $t++;
             if($t >= $months_count){
               break;
@@ -3150,67 +2915,31 @@ public function billable_breakdown(Request $request)
         }
       $adjust_percents = $monthly_percents;
       $leftover = $approximated_budget;
-      $first_negative = true; //if its the first month negative
       $total_percents_used = 0;
       for($i = 0; $i < (count($monthly_percents)); $i++){
         if($months_total_array[$i] == -1){
           $adjust_percents[$i] = -1;
           continue;
-        }       
+        }
+        $adjust_percents[$i] = $months_total_array[$i] / $approximated_budget;
+        $total_percents_used += $adjust_percents[$i];
         $leftover = $leftover - $months_total_array[$i];
-        if($leftover > 0){
-          $adjust_percents[$i] = $months_total_array[$i] / $approximated_budget;
-          $total_percents_used += $adjust_percents[$i];
-        }
-        elseif($leftover < 0 && $first_negative == true){
-          $adjust_percents[$i] = $leftover / $approximated_budget;
-          $first_negative = false;
-          $total_percents_used = 1;
-        }
-        else{
-          $adjust_percents[$i] = (-1 * $months_total_array[$i]) / $approximated_budget;
-        }
       }
+      $month_counter = 0;
+      $i = 0;
 
-      //What this loop does is handle the first month being 0, so it checks the whole array to see if 
-      //there are more indexes that aren't 0. That means its not the last month and the project started
-      //late, so we offset it and keep going.
-      $zero_months = 0;
-      for($i = 0; $i < count($adjust_percents); $i++){
-        if($adjust_percents[$i] != 0){
+      foreach($adjust_percents as $ap){
+        if($ap == 0){
           break;
         }
-        else{
-          $zero_months++;
-        }
-      }
-        
-      //This loops through and figures out how many months we have left. If it hits a 0, we have to make
-      //sure that it wasn't just a delayed month, we have to keep going and check if there's more
-      //months with time coded.
-      $month_counter = $zero_months;
-      for($i = $zero_months; $i < count($adjust_percents); $i++){
-        if($adjust_percents[$i] == 0){
-          $last_month = true;
-          for($z = $i + 1; $z < count($adjust_percents); $z++){
-            if($adjust_percents[$z] != 0){
-              $last_month = false;
-            }
-          }
-          if($last_month == false){
-            $month_counter++;
-            continue;
-          }else{
-            break;
-          }
-        }
-        if($adjust_percents[$i] == -1){
+        if($ap == -1){
           $month_counter++;
           $adjust_percents[$i] = 0;
         }
         else{
           $month_counter++;
         }
+        $i++;
       }
       $months_left = count($adjust_percents) - $month_counter;
       if($months_left > 0){
@@ -3228,17 +2957,15 @@ public function billable_breakdown(Request $request)
             $expected += $monthly_percents[$i];
           }
           $percent_left = (1 - $expected);
-          if($percent_left != 0){
-            for($i = $month_counter; $i < count($adjust_percents); $i++){
-              $adjust_percents[$i] = (($monthly_percents[$i] / $percent_left) * ($expected - $total_percents_used) + $monthly_percents[$i]);
-            }
-          } 
+          for($i = $month_counter; $i < count($adjust_percents); $i++){
+            $adjust_percents[$i] = (($monthly_percents[$i] / $percent_left) * ($expected - $total_percents_used) + $monthly_percents[$i]);
+          }
         }
       }
       $project->adjusted_percents = $adjust_percents;
       $project->save();
     }
-    return;
+    return redirect('/projectindex');
   }
   /*******************BDB**********************/
 }
