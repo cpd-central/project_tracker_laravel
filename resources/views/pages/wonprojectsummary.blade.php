@@ -55,7 +55,7 @@
 @stop 
 
 
-@if($chart_type == 'bdb')
+@if(isset($chart_type) && $chart_type == 'bdb')
 @section('page-title', 'Budget Distribution Buster')
 @else
 @section('page-title', 'Won Project Summary')
